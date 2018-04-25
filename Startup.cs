@@ -50,7 +50,7 @@ namespace WebApp_OpenIDConnect_DotNet
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                    name: "default", 
+                    name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
         }

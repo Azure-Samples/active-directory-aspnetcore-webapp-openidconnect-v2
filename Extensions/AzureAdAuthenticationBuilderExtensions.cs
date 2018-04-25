@@ -31,10 +31,10 @@ namespace Microsoft.AspNetCore.Authentication
             public void Configure(string name, OpenIdConnectOptions options)
             {
                 options.ClientId = _azureOptions.ClientId;
-                options.Authority = $"{_azureOptions.Instance}{_azureOptions.TenantId}";
+                options.Authority = $"{_azureOptions.Instance}common/v2.0";   // V2 specific
                 options.UseTokenLifetime = true;
-                options.CallbackPath = _azureOptions.CallbackPath;
                 options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters.ValidateIssuer = false;     // accept several tenants
             }
 
             public void Configure(OpenIdConnectOptions options)

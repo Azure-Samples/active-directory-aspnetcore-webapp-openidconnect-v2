@@ -11,7 +11,6 @@
     "*.json",
     "*.md",
     "*.txt",
-    "!LICENSE.txt",
     "gulpfile.js"
   ],
   "keywords": [
@@ -37,9 +36,9 @@
   "_resolution": {
     "type": "version",
     "tag": "v3.2.6",
-    "commit": "47e82bc6cb86a05247f8c3846192228038572783"
+    "commit": "13386cd1b5947d8a5d23a12b531ce3960be1eba7"
   },
-  "_source": "https://github.com/aspnet/jquery-validation-unobtrusive.git",
+  "_source": "git://github.com/aspnet/jquery-validation-unobtrusive.git",
   "_target": "3.2.6",
   "_originalSource": "jquery-validation-unobtrusive"
 }
