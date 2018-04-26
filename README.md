@@ -10,6 +10,8 @@ endpoint: AAD V2
 
 This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect to sign in users with their Work and School or Microsoft personal account (formerly live accounts). It leverages the ASP.NET Core OpenID Connect middleware.
 
+![Sign-in with Azure AD](ReadmeFiles/sign-in.png)
+
 For more information on how the protocols work in this scenario and other scenarios, see [Authentication Scenarios for Azure AD](http://go.microsoft.com/fwlink/?LinkId=394414).
 
 ## How to run this sample
@@ -100,6 +102,8 @@ Make a request to the app. The app immediately attempts to authenticate you via 
 
 ## About The code
 
+### ASP.NET Core middleware
+
 This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Azure AD tenant. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app and the URL of the Azure AD tenant where the app is registered, which is read from the `appsettings.json` file. The middleware takes care of:
 
 - Downloading the Azure AD metadata, finding the signing keys, and finding the issuer name for the tenant.
@@ -123,6 +127,14 @@ return SignOut(
     OpenIdConnectDefaults.AuthenticationScheme);
 ```
 
+The middleware in this project is created as a part of the open-source [ASP.NET Security](https://github.com/aspnet/Security) project.
+
+### What is specific to Azure AD V2?
+
+ASP.NET Core creates Web applications for the V1 endpoint. It's easy, however to update the code to let users sign-in with both work and school accounts and Microsoft personal accounts. It's also possible to restrict the accounts used to sign-in
+
+#### Modified code
+
 The specific Azure AD V2 code is in `Configure(string name, OpenIdConnectOptions options)`:
 
 ```CSharp
@@ -134,4 +146,8 @@ The first line tells the middleware to let sign-in users with the Azure AD V2 en
 
 The second line tells the middleware to not validate the tenants. If you want to validate the tenants, you can set `ValidateIssuer` to true, and add a delegate as the `options.TokenValidationParameters.IssuerValidator` property.
 
-The middleware in this project is created as a part of the open-source [ASP.NET Security](https://github.com/aspnet/Security) project.
+#### Variations
+
+You can decide which user accounts can sign-in to your Web App by changing the Authority. The picture below shows all the possibilities
+
+![Variations](ReadmeFiles/v2-variations.png)
