@@ -2,11 +2,13 @@
 services: active-directory
 platforms: dotnet
 author: jmprieur
-level: 200
+level: 100
 service: ASP.NET Core Web App
 endpoint: AAD V2
 ---
 # Integrating Azure AD V2 into an ASP.NET Core web app
+
+![Build badge](https://identitydivision.visualstudio.com/_apis/public/build/definitions/a7934fdd-dcde-4492-a406-7fad6ac00e17/514/badge)
 
 This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect to sign in users with their Work and School or Microsoft personal account (formerly live accounts). It leverages the ASP.NET Core OpenID Connect middleware.
 
