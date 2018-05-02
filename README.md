@@ -18,7 +18,7 @@ This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect 
 
 To run this sample:
 
-> Pre-requisites: - Install .NET Core (for example for Windows) by following the instructions at [.NET and C# - Get Started in 10 Minutes](https://www.microsoft.com/net/core). In addition to developing on Windows, you can develop on [Linux](https://www.microsoft.com/net/core#linuxredhat), [Mac](https://www.microsoft.com/net/core#macos), or [Docker](https://www.microsoft.com/net/core#dockercmd).
+> Pre-requisites: Install .NET Core (for example for Windows) by following the instructions at [.NET and C# - Get Started in 10 Minutes](https://www.microsoft.com/net/core). In addition to developing on Windows, you can develop on [Linux](https://www.microsoft.com/net/core#linuxredhat), [Mac](https://www.microsoft.com/net/core#macos), or [Docker](https://www.microsoft.com/net/core#dockercmd).
 
 ### Step 1: Register the sample with your Azure AD tenant
 
@@ -28,7 +28,6 @@ To run this sample:
 1. In the Redirect URLs field, add `http://localhost:5000/` and `http://localhost:5000/signin-oidc`
 
 > Note: The base address in the **Sign-on URL** and **Logout URL** settings is `http://localhost:5000`. This localhost address allows the sample app to run insecurely from your local system. Port 5000 is the default port for the [Kestrel server](https://docs.microsoft.com/aspnet/core/fundamentals/servers/kestrel). Update these URLs if you configure the app for production use (for example, `https://www.contoso.com/signin-oidc` and `https://www.contoso.com/signout-oidc`).
-
 
 ### Step 2: Download/ Clone this sample code or build the application using a template
 
@@ -53,9 +52,7 @@ You can clone this sample from your shell or command line:
 
     > Note: Replace *`Enter_the_Application_Id_here`* with the *Application Id* from the application Id you just registered in the Application Registration Portal.
 
-2. Open **Extensions\AzureAdAuthenticationBuilderExtensions.cs** file and Modify the `Configure` method to:
-
-This method show be as follows (the changed lines are the lines containing  `Authority`, and `ValidateIssuer`)
+2. Open **Extensions\AzureAdAuthenticationBuilderExtensions.cs** file and replace the `Configure` method with:
 
     ```CSharp
     public void Configure(string name, OpenIdConnectOptions options)
@@ -104,9 +101,9 @@ By default, when you use the dotnet core template with `SingleOrg` authenticatio
 
 To restrict who can sign in to your application, use one of the options:
 
-### Restrict access to a single organization (single-tenant)
+### Option 1: Restrict access to a single organization (single-tenant)
 
-You can restrict sign-in access for your application to only user accounts that are in a single Azure AD tenant - including *guest accounts* of that tenant. This scenario is a common for line-of-business applications:
+You can restrict sign-in access for your application to only user accounts that are in a single Azure AD tenant - including *guest accounts* of that tenant. This scenario is a common for *line-of-business applications*:
 
 1. Open **appsettings.json** and replace the line containing the `TenantId` value with the domain of your tenant, for example, *contoso.onmicrosoft.com* or the guid for the Tenant Id:
 
@@ -114,7 +111,7 @@ You can restrict sign-in access for your application to only user accounts that 
     "TenantId": "[Enter the domain of your tenant, e.g. contoso.onmicrosoft.com or the Tenant Id]",
     ```
 
-2. In your **Extensions\AzureAdAuthenticationBuilderExtensions.cs** file, replace the `Configure` with:
+2. In your **Extensions\AzureAdAuthenticationBuilderExtensions.cs** file, replace the `Configure` method with:
 
     ```CSharp
     public void Configure(string name, OpenIdConnectOptions options)
@@ -127,14 +124,14 @@ You can restrict sign-in access for your application to only user accounts that 
     }
     ```
 
-#### Restrict access to a list of organizations
+### Option 2: Restrict access to a list of organizations
 
 You can restrict sign-in access to only user accounts that are in a specific list of Azure AD organizations:
 
 1. In your **Extensions\AzureAdAuthenticationBuilderExtensions.cs** file, set the `ValidateIssuer` argument to **`true`**
 2. Add a `ValidIssuers` `TokenValidationParameters` parameter containing the list of allowed organizations.
 
-#### Use a custom method to validate issuers
+### Option 3: Use a custom method to validate issuers
 
 You can implement a custom method to validate issuers by using the **IssuerValidator** parameter. For more information about how to use this parameter, read about the [TokenValidationParameters class](https://msdn.microsoft.com/library/system.identitymodel.tokens.tokenvalidationparameters.aspx) on MSDN.
 
