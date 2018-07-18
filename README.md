@@ -41,11 +41,11 @@ You can clone this sample from your shell or command line:
   git clone https://github.com/Azure-Samples/active-directory-dotnet-webapp-openidconnect-aspnetcore.git
   ```
 
-  In the **appsettings.json** file, replace the `ClientID` value with the *Applicaiton ID* from the application you just registered in Application Registration portal on *Step 1*.
+  In the **appsettings.json** file, replace the `ClientID` value with the *Application ID* from the application you just registered in Application Registration portal on *Step 1*.
 
 #### Option 2: Create the sample from the command line
 
-1. Run the following command to create a sample from the command line using the `MultiOrg` template:
+1. Run the following command to create a sample from the command line using the `SingleOrg` template:
     ```console
     dotnet new mvc --auth SingleOrg --client-id <Enter_the_Application_Id_here>
     ```
