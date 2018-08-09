@@ -10,9 +10,13 @@ endpoint: AAD V2
 
 ![Build badge](https://identitydivision.visualstudio.com/_apis/public/build/definitions/a7934fdd-dcde-4492-a406-7fad6ac00e17/514/badge)
 
+## Scenario
+
 This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect to sign in personal accounts (including outlook.com, live.com, and others) as well as work and school accounts from any company or organization that has integrated with Azure Active Directory. It leverages the ASP.NET Core OpenID Connect middleware.
 
 ![Sign-in with Azure AD](ReadmeFiles/sign-in.png)
+
+An on demand video was created for the Build 2018 event, featuring this scenario and this sample. See the video [Building Web App Solutions With Authentication](https://channel9.msdn.com/Events/Build/2018/THR5001), and the associated [PowerPoint deck](http://video.ch9.ms/sessions/c1f9c808-82bc-480a-a930-b340097f6cc1/SigninworkandschoolMSAusersWebApp.pptx)
 
 ## How to run this sample
 
