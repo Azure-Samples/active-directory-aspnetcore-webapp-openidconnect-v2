@@ -13,5 +13,7 @@
         public string TenantId { get; set; }
 
         public string CallbackPath { get; set; }
+
+        public string RedirectUri { get; set; }
     }
 }

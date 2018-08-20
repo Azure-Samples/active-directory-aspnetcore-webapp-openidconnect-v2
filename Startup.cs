@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TodoListService.Extensions;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -27,6 +28,10 @@ namespace WebApp_OpenIDConnect_DotNet
             })
             .AddAzureAd(options => Configuration.Bind("AzureAd", options))
             .AddCookie();
+
+            // Token service
+            services.Configure<AzureAdOptions>(myoptions => { });
+            services.AddSingleton<ITokenAcquisition, TokenAcquisition>();
 
             services.AddMvc();
         }
