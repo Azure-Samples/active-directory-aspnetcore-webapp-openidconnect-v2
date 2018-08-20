@@ -17,7 +17,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         {
             var redirectUrl = Url.Action(nameof(HomeController.Index), "Home");
             return Challenge(
-                new AuthenticationProperties { RedirectUri = redirectUrl },
+                new AuthenticationProperties { RedirectUri = redirectUrl, IsPersistent=true },
                 OpenIdConnectDefaults.AuthenticationScheme);
         }
 

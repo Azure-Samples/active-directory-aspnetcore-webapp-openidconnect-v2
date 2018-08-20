@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
@@ -39,11 +42,22 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             string[] scopes = new string[] { "user.read" };
 
             var claims = User.Claims.ToArray();
-            string accessToken = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(User, scopes);
-            dynamic me = await CallGraphApiOnBehalfOfUser(accessToken);
+            try
 
-            ViewData["Me"] = me;
-            return View();
+            {
+                string accessToken = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(User, scopes);
+                dynamic me = await CallGraphApiOnBehalfOfUser(accessToken);
+
+                ViewData["Me"] = me;
+                return View();
+            }
+            catch(MsalException ex)
+            {
+                var redirectUrl = Url.Action(nameof(HomeController.Contact), "Home");
+                return Challenge(
+                    new AuthenticationProperties { RedirectUri = redirectUrl, IsPersistent = true },
+                    OpenIdConnectDefaults.AuthenticationScheme);
+            }
         }
 
         private static async Task<dynamic> CallGraphApiOnBehalfOfUser(string accessToken)
