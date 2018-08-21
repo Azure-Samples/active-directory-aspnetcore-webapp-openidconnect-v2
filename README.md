@@ -46,7 +46,7 @@ This sample was created from the dotnet core 2.0 [dotnet new mvc](https://docs.m
 You can clone this sample from your shell or command line:
 
   ```console
-  git clone https://github.com/Azure-Samples/active-directory-dotnet-webapp-openidconnect-aspnetcore.git
+  git clone https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2.git
   ```
 
   In the **appsettings.json** file, replace the `ClientID` value with the *Application ID* from the application you registered in Application Registration portal on *Step 1*.
