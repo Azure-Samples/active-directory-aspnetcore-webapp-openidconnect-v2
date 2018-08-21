@@ -40,18 +40,16 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         public async Task<IActionResult> Contact()
         {
             string[] scopes = new string[] { "user.read" };
-
-            var claims = User.Claims.ToArray();
             try
 
             {
-                string accessToken = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(User, scopes);
+                string accessToken = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, User, scopes);
                 dynamic me = await CallGraphApiOnBehalfOfUser(accessToken);
 
                 ViewData["Me"] = me;
                 return View();
             }
-            catch(MsalException ex)
+            catch(MsalException)
             {
                 var redirectUrl = Url.Action(nameof(HomeController.Contact), "Home");
                 return Challenge(

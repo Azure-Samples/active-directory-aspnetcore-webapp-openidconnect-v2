@@ -1,13 +1,42 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using TodoListService.Extensions;
 
-namespace TodoListService.Extensions
+namespace Microsoft.AspNetCore.Authentication
 {
+    /// <summary>
+    /// Extension class enabling adding the TokenAcquisition service
+    /// </summary>
+    public static class TokenAcquisitionExtension
+    {
+        /// <summary>
+        /// Add the token acquisition service.
+        /// </summary>
+        /// <param name="services">Service collection</param>
+        /// <returns>the service collection</returns>
+        public static IServiceCollection AddTokenAcquisition(this IServiceCollection services)
+        {
+            // Token acquisition service
+            services.Configure<AzureAdOptions>(myoptions => { });
+            services.AddTransient<ITokenAcquisition, TokenAcquisition>();
+            return services;
+        }
+    }
+
+    /// <summary>
+    /// Token acquisition service
+    /// </summary>
     public class TokenAcquisition : ITokenAcquisition
     {
         /// <summary>
@@ -17,8 +46,10 @@ namespace TodoListService.Extensions
         /// <param name="options">Options to configure the application</param>
         public TokenAcquisition(IOptions<AzureAdOptions> options)
         {
-            GetOrCreateApplication(options.Value);
+            azureAdOptions = options.Value;
         }
+
+        private AzureAdOptions azureAdOptions;
 
         /// <summary>
         /// The goal of this method is, when a user is authenticated, to add the user's account in the MSAL.NET cache
@@ -45,10 +76,9 @@ namespace TodoListService.Extensions
         /// }
         /// </code>
         /// </example>
-        public void AddAccountToCacheFromJwt(JwtSecurityToken jwtToken)
+        public void AddAccountToCacheFromJwt(JwtSecurityToken jwtToken, IEnumerable<string> scopes)
         {
             string userAccessTokenForThisApi = jwtToken.RawData;
-            string[] scopes = new string[] { "user.read" };
             try
             {
                 UserAssertion userAssertion = new UserAssertion(userAccessTokenForThisApi, "urn:ietf:params:oauth:grant-type:jwt-bearer");
@@ -64,14 +94,18 @@ namespace TodoListService.Extensions
             }
         }
 
-        public void AddAccountToCacheFromAuthorizationCode(string authorizationCode)
+        public async Task AddAccountToCacheFromAuthorizationCode(AuthorizationCodeReceivedContext context, IEnumerable<string> scopes)
         {
-            string[] scopes = new string[] { "user.read" };
             try
             {
-                // .Result to make sure that the cache is filled-in before the controller tries to get access tokens
-                AuthenticationResult result = Application.AcquireTokenByAuthorizationCodeAsync(authorizationCode, scopes).Result;
-                string acessTokenForGraphOBOUser = result.AccessToken;
+                // Acquiring a token with MSAL using the Authorization code flow in order to populate the token cache
+                var request = context.HttpContext.Request;
+                var currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, request.Path);
+                var credential = new ClientCredential(azureAdOptions.ClientSecret);
+                Application = new ConfidentialClientApplication(azureAdOptions.ClientId, currentUri, credential, AuthPropertiesTokenCacheHelper.ForCodeRedemption(context.Properties), null);
+
+                var result = await Application.AcquireTokenByAuthorizationCodeAsync(context.ProtocolMessage.Code, scopes);
+                context.HandleCodeRedemption(result.AccessToken, result.IdToken);
             }
             catch (MsalException ex)
             {
@@ -86,13 +120,21 @@ namespace TodoListService.Extensions
         /// Gets an access token for a downstream API on behalf of the user which evidence are provided by the
         /// <paramref name="user"/> parameter
         /// </summary>
+        /// <param name="context">HttpContext (for instance of the controller)</param>
         /// <param name="user">Account described by its claims</param>
         /// <param name="scopes">Scopes to request for the downstream API to call</param>
         /// <returns>An access token to call the downstream API characterized by its scopes, on behalf of the user</returns>
-        public async Task<string> GetAccessTokenOnBehalfOfUser(ClaimsPrincipal user, string[] scopes)
+        public async Task<string> GetAccessTokenOnBehalfOfUser(HttpContext context, ClaimsPrincipal user, string[] scopes)
         {
-            string userObjectId = user.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier");
-            string tenantId = user.FindFirstValue("http://schemas.microsoft.com/identity/claims/tenantid");
+            // Use MSAL to get the right token to call the API
+            var credential = new ClientCredential(azureAdOptions.ClientSecret);
+            var request = context.Request;
+            var currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, request.Path);
+            Application = new ConfidentialClientApplication(azureAdOptions.ClientId, currentUri, new ClientCredential(azureAdOptions.ClientSecret), 
+                AuthPropertiesTokenCacheHelper.ForApiCalls(context, CookieAuthenticationDefaults.AuthenticationScheme), null);
+
+            string userObjectId = user.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
+            string tenantId = user.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
             if (string.IsNullOrWhiteSpace(userObjectId))
             {
                 // TODO: find a better typed exception
@@ -103,8 +145,9 @@ namespace TodoListService.Extensions
             {
                 throw new Exception("Missing claim 'http://schemas.microsoft.com/identity/claims/tenantid'");
             }
-            string userId = userObjectId + "." + tenantId;
-            return await GetAccessTokenOnBehalfOfUser(userId, scopes);
+            string accountId = userObjectId + "." + tenantId;
+
+            return await GetAccessTokenOnBehalfOfUser(accountId, scopes);
         }
 
         /// <summary>
@@ -141,23 +184,5 @@ namespace TodoListService.Extensions
 
         // Todo provide a better cache
         static TokenCache userTokenCache = new TokenCache();
-
-        private void GetOrCreateApplication(AzureAdOptions options)
-        {
-            if (Application == null)
-            {
-
-                // This is a confidential client applicaiton, and therefore it shares with Azure AD client credentials (a client secret
-                // like here, but could also be a certificate)
-                ClientCredential clientCredential = new ClientCredential(options.ClientSecret);
-
-                // MSAL requests tokens from the Azure AD v2.0 endpoint
-                string authority = $"{options.Instance}{options.TenantId}/v2.0/";
-
-                Application = new ConfidentialClientApplication(options.ClientId, authority, options.RedirectUri,
-                                                                clientCredential, userTokenCache, appTokenCache: null);
-            }
-        }
-
     }
 }

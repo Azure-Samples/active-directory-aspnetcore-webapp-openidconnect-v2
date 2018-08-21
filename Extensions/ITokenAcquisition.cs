@@ -1,4 +1,7 @@
-﻿using Microsoft.Identity.Client;
+﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Identity.Client;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -33,9 +36,9 @@ namespace TodoListService.Extensions
         /// }
         /// </code>
         /// </example>
-        void AddAccountToCacheFromJwt(JwtSecurityToken jwtToken);
+        void AddAccountToCacheFromJwt(JwtSecurityToken jwtToken, IEnumerable<string> scopes);
 
-        void AddAccountToCacheFromAuthorizationCode(string code);
+        Task AddAccountToCacheFromAuthorizationCode(AuthorizationCodeReceivedContext context, IEnumerable<string> scopes);
 
         /// <summary>
         /// Gets an access token for a downstream API on behalf of the user account which claims are provided in the 
@@ -44,7 +47,7 @@ namespace TodoListService.Extensions
         /// <param name="user">User account described by its claims</param>
         /// <param name="scopes">Scopes to request for the downstream API to call</param>
         /// <returns>An access token to call on behalf of the user, the downstream API characterized by its scopes</returns>
-        Task<string> GetAccessTokenOnBehalfOfUser(ClaimsPrincipal user, string[] scopes);
+        Task<string> GetAccessTokenOnBehalfOfUser(HttpContext context, ClaimsPrincipal user, string[] scopes);
 
         /// <summary>
         /// Gets an access token for a downstream API on behalf of the user of a given account ID

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Client;
 using System;
 using System.Threading.Tasks;
 using TodoListService.Extensions;
@@ -39,10 +40,10 @@ namespace Microsoft.AspNetCore.Authentication
                 options.RequireHttpsMetadata = false;
                 options.TokenValidationParameters.ValidateIssuer = false;     // accept several tenants
                 options.Events = new OpenIdConnectEvents();
-                options.Events.OnTokenValidated = OnTokenValidated;
+                options.Events.OnAuthorizationCodeReceived = OnAuthorizationCodeReceived;
                 options.Scope.Add("user.read");
 
-                options.ResponseType = "id_token token";
+                options.ResponseType = "code id_token";
             }
 
             public void Configure(OpenIdConnectOptions options)
@@ -50,9 +51,10 @@ namespace Microsoft.AspNetCore.Authentication
                 Configure(Options.DefaultName, options);
             }
 
-            private async Task OnTokenValidated(TokenValidatedContext context)
+            private async Task OnAuthorizationCodeReceived(AuthorizationCodeReceivedContext context)
             {
-                _tokenAcquisition.AddAccountToCacheFromJwt(context.SecurityToken);
+                string[] scopes = new string[] { "user.read" };
+                await _tokenAcquisition.AddAccountToCacheFromAuthorizationCode(context, scopes);
             }
         }
     }

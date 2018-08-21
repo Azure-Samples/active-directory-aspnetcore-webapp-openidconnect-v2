@@ -30,8 +30,7 @@ namespace WebApp_OpenIDConnect_DotNet
             .AddCookie();
 
             // Token service
-            services.Configure<AzureAdOptions>(myoptions => { });
-            services.AddSingleton<ITokenAcquisition, TokenAcquisition>();
+            services.AddTokenAcquisition();
 
             services.AddMvc();
         }
