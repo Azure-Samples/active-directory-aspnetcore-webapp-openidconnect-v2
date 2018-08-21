@@ -49,7 +49,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                 ViewData["Me"] = me;
                 return View();
             }
-            catch(MsalException)
+            catch (MsalException)
             {
                 var redirectUrl = Url.Action(nameof(HomeController.Contact), "Home");
                 return Challenge(
