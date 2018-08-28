@@ -33,9 +33,9 @@ To run this sample:
 1. Sign in to the [Application registration portal](https://apps.dev.microsoft.com/portal/register-app) either using a personal Microsoft account (live.com or hotmail.com) or work or school account.
 1. Give a name to your Application, make sure that the *Guided Setup* option is **Unchecked**. Then press **Create**. The portal will assign your app a globally unique *Application ID* that you'll use later in your code.
 1. Click **Add Platform**, and select **Web**.
-1. In the Redirect URLs field, add `http://localhost:5000/` and `http://localhost:5000/signin-oidc`
+1. In the Redirect URLs field, add `http://localhost:3110/` and `http://localhost:3110/signin-oidc`. The port number needs to be consistent with the port in the Properties/launchSettings.json file.
 
-> Note: The base address in the **Sign-on URL** and **Logout URL** settings is `http://localhost:5000`. This localhost address allows the sample app to run insecurely from your local system. Port 5000 is the default port for the [Kestrel server](https://docs.microsoft.com/aspnet/core/fundamentals/servers/kestrel). Update these URLs if you configure the app for production use (for example, `https://www.contoso.com/signin-oidc` and `https://www.contoso.com/signout-oidc`).
+> Note: The base address in the **Sign-on URL** and **Logout URL** settings is `http://localhost:3110`. This localhost address allows the sample app to run insecurely from your local system. If the port was not specified (in the lauchsettings.json file), port 5000 would be used as it's the default port for the [Kestrel server](https://docs.microsoft.com/aspnet/core/fundamentals/servers/kestrel). You will need to update these URLs if you configure the app for production use (for example, `https://www.contoso.com/signin-oidc` and `https://www.contoso.com/signout-oidc`).
 
 ### Step 2: Download/ Clone this sample code or build the application using a template
 
