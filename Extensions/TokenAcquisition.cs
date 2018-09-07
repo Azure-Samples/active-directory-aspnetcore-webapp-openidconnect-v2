@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
@@ -6,11 +10,6 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using TodoListService.Extensions;
 
 namespace Microsoft.AspNetCore.Authentication
@@ -39,6 +38,8 @@ namespace Microsoft.AspNetCore.Authentication
     /// </summary>
     public class TokenAcquisition : ITokenAcquisition
     {
+        private AzureAdOptions _azureAdOptions;
+
         /// <summary>
         /// Constructor of the TokenAcquisition service. This requires the Azure AD Options to 
         /// configure the confidential client application
@@ -46,10 +47,8 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="options">Options to configure the application</param>
         public TokenAcquisition(IOptions<AzureAdOptions> options)
         {
-            azureAdOptions = options.Value;
+            _azureAdOptions = options.Value;
         }
-
-        private AzureAdOptions azureAdOptions;
 
         /// <summary>
         /// The goal of this method is, when a user is authenticated, to add the user's account in the MSAL.NET cache
@@ -78,10 +77,15 @@ namespace Microsoft.AspNetCore.Authentication
         /// </example>
         public void AddAccountToCacheFromJwt(JwtSecurityToken jwtToken, IEnumerable<string> scopes)
         {
-            string userAccessTokenForThisApi = jwtToken.RawData;
+            if (jwtToken == null)
+                throw new ArgumentNullException(nameof(jwtToken));
+
+            if (scopes == null)
+                throw new ArgumentNullException(nameof(scopes));
+            
             try
             {
-                UserAssertion userAssertion = new UserAssertion(userAccessTokenForThisApi, "urn:ietf:params:oauth:grant-type:jwt-bearer");
+                UserAssertion userAssertion = new UserAssertion(jwtToken.RawData, "urn:ietf:params:oauth:grant-type:jwt-bearer");
 
                 // .Result to make sure that the cache is filled-in before the controller tries to get access tokens
                 AuthenticationResult result = Application.AcquireTokenOnBehalfOfAsync(scopes, userAssertion).Result;
@@ -94,15 +98,46 @@ namespace Microsoft.AspNetCore.Authentication
             }
         }
 
+        /// <summary>
+        /// Add, to the MSAL.NET cache, the account of the user for which an authorization code was received when the Web API was called.
+        /// An On-behalf-of token contained in the <see cref="AuthorizationCodeReceivedContext"/> is added to the cache, so that it can then be used to acquire another token on-behalf-of the 
+        /// same user in order to call to downstream APIs.
+        /// </summary>
+        /// <param name="context">The context used when an 'AuthorizationCode' is received over the OpenIdConnect protocol.</param>
+        /// <example>
+        /// From the configuration of the Authentication of the ASP.NET Core Web API: 
+        /// <code>OpenIdConnectOptions options;</code>
+        /// 
+        /// Subscribe to the authorization code recieved event:
+        /// <code>
+        ///  options.Events = new OpenIdConnectEvents();
+        ///  options.Events.OnAuthorizationCodeReceived = OnAuthorizationCodeReceived;
+        /// }
+        /// </code>
+        /// 
+        /// And then in the OnAuthorizationCodeRecieved method, call <see cref="AddAccountToCacheFromAuthorizationCode"/>:
+        /// <code>
+        /// private async Task OnAuthorizationCodeReceived(AuthorizationCodeReceivedContext context)
+        /// {
+        ///    await _tokenAcquisition.AddAccountToCacheFromAuthorizationCode(context, new string[] { "user.read" });
+        /// }
+        /// </code>
+        /// </example>
         public async Task AddAccountToCacheFromAuthorizationCode(AuthorizationCodeReceivedContext context, IEnumerable<string> scopes)
         {
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+
+            if (scopes == null)
+                throw new ArgumentNullException(nameof(scopes));
+
             try
             {
                 // Acquiring a token with MSAL using the Authorization code flow in order to populate the token cache
                 var request = context.HttpContext.Request;
                 var currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, request.Path);
-                var credential = new ClientCredential(azureAdOptions.ClientSecret);
-                Application = new ConfidentialClientApplication(azureAdOptions.ClientId, currentUri, credential, AuthPropertiesTokenCacheHelper.ForCodeRedemption(context.Properties), null);
+                var credential = new ClientCredential(_azureAdOptions.ClientSecret);
+                Application = new ConfidentialClientApplication(_azureAdOptions.ClientId, currentUri, credential, AuthPropertiesTokenCacheHelper.ForCodeRedemption(context.Properties), null);
 
                 var result = await Application.AcquireTokenByAuthorizationCodeAsync(context.ProtocolMessage.Code, scopes);
                 context.HandleCodeRedemption(result.AccessToken, result.IdToken);
@@ -112,9 +147,7 @@ namespace Microsoft.AspNetCore.Authentication
                 string message = ex.Message;
                 throw;
             }
-
         }
-
 
         /// <summary>
         /// Gets an access token for a downstream API on behalf of the user which evidence are provided by the
@@ -126,25 +159,30 @@ namespace Microsoft.AspNetCore.Authentication
         /// <returns>An access token to call the downstream API characterized by its scopes, on behalf of the user</returns>
         public async Task<string> GetAccessTokenOnBehalfOfUser(HttpContext context, ClaimsPrincipal user, string[] scopes)
         {
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            if (scopes == null)
+                throw new ArgumentNullException(nameof(scopes));
+
             // Use MSAL to get the right token to call the API
-            var credential = new ClientCredential(azureAdOptions.ClientSecret);
+            var credential = new ClientCredential(_azureAdOptions.ClientSecret);
             var request = context.Request;
             var currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, request.Path);
-            Application = new ConfidentialClientApplication(azureAdOptions.ClientId, currentUri, new ClientCredential(azureAdOptions.ClientSecret), 
+            Application = new ConfidentialClientApplication(_azureAdOptions.ClientId, currentUri, new ClientCredential(_azureAdOptions.ClientSecret), 
                 AuthPropertiesTokenCacheHelper.ForApiCalls(context, CookieAuthenticationDefaults.AuthenticationScheme), null);
 
             string userObjectId = user.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
             string tenantId = user.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
-            if (string.IsNullOrWhiteSpace(userObjectId))
-            {
-                // TODO: find a better typed exception
+            if (string.IsNullOrWhiteSpace(userObjectId)) // TODO: find a better typed exception
                 throw new Exception("Missing claim 'http://schemas.microsoft.com/identity/claims/objectidentifier'");
-            }
 
             if (string.IsNullOrWhiteSpace(tenantId))
-            {
                 throw new Exception("Missing claim 'http://schemas.microsoft.com/identity/claims/tenantid'");
-            }
+            
             string accountId = userObjectId + "." + tenantId;
 
             return await GetAccessTokenOnBehalfOfUser(accountId, scopes);
@@ -158,23 +196,26 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="scopes">Scopes for the downstream API to call</param>
         public async Task<string> GetAccessTokenOnBehalfOfUser(string accountIdentifier, string[] scopes)
         {
-            var accounts = (await Application.GetAccountsAsync());
+            if (accountIdentifier == null)
+                throw new ArgumentNullException(nameof(accountIdentifier));
 
-            string accessToken = null;
+            if (scopes == null)
+                throw new ArgumentNullException(nameof(scopes));
+
+            var accounts = await Application.GetAccountsAsync();
+
             try
             {
                 AuthenticationResult result = null;
                 IAccount account = await Application.GetAccountAsync(accountIdentifier);
                 result = await Application.AcquireTokenSilentAsync(scopes, account);
-                accessToken = result.AccessToken;
+                return result.AccessToken;
             }
             catch (MsalException ex)
             {
                 // TODO process the exception see if this is retryable etc ...
                 throw;
             }
-
-            return accessToken;
         }
 
         /// <summary>

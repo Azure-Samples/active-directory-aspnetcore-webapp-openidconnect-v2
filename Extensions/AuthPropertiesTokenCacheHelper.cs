@@ -10,12 +10,10 @@ namespace TodoListService.Extensions
     public class AuthPropertiesTokenCacheHelper
     {
         private const string TokenCacheKey = ".UserTokenCache";
-
         private HttpContext _httpContext;
         private ClaimsPrincipal _principal;
         private AuthenticationProperties _authProperties;
         private string _signInScheme;
-        public TokenCache TokenCache { get; private set; }
 
         private AuthPropertiesTokenCacheHelper(AuthenticationProperties authProperties) : base()
         {
@@ -36,6 +34,8 @@ namespace TodoListService.Extensions
             TokenCache.SetBeforeWrite(BeforeWriteNotification);
         }
 
+        public TokenCache TokenCache { get; private set; }
+
         public static TokenCache ForCodeRedemption(AuthenticationProperties authProperties)
         {
             return new AuthPropertiesTokenCacheHelper(authProperties).TokenCache;
@@ -51,10 +51,7 @@ namespace TodoListService.Extensions
         {
             string cachedTokensText;
             if (_authProperties.Items.TryGetValue(TokenCacheKey, out cachedTokensText))
-            {
-                var cachedTokens = Convert.FromBase64String(cachedTokensText);
-                TokenCache.Deserialize(cachedTokens);
-            }
+                TokenCache.Deserialize(Convert.FromBase64String(cachedTokensText));
         }
 
         private void BeforeAccessNotificationWithContext(TokenCacheNotificationArgs args)
@@ -73,8 +70,7 @@ namespace TodoListService.Extensions
             if (TokenCache.HasStateChanged)
             {
                 var cachedTokens = TokenCache.Serialize();
-                var cachedTokensText = Convert.ToBase64String(cachedTokens);
-                _authProperties.Items[TokenCacheKey] = cachedTokensText;
+                _authProperties.Items[TokenCacheKey] = Convert.ToBase64String(cachedTokens);
             }
         }
 
@@ -86,8 +82,7 @@ namespace TodoListService.Extensions
                 AfterAccessNotificationWithProperties(args);
 
                 var cachedTokens = TokenCache.Serialize();
-                var cachedTokensText = Convert.ToBase64String(cachedTokens);
-                _authProperties.Items[TokenCacheKey] = cachedTokensText;
+                _authProperties.Items[TokenCacheKey] = Convert.ToBase64String(cachedTokens);
                 _httpContext.SignInAsync(_signInScheme, _principal, _authProperties).Wait();
             }
         }

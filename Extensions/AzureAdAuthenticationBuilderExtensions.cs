@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.Identity.Client;
-using System;
-using System.Threading.Tasks;
 using TodoListService.Extensions;
 
 namespace Microsoft.AspNetCore.Authentication
@@ -53,8 +52,7 @@ namespace Microsoft.AspNetCore.Authentication
 
             private async Task OnAuthorizationCodeReceived(AuthorizationCodeReceivedContext context)
             {
-                string[] scopes = new string[] { "user.read" };
-                await _tokenAcquisition.AddAccountToCacheFromAuthorizationCode(context, scopes);
+                await _tokenAcquisition.AddAccountToCacheFromAuthorizationCode(context, new string[] { "user.read" });
             }
         }
     }

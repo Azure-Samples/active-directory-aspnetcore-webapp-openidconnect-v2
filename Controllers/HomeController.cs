@@ -1,16 +1,14 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System.Diagnostics;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using Newtonsoft.Json;
-using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using TodoListService.Extensions;
 using WebApp_OpenIDConnect_DotNet.Models;
 
@@ -19,12 +17,13 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
     [Authorize]
     public class HomeController : Controller
     {
+        ITokenAcquisition _tokenAcquisition;
+
         public HomeController(ITokenAcquisition tokenAcquisition)
         {
-            this.tokenAcquisition = tokenAcquisition;
+            _tokenAcquisition = tokenAcquisition;
         }
-        ITokenAcquisition tokenAcquisition;
-
+       
         public IActionResult Index()
         {
             return View();
@@ -39,11 +38,11 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
         public async Task<IActionResult> Contact()
         {
-            string[] scopes = new string[] { "user.read" };
+            var scopes = new string[] { "user.read" };
             try
 
             {
-                string accessToken = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, User, scopes);
+                var accessToken = await _tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, User, scopes);
                 dynamic me = await CallGraphApiOnBehalfOfUser(accessToken);
 
                 ViewData["Me"] = me;
@@ -63,18 +62,18 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             //
             // Call the Graph API and retrieve the user's profile.
             //
-            HttpClient client = new HttpClient();
+            var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            HttpResponseMessage response = await client.GetAsync("https://graph.microsoft.com/Beta/me");
-            string content = await response.Content.ReadAsStringAsync();
+            var response = await client.GetAsync("https://graph.microsoft.com/Beta/me");
             if (response.StatusCode == HttpStatusCode.OK)
             {
+                var content = await response.Content.ReadAsStringAsync();
                 dynamic me = JsonConvert.DeserializeObject(content);
                 return me;
             }
             else
             {
-                throw new Exception(content);
+                throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
             }
         }
 

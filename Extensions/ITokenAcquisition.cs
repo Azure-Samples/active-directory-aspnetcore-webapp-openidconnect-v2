@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Identity.Client;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Identity.Client;
 
 namespace TodoListService.Extensions
 {
@@ -12,7 +12,7 @@ namespace TodoListService.Extensions
     {
         /// <summary>
         /// Add, to the MSAL.NET cache, the account of the user for which a bearer token was received when the Web API was called.
-        /// An On-behalf-of token is added to the cache, so that it can then be used to acquire another token on On-behalf-of the 
+        /// An On-behalf-of token is added to the cache, so that it can then be used to acquire another token on-behalf-of the 
         /// same user in order to call to downstream APIs.
         /// </summary>
         /// <param name="userAccessToken">Access token used to call this Web API</param>
@@ -38,6 +38,31 @@ namespace TodoListService.Extensions
         /// </example>
         void AddAccountToCacheFromJwt(JwtSecurityToken jwtToken, IEnumerable<string> scopes);
 
+        /// <summary>
+        /// Add, to the MSAL.NET cache, the account of the user for which an authorization code was received when the Web API was called.
+        /// An On-behalf-of token contained in the <see cref="AuthorizationCodeReceivedContext"/> is added to the cache, so that it can then be used to acquire another token on-behalf-of the 
+        /// same user in order to call to downstream APIs.
+        /// </summary>
+        /// <param name="context">The context used when an 'AuthorizationCode' is received over the OpenIdConnect protocol.</param>
+        /// <example>
+        /// From the configuration of the Authentication of the ASP.NET Core Web API: 
+        /// <code>OpenIdConnectOptions options;</code>
+        /// 
+        /// Subscribe to the authorization code recieved event:
+        /// <code>
+        ///  options.Events = new OpenIdConnectEvents();
+        ///  options.Events.OnAuthorizationCodeReceived = OnAuthorizationCodeReceived;
+        /// }
+        /// </code>
+        /// 
+        /// And then in the OnAuthorizationCodeRecieved method, call <see cref="AddAccountToCacheFromAuthorizationCode"/>:
+        /// <code>
+        /// private async Task OnAuthorizationCodeReceived(AuthorizationCodeReceivedContext context)
+        /// {
+        ///    await _tokenAcquisition.AddAccountToCacheFromAuthorizationCode(context, new string[] { "user.read" });
+        /// }
+        /// </code>
+        /// </example>
         Task AddAccountToCacheFromAuthorizationCode(AuthorizationCodeReceivedContext context, IEnumerable<string> scopes);
 
         /// <summary>
