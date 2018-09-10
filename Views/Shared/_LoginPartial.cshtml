@@ -1,9 +1,11 @@
-@using System.Security.Principal
+@using System.Security.Claims
 
 @if (User.Identity.IsAuthenticated)
 {
+    var identity = User.Identity as ClaimsIdentity; // Azure AD V2 endpoint specific
+    string preferred_username = identity.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value;
     <ul class="nav navbar-nav navbar-right">
-        <li class="navbar-text">Hello @User.Identity.Name!</li>
+        <li class="navbar-text">Hello @preferred_username!</li>
         <li><a asp-area="AzureAD" asp-controller="Account" asp-action="SignOut">Sign out</a></li>
     </ul>
 }

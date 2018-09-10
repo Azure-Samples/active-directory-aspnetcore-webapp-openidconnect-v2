@@ -50,28 +50,28 @@ You can clone this sample from your shell or command line:
   git clone https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2.git
   ```
 
-  In the **appsettings.json** file, replace the `ClientID` value with the *Application ID* from the application you registered in Application Registration portal on *Step 1*.
+  In the **appsettings.json** file:
+  
+  - replace the `ClientID` value with the *Application ID* from the application you registered in Application Registration portal on *Step 1*.
+  - reaplce the `TenantId` value with `common`
 
 #### Option 2: Create the sample from the command line
 
 1. Run the following command to create a sample from the command line using the `SingleOrg` template:
     ```console
-    dotnet new mvc --auth SingleOrg --client-id <Enter_the_Application_Id_here>
+    dotnet new mvc --auth SingleOrg --client-id <Enter_the_Application_Id_here> --tenant-id common
     ```
 
     > Note: Replace *`Enter_the_Application_Id_here`* with the *Application Id* from the application Id you just registered in the Application Registration Portal.
 
-2. Open **Extensions\AzureAdAuthenticationBuilderExtensions.cs** file and replace the `Configure` method with:
+2. Open the **Startup.cs** file and in the `ConfigureServices` method, after the line containing `.AddAzureAD` insert the following code which enables your application to sign-in users with the Azure AD v2.0 endpoint, that is both Work and School and Microsoft Personal accounts.
 
     ```CSharp
-    public void Configure(string name, OpenIdConnectOptions options)
+    services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
     {
-        options.ClientId = _azureOptions.ClientId;
-        options.Authority = $"{_azureOptions.Instance}common/v2.0";   // V2 Endpoint
-        options.UseTokenLifetime = true;
-        options.RequireHttpsMetadata = false;
-        options.TokenValidationParameters.ValidateIssuer = false;     // accept any tenant
-    }
+        options.Authority = options.Authority + "/v2.0/";
+        options.TokenValidationParameters.ValidateIssuer = false;
+    });
     ```
 
 3. Modify `Views\Shared\_LoginPartial.cshtml` to have the following content:
@@ -106,11 +106,27 @@ You can clone this sample from your shell or command line:
 
 ## Optional: Restrict sign-in access to your application
 
-By default, when you use the dotnet core template with `SingleOrg` authentication option and follow the instructions in this guide to configure the application to use the Azure Active Directory v2 endpoint, both personal accounts - like outlook.com, live.com, and others - as well as Work or school accounts from any organizations that are integrated with Azure AD can sign in to your application. This is typically used on SaaS applications.
+By default, when you use the dotnet core template with `SingleOrg` authentication option and follow the instructions in this guide to configure the application to use the Azure Active Directory v2.0 endpoint, both personal accounts - like outlook.com, live.com, and others - as well as Work or school accounts from any organizations that are integrated with Azure AD can sign in to your application. This is typically used on SaaS applications.
 
 To restrict accounts type that can sign in to your application, use one of the options:
 
-### Option 1: Restrict access to a single organization (single-tenant)
+### Option 1: Restrict access to a only Work and School accounts
+
+Open **appsettings.json** and replace the line containing the `TenantId` value with `organizations`:
+
+    ```json
+    "TenantId": "organizations",
+    ```
+
+### Option 2: Restrict access to a only Microsoft personal accounts
+
+Open **appsettings.json** and replace the line containing the `TenantId` value with `consumers`:
+
+    ```json
+    "TenantId": "consumers",
+    ```
+
+### Option 3: Restrict access to a single organization (single-tenant)
 
 You can restrict sign-in access for your application to only user accounts that are in a single Azure AD tenant - including *guest accounts* of that tenant. This scenario is a common for *line-of-business applications*:
 
@@ -120,35 +136,26 @@ You can restrict sign-in access for your application to only user accounts that 
     "TenantId": "[Enter the domain of your tenant, e.g. contoso.onmicrosoft.com or the Tenant Id]",
     ```
 
-2. In your **Extensions\AzureAdAuthenticationBuilderExtensions.cs** file, replace the `Configure` method with:
+2. In your **Startup.cs** file, change the code we added in the `ConfigureServices` method to be:
 
     ```CSharp
-    public void Configure(string name, OpenIdConnectOptions options)
+    services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
     {
-        options.ClientId = _azureOptions.ClientId;
-        options.Authority = $"{_azureOptions.Instance}{_azureOptions.TenantId}/v2.0";   // V2 Endpoint
-        options.UseTokenLifetime = true;
-        options.RequireHttpsMetadata = false;
-        options.TokenValidationParameters.ValidateIssuer = true;     // Validate the tenant
-    }
+        options.Authority = options.Authority + "/v2.0/";
+        options.TokenValidationParameters.ValidateIssuer = true;
+    });
     ```
 
-### Option 2: Restrict access to a list of organizations
+### Option 3: Restrict access to a list of organizations
 
 You can restrict sign-in access to only user accounts that are in a specific list of Azure AD organizations:
 
-1. In your **Extensions\AzureAdAuthenticationBuilderExtensions.cs** file, set the `ValidateIssuer` argument to **`true`**
+1. In your **Startup.cs** file, set the `ValidateIssuer` argument to **`true`**
 2. Add a `ValidIssuers` `TokenValidationParameters` parameter containing the list of allowed organizations.
 
-### Option 3: Use a custom method to validate issuers
+### Option 4: Use a custom method to validate issuers
 
-You can implement a custom method to validate issuers by using the **IssuerValidator** parameter. For more information about how to use this parameter, read about the [TokenValidationParameters class](https://msdn.microsoft.com/library/system.identitymodel.tokens.tokenvalidationparameters.aspx) on MSDN.
-
-### Variations
-
-You can also decide which types of user accounts can sign in to your Web App by changing the Authority. The picture below shows all the possibilities
-
-![Variations](ReadmeFiles/v2-variations.png)
+You can implement a custom method to validate issuers by using the **IssuerValidator** parameter. For more information about how to use this parameter, read about [Validating Tokens](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki/ValidatingTokens).
 
 ## About The code
 
