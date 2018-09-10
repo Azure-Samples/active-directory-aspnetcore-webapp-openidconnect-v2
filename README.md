@@ -64,7 +64,7 @@ You can clone this sample from your shell or command line:
 
     > Note: Replace *`Enter_the_Application_Id_here`* with the *Application Id* from the application Id you just registered in the Application Registration Portal.
 
-2. Open the **Startup.cs** file and in the `ConfigureServices` method, after the line containing `.AddAzureAD` insert the following code which enables your application to sign-in users with the Azure AD v2.0 endpoint, that is both Work and School and Microsoft Personal accounts.
+2. Open the **Startup.cs** file and in the `ConfigureServices` method, after the line containing `.AddAzureAD` insert the following code, which enables your application to sign in users with the Azure AD v2.0 endpoint, that is both Work and School and Microsoft Personal accounts.
 
     ```CSharp
     services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
@@ -106,25 +106,25 @@ You can clone this sample from your shell or command line:
 
 ## Optional: Restrict sign-in access to your application
 
-By default, when you use the dotnet core template with `SingleOrg` authentication option and follow the instructions in this guide to configure the application to use the Azure Active Directory v2.0 endpoint, both personal accounts - like outlook.com, live.com, and others - as well as Work or school accounts from any organizations that are integrated with Azure AD can sign in to your application. This is typically used on SaaS applications.
+By default, when you use the dotnet core template with `SingleOrg` authentication option and follow the instructions in this guide to configure the application to use the Azure Active Directory v2.0 endpoint, both personal accounts - like outlook.com, live.com, and others - as well as Work or school accounts from any organizations that are integrated with Azure AD can sign in to your application. These multi-tenant apps are typically used on SaaS applications.
 
-To restrict accounts type that can sign in to your application, use one of the options:
+To restrict accounts types that can sign in to your application, use one of the options:
 
-### Option 1: Restrict access to a only Work and School accounts
+### Option 1: Restrict access to only Work and School accounts
 
 Open **appsettings.json** and replace the line containing the `TenantId` value with `organizations`:
 
-    ```json
-    "TenantId": "organizations",
-    ```
+```json
+"TenantId": "organizations",
+```
 
-### Option 2: Restrict access to a only Microsoft personal accounts
+### Option 2: Restrict access to only Microsoft personal accounts
 
 Open **appsettings.json** and replace the line containing the `TenantId` value with `consumers`:
 
-    ```json
-    "TenantId": "consumers",
-    ```
+```json
+"TenantId": "consumers",
+```
 
 ### Option 3: Restrict access to a single organization (single-tenant)
 
@@ -132,9 +132,9 @@ You can restrict sign-in access for your application to only user accounts that 
 
 1. Open **appsettings.json** and replace the line containing the `TenantId` value with the domain of your tenant, for example, *contoso.onmicrosoft.com* or the guid for the Tenant ID:
 
-    ```json
-    "TenantId": "[Enter the domain of your tenant, e.g. contoso.onmicrosoft.com or the Tenant Id]",
-    ```
+   ```json
+   "TenantId": "[Enter the domain of your tenant, e.g. contoso.onmicrosoft.com or the Tenant Id]",
+   ```
 
 2. In your **Startup.cs** file, change the code we added in the `ConfigureServices` method to be:
 
@@ -146,20 +146,20 @@ You can restrict sign-in access for your application to only user accounts that 
     });
     ```
 
-### Option 3: Restrict access to a list of organizations
+### Option 4: Restrict access to a list of organizations
 
 You can restrict sign-in access to only user accounts that are in a specific list of Azure AD organizations:
 
 1. In your **Startup.cs** file, set the `ValidateIssuer` argument to **`true`**
 2. Add a `ValidIssuers` `TokenValidationParameters` parameter containing the list of allowed organizations.
 
-### Option 4: Use a custom method to validate issuers
+### Option 5: Use a custom method to validate issuers
 
 You can implement a custom method to validate issuers by using the **IssuerValidator** parameter. For more information about how to use this parameter, read about [Validating Tokens](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki/ValidatingTokens).
 
 ## About The code
 
-This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Azure AD tenant. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app and the URL of the Azure AD tenant where the app is registered, which is read from the `appsettings.json` file. The middleware takes care of:
+This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Azure AD tenant. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Azure AD tenant where the app is registered. These values are  read from the `appsettings.json` file. The middleware takes care of:
 
 - Downloading the Azure AD metadata, finding the signing keys, and finding the issuer name for the tenant.
 - Processing OpenID Connect sign-in responses by validating the signature and issuer in an incoming JWT, extracting the user's claims, and putting the claims in `ClaimsPrincipal.Current`.
@@ -188,7 +188,7 @@ The middleware in this project is created as a part of the open-source [ASP.NET 
 
 ### Token validation
 
-The token validation is performed by the clases of the [Identity Model Extensions for DotNet](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet) library. Learn about to customize
+The token validation is performed by the classes of the [Identity Model Extensions for DotNet](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet) library. Learn about to customize
 token validation reading [ValidatingTokens](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki/ValidatingTokens) in that library's conceptual documentation
 
 <!-- Activate when the signInAndCallMsGraph branch is ready
