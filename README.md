@@ -8,17 +8,16 @@ endpoint: AAD V2
 ---
 # Integrating Azure AD V2 into an ASP.NET Core web app
 
-> This sample is for ASP.NET Core 2.0 and 2.1. We are working on updating the README.md for ASP.NET Core 2.2 for which the template recently changed.
+> This sample is for ASP.NET Core 2.1
+> A previous version for ASP.NET 2.0 is available from the [aspnetcore2-1](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-1) branch
 
 ![Build badge](https://identitydivision.visualstudio.com/_apis/public/build/definitions/a7934fdd-dcde-4492-a406-7fad6ac00e17/514/badge)
 
 ## Scenario
 
-This sample shows how to build a .NET Core 2.0 and 2.1 MVC Web app that uses OpenID Connect to sign in users. Users can use personal accounts (including outlook.com, live.com, and others) as well as work and school accounts from any company or organization that has integrated with Azure Active Directory. It leverages the ASP.NET Core OpenID Connect middleware.
+This sample shows how to build a .NET Core 2.1 MVC Web app that uses OpenID Connect to sign in users. Users can use personal accounts (including outlook.com, live.com, and others) as well as work and school accounts from any company or organization that has integrated with Azure Active Directory. It leverages the ASP.NET Core OpenID Connect middleware.
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
-
-An on-demand video was created for the Build 2018 event, featuring this scenario and this sample. See the video [Building Web App Solutions With Authentication](https://channel9.msdn.com/Events/Build/2018/THR5001), and the associated [PowerPoint deck](http://video.ch9.ms/sessions/c1f9c808-82bc-480a-a930-b340097f6cc1/SigninworkandschoolMSAusersWebApp.pptx)
 
 <!-- Activate when the signInAndCallMsGraph branch is ready
 > This is the first of a set of tutorials. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, learn how to enable you [Web App to call a Web API in the name of the user](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/signInAndCallMsGraph)
@@ -28,7 +27,7 @@ An on-demand video was created for the Build 2018 event, featuring this scenario
 
 To run this sample:
 
-> Pre-requisites: Install .NET Core (for example for Windows) by following the instructions at [.NET and C# - Get Started in 10 Minutes](https://www.microsoft.com/net/core). In addition to developing on Windows, you can develop on [Linux](https://www.microsoft.com/net/core#linuxredhat), [Mac](https://www.microsoft.com/net/core#macos), or [Docker](https://www.microsoft.com/net/core#dockercmd).
+> Pre-requisites: Install .NET Core 2.1 or later (for example for Windows) by following the instructions at [.NET and C# - Get Started in 10 Minutes](https://www.microsoft.com/net/core). In addition to developing on Windows, you can develop on [Linux](https://www.microsoft.com/net/core#linuxredhat), [Mac](https://www.microsoft.com/net/core#macos), or [Docker](https://www.microsoft.com/net/core#dockercmd).
 
 ### Step 1: Register the sample with your Azure AD tenant
 
@@ -41,7 +40,7 @@ To run this sample:
 
 ### Step 2: Download/ Clone this sample code or build the application using a template
 
-This sample was created from the dotnet core 2.0 [dotnet new mvc](https://docs.microsoft.com/dotnet/core/tools/dotnet-new?tabs=netcore2x) template with `SingleOrg` authentication, and then tweaked to let it support tokens for the Azure AD V2 endpoint. You can clone/download this repository or create the sample from the command line:
+This sample was created from the dotnet core 2.2 [dotnet new mvc](https://docs.microsoft.com/dotnet/core/tools/dotnet-new?tabs=netcore2x) template with `SingleOrg` authentication, and then tweaked to let it support tokens for the Azure AD V2 endpoint. You can clone/download this repository or create the sample from the command line:
 
 #### Option 1: Download/ clone this sample
 
