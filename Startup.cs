@@ -28,6 +28,9 @@ namespace WebApp_OpenIDConnect_DotNet
             .AddAzureAd(options => Configuration.Bind("AzureAd", options))
             .AddCookie();
 
+            // Token service
+            services.AddTokenAcquisition();
+
             services.AddMvc();
         }
 
