@@ -24,7 +24,7 @@ To run this sample:
 
 ### Step 1: Register the sample with your Azure AD tenant
 
-When you have registered your app as described in [the first tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2), you need an extra step:
+When you have [registered](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-1#step-1-register-the-sample-with-your-azure-ad-tenant) your app as described in [the first tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2), you need an extra step:
 
 1. In the Application Secrets, section, click on **Generate New Password** and copy the value of the generated password. This value is needed for your Web App to call a Web API. For this to happen, the Web App needs to get an access token for the Web API. This will be done using MSAL.NET `ConfidentialClientApplication` which will share a secret with Azure AD to prove the Web Apps identity.
 
