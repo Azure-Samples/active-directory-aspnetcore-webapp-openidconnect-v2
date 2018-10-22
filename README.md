@@ -6,7 +6,7 @@ level: 100
 service: ASP.NET Core Web App
 endpoint: AAD V2
 ---
-# Integrating Azure AD V2 into an ASP.NET Core web app
+# Integrating Azure AD V2 into an ASP.NET Core web app and calling the Microsoft Graph API on behalf of the user.
 
 > This sample is for ASP.NET Core 2.1
 > A previous version for ASP.NET 2.0 is available from the [aspnetcore2-1](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-1) branch
