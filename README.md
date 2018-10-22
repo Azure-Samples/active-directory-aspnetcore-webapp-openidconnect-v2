@@ -53,7 +53,7 @@ You can clone this sample from your shell or command line:
   In the **appsettings.json** file:
   
   - replace the `ClientID` value with the *Application ID* from the application you registered in Application Registration portal on *Step 1*.
-  - reaplce the `TenantId` value with `common`
+  - replace the `TenantId` value with `common`
 
 #### Option 2: Create the sample from the command line
 
