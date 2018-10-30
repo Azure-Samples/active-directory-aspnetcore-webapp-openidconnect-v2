@@ -172,7 +172,7 @@ namespace Microsoft.AspNetCore.Authentication
             var request = context.Request;
             var currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, request.Path);
             Application = new ConfidentialClientApplication(_azureAdOptions.ClientId, currentUri, new ClientCredential(_azureAdOptions.ClientSecret), 
-                AuthPropertiesTokenCacheHelper.ForApiCalls(context, CookieAuthenticationDefaults.AuthenticationScheme), null);
+                AuthPropertiesTokenCacheHelper.ForApiCalls(context, AzureADDefaults.CookieScheme), null);
 
             string userObjectId = user.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
             string tenantId = user.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
