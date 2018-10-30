@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="2.0.0-internal23101dev" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="2.3.1-preview" />
   </ItemGroup>
 
   <ItemGroup>
