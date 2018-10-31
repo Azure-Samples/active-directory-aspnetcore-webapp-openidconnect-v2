@@ -138,6 +138,9 @@ namespace Microsoft.AspNetCore.Authentication
                 var credential = new ClientCredential(_azureAdOptions.ClientSecret);
                 Application = new ConfidentialClientApplication(_azureAdOptions.ClientId, currentUri, credential, AuthPropertiesTokenCacheHelper.ForCodeRedemption(context.Properties), null);
 
+                // As AcquireTokenByAuthorizationCodeAsync is asynchronous we want to tell ASP.NET core that we are handing the code
+                // even if it's not done yet, so that it does not concurrently call the Token endpoint.
+                context.HandleCodeRedemption();
                 var result = await Application.AcquireTokenByAuthorizationCodeAsync(context.ProtocolMessage.Code, scopes);
                 context.HandleCodeRedemption(result.AccessToken, result.IdToken);
             }
