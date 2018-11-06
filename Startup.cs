@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using System.Linq;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -64,13 +62,15 @@ namespace WebApp_OpenIDConnect_DotNet
 
                 // Response type
                 options.ResponseType = "code id_token";
+                options.Scope.Add("User.Read");
+                options.Prompt = "consent";
 
                 // Handling the auth code
                 var handler = options.Events.OnAuthorizationCodeReceived;
                 options.Events.OnAuthorizationCodeReceived = async context =>
                 {
                    var _tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
-                    await _tokenAcquisition.AddAccountToCacheFromAuthorizationCode(context, new string[] { "user.read" });
+                    await _tokenAcquisition.AddAccountToCacheFromAuthorizationCode(context, new string[] { "User.Read" });
                     await handler(context);
                 };
             });
