@@ -63,7 +63,7 @@ namespace WebApp_OpenIDConnect_DotNet
                 // Response type
                 options.ResponseType = "code id_token";
                 options.Scope.Add("User.Read");
-                options.Prompt = "consent";
+               // options.Prompt = "consent";
 
                 // Handling the auth code
                 var handler = options.Events.OnAuthorizationCodeReceived;
