@@ -4,7 +4,7 @@ platforms: dotnet
 author: jmprieur
 level: 100
 service: ASP.NET Core Web App
-endpoint: AAD V2
+endpoint: AAD v2.0
 ---
 # Integrating Azure AD V2 into an ASP.NET Core web app
 
@@ -31,12 +31,35 @@ To run this sample:
 
 ### Step 1: Register the sample with your Azure AD tenant
 
-1. Sign in to the [Application registration portal](https://apps.dev.microsoft.com/portal/register-app) either using a personal Microsoft account (live.com or hotmail.com) or work or school account.
-1. Give a name to your Application, make sure that the *Guided Setup* option is **Unchecked**. Then press **Create**. The portal will assign your app a globally unique *Application ID* that you'll use later in your code.
-1. Click **Add Platform**, and select **Web**.
-1. In the Redirect URLs field, add `http://localhost:3110/` and `http://localhost:3110/signin-oidc`. The port number needs to be consistent with the port in the Properties/launchSettings.json file.
+#### Choose the Azure AD tenant where you want to create your applications
 
-> Note: The base address in the **Sign-on URL** and **Logout URL** settings is `http://localhost:3110`. This localhost address allows the sample app to run insecurely from your local system. If the port was not specified (in the lauchsettings.json file), port 5000 would be used as it's the default port for the [Kestrel server](https://docs.microsoft.com/aspnet/core/fundamentals/servers/kestrel). You will need to update these URLs if you configure the app for production use (for example, `https://www.contoso.com/signin-oidc` and `https://www.contoso.com/signout-oidc`).
+1. Sign in to the [Azure portal](https://portal.azure.com) using either a work or school account or a personal Microsoft account.
+1. If your account gives you access to more than one tenant, select your account in the top right corner, and set your portal session to the desired Azure AD tenant
+   (using **Switch Directory**).
+
+#### Register your app
+
+1. In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations (Preview)**.
+1. In **App registrations (Preview)** page, select **New registration**.
+1. When the **Register an application page** appears, enter your application's registration information:
+   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp`.
+   - In the **Supported account types** section, select **Accounts in any organizational directory and personal Microsoft accounts (e.g. Skype, Xbox, Outlook.com)**.
+   - In the Redirect URI (optional) section, select **Web** in the combo-box.
+   - For the *Redirect URI*, enter the base URL for the sample. By default, this sample uses `https://localhost:44321/`.
+   - Select **Register** to create the application.
+1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the Visual Studio configuration file for this project.
+1. In the list of pages for the app, select **Authentication**.
+   - In the **Advanced settings** section set **Logout URL** to `https://localhost:44321/signout-oidc`
+   - In the **Advanced settings** | **Implicit grant** section, check **Access tokens** and **ID tokens** as this sample requires 
+   the [Implicit grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-implicit-grant-flow)to be enabled to
+   sign-in the user, and call an API.
+ 1. Select **Save**.
+1. In the list of pages for the app, select **API permissions**
+   - Click the **Add a permission** button and then,
+   - Ensure that the **Microsoft APIs** tab is selected
+   - In the *Commonly used Microsoft APIs* section, click on **Microsoft Graph**
+   - In the **Delegated permissions** section, ensure that the right permissions are checked: **User.Read**. Use the search box if necessary.
+   - Select the **Add permissions** button
 
 ### Step 2: Download/ Clone this sample code or build the application using a template
 
@@ -49,6 +72,8 @@ You can clone this sample from your shell or command line:
   ```console
   git clone https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2.git
   ```
+
+> Given that the name of the sample is pretty long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
   In the **appsettings.json** file:
   
@@ -102,7 +127,7 @@ You can clone this sample from your shell or command line:
 
 1. Build the solution and run it.
 
-2. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Azure AD v2 endpoint. Sign in with your personal account or with work or school account.
+2. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. The app immediately attempts to authenticate you via the Azure AD v2 endpoint. Sign in with your personal account or with work or school account.
 
 ## Optional: Restrict sign-in access to your application
 
@@ -187,6 +212,11 @@ The middleware in this project is created as a part of the open-source [ASP.NET 
 ## Learn more
 
 ### Token validation
+
+To understand more about app registration, see:
+
+- [Quickstart: Register an application with the Microsoft identity platform (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
+- [Quickstart: Configure a client application to access web APIs (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
 
 The token validation is performed by the classes of the [Identity Model Extensions for DotNet](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet) library. Learn about customizing
 token validation by reading:
