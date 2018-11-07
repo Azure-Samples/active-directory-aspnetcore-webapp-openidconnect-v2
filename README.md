@@ -2,9 +2,10 @@
 services: active-directory
 platforms: dotnet
 author: jmprieur
-level: 100
-service: ASP.NET Core Web App
-endpoint: AAD V2
+level: 200
+client: ASP.NET Core 2.x Web App
+service: Microsoft Graph
+endpoint: AAD v2.0
 ---
 # Integrating Azure AD V2 into an ASP.NET Core web app and calling the Microsoft Graph API on behalf of the user.
 
@@ -34,9 +35,12 @@ To run this sample:
 
 When you have [registered](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2#step-1-register-the-sample-with-your-azure-ad-tenant) your app as described in [the first tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2), you need an extra step:
 
-1. In the Application Secrets, section, click on **Generate New Password** and copy the value of the generated password. This value is needed for your Web App to call a Web API. For this to happen, the Web App needs to get an access token for the Web API. This will be done using MSAL.NET `ConfidentialClientApplication` which will share a secret with Azure AD to prove the Web Apps identity.
+1. From the **Certificates & secrets** page, for your app registration, in the **Client secrets** section, choose **New client secret**:
 
-1. Save the changes
+   - Type a key description (of instance `app secret`),
+   - Select a key duration of either **In 1 year**, **In 2 years**, or **Never Expires**.
+   - When you press the **Add** button, the key value will be displayed, copy, and save the value in a safe location.
+   - You'll need this key later to configure the project in Visual Studio. This key value will not be displayed again, nor retrievable by any other means.
 
 ### Step 2: Download/ Clone this sample code or build the application using a template
 
@@ -51,7 +55,7 @@ You can clone this sample from your shell or command line:
 
 - the `ClientID` value with the *Application ID* from the application you registered in Application Registration portal,
 - the `TenantId` by `common`,
-- and the `ClientSecret` by the password you generated.
+- and the `ClientSecret` by the client secret you generated in Step 1.
 
 ### Step 3: Run the sample
 
