@@ -61,7 +61,8 @@ namespace WebApp_OpenIDConnect_DotNet
                 // options.TokenValidationParameters.ValidIssuers collection
 
                 // Response type
-                options.ResponseType = "code id_token";
+                options.ResponseType = "code";
+                options.Scope.Add("offline_access");
                 options.Scope.Add("User.Read");
                // options.Prompt = "consent";
 
@@ -69,7 +70,7 @@ namespace WebApp_OpenIDConnect_DotNet
                 var handler = options.Events.OnAuthorizationCodeReceived;
                 options.Events.OnAuthorizationCodeReceived = async context =>
                 {
-                   var _tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
+                    var _tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
                     await _tokenAcquisition.AddAccountToCacheFromAuthorizationCode(context, new string[] { "User.Read" });
                     await handler(context);
                 };
@@ -83,33 +84,33 @@ namespace WebApp_OpenIDConnect_DotNet
                     options.Filters.Add(new AuthorizeFilter(policy));
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            }
+        }
 
-            // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-            public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            if (env.IsDevelopment())
             {
-                if (env.IsDevelopment())
-                {
-                    app.UseDeveloperExceptionPage();
-                }
-                else
-                {
-                    app.UseExceptionHandler("/Home/Error");
-                    app.UseHsts();
-                }
-
-                app.UseHttpsRedirection();
-                app.UseStaticFiles();
-                app.UseCookiePolicy();
-
-                app.UseAuthentication();
-
-                app.UseMvc(routes =>
-                {
-                    routes.MapRoute(
-                        name: "default",
-                        template: "{controller=Home}/{action=Index}/{id?}");
-                });
+                app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseCookiePolicy();
+
+            app.UseAuthentication();
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
+}
