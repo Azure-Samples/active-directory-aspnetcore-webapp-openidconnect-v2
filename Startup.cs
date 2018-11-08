@@ -51,12 +51,12 @@ namespace WebApp_OpenIDConnect_DotNet
                 // If you want to restrict the users that can sign-in to only one tenant
                 // set the tenant value in the appsettings.json file to the tenant ID of this
                 // organization, and set ValidateIssuer below to true.
-                options.TokenValidationParameters.ValidateIssuer = false;
 
                 // If you want to restrict the users that can sign-in to several organizations
                 // Set the tenant value in the appsettings.json file to 'organizations', set
                 // ValidateIssuer, above to 'true', and add the issuers you want to accept to the
                 // options.TokenValidationParameters.ValidIssuers collection
+                options.TokenValidationParameters.ValidateIssuer = false;
             });
 
             services.AddMvc(options =>
