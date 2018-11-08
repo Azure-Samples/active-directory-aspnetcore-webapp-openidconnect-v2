@@ -35,12 +35,14 @@ To run this sample:
 
 When you have [registered](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2#step-1-register-the-sample-with-your-azure-ad-tenant) your app as described in [the first tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2), you need an extra step:
 
+1. From the **Authentication** page, uncheck **ID tokens**. This is no longer needed here.
 1. From the **Certificates & secrets** page, for your app registration, in the **Client secrets** section, choose **New client secret**:
 
    - Type a key description (of instance `app secret`),
    - Select a key duration of either **In 1 year**, **In 2 years**, or **Never Expires**.
    - When you press the **Add** button, the key value will be displayed, copy, and save the value in a safe location.
    - You'll need this key later to configure the project in Visual Studio. This key value will not be displayed again, nor retrievable by any other means.
+1. In the list of pages for the app, select **API permissions**, and notice that a delegated permission is set by default to Microsoft Graph for the scope **User.Read**
 
 ### Step 2: Download/ Clone this sample code or build the application using a template
 
@@ -112,21 +114,24 @@ options.TokenValidationParameters.ValidateIssuer = false
 insert:
 ```CSharp
  // Response type 
- options.ResponseType = "code id_token"; 
+ options.ResponseType = "code"; 
+ options.Scope.Add("offline_access");
+ options.Scope.Add("User.Read");
  
  // Handling the auth code 
- var handler = options.Events.OnAuthorizationCodeReceived; 
+ var handler = options.Events.OnAuthorizationCodeReceived;
  options.Events.OnAuthorizationCodeReceived = async context => 
  { 
-  var _tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>(); 
-  await _tokenAcquisition.AddAccountToCacheFromAuthorizationCode(context, new string[] { "user.read" }); 
-  await handler(context); 
+  var _tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
+  await _tokenAcquisition.AddAccountToCacheFromAuthorizationCode(context, new string[] { "User.Read" });
+  await handler(context);
  };
 ```
 
 ### Change the controller code to acquire a token and call Microsoft Graph
 
 In the `Controllers\HomeController.cs`file:
+
 1. Add a constructor to HomeController, making the ITokenAcquisition service available (used by the ASP.NET dependency injection mechanism)
 
    ```CSharp
@@ -143,7 +148,7 @@ In the `Controllers\HomeController.cs`file:
       ```CSharp
       public async Task<IActionResult> Contact()
       {
-       string[] scopes = new string[] { "user.read" };
+       string[] scopes = new string[] { "User.Read" };
        try
         {
          string accessToken = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, User, scopes);
