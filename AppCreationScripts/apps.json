@@ -1,0 +1,44 @@
+{
+  /*
+  This section describes the Azure AD Applications to configure, and their dependencies
+  */
+
+  "Sample": {
+    "Title": "Signing users to an ASP.NET Core Web App",
+    "Level": 200,
+    "Client": "ASP.NET Core 2.2"
+  },
+  "AppRegistrations": [
+    {
+      "x-ms-id": "active-directory-aspnetcore-webapp-openidconnect-v2",
+      "x-ms-name": "aspnetcore-webapp-openidconnect-v2",
+      "x-ms-version": "2.0",
+      "replyUrlsWithType": [
+        {
+          "url": "https://localhost:44321/",
+          "type": "Web"
+        },
+        {
+          "url": "https://localhost:44321/signin-oidc",
+          "type": "Web"
+        }
+      ],
+      "oauth2AllowIdTokenImplicitFlow": true,
+      "oauth2AllowImplicitFlow": true,
+      "logoutUrl": "https://localhost:44321/signout-callback-oidc",
+      "requiredResourceAccess": [
+        {
+          "x-ms-resourceAppName": "Microsoft Graph",
+          "resourceAppId": "00000003-0000-0000-c000-000000000000",
+          "resourceAccess": [
+            {
+              "id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d",
+              "type": "Scope",
+              "x-ms-name": "user.read"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
