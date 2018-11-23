@@ -158,8 +158,8 @@ namespace Microsoft.AspNetCore.Authentication
                 var request = httpContext.Request;
                 var currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, request.Path);
                 var credential = new ClientCredential(_azureAdOptions.ClientSecret);
-                Application = new ConfidentialClientApplication(_azureAdOptions.ClientId, currentUri, credential,
-                    _tokenCacheProvider.GetCache(httpContext, authenticationProperties, signInScheme), null);
+                TokenCache userTokenCache = _tokenCacheProvider.GetCache(httpContext, authenticationProperties, signInScheme);
+                Application = new ConfidentialClientApplication(_azureAdOptions.ClientId, currentUri, credential, userTokenCache, null);
             }
             return Application;
         }
