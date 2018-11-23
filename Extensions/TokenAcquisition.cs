@@ -185,31 +185,6 @@ namespace Microsoft.AspNetCore.Authentication
             return await GetAccessTokenOnBehalfOfUser(context.User, scopes);
         }
 
-
-        private static string GetAccountId(ClaimsPrincipal user)
-        {
-            string userObjectId = user.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
-            if (string.IsNullOrEmpty(userObjectId))
-            {
-                userObjectId = user.FindFirst("oid")?.Value;
-            }
-            string tenantId = user.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
-            if (string.IsNullOrEmpty(userObjectId))
-            {
-                userObjectId = user.FindFirst("tid")?.Value;
-            }
-
-            if (string.IsNullOrWhiteSpace(userObjectId)) // TODO: find a better typed exception
-                throw new Exception("Missing claim 'http://schemas.microsoft.com/identity/claims/objectidentifier' or 'oid' ");
-
-            if (string.IsNullOrWhiteSpace(tenantId))
-                throw new Exception("Missing claim 'http://schemas.microsoft.com/identity/claims/tenantid' or 'tid' ");
-
-            string accountId = userObjectId + "." + tenantId;
-            return accountId;
-        }
-
-
         /// <summary>
         /// Gets an access token for a downstream API on behalf of the user described by its claimsPrincipal
         /// </summary>
@@ -217,7 +192,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="scopes">Scopes for the downstream API to call</param>
         private async Task<string> GetAccessTokenOnBehalfOfUser(ClaimsPrincipal claimsPrincipal, string[] scopes)
         {
-            string accountIdentifier = GetAccountId(claimsPrincipal);
+            string accountIdentifier = claimsPrincipal.GetAccountId();
             return await GetAccessTokenOnBehalfOfUser(accountIdentifier, scopes);
         }
 
