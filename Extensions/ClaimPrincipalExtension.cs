@@ -21,9 +21,9 @@ namespace Microsoft.AspNetCore.Authentication
                 userObjectId = claimsPrincipal.FindFirst("oid")?.Value;
             }
             string tenantId = claimsPrincipal.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
-            if (string.IsNullOrEmpty(userObjectId))
+            if (string.IsNullOrEmpty(tenantId))
             {
-                userObjectId = claimsPrincipal.FindFirst("tid")?.Value;
+                tenantId = claimsPrincipal.FindFirst("tid")?.Value;
             }
 
             if (string.IsNullOrWhiteSpace(userObjectId)) // TODO: find a better typed exception
