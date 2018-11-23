@@ -43,7 +43,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             var scopes = new string[] { "user.read" };
             try
             {
-                var accessToken = await _tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, User, scopes);
+                var accessToken = await _tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, scopes);
                 dynamic me = await CallGraphApiOnBehalfOfUser(accessToken);
 
                 ViewData["Me"] = me;

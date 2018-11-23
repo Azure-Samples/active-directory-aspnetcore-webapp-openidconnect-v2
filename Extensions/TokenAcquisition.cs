@@ -39,14 +39,17 @@ namespace Microsoft.AspNetCore.Authentication
     {
         private AzureADOptions _azureAdOptions;
 
+        private ITokenCacheProvider _tokenCacheProvider;
+
         /// <summary>
         /// Constructor of the TokenAcquisition service. This requires the Azure AD Options to 
         /// configure the confidential client application
         /// </summary>
         /// <param name="options">Options to configure the application</param>
-        public TokenAcquisition(IOptionsMonitor<AzureADOptions> options)
+        public TokenAcquisition(IOptionsMonitor<AzureADOptions> options, ITokenCacheProvider tokenCacheProvider)
         {
             _azureAdOptions = options.Get("AzureAD");
+            _tokenCacheProvider = tokenCacheProvider;
         }
 
         /// <summary>
@@ -81,7 +84,7 @@ namespace Microsoft.AspNetCore.Authentication
 
             if (scopes == null)
                 throw new ArgumentNullException(nameof(scopes));
-            
+
             try
             {
                 UserAssertion userAssertion = new UserAssertion(jwtToken.RawData, "urn:ietf:params:oauth:grant-type:jwt-bearer");
@@ -132,15 +135,11 @@ namespace Microsoft.AspNetCore.Authentication
 
             try
             {
-                // Acquiring a token with MSAL using the Authorization code flow in order to populate the token cache
-                var request = context.HttpContext.Request;
-                var currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, request.Path);
-                var credential = new ClientCredential(_azureAdOptions.ClientSecret);
-                Application = new ConfidentialClientApplication(_azureAdOptions.ClientId, currentUri, credential, AuthPropertiesTokenCacheHelper.ForCodeRedemption(context.Properties), null);
-
                 // As AcquireTokenByAuthorizationCodeAsync is asynchronous we want to tell ASP.NET core that we are handing the code
                 // even if it's not done yet, so that it does not concurrently call the Token endpoint.
                 context.HandleCodeRedemption();
+
+                CreateApplicationIfNeeded(context.HttpContext, context.Properties, null);
                 var result = await Application.AcquireTokenByAuthorizationCodeAsync(context.ProtocolMessage.Code, scopes);
                 context.HandleCodeRedemption(result.AccessToken, result.IdToken);
             }
@@ -151,6 +150,20 @@ namespace Microsoft.AspNetCore.Authentication
             }
         }
 
+
+        private ConfidentialClientApplication CreateApplicationIfNeeded(HttpContext httpContext, AuthenticationProperties authenticationProperties, string signInScheme)
+        {
+            if (Application == null)
+            {
+                var request = httpContext.Request;
+                var currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, request.Path);
+                var credential = new ClientCredential(_azureAdOptions.ClientSecret);
+                Application = new ConfidentialClientApplication(_azureAdOptions.ClientId, currentUri, credential,
+                    _tokenCacheProvider.GetCache(httpContext, authenticationProperties, signInScheme), null);
+            }
+            return Application;
+        }
+
         /// <summary>
         /// Gets an access token for a downstream API on behalf of the user which evidence are provided by the
         /// <paramref name="user"/> parameter
@@ -159,35 +172,53 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="user">Account described by its claims</param>
         /// <param name="scopes">Scopes to request for the downstream API to call</param>
         /// <returns>An access token to call the downstream API characterized by its scopes, on behalf of the user</returns>
-        public async Task<string> GetAccessTokenOnBehalfOfUser(HttpContext context, ClaimsPrincipal user, string[] scopes)
+        public async Task<string> GetAccessTokenOnBehalfOfUser(HttpContext context, string[] scopes)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
-
-            if (user == null)
-                throw new ArgumentNullException(nameof(user));
 
             if (scopes == null)
                 throw new ArgumentNullException(nameof(scopes));
 
             // Use MSAL to get the right token to call the API
-            var credential = new ClientCredential(_azureAdOptions.ClientSecret);
-            var request = context.Request;
-            var currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, request.Path);
-            Application = new ConfidentialClientApplication(_azureAdOptions.ClientId, currentUri, new ClientCredential(_azureAdOptions.ClientSecret), 
-                AuthPropertiesTokenCacheHelper.ForApiCalls(context, AzureADDefaults.CookieScheme), null);
+            CreateApplicationIfNeeded(context, null, AzureADDefaults.CookieScheme);
+            return await GetAccessTokenOnBehalfOfUser(context.User, scopes);
+        }
 
-            string userObjectId = user.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
-            string tenantId = user.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
+
+        private static string GetAccountId(ClaimsPrincipal user)
+        {
+            string userObjectId = user.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
+            if (string.IsNullOrEmpty(userObjectId))
+            {
+                userObjectId = user.FindFirst("oid")?.Value;
+            }
+            string tenantId = user.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
+            if (string.IsNullOrEmpty(userObjectId))
+            {
+                userObjectId = user.FindFirst("tid")?.Value;
+            }
+
             if (string.IsNullOrWhiteSpace(userObjectId)) // TODO: find a better typed exception
-                throw new Exception("Missing claim 'http://schemas.microsoft.com/identity/claims/objectidentifier'");
+                throw new Exception("Missing claim 'http://schemas.microsoft.com/identity/claims/objectidentifier' or 'oid' ");
 
             if (string.IsNullOrWhiteSpace(tenantId))
-                throw new Exception("Missing claim 'http://schemas.microsoft.com/identity/claims/tenantid'");
-            
-            string accountId = userObjectId + "." + tenantId;
+                throw new Exception("Missing claim 'http://schemas.microsoft.com/identity/claims/tenantid' or 'tid' ");
 
-            return await GetAccessTokenOnBehalfOfUser(accountId, scopes);
+            string accountId = userObjectId + "." + tenantId;
+            return accountId;
+        }
+
+
+        /// <summary>
+        /// Gets an access token for a downstream API on behalf of the user described by its claimsPrincipal
+        /// </summary>
+        /// <param name="claimsPrincipal">Claims principal for the user on behalf of whom to get a token 
+        /// <param name="scopes">Scopes for the downstream API to call</param>
+        private async Task<string> GetAccessTokenOnBehalfOfUser(ClaimsPrincipal claimsPrincipal, string[] scopes)
+        {
+            string accountIdentifier = GetAccountId(claimsPrincipal);
+            return await GetAccessTokenOnBehalfOfUser(accountIdentifier, scopes);
         }
 
         /// <summary>
@@ -196,7 +227,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="accountIdentifier">User account identifier for which to acquire a token. 
         /// See <see cref="Microsoft.Identity.Client.AccountId.Identifier"/></param>
         /// <param name="scopes">Scopes for the downstream API to call</param>
-        public async Task<string> GetAccessTokenOnBehalfOfUser(string accountIdentifier, string[] scopes)
+        private async Task<string> GetAccessTokenOnBehalfOfUser(string accountIdentifier, string[] scopes)
         {
             if (accountIdentifier == null)
                 throw new ArgumentNullException(nameof(accountIdentifier));

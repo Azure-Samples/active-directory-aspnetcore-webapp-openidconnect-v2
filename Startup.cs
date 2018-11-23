@@ -35,8 +35,9 @@ namespace WebApp_OpenIDConnect_DotNet
                 .AddAzureAD(options => Configuration.Bind("AzureAd", options))
                 .AddCookie();
 
-            // Token acquisition service
-            services.AddTokenAcquisition();
+            // Token acquisition service and its cache implementation
+            services.AddTokenAcquisition()
+                    .AddCookieBasedTokenCache();
 
             services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
             {

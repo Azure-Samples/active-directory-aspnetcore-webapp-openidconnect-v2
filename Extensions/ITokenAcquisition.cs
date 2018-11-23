@@ -66,22 +66,13 @@ namespace Microsoft.AspNetCore.Authentication
         Task AddAccountToCacheFromAuthorizationCode(AuthorizationCodeReceivedContext context, IEnumerable<string> scopes);
 
         /// <summary>
-        /// Gets an access token for a downstream API on behalf of the user account which claims are provided in the 
-        /// <paramref name="user"/> parameter
+        /// Gets an access token for a downstream API on behalf of the user account which claims are provided in the <see cref="HttpContext.User"/>
+        /// member of the <paramref name="context"/> parameter
         /// </summary>
-        /// <param name="user">User account described by its claims</param>
+        /// <param name="context">HttpContext associated with the Controller or auth operation</param>
         /// <param name="scopes">Scopes to request for the downstream API to call</param>
         /// <returns>An access token to call on behalf of the user, the downstream API characterized by its scopes</returns>
-        Task<string> GetAccessTokenOnBehalfOfUser(HttpContext context, ClaimsPrincipal user, string[] scopes);
-
-        /// <summary>
-        /// Gets an access token for a downstream API on behalf of the user of a given account ID
-        /// </summary>
-        /// <param name="accountIdentifier">User account identifier for which to acquire a token. 
-        /// See <see cref="Microsoft.Identity.Client.AccountId.Identifier"/> for a description on how
-        /// to get the account identifier</param>
-        /// <param name="scopes">Scopes for the downstream API to call</param>
-        Task<string> GetAccessTokenOnBehalfOfUser(string userId, string[] scopes);
+        Task<string> GetAccessTokenOnBehalfOfUser(HttpContext context, string[] scopes);
 
         /// <summary>
         /// Access to the MSAL.NET confidential client application (for advanced scenarios)
