@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Identity.Client;
+using System.Security.Claims;
 
 namespace Microsoft.AspNetCore.Authentication
 {
@@ -18,6 +19,6 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="signInScheme">[Optional] Authentication properties (for the cookie based cookie based token cache serialization). Can be <c>null</c>
         /// if you don't want to use cookie based token cache serialization</param>
         /// <returns>A token cache to use in the application</returns>
-        TokenCache GetCache(HttpContext httpContext, AuthenticationProperties authenticationProperties, string signInScheme = null);
+        TokenCache GetCache(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, AuthenticationProperties authenticationProperties, string signInScheme = null);
     }
 }

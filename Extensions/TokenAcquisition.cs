@@ -139,7 +139,7 @@ namespace Microsoft.AspNetCore.Authentication
                 // even if it's not done yet, so that it does not concurrently call the Token endpoint.
                 context.HandleCodeRedemption();
 
-                CreateApplicationIfNeeded(context.HttpContext, context.Properties, null);
+                CreateApplicationIfNeeded(context.HttpContext, context.Principal, context.Properties, null);
                 var result = await Application.AcquireTokenByAuthorizationCodeAsync(context.ProtocolMessage.Code, scopes);
                 context.HandleCodeRedemption(result.AccessToken, result.IdToken);
             }
@@ -151,14 +151,14 @@ namespace Microsoft.AspNetCore.Authentication
         }
 
 
-        private ConfidentialClientApplication CreateApplicationIfNeeded(HttpContext httpContext, AuthenticationProperties authenticationProperties, string signInScheme)
+        private ConfidentialClientApplication CreateApplicationIfNeeded(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, AuthenticationProperties authenticationProperties, string signInScheme)
         {
             if (Application == null)
             {
                 var request = httpContext.Request;
                 var currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, request.Path);
                 var credential = new ClientCredential(_azureAdOptions.ClientSecret);
-                TokenCache userTokenCache = _tokenCacheProvider.GetCache(httpContext, authenticationProperties, signInScheme);
+                TokenCache userTokenCache = _tokenCacheProvider.GetCache(httpContext, claimsPrincipal, authenticationProperties, signInScheme);
                 Application = new ConfidentialClientApplication(_azureAdOptions.ClientId, currentUri, credential, userTokenCache, null);
             }
             return Application;
@@ -181,7 +181,7 @@ namespace Microsoft.AspNetCore.Authentication
                 throw new ArgumentNullException(nameof(scopes));
 
             // Use MSAL to get the right token to call the API
-            CreateApplicationIfNeeded(context, null, AzureADDefaults.CookieScheme);
+            CreateApplicationIfNeeded(context, context.User, null, AzureADDefaults.CookieScheme);
             return await GetAccessTokenOnBehalfOfUser(context.User, scopes);
         }
 
@@ -215,6 +215,7 @@ namespace Microsoft.AspNetCore.Authentication
             try
             {
                 AuthenticationResult result = null;
+                var allAccounts = await Application.GetAccountsAsync();
                 IAccount account = await Application.GetAccountAsync(accountIdentifier);
                 result = await Application.AcquireTokenSilentAsync(scopes, account);
                 return result.AccessToken;

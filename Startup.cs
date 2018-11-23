@@ -37,7 +37,11 @@ namespace WebApp_OpenIDConnect_DotNet
 
             // Token acquisition service and its cache implementation
             services.AddTokenAcquisition()
-                    .AddCookieBasedTokenCache();
+                    .AddDistributedMemoryCache()
+                    .AddSession()
+                    .AddSessionBasedTokenCache()
+                    /* you could also use: .AddCookieBasedTokenCache() */
+                    ;
 
             services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
             {
@@ -62,7 +66,7 @@ namespace WebApp_OpenIDConnect_DotNet
                 // options.TokenValidationParameters.ValidIssuers collection
 
                 // Response type
-                options.ResponseType = "code";
+                options.ResponseType = "id_token code";
                 options.Scope.Add("offline_access");
                 options.Scope.Add("User.Read");
                // options.Prompt = "consent";
@@ -90,6 +94,10 @@ namespace WebApp_OpenIDConnect_DotNet
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            // See https://docs.microsoft.com/en-us/aspnet/core/fundamentals/app-state?view=aspnetcore-2.1#configure-session-state
+            // to use a session token cache
+            app.UseSession();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

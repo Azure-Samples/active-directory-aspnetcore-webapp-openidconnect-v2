@@ -39,7 +39,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="signInScheme">Sign-in scheme</param>
         /// <returns>A token cache to use in the application</returns>
 
-        public TokenCache GetCache(HttpContext httpContext, AuthenticationProperties authenticationProperties, string signInScheme)
+        public TokenCache GetCache(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, AuthenticationProperties authenticationProperties, string signInScheme)
         {
             if (authenticationProperties!=null)
             {
