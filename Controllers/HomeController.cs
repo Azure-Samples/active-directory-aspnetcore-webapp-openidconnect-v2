@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using Newtonsoft.Json;
+using System.Diagnostics;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using WebApp_OpenIDConnect_DotNet.Models;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
@@ -49,12 +45,9 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                 ViewData["Me"] = me;
                 return View();
             }
-            catch (MsalException)
+            catch (MsalUiRequiredException ex)
             {
-                var redirectUrl = Url.Action(nameof(HomeController.Contact), "Home");
-                return Challenge(
-                    new AuthenticationProperties { RedirectUri = redirectUrl, IsPersistent = true },
-                    OpenIdConnectDefaults.AuthenticationScheme);
+                return Challenge();
             }
         }
 
