@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
@@ -60,9 +61,10 @@ namespace Microsoft.AspNetCore.Authentication
         /// This constructor is called by ASP.NET Core dependency injection
         /// </summary>
         /// <param name="options">Options to configure the application</param>
-        public TokenAcquisition(IOptionsMonitor<AzureADOptions> options, ITokenCacheProvider tokenCacheProvider)
+        public TokenAcquisition(ITokenCacheProvider tokenCacheProvider, IConfiguration configuration)
         {
-            _azureAdOptions = options.Get("AzureAD");
+            _azureAdOptions = new AzureADOptions();
+            configuration.Bind("AzureAD", _azureAdOptions);
             _tokenCacheProvider = tokenCacheProvider;
         }
 
