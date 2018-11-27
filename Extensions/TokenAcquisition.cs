@@ -246,7 +246,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="scopes">Scopes for the downstream API to call</param>
         private async Task<string> GetAccessTokenOnBehalfOfUser(ConfidentialClientApplication application, ClaimsPrincipal claimsPrincipal, IEnumerable<string> scopes)
         {
-            string accountIdentifier = claimsPrincipal.GetAccountId();
+            string accountIdentifier = claimsPrincipal.GetMsalAccountId();
             return await GetAccessTokenOnBehalfOfUser(application, accountIdentifier, scopes);
         }
 

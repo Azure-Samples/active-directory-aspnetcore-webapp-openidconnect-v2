@@ -45,7 +45,7 @@ namespace Microsoft.AspNetCore.Authentication
 
         public TokenCache GetCache(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, AuthenticationProperties authenticationProperties, string signInScheme)
         {
-            string userId = claimsPrincipal.GetAccountId();
+            string userId = claimsPrincipal.GetMsalAccountId();
             helper = new SessionTokenCacheHelper(userId, httpContext);
             return helper.GetMsalCacheInstance();
         }
