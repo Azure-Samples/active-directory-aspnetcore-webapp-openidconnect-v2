@@ -33,11 +33,16 @@ namespace WebApp_OpenIDConnect_DotNet
 
             services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
                 .AddAzureAD(options => Configuration.Bind("AzureAd", options))
-                .AddCookie();
+                ;
 
             // Token acquisition service and its cache implementation
             services.AddTokenAcquisition()
-                    .AddCookieBasedTokenCache();
+                    .AddDistributedMemoryCache()
+                    .AddSession()
+                    .AddSessionBasedTokenCache()
+                    /* you could use a cookie based token cache by reaplacing the last
+                     * trew lines by : .AddCookie().AddCookieBasedTokenCache()  */
+                    ;
 
             services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
             {
@@ -50,29 +55,27 @@ namespace WebApp_OpenIDConnect_DotNet
                 // - only Work and School accounts => 'organizations'
                 // - only Microsoft Personal accounts => 'consumers'
                 // - Work and School and Personal accounts => 'common'
-
                 // If you want to restrict the users that can sign-in to only one tenant
-                // set the tenant value in the appsettings.json file to the tenant ID of this
-                // organization, and set ValidateIssuer below to true.
-                options.TokenValidationParameters.ValidateIssuer = false;
+                // set the tenant value in the appsettings.json file to the tenant ID 
+                // or domain of this organization
+                options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.ValidateAadIssuer;
 
                 // If you want to restrict the users that can sign-in to several organizations
-                // Set the tenant value in the appsettings.json file to 'organizations', set
-                // ValidateIssuer, above to 'true', and add the issuers you want to accept to the
-                // options.TokenValidationParameters.ValidIssuers collection
+                // Set the tenant value in the appsettings.json file to 'organizations', and add the
+                // issuers you want to accept to options.TokenValidationParameters.ValidIssuers collection
 
                 // Response type
-                options.ResponseType = "code";
+                options.ResponseType = "id_token code";
                 options.Scope.Add("offline_access");
                 options.Scope.Add("User.Read");
-               // options.Prompt = "consent";
-
+//                options.Prompt = "consent";
+                
                 // Handling the auth code
                 var handler = options.Events.OnAuthorizationCodeReceived;
                 options.Events.OnAuthorizationCodeReceived = async context =>
                 {
                     var _tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
-                    await _tokenAcquisition.AddAccountToCacheFromAuthorizationCode(context, new string[] { "User.Read" });
+                    await _tokenAcquisition.AddAccountToCacheFromAuthorizationCode(context, options.Scope);
                     await handler(context);
                 };
             });
@@ -90,6 +93,10 @@ namespace WebApp_OpenIDConnect_DotNet
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            // See https://docs.microsoft.com/en-us/aspnet/core/fundamentals/app-state?view=aspnetcore-2.1#configure-session-state
+            // to use a session token cache
+            app.UseSession();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
