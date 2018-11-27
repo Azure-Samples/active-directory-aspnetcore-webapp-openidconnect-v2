@@ -1,45 +1,15 @@
-﻿using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Identity.Client;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Microsoft.AspNetCore.Authentication
 {
     public interface ITokenAcquisition
     {
         /// <summary>
-        /// Add, to the MSAL.NET cache, the account of the user for which a bearer token was received when the Web API was called.
-        /// An On-behalf-of token is added to the cache, so that it can then be used to acquire another token on-behalf-of the 
-        /// same user in order to call to downstream APIs.
-        /// </summary>
-        /// <param name="userAccessToken">Access token used to call this Web API</param>
-        /// <example>
-        /// From the configuration of the Authentication of the ASP.NET Core Web API: 
-        /// <code>JwtBearerOptions option;</code>
-        /// 
-        /// Subscribe to the token validated event:
-        /// <code>
-        /// options.Events = new JwtBearerEvents();
-        /// options.Events.OnTokenValidated = OnTokenValidated;
-        /// }
-        /// </code>
-        /// 
-        /// And then in the OnTokenValidated method, call <see cref="AddAccountToCache(JwtSecurityToken)"/>:
-        /// <code>
-        /// private async Task OnTokenValidated(TokenValidatedContext context)
-        /// {
-        ///  JwtSecurityToken accessToken = context.SecurityToken as JwtSecurityToken;
-        ///  _tokenAcquisition.AddAccountToCache(accessToken);
-        /// }
-        /// </code>
-        /// </example>
-        void AddAccountToCacheFromJwt(JwtSecurityToken jwtToken, IEnumerable<string> scopes);
-
-        /// <summary>
-        /// Add, to the MSAL.NET cache, the account of the user for which an authorization code was received when the Web API was called.
+        /// In a Web App, adds, to the MSAL.NET cache, the account of the user authenticating to the Web App, when the authorization code is received (after the user
+        /// signed-in and consented)
         /// An On-behalf-of token contained in the <see cref="AuthorizationCodeReceivedContext"/> is added to the cache, so that it can then be used to acquire another token on-behalf-of the 
         /// same user in order to call to downstream APIs.
         /// </summary>
@@ -59,6 +29,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// <code>
         /// private async Task OnAuthorizationCodeReceived(AuthorizationCodeReceivedContext context)
         /// {
+        ///   var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
         ///    await _tokenAcquisition.AddAccountToCacheFromAuthorizationCode(context, new string[] { "user.read" });
         /// }
         /// </code>
@@ -66,26 +37,67 @@ namespace Microsoft.AspNetCore.Authentication
         Task AddAccountToCacheFromAuthorizationCode(AuthorizationCodeReceivedContext context, IEnumerable<string> scopes);
 
         /// <summary>
-        /// Gets an access token for a downstream API on behalf of the user account which claims are provided in the 
-        /// <paramref name="user"/> parameter
+        /// Typically used from an ASP.NET Core Web App or Web API controller, this method gets an access token 
+        /// for a downstream API on behalf of the user account which claims are provided in the <see cref="HttpContext.User"/>
+        /// member of the <paramref name="context"/> parameter
         /// </summary>
-        /// <param name="user">User account described by its claims</param>
+        /// <param name="context">HttpContext associated with the Controller or auth operation</param>
         /// <param name="scopes">Scopes to request for the downstream API to call</param>
         /// <returns>An access token to call on behalf of the user, the downstream API characterized by its scopes</returns>
-        Task<string> GetAccessTokenOnBehalfOfUser(HttpContext context, ClaimsPrincipal user, string[] scopes);
+        Task<string> GetAccessTokenOnBehalfOfUser(HttpContext context, IEnumerable<string> scopes);
 
         /// <summary>
-        /// Gets an access token for a downstream API on behalf of the user of a given account ID
+        /// In a Web API, adds to the MSAL.NET cache, the account of the user for which a bearer token was received when the Web API was called.
+        /// An access token and a refresh token are added to the cache, so that they can then be used to acquire another token on-behalf-of the 
+        /// same user in order to call to downstream APIs.
         /// </summary>
-        /// <param name="accountIdentifier">User account identifier for which to acquire a token. 
-        /// See <see cref="Microsoft.Identity.Client.AccountId.Identifier"/> for a description on how
-        /// to get the account identifier</param>
-        /// <param name="scopes">Scopes for the downstream API to call</param>
-        Task<string> GetAccessTokenOnBehalfOfUser(string userId, string[] scopes);
+        /// <param name="tokenValidationContext">Token validation context passed to the handler of the OnTokenValidated event
+        /// for the JwtBearer middleware</param>
+        /// <param name="scopes">[Optional] scopes to pre-request for a downstream API</param>
+        /// <example>
+        /// From the configuration of the Authentication of the ASP.NET Core Web API (for example in the Startup.cs file)
+        /// <code>JwtBearerOptions option;</code>
+        /// 
+        /// Subscribe to the token validated event:
+        /// <code>
+        /// options.Events = new JwtBearerEvents();
+        /// options.Events.OnTokenValidated = async context =>
+        /// {
+        ///   var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
+        ///   tokenAcquisition.AddAccountToCacheFromJwt(context);
+        /// };
+        /// </code>
+        /// </example>
+        void AddAccountToCacheFromJwt(JwtBearer.TokenValidatedContext tokenValidationContext, IEnumerable<string> scopes = null);
 
         /// <summary>
-        /// Access to the MSAL.NET confidential client application (for advanced scenarios)
+        /// [not recommended] In a Web App, adds, to the MSAL.NET cache, the account of the user authenticating to the Web App.
+        /// An On-behalf-of token is added to the cache, so that it can then be used to acquire another token on-behalf-of the 
+        /// same user in order for the Web App to call a Web APIs.
         /// </summary>
-        ConfidentialClientApplication Application { get; }
+        /// <param name="tokenValidationContext">Token validation context passed to the handler of the OnTokenValidated event 
+        /// for the OpenIdConnect middleware</param>
+        /// <param name="scopes">[Optional] scopes to pre-request for a downstream API</param>
+        /// <remarks>In a Web App, it's preferable to not request an access token, but only a code, and use the <see cref="AddAccountToCacheFromAuthorizationCode"/></remarks>
+        /// <example>
+        /// From the configuration of the Authentication of the ASP.NET Core Web API: 
+        /// <code>OpenIdConnectOptions options;</code>
+        /// 
+        /// Subscribe to the token validated event:
+        /// <code>
+        ///  options.Events.OnAuthorizationCodeReceived = OnTokenValidated;
+        /// </code>
+        /// 
+        /// And then in the OnTokenValidated method, call <see cref="AddAccountToCacheFromJwt(OpenIdConnect.TokenValidatedContext)"/>:
+        /// <code>
+        /// private async Task OnTokenValidated(TokenValidatedContext context)
+        /// {
+        ///   var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
+        ///  _tokenAcquisition.AddAccountToCache(tokenValidationContext);
+        /// }
+        /// </code>
+        /// </example>
+        void AddAccountToCacheFromJwt(OpenIdConnect.TokenValidatedContext tokenValidationContext, IEnumerable<string> scopes = null);
+
     }
 }

@@ -7,7 +7,7 @@ client: ASP.NET Core 2.x Web App
 service: Microsoft Graph
 endpoint: AAD v2.0
 ---
-# Integrating Azure AD V2 into an ASP.NET Core web app and calling the Microsoft Graph API on behalf of the user.
+# Integrating Azure AD V2 into an ASP.NET Core web app and calling the Microsoft Graph API on behalf of the user
 
 > This sample is for ASP.NET Core 2.1
 > A previous version for ASP.NET 2.0 is available from the [aspnetcore2-1](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-1) branch
@@ -33,9 +33,10 @@ To run this sample:
 
 ### Step 1: Register the sample with your Azure AD tenant
 
-When you have [registered](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2#step-1-register-the-sample-with-your-azure-ad-tenant) your app as described in [the first tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2), you need an extra step:
+You first need to have [registered](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2#step-1-register-the-sample-with-your-azure-ad-tenant) your app as described in [the first tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2)
 
-1. From the **Authentication** page, uncheck **ID tokens**. This is no longer needed here.
+Then here are the extra steps:
+
 1. From the **Certificates & secrets** page, for your app registration, in the **Client secrets** section, choose **New client secret**:
 
    - Type a key description (of instance `app secret`),
@@ -77,55 +78,69 @@ Using the NuGet package manager, reference Microsoft.Identity.Client (which is s
 
 ### Add additional files to support token acquisition
 
-1. Add the `Extensions\ITokenAcquisition.cs`, `Extensions\TokenAcquisition.cs`. These files define a token acquisition service leveraging MSAL.NET, which is used in the existing application by dependency injection.
-1. Add the `Extensions\AuthPropertiesTokenCacheHelper.cs` file. This file proposes a cache for MSAL.NET Confidential client application based on AuthProperties (which are an ASP.NET concept) backed by Cookies.
+1. Add the `Extensions\ITokenAcquisition.cs`, `Extensions\TokenAcquisition.cs`. These files define a token acquisition service leveraging MSAL.NET, which is used in the existing application by dependency injection. It's there that you'll find the MSAL.NET code that will redeem the authorization code acquired by ASP.NET Core, in order to get a token to add it to the token cache. Then controllers will call another of its methods to acquire tokens for the signed-in user.
+1. Add the `Extensions\ITokenCacheHelpers.cs` file, as well as `Extensions\ITokenCacheHelpers.cs`. This file proposes a cache for MSAL.NET Confidential client application based on the session backed and in-memory-distributed cache (these terms are ASP.NET core concepts)
 
 ### Update the `Startup.cs` file to enable TokenAcquisition service
 
 In the `Startup.cs` file, in the `ConfigureServices(IServiceCollection services)` method:
 
-#### Enable a cookie cache
+#### Enable a session cache
+
+After the following lines in the ConfigureServices(IServiceCollection services) method
 
 ```CSharp
 services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
    .AddAzureAD(options => Configuration.Bind("AzureAd", options));
 ```
 
-by:
+add the following lines to enable:
+
+- the MSAL.NET token acquisition service (`AddTokenAcquisition`)
+- based on a session cache (the three other lines)
 
 ```CSharp
-services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
-   .AddAzureAD(options => Configuration.Bind("AzureAd", options)) 
-   .AddCookie();
-
-services.AddTokenAcquisition();
+services.AddTokenAcquisition()
+    .AddDistributedMemoryCache()
+    .AddSession()
+    .AddSessionBasedTokenCache()
 ```
 
-this last line adss a token acquisition service that leverages MSAL.NET to acquire tokens.
+this last line adds a token acquisition service that leverages MSAL.NET to acquire tokens.
 
 #### Hook-up to the `OnAuthorizationCodeReceived` event to populate the token cache with a token for the user
 
-Once the user has signed-in, the ASP.NET middleware provides the Web App with the ability to be notified of events such as the fact that an authorization code was received. The following code hooks-up to the `OnAuthorizationCodeReceived` event in order to redeem the code itself and therefore acquire a token, which then will be cached so that it can be used later in the application (in particular in the controllers). For this, after:
+Once the user has signed-in, the ASP.NET middleware provides the Web App with the ability to be notified of events such as the fact that an authorization code was received. The following code hooks-up to the `OnAuthorizationCodeReceived` event in order to redeem the code itself and therefore acquire a token, which then will be cached so that it can be used later in the application (in particular in the controllers). To enable this code redemption, after the following line:
 
 ```CSharp
-options.TokenValidationParameters.ValidateIssuer = false
+options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.ValidateAadIssuer
 ```
 
 insert:
+
 ```CSharp
- // Response type 
- options.ResponseType = "code"; 
+ // Response type
+ options.ResponseType = "id_token code";
  options.Scope.Add("offline_access");
  options.Scope.Add("User.Read");
- 
- // Handling the auth code 
+
+ // Handling the auth code
  var handler = options.Events.OnAuthorizationCodeReceived;
- options.Events.OnAuthorizationCodeReceived = async context => 
- { 
+ options.Events.OnAuthorizationCodeReceived = async context =>
+ {
   var _tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
   await _tokenAcquisition.AddAccountToCacheFromAuthorizationCode(context, new string[] { "User.Read" });
   await handler(context);
  };
+```
+
+#### Enable a session
+
+In the `Configure(IApplicationBuilder app, IHostingEnvironment env)` method, add the following lines
+
+```CSharp
+    // to use a session token cache
+    app.UseSession();
 ```
 
 ### Change the controller code to acquire a token and call Microsoft Graph
@@ -157,12 +172,9 @@ In the `Controllers\HomeController.cs`file:
          ViewData["Me"] = me;
          return View();
         }
-        catch(MsalException)
+        catch(MsalServiceException)
         {
-         var redirectUrl = Url.Action(nameof(HomeController.Contact), "Home");
-         return Challenge(
-                new AuthenticationProperties { RedirectUri = redirectUrl, IsPersistent = true },
-                                               OpenIdConnectDefaults.AuthenticationScheme);
+         return Challenge();
         }
        }
 
@@ -214,8 +226,8 @@ HTML table displaying the properties of the *me* object as returned by Microsoft
 
 ## Learn more
 
-You can learn more about the tokens by looking at the following topics in MSAL.NET's conceptual documentation:
+You can learn more about the tokens by looking at the following articles in MSAL.NET's conceptual documentation:
 
-- The [Authorization code flow](https://aka.ms/msal-net-authorization-code) which is used, after the user signed-in with Open ID Connect, in order to get a token and cache it for a later use. See [TokenAcquisition L 107](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/f99e913cc032e16c59b748241111e97108e87918/Extensions/TokenAcquisition.cs#L107) for details of this code
-- [AcquireTokenSilent](https://aka.ms/msal-net-acquiretokensilent ) which is used by the controller to get an access token for the downstream API. See [TokenAcquisition L 168](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/f99e913cc032e16c59b748241111e97108e87918/Extensions/TokenAcquisition.cs#L168) for details of this code
+- The [Authorization code flow](https://aka.ms/msal-net-authorization-code), which is used, after the user signed-in with Open ID Connect, in order to get a token and cache it for a later use. See [TokenAcquisition L 107](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/f99e913cc032e16c59b748241111e97108e87918/Extensions/TokenAcquisition.cs#L107) for details of this code
+- [AcquireTokenSilent](https://aka.ms/msal-net-acquiretokensilent ), which is used by the controller to get an access token for the downstream API. See [TokenAcquisition L 168](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/f99e913cc032e16c59b748241111e97108e87918/Extensions/TokenAcquisition.cs#L168) for details of this code
 - [Token cache serialization](msal-net-token-cache-serialization)
