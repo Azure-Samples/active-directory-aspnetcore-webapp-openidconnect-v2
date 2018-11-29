@@ -2,11 +2,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using WebApp_OpenIDConnect_DotNet.Models;
 
@@ -21,7 +25,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         {
             _tokenAcquisition = tokenAcquisition;
         }
-       
+
         public IActionResult Index()
         {
             return View();
@@ -47,8 +51,33 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             }
             catch (MsalUiRequiredException ex)
             {
-                return Challenge();
+                AuthenticationProperties properties = BuildAuthenticationPropertiesForIncrementalConsent(scopes);
+                return Challenge(properties);
             }
+        }
+
+        /// <summary>
+        /// Build Authentication properties needed for an incremental consent.
+        /// </summary>
+        /// <param name="scopes">Scopes to request</param>
+        /// <returns>AuthenticationProperties</returns>
+        private AuthenticationProperties BuildAuthenticationPropertiesForIncrementalConsent(string[] scopes)
+        {
+            AuthenticationProperties properties = new AuthenticationProperties();
+
+            // Set the scopes, including the scopes that ADAL.NET / MASL.NET need for the Token cache
+            string[] additionalBuildInScopes = new string[] { "openid", "offline_access", "profile" };
+            properties.SetParameter<ICollection<string>>(OpenIdConnectParameterNames.Scope, scopes.Union(additionalBuildInScopes).ToList());
+
+            // Attempts to set the login_hint to avoid the logged-in user to be presented with an account selection dialog
+            string loginHint = string.Empty;
+            string displayName = HttpContext.User.FindFirstValue("preferred_username");
+            if (!string.IsNullOrWhiteSpace(displayName))
+            {
+                properties.SetParameter<string>(OpenIdConnectParameterNames.LoginHint, displayName);
+            }
+
+            return properties;
         }
 
         private static async Task<dynamic> CallGraphApiOnBehalfOfUser(string accessToken)

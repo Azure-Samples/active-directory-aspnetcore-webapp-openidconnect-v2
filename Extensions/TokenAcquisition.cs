@@ -115,6 +115,14 @@ namespace Microsoft.AspNetCore.Authentication
                 context.HandleCodeRedemption();
 
                 var application = CreateApplication(context.HttpContext, context.Principal, context.Properties, null);
+
+                // When redeeming a token, MSAL.NET's AcquireTokenByAuthorizationCodeAsync method should not look at the cache. It does for the moment
+                // Until this is fixed, removing the account
+                var account = await application.GetAccountAsync(context.Principal.GetMsalAccountId());
+                if (account!=null)
+                {
+                    await application.RemoveAsync(account);
+                }
                 var result = await application.AcquireTokenByAuthorizationCodeAsync(context.ProtocolMessage.Code, scopes.Except(scopesRequestedByMsalNet));
                 context.HandleCodeRedemption(result.AccessToken, result.IdToken);
             }

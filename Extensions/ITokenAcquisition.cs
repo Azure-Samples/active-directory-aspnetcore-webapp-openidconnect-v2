@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Identity.Client;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
