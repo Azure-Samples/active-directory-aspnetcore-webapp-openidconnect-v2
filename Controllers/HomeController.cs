@@ -64,6 +64,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         private AuthenticationProperties BuildAuthenticationPropertiesForIncrementalConsent(string[] scopes)
         {
             AuthenticationProperties properties = new AuthenticationProperties();
+            const string msaTenantId = "9188040d-6c67-4c5b-b112-36a304b66dad";
 
             // Set the scopes, including the scopes that ADAL.NET / MASL.NET need for the Token cache
             string[] additionalBuildInScopes = new string[] { "openid", "offline_access", "profile" };
@@ -75,6 +76,21 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             if (!string.IsNullOrWhiteSpace(displayName))
             {
                 properties.SetParameter<string>(OpenIdConnectParameterNames.LoginHint, displayName);
+
+                string tenantId = HttpContext.User.FindFirstValue("http://schemas.microsoft.com/identity/claims/tenantid");
+                if (!string.IsNullOrWhiteSpace(tenantId))
+                {
+                    string domainHint;
+                    if (tenantId == msaTenantId)
+                    {
+                        domainHint = "consumers";
+                    }
+                    else
+                    {
+                        domainHint = "organizations";
+                    }
+                    properties.SetParameter<string>(OpenIdConnectParameterNames.DomainHint, domainHint);
+                }
             }
 
             return properties;

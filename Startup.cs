@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -68,15 +69,33 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.ResponseType = "id_token code";
                 options.Scope.Add("offline_access");
                 options.Scope.Add("User.Read");
-//                options.Prompt = "consent";
-                
-                // Handling the auth code
+                //                options.Prompt = "consent";
+
+                // Handling the auth redemption by MSAL.NET so that a token is available in the token cache
+                // where it will be usable from Controllers later (through the TokenAcquisition service)
                 var handler = options.Events.OnAuthorizationCodeReceived;
                 options.Events.OnAuthorizationCodeReceived = async context =>
                 {
                     var _tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
                     await _tokenAcquisition.AddAccountToCacheFromAuthorizationCode(context, options.Scope);
                     await handler(context);
+                };
+
+                // Avoids having users being presented the select account dialog when they are already signed-in
+                // for instance when going through incremental consent 
+                options.Events.OnRedirectToIdentityProvider = async context =>
+                {
+                    string login = context.Properties.GetParameter<string>(OpenIdConnectParameterNames.LoginHint);
+                    if (!string.IsNullOrWhiteSpace(login))
+                    {
+                        context.ProtocolMessage.LoginHint = login;
+                        context.ProtocolMessage.DomainHint = context.Properties.GetParameter<string>(OpenIdConnectParameterNames.DomainHint);
+
+                        // delete the loginhint and domainHint from the Properties when we are done otherwise 
+                        // it will take up extra space in the cookie.
+                        context.Properties.Parameters.Remove(OpenIdConnectParameterNames.LoginHint);
+                        context.Properties.Parameters.Remove(OpenIdConnectParameterNames.DomainHint);
+                    }
                 };
             });
 
