@@ -116,15 +116,11 @@ namespace Microsoft.AspNetCore.Authentication
 
                 var application = CreateApplication(context.HttpContext, context.Principal, context.Properties, null);
 
-                // When redeeming a token, MSAL.NET's AcquireTokenByAuthorizationCodeAsync method should not look at the cache. It does for the moment
-                // Until this is fixed, removing the account
-                var account = await application.GetAccountAsync(context.Principal.GetMsalAccountId());
-                if (account!=null)
-                {
-                    await application.RemoveAsync(account);
-                }
+                // Do not share the access token with ASP.NET Core otherwise ASP.NET will cache it and will not send the OAuth 2.0 request in
+                // case a further call to AcquireTokenByAuthorizationCodeAsync in the future for incremental consent (getting a code requesting more scopes)
+                // Share the ID Token
                 var result = await application.AcquireTokenByAuthorizationCodeAsync(context.ProtocolMessage.Code, scopes.Except(scopesRequestedByMsalNet));
-                context.HandleCodeRedemption(result.AccessToken, result.IdToken);
+                context.HandleCodeRedemption(null, result.IdToken);
             }
             catch (MsalException ex)
             {
