@@ -115,8 +115,12 @@ namespace Microsoft.AspNetCore.Authentication
                 context.HandleCodeRedemption();
 
                 var application = CreateApplication(context.HttpContext, context.Principal, context.Properties, null);
+
+                // Do not share the access token with ASP.NET Core otherwise ASP.NET will cache it and will not send the OAuth 2.0 request in
+                // case a further call to AcquireTokenByAuthorizationCodeAsync in the future for incremental consent (getting a code requesting more scopes)
+                // Share the ID Token
                 var result = await application.AcquireTokenByAuthorizationCodeAsync(context.ProtocolMessage.Code, scopes.Except(scopesRequestedByMsalNet));
-                context.HandleCodeRedemption(result.AccessToken, result.IdToken);
+                context.HandleCodeRedemption(null, result.IdToken);
             }
             catch (MsalException ex)
             {
