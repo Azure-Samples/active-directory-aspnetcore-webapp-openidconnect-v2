@@ -11,6 +11,8 @@ endpoint: AAD v2.0
 > This sample is for ASP.NET Core 2.1
 > A previous version for ASP.NET 2.0 is available from the [aspnetcore2-1](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-1) branch
 
+> This sample is for Azure AD, not Azure AD B2C
+
 ![Build badge](https://identitydivision.visualstudio.com/_apis/public/build/definitions/a7934fdd-dcde-4492-a406-7fad6ac00e17/514/badge)
 
 ## Scenario
