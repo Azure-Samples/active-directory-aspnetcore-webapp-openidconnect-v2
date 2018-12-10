@@ -53,7 +53,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             {
                 if (CanbeSolvedByReSignInUser(ex))
                 {
-                    AuthenticationProperties properties = BuildAuthenticationPropertiesForIncrementalConsent(scopes);
+                    AuthenticationProperties properties = BuildAuthenticationPropertiesForIncrementalConsent(scopes, ex);
                     return Challenge(properties);
                 }
                 else
