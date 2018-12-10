@@ -109,6 +109,13 @@ namespace WebApp_OpenIDConnect_DotNet
                         context.Properties.Parameters.Remove(OpenIdConnectParameterNames.LoginHint);
                         context.Properties.Parameters.Remove(OpenIdConnectParameterNames.DomainHint);
                     }
+
+                    // Additional claims
+                    const string claims = "claims";
+                    if (context.Properties.Items.ContainsKey(claims))
+                    {
+                        context.ProtocolMessage.SetParameter(claims, context.Properties.Items[claims]);
+                    }
                 };
             });
 

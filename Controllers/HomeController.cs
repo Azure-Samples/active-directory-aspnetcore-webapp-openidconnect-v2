@@ -82,7 +82,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         /// </summary>
         /// <param name="scopes">Scopes to request</param>
         /// <returns>AuthenticationProperties</returns>
-        private AuthenticationProperties BuildAuthenticationPropertiesForIncrementalConsent(string[] scopes)
+        private AuthenticationProperties BuildAuthenticationPropertiesForIncrementalConsent(string[] scopes, MsalUiRequiredException ex)
         {
             AuthenticationProperties properties = new AuthenticationProperties();
 
@@ -99,6 +99,13 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                 string domainHint = HttpContext.User.GetDomainHint();
                 properties.SetParameter<string>(OpenIdConnectParameterNames.DomainHint, domainHint);
             }
+
+            // Additional claims required (for instance MFA)
+            if (!string.IsNullOrEmpty(ex.Claims))
+            {
+                properties.Items.Add("claims", ex.Claims);
+            }
+
             return properties;
         }
 
