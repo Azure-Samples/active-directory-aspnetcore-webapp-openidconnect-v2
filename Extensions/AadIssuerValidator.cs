@@ -31,7 +31,7 @@ namespace Microsoft.AspNetCore.Authentication
 
             // Extracting the tenant ID
             string tenantId = jwtToken.Claims.FirstOrDefault(c => c.Type == "tid")?.Value;
-            if (jwtToken == null)
+            if (string.IsNullOrEmpty(tenantId))
             {
                 throw new SecurityTokenInvalidIssuerException("Expecting a tid claim from Azure Active Directory.");
             }
