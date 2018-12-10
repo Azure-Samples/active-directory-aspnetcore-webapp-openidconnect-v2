@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
@@ -87,7 +88,12 @@ namespace Microsoft.AspNetCore.Authentication
                 byte[] blob;
                 if (session.TryGetValue(CacheId, out blob))
                 {
+                    Debug.WriteLine($"INFO: Deserializing session {session.Id}, cacheId {CacheId}");
                     cache.Deserialize(blob);
+                }
+                else
+                {
+                    Debug.WriteLine($"INFO: cacheId {CacheId} not found in session {session.Id}");
                 }
             }
             finally
@@ -104,6 +110,8 @@ namespace Microsoft.AspNetCore.Authentication
             {
                 // Optimistically set HasStateChanged to false. We need to do it early to avoid losing changes made by a concurrent thread.
                 cache.HasStateChanged = false;
+
+                Debug.WriteLine($"INFO: Serializing session {session.Id}, cacheId {CacheId}");
 
                 // Reflect changes in the persistent store
                 byte[] blob = cache.Serialize();
