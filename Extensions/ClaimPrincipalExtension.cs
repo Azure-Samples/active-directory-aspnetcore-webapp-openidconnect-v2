@@ -12,16 +12,8 @@ namespace Microsoft.AspNetCore.Authentication
         /// <returns>A string corresponding to an account identifier as defined in <see cref="Microsoft.Identity.Client.AccountId.Identifier"/></returns>
         public static string GetMsalAccountId(this ClaimsPrincipal claimsPrincipal)
         {
-            string userObjectId = claimsPrincipal.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier");
-            if (string.IsNullOrEmpty(userObjectId))
-            {
-                userObjectId = claimsPrincipal.FindFirstValue("oid");
-            }
-            string tenantId = claimsPrincipal.FindFirstValue("http://schemas.microsoft.com/identity/claims/tenantid");
-            if (string.IsNullOrEmpty(tenantId))
-            {
-                tenantId = claimsPrincipal.FindFirstValue("tid");
-            }
+            string userObjectId = GetObjectId(claimsPrincipal);
+            string tenantId = GetTenantId(claimsPrincipal);
 
             if (string.IsNullOrWhiteSpace(userObjectId)) // TODO: find a better typed exception
                 throw new ArgumentOutOfRangeException("Missing claim 'http://schemas.microsoft.com/identity/claims/objectidentifier' or 'oid' ");
@@ -32,6 +24,80 @@ namespace Microsoft.AspNetCore.Authentication
             string accountId = userObjectId + "." + tenantId;
             return accountId;
         }
+
+        /// <summary>
+        /// Get the unique object ID associated with the claimsPrincipal
+        /// </summary>
+        /// <param name="claimsPrincipal">Claims principal from which to retrieve the unique object id</param>
+        /// <returns>Unique object ID of the identity, or <c>null</c> if it cannot be found</returns>
+        private static string GetObjectId(ClaimsPrincipal claimsPrincipal)
+        {
+            string userObjectId = claimsPrincipal.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier");
+            if (string.IsNullOrEmpty(userObjectId))
+            {
+                userObjectId = claimsPrincipal.FindFirstValue("oid");
+            }
+
+            return userObjectId;
+        }
+
+        /// <summary>
+        /// Tenant ID of the identity
+        /// </summary>
+        /// <param name="claimsPrincipal">Claims principal from which to retrieve the tenant id</param>
+        /// <returns>Tenant ID of the identity, or <c>null</c> if it cannot be found</returns>
+        private static string GetTenantId(ClaimsPrincipal claimsPrincipal)
+        {
+            string tenantId = claimsPrincipal.FindFirstValue("http://schemas.microsoft.com/identity/claims/tenantid");
+            if (string.IsNullOrEmpty(tenantId))
+            {
+                tenantId = claimsPrincipal.FindFirstValue("tid");
+            }
+
+            return tenantId;
+        }
+
+        /// <summary>
+        /// Gets the login-hint associated with an identity
+        /// </summary>
+        /// <param name="claimsPrincipal">Identity for which to compte the login-hint</param>
+        /// <returns>login-hint for the identity, or <c>null</c> if it cannot be found</returns>
+        public static string GetLoginHint(this ClaimsPrincipal claimsPrincipal)
+        {
+            return GetDisplayName(claimsPrincipal);
+        }
+
+        /// <summary>
+        /// Gets the domain-hint associated with an identity
+        /// </summary>
+        /// <param name="claimsPrincipal">Identity for which to compte the domain-hint</param>
+        /// <returns>domain-hint for the identity, or <c>null</c> if it cannot be found</returns>
+        public static string GetDomainHint(this ClaimsPrincipal claimsPrincipal)
+        {
+            // Tenant for MSA accounts
+            const string msaTenantId = "9188040d-6c67-4c5b-b112-36a304b66dad";
+
+            string tenantId = GetTenantId(claimsPrincipal);
+            string domainHint;
+
+            if (!string.IsNullOrWhiteSpace(tenantId))
+            {
+                if (tenantId == msaTenantId)
+                {
+                    domainHint = "consumers";
+                }
+                else
+                {
+                    domainHint = "organizations";
+                }
+            }
+            else
+            {
+                domainHint = null;
+            }
+            return domainHint;
+        }
+
 
         /// <summary>
         /// Get the display name for the signed-in user, based on their claims principal
@@ -50,7 +116,7 @@ namespace Microsoft.AspNetCore.Authentication
             {
                 displayName = claimsPrincipal.FindFirstValue(ClaimsIdentity.DefaultNameClaimType);
             }
-            
+
             // Finally falling back to name
             if (string.IsNullOrWhiteSpace(displayName))
             {
