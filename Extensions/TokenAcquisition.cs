@@ -271,12 +271,12 @@ namespace Microsoft.AspNetCore.Authentication
             if (scopes == null)
                 throw new ArgumentNullException(nameof(scopes));
 
+            // Remove: this is for debugging
             var accounts = await application.GetAccountsAsync();
 
             try
             {
                 AuthenticationResult result = null;
-                var allAccounts = await application.GetAccountsAsync();
                 IAccount account = await application.GetAccountAsync(accountIdentifier);
                 result = await application.AcquireTokenSilentAsync(scopes.Except(scopesRequestedByMsalNet), account);
                 return result.AccessToken;
