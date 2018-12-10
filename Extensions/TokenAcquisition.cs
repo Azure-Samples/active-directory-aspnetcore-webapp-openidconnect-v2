@@ -232,8 +232,16 @@ namespace Microsoft.AspNetCore.Authentication
         /// <returns></returns>
         public async Task RemoveAccount(RedirectContext context)
         {
-            var app = CreateApplication(context.HttpContext, context.HttpContext.User, context.Properties, AzureADDefaults.CookieScheme);
+            var user = context.HttpContext.User;
+            var app = CreateApplication(context.HttpContext, user, context.Properties, AzureADDefaults.CookieScheme);
             var account = await app.GetAccountAsync(context.HttpContext.User.GetMsalAccountId());
+
+            // Workaround for the guest account
+            if (account == null)
+            {
+                var accounts = await app.GetAccountsAsync();
+                account = accounts.FirstOrDefault(a => a.Username == user.GetLoginHint());
+            }
             await app.RemoveAsync(account);
         }
 
