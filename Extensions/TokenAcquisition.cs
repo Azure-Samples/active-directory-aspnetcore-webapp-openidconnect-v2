@@ -225,6 +225,27 @@ namespace Microsoft.AspNetCore.Authentication
         }
 
         /// <summary>
+        /// Removes the account associated with context.HttpContext.User from the MSAL.NET cache
+        /// </summary>
+        /// <param name="context">RedirectContext passed-in to a <see cref="OnRedirectToIdentityProviderForSignOut"/> 
+        /// Openidconnect event</param>
+        /// <returns></returns>
+        public async Task RemoveAccount(RedirectContext context)
+        {
+            var user = context.HttpContext.User;
+            var app = CreateApplication(context.HttpContext, user, context.Properties, AzureADDefaults.CookieScheme);
+            var account = await app.GetAccountAsync(context.HttpContext.User.GetMsalAccountId());
+
+            // Workaround for the guest account
+            if (account == null)
+            {
+                var accounts = await app.GetAccountsAsync();
+                account = accounts.FirstOrDefault(a => a.Username == user.GetLoginHint());
+            }
+            await app.RemoveAsync(account);
+        }
+
+        /// <summary>
         /// Creates an MSAL Confidential client application
         /// </summary>
         /// <param name="httpContext"></param>
@@ -254,7 +275,8 @@ namespace Microsoft.AspNetCore.Authentication
         private async Task<string> GetAccessTokenOnBehalfOfUser(ConfidentialClientApplication application, ClaimsPrincipal claimsPrincipal, IEnumerable<string> scopes)
         {
             string accountIdentifier = claimsPrincipal.GetMsalAccountId();
-            return await GetAccessTokenOnBehalfOfUser(application, accountIdentifier, scopes);
+            string loginHint = claimsPrincipal.GetLoginHint();
+            return await GetAccessTokenOnBehalfOfUser(application, accountIdentifier, scopes, loginHint);
         }
 
         /// <summary>
@@ -263,7 +285,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="accountIdentifier">User account identifier for which to acquire a token. 
         /// See <see cref="Microsoft.Identity.Client.AccountId.Identifier"/></param>
         /// <param name="scopes">Scopes for the downstream API to call</param>
-        private async Task<string> GetAccessTokenOnBehalfOfUser(ConfidentialClientApplication application, string accountIdentifier, IEnumerable<string> scopes)
+        private async Task<string> GetAccessTokenOnBehalfOfUser(ConfidentialClientApplication application, string accountIdentifier, IEnumerable<string> scopes, string loginHint)
         {
             if (accountIdentifier == null)
                 throw new ArgumentNullException(nameof(accountIdentifier));
@@ -271,13 +293,19 @@ namespace Microsoft.AspNetCore.Authentication
             if (scopes == null)
                 throw new ArgumentNullException(nameof(scopes));
 
-            // Remove: this is for debugging
-            var accounts = await application.GetAccountsAsync();
+            // Get the account
+            IAccount account = await application.GetAccountAsync(accountIdentifier);
+
+            // Special case for guest users as the Guest iod / tenant id are not surfaced.
+            if (account == null)
+            {
+                var accounts = await application.GetAccountsAsync();
+                account = accounts.FirstOrDefault(a => a.Username == loginHint);
+            }
 
             try
             {
                 AuthenticationResult result = null;
-                IAccount account = await application.GetAccountAsync(accountIdentifier);
                 result = await application.AcquireTokenSilentAsync(scopes.Except(scopesRequestedByMsalNet), account);
                 return result.AccessToken;
             }
