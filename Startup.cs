@@ -81,6 +81,20 @@ namespace WebApp_OpenIDConnect_DotNet
                     await handler(context);
                 };
 
+                // Handling the sign-out: removing the account from MSAL.NET cache
+                options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
+                {
+                    var user = context.HttpContext.User;
+
+                    // Avoid displaying the select account dialog
+                    context.ProtocolMessage.LoginHint = user.GetLoginHint();
+                    context.ProtocolMessage.DomainHint = user.GetDomainHint();
+
+                    // Remove the account from MSAL.NET token cache
+                    var _tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
+                    await _tokenAcquisition.RemoveAccount(context);
+                };
+
                 // Avoids having users being presented the select account dialog when they are already signed-in
                 // for instance when going through incremental consent 
                 options.Events.OnRedirectToIdentityProvider = async context =>

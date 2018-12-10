@@ -100,5 +100,12 @@ namespace Microsoft.AspNetCore.Authentication
         /// </example>
         void AddAccountToCacheFromJwt(OpenIdConnect.TokenValidatedContext tokenValidationContext, IEnumerable<string> scopes = null);
 
+        /// <summary>
+        /// Removes the account associated with context.HttpContext.User from the MSAL.NET cache
+        /// </summary>
+        /// <param name="context">RedirectContext passed-in to a <see cref="OnRedirectToIdentityProviderForSignOut"/> 
+        /// Openidconnect event</param>
+        /// <returns></returns>
+        Task RemoveAccount(RedirectContext context);
     }
 }

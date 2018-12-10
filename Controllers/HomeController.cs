@@ -51,8 +51,18 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             }
             catch (MsalUiRequiredException ex)
             {
-                AuthenticationProperties properties = BuildAuthenticationPropertiesForIncrementalConsent(scopes);
-                return Challenge(properties);
+                if (ex.ErrorCode != MsalUiRequiredException.UserNullError)
+                {
+                    AuthenticationProperties properties = BuildAuthenticationPropertiesForIncrementalConsent(scopes);
+                    return Challenge(properties);
+                }
+                else
+                {
+                    // UserNullError indicates a cache problem as when calling Contact we should have an
+                    // authenticate user (see the [Authenticate] attribute on the controller, but
+                    // and therefore its account should be in the cache
+                    throw;
+                }
             }
         }
 
@@ -64,33 +74,19 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         private AuthenticationProperties BuildAuthenticationPropertiesForIncrementalConsent(string[] scopes)
         {
             AuthenticationProperties properties = new AuthenticationProperties();
-            const string msaTenantId = "9188040d-6c67-4c5b-b112-36a304b66dad";
 
             // Set the scopes, including the scopes that ADAL.NET / MASL.NET need for the Token cache
             string[] additionalBuildInScopes = new string[] { "openid", "offline_access", "profile" };
             properties.SetParameter<ICollection<string>>(OpenIdConnectParameterNames.Scope, scopes.Union(additionalBuildInScopes).ToList());
 
             // Attempts to set the login_hint to avoid the logged-in user to be presented with an account selection dialog
-            string loginHint = string.Empty;
-            string displayName = HttpContext.User.FindFirstValue("preferred_username");
-            if (!string.IsNullOrWhiteSpace(displayName))
+            string loginHint = HttpContext.User.GetLoginHint();
+            if (!string.IsNullOrWhiteSpace(loginHint))
             {
-                properties.SetParameter<string>(OpenIdConnectParameterNames.LoginHint, displayName);
+                properties.SetParameter<string>(OpenIdConnectParameterNames.LoginHint, loginHint);
 
-                string tenantId = HttpContext.User.FindFirstValue("http://schemas.microsoft.com/identity/claims/tenantid");
-                if (!string.IsNullOrWhiteSpace(tenantId))
-                {
-                    string domainHint;
-                    if (tenantId == msaTenantId)
-                    {
-                        domainHint = "consumers";
-                    }
-                    else
-                    {
-                        domainHint = "organizations";
-                    }
-                    properties.SetParameter<string>(OpenIdConnectParameterNames.DomainHint, domainHint);
-                }
+                string domainHint = HttpContext.User.GetDomainHint();
+                properties.SetParameter<string>(OpenIdConnectParameterNames.DomainHint, domainHint);
             }
 
             return properties;
