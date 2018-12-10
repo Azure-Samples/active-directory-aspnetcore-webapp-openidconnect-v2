@@ -39,8 +39,7 @@ namespace WebApp_OpenIDConnect_DotNet
             // Token acquisition service and its cache implementation
             services.AddTokenAcquisition()
                     .AddDistributedMemoryCache()
-                    .AddSession()
-                    .AddSessionBasedTokenCache()
+                    .AddInMemoryTokenCache()
                     /* you could use a cookie based token cache by reaplacing the last
                      * trew lines by : .AddCookie().AddCookieBasedTokenCache()  */
                     ;
@@ -126,10 +125,6 @@ namespace WebApp_OpenIDConnect_DotNet
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            // See https://docs.microsoft.com/en-us/aspnet/core/fundamentals/app-state?view=aspnetcore-2.1#configure-session-state
-            // to use a session token cache
-            app.UseSession();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

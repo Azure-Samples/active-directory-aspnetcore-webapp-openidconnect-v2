@@ -51,19 +51,30 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             }
             catch (MsalUiRequiredException ex)
             {
-                if (ex.ErrorCode != MsalUiRequiredException.UserNullError)
+                if (CanbeSolvedByReSignInUser(ex))
                 {
                     AuthenticationProperties properties = BuildAuthenticationPropertiesForIncrementalConsent(scopes);
                     return Challenge(properties);
                 }
                 else
                 {
-                    // UserNullError indicates a cache problem as when calling Contact we should have an
-                    // authenticate user (see the [Authenticate] attribute on the controller, but
-                    // and therefore its account should be in the cache
                     throw;
                 }
             }
+        }
+
+        private static bool CanbeSolvedByReSignInUser(MsalUiRequiredException ex)
+        {
+            bool canbeSolvedByReSignInUser = true;
+
+            // ex.ErrorCode != MsalUiRequiredException.UserNullError indicates a cache problem 
+            // as when calling Contact we should have an
+            // authenticate user (see the [Authenticate] attribute on the controller, but
+            // and therefore its account should be in the cache
+            // In the case of an InMemoryCache, this can happen if the server was restarted
+            // as the cache is in the server memory
+
+            return canbeSolvedByReSignInUser;
         }
 
         /// <summary>
@@ -88,7 +99,6 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                 string domainHint = HttpContext.User.GetDomainHint();
                 properties.SetParameter<string>(OpenIdConnectParameterNames.DomainHint, domainHint);
             }
-
             return properties;
         }
 
