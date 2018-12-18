@@ -118,9 +118,9 @@ namespace WebApp_OpenIDConnect_DotNet
                     }
                 };
 
-              // If you want to debug, or just understand the OpenIdConnect events, just
-              // uncomment the following line of code
-              // OpenIdConnectMiddlewareDiagnostics.Subscribe(options.Events);
+                // If you want to debug, or just understand the OpenIdConnect events, just
+                // uncomment the following line of code
+                // OpenIdConnectMiddlewareDiagnostics.Subscribe(options.Events);
 
             });
 
