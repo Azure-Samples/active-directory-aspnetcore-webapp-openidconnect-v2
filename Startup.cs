@@ -77,7 +77,7 @@ namespace WebApp_OpenIDConnect_DotNet
                 {
                     var _tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
                     await _tokenAcquisition.AddAccountToCacheFromAuthorizationCode(context, options.Scope);
-                    context.HandleCodeRedemption();
+                    await handler(context);
                 };
 
                 // Handling the sign-out: removing the account from MSAL.NET cache
@@ -120,7 +120,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
               // If you want to debug, or just understand the OpenIdConnect events, just
               // uncomment the following line of code
-              //  OpenIdConnectMiddlewareDiagnostics.Subscribe(options.Events);
+              // OpenIdConnectMiddlewareDiagnostics.Subscribe(options.Events);
 
             });
 

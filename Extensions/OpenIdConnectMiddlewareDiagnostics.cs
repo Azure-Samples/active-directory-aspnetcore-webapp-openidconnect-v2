@@ -130,23 +130,23 @@ namespace Microsoft.AspNetCore.Authentication
 
         static async Task OnAuthorizationCodeReceived(AuthorizationCodeReceivedContext context)
         {
-            Debug.WriteLine($"3. Begin {nameof(OnAuthorizationCodeReceived)}");
+            Debug.WriteLine($"4. Begin {nameof(OnAuthorizationCodeReceived)}");
             await onAuthorizationCodeReceived(context);
-            Debug.WriteLine($"3. End - {nameof(OnAuthorizationCodeReceived)}");
+            Debug.WriteLine($"4. End - {nameof(OnAuthorizationCodeReceived)}");
         }
 
         static async Task OnTokenResponseReceived(TokenResponseReceivedContext context)
         {
-            Debug.WriteLine($"4. Begin {nameof(OnTokenResponseReceived)}");
+            Debug.WriteLine($"5. Begin {nameof(OnTokenResponseReceived)}");
             await onTokenResponseReceived(context);
-            Debug.WriteLine($"4. End - {nameof(OnTokenResponseReceived)}");
+            Debug.WriteLine($"5. End - {nameof(OnTokenResponseReceived)}");
 
         }
         static async Task OnTokenValidated(TokenValidatedContext context)
         {
-            Debug.WriteLine($"5. Begin {nameof(OnTokenValidated)}");
+            Debug.WriteLine($"3. Begin {nameof(OnTokenValidated)}");
             await onTokenValidated(context);
-            Debug.WriteLine($"5. End - {nameof(OnTokenValidated)}");
+            Debug.WriteLine($"3. End - {nameof(OnTokenValidated)}");
         }
         static async Task OnUserInformationReceived(UserInformationReceivedContext context)
         {
