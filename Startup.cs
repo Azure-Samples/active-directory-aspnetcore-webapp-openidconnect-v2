@@ -117,6 +117,11 @@ namespace WebApp_OpenIDConnect_DotNet
                         context.ProtocolMessage.SetParameter(claims, context.Properties.Items[claims]);
                     }
                 };
+
+                // If you want to debug, or just understand the OpenIdConnect events, just
+                // uncomment the following line of code
+                // OpenIdConnectMiddlewareDiagnostics.Subscribe(options.Events);
+
             });
 
             services.AddMvc(options =>
