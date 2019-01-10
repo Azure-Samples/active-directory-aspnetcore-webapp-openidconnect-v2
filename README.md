@@ -91,7 +91,7 @@ You can clone this sample from your shell or command line:
     ```CSharp
     services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
     {
-        options.Authority = options.Authority";
+        options.Authority = options.Authority;
         options.TokenValidationParameters.ValidateIssuer = false;
     });
     ```
