@@ -163,7 +163,7 @@ You can restrict sign-in access for your application to only user accounts that 
     ```CSharp
     services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
     {
-        options.Authority = options.Authority + "/v2.0/";
+        options.Authority = options.Authority;
         options.TokenValidationParameters.ValidateIssuer = true;
     });
     ```
