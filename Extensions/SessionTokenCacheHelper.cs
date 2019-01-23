@@ -108,9 +108,6 @@ namespace Microsoft.AspNetCore.Authentication
 
             try
             {
-                // Optimistically set HasStateChanged to false. We need to do it early to avoid losing changes made by a concurrent thread.
-                cache.HasStateChanged = false;
-
                 Debug.WriteLine($"INFO: Serializing session {session.Id}, cacheId {CacheId}");
 
                 // Reflect changes in the persistent store
@@ -135,7 +132,7 @@ namespace Microsoft.AspNetCore.Authentication
         void AfterAccessNotification(TokenCacheNotificationArgs args)
         {
             // if the access operation resulted in a cache update
-            if (cache.HasStateChanged)
+            if (args.HasStateChanged)
             {
                 Persist();
             }

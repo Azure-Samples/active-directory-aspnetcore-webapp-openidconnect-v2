@@ -102,9 +102,6 @@ namespace Microsoft.AspNetCore.Authentication
 
         public void Persist()
         {
-            // Optimistically set HasStateChanged to false. We need to do it early to avoid losing changes made by a concurrent thread.
-            cache.HasStateChanged = false;
-
             // Reflect changes in the persistent store
             byte[] blob = cache.Serialize();
             memoryCache.Set(CacheId, blob);
@@ -120,11 +117,7 @@ namespace Microsoft.AspNetCore.Authentication
         // Triggered right after MSAL accessed the cache.
         void AfterAccessNotification(TokenCacheNotificationArgs args)
         {
-            // if the access operation resulted in a cache update
-            if (cache.HasStateChanged)
-            {
                 Persist();
-            }
         }
     }
 }

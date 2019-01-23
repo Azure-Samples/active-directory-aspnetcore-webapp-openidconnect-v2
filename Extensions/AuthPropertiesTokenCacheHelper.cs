@@ -112,7 +112,7 @@ namespace Microsoft.AspNetCore.Authentication
         private void AfterAccessNotificationWithProperties(TokenCacheNotificationArgs args)
         {
             // if state changed
-            if (TokenCache.HasStateChanged)
+            if (args.HasStateChanged)
             {
                 var cachedTokens = TokenCache.Serialize();
                 _authProperties.Items[TokenCacheKey] = Convert.ToBase64String(cachedTokens);
@@ -122,7 +122,7 @@ namespace Microsoft.AspNetCore.Authentication
         private void AfterAccessNotificationWithContext(TokenCacheNotificationArgs args)
         {
             // if state changed
-            if (TokenCache.HasStateChanged)
+            if (args.HasStateChanged)
             {
                 AfterAccessNotificationWithProperties(args);
 
