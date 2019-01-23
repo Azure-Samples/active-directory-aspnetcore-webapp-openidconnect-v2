@@ -31,6 +31,11 @@ namespace Microsoft.AspNetCore.Authentication
     /// </summary>
     public class CookieTokenCacheProvider : ITokenCacheProvider
     {
+        public void EnableSerialization(ITokenCache userTokenCache, HttpContext httpContext, ClaimsPrincipal claimsPrincipal, AuthenticationProperties authenticationProperties, string signInScheme = null)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Get an MSAL.NET Token cache from the HttpContext, and possibly the AuthenticationProperties and Cookies sign-in scheme
         /// </summary>
@@ -39,7 +44,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="signInScheme">Sign-in scheme</param>
         /// <returns>A token cache to use in the application</returns>
 
-        public TokenCache GetCache(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, AuthenticationProperties authenticationProperties, string signInScheme)
+        public ITokenCache GetCache(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, AuthenticationProperties authenticationProperties, string signInScheme)
         {
             if (authenticationProperties!=null)
             {
@@ -112,7 +117,7 @@ namespace Microsoft.AspNetCore.Authentication
         private void AfterAccessNotificationWithProperties(TokenCacheNotificationArgs args)
         {
             // if state changed
-            if (TokenCache.HasStateChanged)
+            if (args.HasStateChanged)
             {
                 var cachedTokens = TokenCache.Serialize();
                 _authProperties.Items[TokenCacheKey] = Convert.ToBase64String(cachedTokens);
@@ -122,7 +127,7 @@ namespace Microsoft.AspNetCore.Authentication
         private void AfterAccessNotificationWithContext(TokenCacheNotificationArgs args)
         {
             // if state changed
-            if (TokenCache.HasStateChanged)
+            if (args.HasStateChanged)
             {
                 AfterAccessNotificationWithProperties(args);
 

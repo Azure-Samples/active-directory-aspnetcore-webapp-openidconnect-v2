@@ -56,11 +56,18 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="signInScheme">Sign-in scheme</param>
         /// <returns>A token cache to use in the application</returns>
 
-        public TokenCache GetCache(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, AuthenticationProperties authenticationProperties, string signInScheme)
+        public ITokenCache GetCache(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, AuthenticationProperties authenticationProperties, string signInScheme)
         {
             string userId = claimsPrincipal.GetMsalAccountId();
-            helper = new InMemoryTokenCacheHelper(userId, httpContext, memoryCache);
+            helper = new InMemoryTokenCacheHelper(null, userId, httpContext, memoryCache);
             return helper.GetMsalCacheInstance();
+        }
+
+        public void EnableSerialization(ITokenCache userTokenCache, HttpContext httpContext, ClaimsPrincipal claimsPrincipal, AuthenticationProperties authenticationProperties, string signInScheme = null)
+        {
+            string userId = claimsPrincipal.GetMsalAccountId();
+            helper = new InMemoryTokenCacheHelper(userTokenCache, userId, httpContext, memoryCache);
+            helper.GetMsalCacheInstance();
         }
     }
 
@@ -71,18 +78,22 @@ namespace Microsoft.AspNetCore.Authentication
         IMemoryCache memoryCache;
 
 
-        TokenCache cache = new TokenCache();
+        ITokenCache cache = new TokenCache();
 
-        public InMemoryTokenCacheHelper(string userId, HttpContext httpcontext, IMemoryCache aspnetInMemoryCache)
+        public InMemoryTokenCacheHelper(ITokenCache userTokenCache, string userId, HttpContext httpcontext, IMemoryCache aspnetInMemoryCache)
         {
             // not object, we want the SUB
             UserId = userId;
             CacheId = UserId + "_TokenCache";
             memoryCache = aspnetInMemoryCache;
+            if (userTokenCache != null)
+            {
+                this.cache = userTokenCache;
+            }
             Load();
         }
 
-        public TokenCache GetMsalCacheInstance()
+        public ITokenCache GetMsalCacheInstance()
         {
             cache.SetBeforeAccess(BeforeAccessNotification);
             cache.SetAfterAccess(AfterAccessNotification);
@@ -102,9 +113,6 @@ namespace Microsoft.AspNetCore.Authentication
 
         public void Persist()
         {
-            // Optimistically set HasStateChanged to false. We need to do it early to avoid losing changes made by a concurrent thread.
-            cache.HasStateChanged = false;
-
             // Reflect changes in the persistent store
             byte[] blob = cache.Serialize();
             memoryCache.Set(CacheId, blob);
@@ -120,11 +128,7 @@ namespace Microsoft.AspNetCore.Authentication
         // Triggered right after MSAL accessed the cache.
         void AfterAccessNotification(TokenCacheNotificationArgs args)
         {
-            // if the access operation resulted in a cache update
-            if (cache.HasStateChanged)
-            {
                 Persist();
-            }
         }
     }
 }

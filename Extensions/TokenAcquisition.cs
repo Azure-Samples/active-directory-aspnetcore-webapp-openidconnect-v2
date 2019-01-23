@@ -12,6 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.Identity.Client.AppConfig;
 
 namespace Microsoft.AspNetCore.Authentication
 {
@@ -55,6 +56,8 @@ namespace Microsoft.AspNetCore.Authentication
 
         private ITokenCacheProvider _tokenCacheProvider;
 
+        private ConfidentialClientApplicationOptions _applicationOptions;
+
         /// <summary>
         /// Constructor of the TokenAcquisition service. This requires the Azure AD Options to 
         /// configure the confidential client application and a token cache provider.
@@ -65,6 +68,8 @@ namespace Microsoft.AspNetCore.Authentication
         {
             _azureAdOptions = new AzureADOptions();
             configuration.Bind("AzureAD", _azureAdOptions);
+            _applicationOptions = new ConfidentialClientApplicationOptions();
+            configuration.Bind("AzureAD", _applicationOptions);
             _tokenCacheProvider = tokenCacheProvider;
         }
 
@@ -253,15 +258,15 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="authenticationProperties"></param>
         /// <param name="signInScheme"></param>
         /// <returns></returns>
-        private ConfidentialClientApplication CreateApplication(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, AuthenticationProperties authenticationProperties, string signInScheme)
+        private IConfidentialClientApplication CreateApplication(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, AuthenticationProperties authenticationProperties, string signInScheme)
         {
-            ConfidentialClientApplication app;
             var request = httpContext.Request;
             var currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, _azureAdOptions.CallbackPath ?? string.Empty);
-            var credential = new ClientCredential(_azureAdOptions.ClientSecret);
-            TokenCache userTokenCache = _tokenCacheProvider.GetCache(httpContext, claimsPrincipal, authenticationProperties, signInScheme);
-            string authority = $"{_azureAdOptions.Instance}{_azureAdOptions.TenantId}/"; 
-            app = new ConfidentialClientApplication(_azureAdOptions.ClientId, authority, currentUri, credential, userTokenCache, null);
+
+            var app = ConfidentialClientApplicationBuilder.CreateWithApplicationOptions(_applicationOptions)
+                .WithRedirectUri(currentUri)
+                .Build();
+            _tokenCacheProvider.EnableSerialization(app.UserTokenCache, httpContext, claimsPrincipal, authenticationProperties, signInScheme);
             return app;
         }
 
@@ -272,7 +277,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// </summary>
         /// <param name="claimsPrincipal">Claims principal for the user on behalf of whom to get a token 
         /// <param name="scopes">Scopes for the downstream API to call</param>
-        private async Task<string> GetAccessTokenOnBehalfOfUser(ConfidentialClientApplication application, ClaimsPrincipal claimsPrincipal, IEnumerable<string> scopes)
+        private async Task<string> GetAccessTokenOnBehalfOfUser(IConfidentialClientApplication application, ClaimsPrincipal claimsPrincipal, IEnumerable<string> scopes)
         {
             string accountIdentifier = claimsPrincipal.GetMsalAccountId();
             string loginHint = claimsPrincipal.GetLoginHint();
@@ -285,7 +290,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="accountIdentifier">User account identifier for which to acquire a token. 
         /// See <see cref="Microsoft.Identity.Client.AccountId.Identifier"/></param>
         /// <param name="scopes">Scopes for the downstream API to call</param>
-        private async Task<string> GetAccessTokenOnBehalfOfUser(ConfidentialClientApplication application, string accountIdentifier, IEnumerable<string> scopes, string loginHint)
+        private async Task<string> GetAccessTokenOnBehalfOfUser(IConfidentialClientApplication application, string accountIdentifier, IEnumerable<string> scopes, string loginHint)
         {
             if (accountIdentifier == null)
                 throw new ArgumentNullException(nameof(accountIdentifier));
@@ -344,6 +349,8 @@ namespace Microsoft.AspNetCore.Authentication
                 var application = CreateApplication(httpContext, principal, properties, null);
 
                 // .Result to make sure that the cache is filled-in before the controller tries to get access tokens
+                
+
                 AuthenticationResult result = application.AcquireTokenOnBehalfOfAsync(scopes.Except(scopesRequestedByMsalNet), userAssertion).Result;
             }
             catch (MsalException ex)
