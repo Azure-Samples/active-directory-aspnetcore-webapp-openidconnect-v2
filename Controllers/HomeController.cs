@@ -65,7 +65,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
         private static bool CanbeSolvedByReSignInUser(MsalUiRequiredException ex)
         {
-            bool canbeSolvedByReSignInUser = true;
+            bool canbeSolvedByReSignInUser = false;
 
             // ex.ErrorCode != MsalUiRequiredException.UserNullError indicates a cache problem 
             // as when calling Contact we should have an
@@ -73,6 +73,11 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             // and therefore its account should be in the cache
             // In the case of an InMemoryCache, this can happen if the server was restarted
             // as the cache is in the server memory
+
+            if (ex.ErrorCode == MsalUiRequiredException.UserNullError) // ex.ErrorCode == "user_null"
+            {
+                canbeSolvedByReSignInUser = true;
+            }
 
             return canbeSolvedByReSignInUser;
         }
