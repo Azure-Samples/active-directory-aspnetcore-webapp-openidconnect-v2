@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
@@ -96,7 +97,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
                 // Avoids having users being presented the select account dialog when they are already signed-in
                 // for instance when going through incremental consent 
-                options.Events.OnRedirectToIdentityProvider = async context =>
+                options.Events.OnRedirectToIdentityProvider = context =>
                 {
                     string login = context.Properties.GetParameter<string>(OpenIdConnectParameterNames.LoginHint);
                     if (!string.IsNullOrWhiteSpace(login))
@@ -116,12 +117,13 @@ namespace WebApp_OpenIDConnect_DotNet
                     {
                         context.ProtocolMessage.SetParameter(claims, context.Properties.Items[claims]);
                     }
+
+                    return Task.FromResult(0);
                 };
 
                 // If you want to debug, or just understand the OpenIdConnect events, just
                 // uncomment the following line of code
-                // OpenIdConnectMiddlewareDiagnostics.Subscribe(options.Events);
-
+                OpenIdConnectMiddlewareDiagnostics.Subscribe(options.Events);
             });
 
             services.AddMvc(options =>
