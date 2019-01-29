@@ -3,6 +3,7 @@
 ################################################################################
 
 /.vs
+/.vscode
 /obj
 /bin/Debug/netcoreapp2.0
 /bin/Debug/netcoreapp2.1/WebApp-OpenIDConnect-DotNet.Views.pdb
