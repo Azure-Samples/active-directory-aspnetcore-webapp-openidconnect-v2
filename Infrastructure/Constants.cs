@@ -8,6 +8,6 @@ namespace WebApp_OpenIDConnect_DotNet.Infrastructure
         public const string ScopeUserRead = "User.Read";
         public const string ScopeProfile = "profile";
         public const string ScopeOpenId = "openid";
-        public const string AuthenticationHeaderValue = "Bearer";
+        public const string AuthorizationScheme = "Bearer";
     }
 }
