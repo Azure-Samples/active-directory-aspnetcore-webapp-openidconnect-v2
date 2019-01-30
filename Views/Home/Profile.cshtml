@@ -1,0 +1,25 @@
+﻿@using Newtonsoft.Json.Linq
+@{
+    ViewData["Title"] = "Contact";
+}
+<h2>@ViewData["Title"]</h2>
+<h3>@ViewData["Message"]</h3>
+
+<table>
+    <tr>
+        <td>Property</td>
+        <td>Value</td>
+    </tr>
+    @{
+        var me = ViewData["me"] as JObject;
+        var children = me.Properties();
+        foreach (var child in children)
+        {
+            <tr>
+                <td>@child.Name</td>
+                <td>@child.Value
+                <td>
+            </tr>
+        }
+    }
+</table>

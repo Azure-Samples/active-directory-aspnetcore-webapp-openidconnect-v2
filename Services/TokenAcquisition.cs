@@ -1,17 +1,17 @@
-﻿using Microsoft.AspNetCore.Authentication.AzureAD.UI;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Microsoft.Identity.Client;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Identity.Client;
+using TokenValidatedContext = Microsoft.AspNetCore.Authentication.JwtBearer.TokenValidatedContext;
 
 namespace Microsoft.AspNetCore.Authentication
 {
@@ -71,7 +71,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// <summary>
         /// Scopes which are already requested by MSAL.NET. they should not be re-requested;
         /// </summary>
-        private string[] scopesRequestedByMsalNet = new string[] { "openid", "profile", "offline_access" };
+        private string[] scopesRequestedByMsalNet = { "openid", "profile", "offline_access" };
 
         /// <summary>
         /// In a Web App, adds, to the MSAL.NET cache, the account of the user authenticating to the Web App, when the authorization code is received (after the user
@@ -124,7 +124,7 @@ namespace Microsoft.AspNetCore.Authentication
             }
             catch (MsalException ex)
             {
-                string message = ex.Message;
+                var message = ex.Message;
                 throw;
             }
         }
@@ -173,7 +173,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// };
         /// </code>
         /// </example>
-        public void AddAccountToCacheFromJwt(JwtBearer.TokenValidatedContext tokenValidatedContext, IEnumerable<string> scopes)
+        public void AddAccountToCacheFromJwt(TokenValidatedContext tokenValidatedContext, IEnumerable<string> scopes)
         {
             if (tokenValidatedContext == null)
                 throw new ArgumentNullException(nameof(tokenValidatedContext));
@@ -259,8 +259,8 @@ namespace Microsoft.AspNetCore.Authentication
             var request = httpContext.Request;
             var currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, _azureAdOptions.CallbackPath ?? string.Empty);
             var credential = new ClientCredential(_azureAdOptions.ClientSecret);
-            TokenCache userTokenCache = _tokenCacheProvider.GetCache(httpContext, claimsPrincipal, authenticationProperties, signInScheme);
-            string authority = $"{_azureAdOptions.Instance}{_azureAdOptions.TenantId}/"; 
+            var userTokenCache = _tokenCacheProvider.GetCache(httpContext, claimsPrincipal, authenticationProperties, signInScheme);
+            var authority = $"{_azureAdOptions.Instance}{_azureAdOptions.TenantId}/"; 
             app = new ConfidentialClientApplication(_azureAdOptions.ClientId, authority, currentUri, credential, userTokenCache, null);
             return app;
         }
@@ -274,8 +274,8 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="scopes">Scopes for the downstream API to call</param>
         private async Task<string> GetAccessTokenOnBehalfOfUser(ConfidentialClientApplication application, ClaimsPrincipal claimsPrincipal, IEnumerable<string> scopes)
         {
-            string accountIdentifier = claimsPrincipal.GetMsalAccountId();
-            string loginHint = claimsPrincipal.GetLoginHint();
+            var accountIdentifier = claimsPrincipal.GetMsalAccountId();
+            var loginHint = claimsPrincipal.GetLoginHint();
             return await GetAccessTokenOnBehalfOfUser(application, accountIdentifier, scopes, loginHint);
         }
 
@@ -294,7 +294,7 @@ namespace Microsoft.AspNetCore.Authentication
                 throw new ArgumentNullException(nameof(scopes));
 
             // Get the account
-            IAccount account = await application.GetAccountAsync(accountIdentifier);
+            var account = await application.GetAccountAsync(accountIdentifier);
 
             // Special case for guest users as the Guest iod / tenant id are not surfaced.
             if (account == null)
@@ -303,17 +303,9 @@ namespace Microsoft.AspNetCore.Authentication
                 account = accounts.FirstOrDefault(a => a.Username == loginHint);
             }
 
-            try
-            {
-                AuthenticationResult result = null;
-                result = await application.AcquireTokenSilentAsync(scopes.Except(scopesRequestedByMsalNet), account);
-                return result.AccessToken;
-            }
-            catch (MsalException ex)
-            {
-                // TODO process the exception see if this is retryable etc ...
-                throw;
-            }
+            AuthenticationResult result = null;
+            result = await application.AcquireTokenSilentAsync(scopes.Except(scopesRequestedByMsalNet), account);
+            return result.AccessToken;
         }
 
         /// <summary>
@@ -344,11 +336,11 @@ namespace Microsoft.AspNetCore.Authentication
                 var application = CreateApplication(httpContext, principal, properties, null);
 
                 // .Result to make sure that the cache is filled-in before the controller tries to get access tokens
-                AuthenticationResult result = application.AcquireTokenOnBehalfOfAsync(scopes.Except(scopesRequestedByMsalNet), userAssertion).Result;
+                var result = application.AcquireTokenOnBehalfOfAsync(scopes.Except(scopesRequestedByMsalNet), userAssertion).Result;
             }
             catch (MsalException ex)
             {
-                string message = ex.Message;
+                var message = ex.Message;
                 throw;
             }
         }

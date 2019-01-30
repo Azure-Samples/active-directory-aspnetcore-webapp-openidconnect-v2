@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace Microsoft.AspNetCore.Authentication
 {
@@ -102,7 +100,7 @@ namespace Microsoft.AspNetCore.Authentication
 
             await onRedirectToIdentityProvider(context);
 
-            Debug.WriteLine($"   Sending OpenIdConnect message:");
+            Debug.WriteLine("   Sending OpenIdConnect message:");
             DisplayProtocolMessage(context.ProtocolMessage);
             Debug.WriteLine($"1. End - {nameof(OnRedirectToIdentityProvider)}");
         }
@@ -111,7 +109,7 @@ namespace Microsoft.AspNetCore.Authentication
         {
             foreach (var property in message.GetType().GetProperties())
             {
-                object value = property.GetValue(message);
+                var value = property.GetValue(message);
                 if (value != null)
                 {
                     Debug.WriteLine($"   - {property.Name}={value}");
@@ -122,7 +120,7 @@ namespace Microsoft.AspNetCore.Authentication
         static async Task OnMessageReceived(MessageReceivedContext context)
         {
             Debug.WriteLine($"2. Begin {nameof(OnMessageReceived)}");
-            Debug.WriteLine($"   Received from STS the OpenIdConnect message:");
+            Debug.WriteLine("   Received from STS the OpenIdConnect message:");
             DisplayProtocolMessage(context.ProtocolMessage);
             await onMessageReceived(context);
             Debug.WriteLine($"2. End - {nameof(OnMessageReceived)}");

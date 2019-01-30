@@ -1,14 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Client;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading;
-using System.Web;
 
 namespace Microsoft.AspNetCore.Authentication
 {
@@ -58,7 +52,7 @@ namespace Microsoft.AspNetCore.Authentication
 
         public TokenCache GetCache(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, AuthenticationProperties authenticationProperties, string signInScheme)
         {
-            string userId = claimsPrincipal.GetMsalAccountId();
+            var userId = claimsPrincipal.GetMsalAccountId();
             helper = new InMemoryTokenCacheHelper(userId, httpContext, memoryCache);
             return helper.GetMsalCacheInstance();
         }
@@ -66,12 +60,12 @@ namespace Microsoft.AspNetCore.Authentication
 
     public class InMemoryTokenCacheHelper
     {
-        string UserId = string.Empty;
-        string CacheId = string.Empty;
-        IMemoryCache memoryCache;
+        readonly string UserId = string.Empty;
+        readonly string CacheId = string.Empty;
+        readonly IMemoryCache memoryCache;
 
 
-        TokenCache cache = new TokenCache();
+        readonly TokenCache cache = new TokenCache();
 
         public InMemoryTokenCacheHelper(string userId, HttpContext httpcontext, IMemoryCache aspnetInMemoryCache)
         {
@@ -103,7 +97,7 @@ namespace Microsoft.AspNetCore.Authentication
         public void Persist()
         {
             // Reflect changes in the persistent store
-            byte[] blob = cache.Serialize();
+            var blob = cache.Serialize();
             memoryCache.Set(CacheId, blob);
         }
 

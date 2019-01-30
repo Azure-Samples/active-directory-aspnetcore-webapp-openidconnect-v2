@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Identity.Client;
-using System.Security.Claims;
 
 namespace Microsoft.AspNetCore.Authentication
 {

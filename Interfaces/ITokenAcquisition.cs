@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Identity.Client;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Http;
+using TokenValidatedContext = Microsoft.AspNetCore.Authentication.JwtBearer.TokenValidatedContext;
 
 namespace Microsoft.AspNetCore.Authentication
 {
@@ -69,7 +69,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// };
         /// </code>
         /// </example>
-        void AddAccountToCacheFromJwt(JwtBearer.TokenValidatedContext tokenValidationContext, IEnumerable<string> scopes = null);
+        void AddAccountToCacheFromJwt(TokenValidatedContext tokenValidationContext, IEnumerable<string> scopes = null);
 
         /// <summary>
         /// [not recommended] In a Web App, adds, to the MSAL.NET cache, the account of the user authenticating to the Web App.

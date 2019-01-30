@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+﻿using System;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Client;
-using System;
-using System.Security.Claims;
 
 namespace Microsoft.AspNetCore.Authentication
 {
@@ -45,10 +45,8 @@ namespace Microsoft.AspNetCore.Authentication
             {
                 return AuthPropertiesTokenCacheHelper.ForCodeRedemption(authenticationProperties);
             }
-            else
-            {
-                return AuthPropertiesTokenCacheHelper.ForApiCalls(httpContext, signInScheme?? AzureADDefaults.CookieScheme);
-            }
+
+            return AuthPropertiesTokenCacheHelper.ForApiCalls(httpContext, signInScheme?? AzureADDefaults.CookieScheme);
         }
     }
 
@@ -60,7 +58,7 @@ namespace Microsoft.AspNetCore.Authentication
         private AuthenticationProperties _authProperties;
         private string _signInScheme;
 
-        private AuthPropertiesTokenCacheHelper(AuthenticationProperties authProperties) : base()
+        private AuthPropertiesTokenCacheHelper(AuthenticationProperties authProperties)
         {
             _authProperties = authProperties;
             TokenCache = new TokenCache();
@@ -69,7 +67,7 @@ namespace Microsoft.AspNetCore.Authentication
             TokenCache.SetBeforeWrite(BeforeWriteNotification);
         }
 
-        private AuthPropertiesTokenCacheHelper(HttpContext httpContext, string signInScheme) : base()
+        private AuthPropertiesTokenCacheHelper(HttpContext httpContext, string signInScheme)
         {
             _httpContext = httpContext;
             _signInScheme = signInScheme;

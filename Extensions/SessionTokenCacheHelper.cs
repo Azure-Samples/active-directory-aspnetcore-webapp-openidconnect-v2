@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Identity.Client;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Security.Claims;
 using System.Threading;
-using System.Web;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Identity.Client;
 
 namespace Microsoft.AspNetCore.Authentication
 {
@@ -46,7 +42,7 @@ namespace Microsoft.AspNetCore.Authentication
 
         public TokenCache GetCache(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, AuthenticationProperties authenticationProperties, string signInScheme)
         {
-            string userId = claimsPrincipal.GetMsalAccountId();
+            var userId = claimsPrincipal.GetMsalAccountId();
             helper = new SessionTokenCacheHelper(userId, httpContext);
             return helper.GetMsalCacheInstance();
         }
@@ -111,7 +107,7 @@ namespace Microsoft.AspNetCore.Authentication
                 Debug.WriteLine($"INFO: Serializing session {session.Id}, cacheId {CacheId}");
 
                 // Reflect changes in the persistent store
-                byte[] blob = cache.Serialize();
+                var blob = cache.Serialize();
                 session.Set(CacheId, blob);
                 session.CommitAsync().Wait();
             }

@@ -1,5 +1,4 @@
 ﻿@using Microsoft.AspNetCore.Http.Features
-
 @{
     var consentFeature = Context.Features.Get<ITrackingConsentFeature>();
     var showBanner = !consentFeature?.CanTrack ?? false;
