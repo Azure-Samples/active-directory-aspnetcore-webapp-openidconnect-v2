@@ -30,12 +30,11 @@ namespace WebApp_OpenIDConnect_DotNet.Infrastructure
         
         private bool CanbeSolvedByReSignInUser(MsalUiRequiredException ex)
         {
-            // ex.ErrorCode != MsalUiRequiredException.UserNullError indicates a cache problem 
-            // as when calling Contact we should have an
-            // authenticate user (see the [Authenticate] attribute on the controller, but
-            // and therefore its account should be in the cache
-            // In the case of an InMemoryCache, this can happen if the server was restarted
-            // as the cache is in the server memory
+            // ex.ErrorCode != MsalUiRequiredException.UserNullError indicates a cache problem.
+            // When calling an [Authenticate]-decorated controller we expect an authenticated
+            // user and therefore its account should be in the cache. However in the case of an
+            // InMemoryCache, the cache could be empty if the server was restarted. This is why
+            // the null_user exception is thrown.
 
             return ex.ErrorCode == MsalUiRequiredException.UserNullError;
         }
