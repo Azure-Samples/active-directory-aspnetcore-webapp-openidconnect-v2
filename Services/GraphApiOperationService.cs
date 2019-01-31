@@ -23,7 +23,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         public async Task<dynamic> CallOnBehalfOfUserAsync(string accessToken)
         {
             httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(Constants.AuthenticationHeaderValue,
+                new AuthenticationHeaderValue(Constants.AuthorizationScheme,
                                               accessToken);
             var response = await httpClient.GetAsync(webOptions.GraphApiUrl);
             if (response.StatusCode == HttpStatusCode.OK)
