@@ -17,7 +17,7 @@ namespace WebApp_OpenIDConnect_DotNet.Infrastructure
         {
             if (context.Exception is MsalUiRequiredException msalUiRequiredException)
             {
-                if (CanbeSolvedByReSignInUser(msalUiRequiredException))
+                if (CanBeSolvedByReSignInUser(msalUiRequiredException))
                 {
                     var properties =
                         BuildAuthenticationPropertiesForIncrementalConsent(Scopes, msalUiRequiredException, context.HttpContext);
@@ -28,7 +28,7 @@ namespace WebApp_OpenIDConnect_DotNet.Infrastructure
             base.OnException(context);
         }
         
-        private bool CanbeSolvedByReSignInUser(MsalUiRequiredException ex)
+        private bool CanBeSolvedByReSignInUser(MsalUiRequiredException ex)
         {
             // ex.ErrorCode != MsalUiRequiredException.UserNullError indicates a cache problem.
             // When calling an [Authenticate]-decorated controller we expect an authenticated
