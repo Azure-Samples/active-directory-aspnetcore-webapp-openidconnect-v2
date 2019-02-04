@@ -1,13 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.Identity.Client;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Interfaces;
 using WebApp_OpenIDConnect_DotNet.Models;
@@ -37,9 +32,13 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         {
             var accessToken =
                 await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new[] {Constants.ScopeUserRead});
+
             var me = await graphApiOperations.CallOnBehalfOfUserAsync(accessToken);
+            var photo = await graphApiOperations.GetPhotoAsBase64Async(accessToken);
 
             ViewData["Me"] = me;
+            ViewData["Photo"] = photo;
+
             return View();
         }
 
