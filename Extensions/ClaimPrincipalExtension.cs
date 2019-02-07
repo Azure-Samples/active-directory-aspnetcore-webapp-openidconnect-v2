@@ -12,8 +12,8 @@ namespace Microsoft.AspNetCore.Authentication
         /// <returns>A string corresponding to an account identifier as defined in <see cref="Microsoft.Identity.Client.AccountId.Identifier"/></returns>
         public static string GetMsalAccountId(this ClaimsPrincipal claimsPrincipal)
         {
-            var userObjectId = GetObjectId(claimsPrincipal);
-            var tenantId = GetTenantId(claimsPrincipal);
+            string userObjectId = GetObjectId(claimsPrincipal);
+            string tenantId = GetTenantId(claimsPrincipal);
 
             if (string.IsNullOrWhiteSpace(userObjectId)) // TODO: find a better typed exception
                 throw new ArgumentOutOfRangeException("Missing claim 'http://schemas.microsoft.com/identity/claims/objectidentifier' or 'oid' ");
@@ -21,8 +21,7 @@ namespace Microsoft.AspNetCore.Authentication
             if (string.IsNullOrWhiteSpace(tenantId))
                 throw new ArgumentOutOfRangeException("Missing claim 'http://schemas.microsoft.com/identity/claims/tenantid' or 'tid' ");
 
-            var accountId = userObjectId + "." + tenantId;
-            return accountId;
+            return $"{userObjectId}.{tenantId}";
         }
 
         /// <summary>
@@ -32,7 +31,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// <returns>Unique object ID of the identity, or <c>null</c> if it cannot be found</returns>
         private static string GetObjectId(ClaimsPrincipal claimsPrincipal)
         {
-            var userObjectId = claimsPrincipal.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier");
+            string userObjectId = claimsPrincipal.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier");
             if (string.IsNullOrEmpty(userObjectId))
             {
                 userObjectId = claimsPrincipal.FindFirstValue("oid");
@@ -48,7 +47,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// <returns>Tenant ID of the identity, or <c>null</c> if it cannot be found</returns>
         private static string GetTenantId(ClaimsPrincipal claimsPrincipal)
         {
-            var tenantId = claimsPrincipal.FindFirstValue("http://schemas.microsoft.com/identity/claims/tenantid");
+            string tenantId = claimsPrincipal.FindFirstValue("http://schemas.microsoft.com/identity/claims/tenantid");
             if (string.IsNullOrEmpty(tenantId))
             {
                 tenantId = claimsPrincipal.FindFirstValue("tid");
@@ -78,23 +77,8 @@ namespace Microsoft.AspNetCore.Authentication
             const string msaTenantId = "9188040d-6c67-4c5b-b112-36a304b66dad";
 
             var tenantId = GetTenantId(claimsPrincipal);
-            string domainHint;
-
-            if (!string.IsNullOrWhiteSpace(tenantId))
-            {
-                if (tenantId == msaTenantId)
-                {
-                    domainHint = "consumers";
-                }
-                else
-                {
-                    domainHint = "organizations";
-                }
-            }
-            else
-            {
-                domainHint = null;
-            }
+            string domainHint = string.IsNullOrWhiteSpace(tenantId) ? null :
+                tenantId == msaTenantId ? "consumers" : "organizations";
             return domainHint;
         }
 
@@ -109,7 +93,7 @@ namespace Microsoft.AspNetCore.Authentication
         public static string GetDisplayName(this ClaimsPrincipal claimsPrincipal)
         {
             // Attempting the claims brought by an Azure AD v2.0 token first
-            var displayName = claimsPrincipal.FindFirstValue("preferred_username");
+            string displayName = claimsPrincipal.FindFirstValue("preferred_username");
 
             // Otherwise falling back to the claims brought by an Azure AD v1.0 token
             if (string.IsNullOrWhiteSpace(displayName))

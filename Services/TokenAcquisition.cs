@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -10,8 +11,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
-using TokenValidatedContext = Microsoft.AspNetCore.Authentication.JwtBearer.TokenValidatedContext;
+using WebApp_OpenIDConnect_DotNet.Infrastructure;
 
 namespace Microsoft.AspNetCore.Authentication
 {
@@ -51,9 +53,9 @@ namespace Microsoft.AspNetCore.Authentication
     /// </summary>
     public class TokenAcquisition : ITokenAcquisition
     {
-        private AzureADOptions _azureAdOptions;
+        private readonly AzureAdOptions azureAdOptions;
 
-        private ITokenCacheProvider _tokenCacheProvider;
+        private readonly ITokenCacheProvider tokenCacheProvider;
 
         /// <summary>
         /// Constructor of the TokenAcquisition service. This requires the Azure AD Options to 
@@ -61,17 +63,16 @@ namespace Microsoft.AspNetCore.Authentication
         /// This constructor is called by ASP.NET Core dependency injection
         /// </summary>
         /// <param name="options">Options to configure the application</param>
-        public TokenAcquisition(ITokenCacheProvider tokenCacheProvider, IConfiguration configuration)
+        public TokenAcquisition(ITokenCacheProvider tokenCacheProvider, IOptions<AzureAdOptions> options)
         {
-            _azureAdOptions = new AzureADOptions();
-            configuration.Bind("AzureAD", _azureAdOptions);
-            _tokenCacheProvider = tokenCacheProvider;
+            azureAdOptions = options.Value;
+            this.tokenCacheProvider = tokenCacheProvider;
         }
 
         /// <summary>
         /// Scopes which are already requested by MSAL.NET. they should not be re-requested;
         /// </summary>
-        private string[] scopesRequestedByMsalNet = { "openid", "profile", "offline_access" };
+        private readonly string[] scopesRequestedByMsalNet = new string[] { Constants.ScopeOpenId, Constants.ScopeProfile, Constants.ScopeOfflineAccess };
 
         /// <summary>
         /// In a Web App, adds, to the MSAL.NET cache, the account of the user authenticating to the Web App, when the authorization code is received (after the user
@@ -124,7 +125,7 @@ namespace Microsoft.AspNetCore.Authentication
             }
             catch (MsalException ex)
             {
-                var message = ex.Message;
+                Debug.WriteLine(ex.Message);
                 throw;
             }
         }
@@ -173,7 +174,8 @@ namespace Microsoft.AspNetCore.Authentication
         /// };
         /// </code>
         /// </example>
-        public void AddAccountToCacheFromJwt(TokenValidatedContext tokenValidatedContext, IEnumerable<string> scopes)
+        public void AddAccountToCacheFromJwt(Microsoft.AspNetCore.Authentication.JwtBearer.TokenValidatedContext tokenValidatedContext, 
+            IEnumerable<string> scopes)
         {
             if (tokenValidatedContext == null)
                 throw new ArgumentNullException(nameof(tokenValidatedContext));
@@ -232,9 +234,9 @@ namespace Microsoft.AspNetCore.Authentication
         /// <returns></returns>
         public async Task RemoveAccount(RedirectContext context)
         {
-            var user = context.HttpContext.User;
-            var app = CreateApplication(context.HttpContext, user, context.Properties, AzureADDefaults.CookieScheme);
-            var account = await app.GetAccountAsync(context.HttpContext.User.GetMsalAccountId());
+            ClaimsPrincipal user = context.HttpContext.User;
+            ConfidentialClientApplication app = CreateApplication(context.HttpContext, user, context.Properties, AzureADDefaults.CookieScheme);
+            IAccount account = await app.GetAccountAsync(context.HttpContext.User.GetMsalAccountId());
 
             // Workaround for the guest account
             if (account == null)
@@ -255,13 +257,12 @@ namespace Microsoft.AspNetCore.Authentication
         /// <returns></returns>
         private ConfidentialClientApplication CreateApplication(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, AuthenticationProperties authenticationProperties, string signInScheme)
         {
-            ConfidentialClientApplication app;
             var request = httpContext.Request;
-            var currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, _azureAdOptions.CallbackPath ?? string.Empty);
-            var credential = new ClientCredential(_azureAdOptions.ClientSecret);
-            var userTokenCache = _tokenCacheProvider.GetCache(httpContext, claimsPrincipal, authenticationProperties, signInScheme);
-            var authority = $"{_azureAdOptions.Instance}{_azureAdOptions.TenantId}/"; 
-            app = new ConfidentialClientApplication(_azureAdOptions.ClientId, authority, currentUri, credential, userTokenCache, null);
+            string currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, azureAdOptions.CallbackPath ?? string.Empty);
+            var credential = new ClientCredential(azureAdOptions.ClientSecret);
+            TokenCache userTokenCache = tokenCacheProvider.GetCache(httpContext, claimsPrincipal, authenticationProperties, signInScheme);
+            string authority = $"{azureAdOptions.Instance}{azureAdOptions.TenantId}/"; 
+            var app = new ConfidentialClientApplication(azureAdOptions.ClientId, authority, currentUri, credential, userTokenCache, null);
             return app;
         }
 
@@ -274,8 +275,8 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="scopes">Scopes for the downstream API to call</param>
         private async Task<string> GetAccessTokenOnBehalfOfUser(ConfidentialClientApplication application, ClaimsPrincipal claimsPrincipal, IEnumerable<string> scopes)
         {
-            var accountIdentifier = claimsPrincipal.GetMsalAccountId();
-            var loginHint = claimsPrincipal.GetLoginHint();
+            string accountIdentifier = claimsPrincipal.GetMsalAccountId();
+            string loginHint = claimsPrincipal.GetLoginHint();
             return await GetAccessTokenOnBehalfOfUser(application, accountIdentifier, scopes, loginHint);
         }
 
@@ -294,7 +295,7 @@ namespace Microsoft.AspNetCore.Authentication
                 throw new ArgumentNullException(nameof(scopes));
 
             // Get the account
-            var account = await application.GetAccountAsync(accountIdentifier);
+            IAccount account = await application.GetAccountAsync(accountIdentifier);
 
             // Special case for guest users as the Guest iod / tenant id are not surfaced.
             if (account == null)
@@ -303,20 +304,15 @@ namespace Microsoft.AspNetCore.Authentication
                 account = accounts.FirstOrDefault(a => a.Username == loginHint);
             }
 
-            AuthenticationResult result = null;
-            result = await application.AcquireTokenSilentAsync(scopes.Except(scopesRequestedByMsalNet), account);
+            AuthenticationResult result = await application.AcquireTokenSilentAsync(scopes.Except(scopesRequestedByMsalNet), account);
             return result.AccessToken;
         }
 
         /// <summary>
         /// Adds an account to the token cache from a JWT token and other parameters related to the token cache implementation
         /// </summary>
-        /// <param name="scopes"></param>
-        /// <param name="jwtToken"></param>
-        /// <param name="properties"></param>
-        /// <param name="principal"></param>
-        /// <param name="httpContext"></param>
-        private void AddAccountToCacheFromJwt(IEnumerable<string> scopes, JwtSecurityToken jwtToken, AuthenticationProperties properties, ClaimsPrincipal principal, HttpContext httpContext)
+        private void AddAccountToCacheFromJwt(IEnumerable<string> scopes, JwtSecurityToken jwtToken, 
+            AuthenticationProperties properties, ClaimsPrincipal principal, HttpContext httpContext)
         {
             try
             {
@@ -336,15 +332,13 @@ namespace Microsoft.AspNetCore.Authentication
                 var application = CreateApplication(httpContext, principal, properties, null);
 
                 // .Result to make sure that the cache is filled-in before the controller tries to get access tokens
-                var result = application.AcquireTokenOnBehalfOfAsync(scopes.Except(scopesRequestedByMsalNet), userAssertion).Result;
+                var result = application.AcquireTokenOnBehalfOfAsync(requestedScopes.Except(scopesRequestedByMsalNet), userAssertion).Result;
             }
             catch (MsalException ex)
             {
-                var message = ex.Message;
+                Debug.WriteLine(ex.Message);
                 throw;
             }
         }
-
-
     }
 }

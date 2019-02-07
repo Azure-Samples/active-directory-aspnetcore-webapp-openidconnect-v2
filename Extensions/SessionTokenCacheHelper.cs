@@ -8,7 +8,7 @@ using Microsoft.Identity.Client;
 namespace Microsoft.AspNetCore.Authentication
 {
     /// <summary>
-    /// Extension class enabling adding the CookieBasedTokenCache implentation service
+    /// Extension class enabling adding the CookieBasedTokenCache implementation service
     /// </summary>
     public static class SessionBasedTokenCacheExtension
     {
@@ -39,10 +39,9 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="authenticationProperties">Authentication properties</param>
         /// <param name="signInScheme">Sign-in scheme</param>
         /// <returns>A token cache to use in the application</returns>
-
         public TokenCache GetCache(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, AuthenticationProperties authenticationProperties, string signInScheme)
         {
-            var userId = claimsPrincipal.GetMsalAccountId();
+            string userId = claimsPrincipal.GetMsalAccountId();
             helper = new SessionTokenCacheHelper(userId, httpContext);
             return helper.GetMsalCacheInstance();
         }
@@ -50,12 +49,12 @@ namespace Microsoft.AspNetCore.Authentication
 
     public class SessionTokenCacheHelper
     {
-        private static ReaderWriterLockSlim SessionLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
-        string UserId = string.Empty;
-        string CacheId = string.Empty;
-        ISession session;
+        private static readonly ReaderWriterLockSlim SessionLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+        private string UserId;
+        private string CacheId;
+        private ISession session;
 
-        TokenCache cache = new TokenCache();
+        private TokenCache cache = new TokenCache();
 
         public SessionTokenCacheHelper(string userId, HttpContext httpcontext)
         {
@@ -107,7 +106,7 @@ namespace Microsoft.AspNetCore.Authentication
                 Debug.WriteLine($"INFO: Serializing session {session.Id}, cacheId {CacheId}");
 
                 // Reflect changes in the persistent store
-                var blob = cache.Serialize();
+                byte[] blob = cache.Serialize();
                 session.Set(CacheId, blob);
                 session.CommitAsync().Wait();
             }
@@ -128,10 +127,7 @@ namespace Microsoft.AspNetCore.Authentication
         void AfterAccessNotification(TokenCacheNotificationArgs args)
         {
             // if the access operation resulted in a cache update
-            if (args.HasStateChanged)
-            {
-                Persist();
-            }
+            if (args.HasStateChanged) Persist();
         }
     }
 }

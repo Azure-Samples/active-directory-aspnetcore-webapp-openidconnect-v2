@@ -109,7 +109,7 @@ namespace Microsoft.AspNetCore.Authentication
         {
             foreach (var property in message.GetType().GetProperties())
             {
-                var value = property.GetValue(message);
+                object value = property.GetValue(message);
                 if (value != null)
                 {
                     Debug.WriteLine($"   - {property.Name}={value}");

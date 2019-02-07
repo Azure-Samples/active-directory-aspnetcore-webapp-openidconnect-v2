@@ -36,13 +36,26 @@ namespace WebApp_OpenIDConnect_DotNet.Infrastructure
                 .AddAzureAD(options => configuration.Bind("AzureAd", options));
 
             // Token acquisition service and its cache implementation
-            services.AddTokenAcquisition()
+            services.WithOpenIdConnect()
+                    .AddTokenAcquisition()
                     .AddDistributedMemoryCache()
                     .AddInMemoryTokenCache()
                     /* you could use a cookie based token cache by reaplacing the last
                      * trew lines by : .AddCookie().AddCookieBasedTokenCache()  */
                     ;
 
+            services.AddMvc(options =>
+                {
+                    var policy = new AuthorizationPolicyBuilder()
+                        .RequireAuthenticatedUser()
+                        .Build();
+                    options.Filters.Add(new AuthorizeFilter(policy));
+                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+        }
+
+        public static IServiceCollection WithOpenIdConnect(this IServiceCollection services)
+        {
             services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
             {
                 options.Authority = options.Authority + "/v2.0/";
@@ -123,15 +136,7 @@ namespace WebApp_OpenIDConnect_DotNet.Infrastructure
                 // uncomment the following line of code
                 // OpenIdConnectMiddlewareDiagnostics.Subscribe(options.Events);
             });
-
-            services.AddMvc(options =>
-                {
-                    var policy = new AuthorizationPolicyBuilder()
-                        .RequireAuthenticatedUser()
-                        .Build();
-                    options.Filters.Add(new AuthorizeFilter(policy));
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            return services;
         }
     }
 }

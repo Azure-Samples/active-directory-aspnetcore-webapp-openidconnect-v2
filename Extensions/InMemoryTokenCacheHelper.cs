@@ -7,7 +7,7 @@ using Microsoft.Identity.Client;
 namespace Microsoft.AspNetCore.Authentication
 {
     /// <summary>
-    /// Extension class enabling adding the CookieBasedTokenCache implentation service
+    /// Extension class enabling adding the CookieBasedTokenCache implementation service
     /// </summary>
     public static class InMemoryTokenCacheExtension
     {
@@ -27,9 +27,9 @@ namespace Microsoft.AspNetCore.Authentication
     /// <summary>
     /// Provides an implementation of <see cref="ITokenCacheProvider"/> for a cookie based token cache implementation
     /// </summary>
-    class InMemoryTokenCacheProvider : ITokenCacheProvider
+    public class InMemoryTokenCacheProvider : ITokenCacheProvider
     {
-        InMemoryTokenCacheHelper helper;
+        private InMemoryTokenCacheHelper helper;
 
         /// <summary>
         /// Constructor
@@ -40,7 +40,7 @@ namespace Microsoft.AspNetCore.Authentication
             memoryCache = cache;
         }
 
-        IMemoryCache memoryCache;
+        private readonly IMemoryCache memoryCache;
 
         /// <summary>
         /// Get an MSAL.NET Token cache from the HttpContext, and possibly the AuthenticationProperties and Cookies sign-in scheme
@@ -52,20 +52,19 @@ namespace Microsoft.AspNetCore.Authentication
 
         public TokenCache GetCache(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, AuthenticationProperties authenticationProperties, string signInScheme)
         {
-            var userId = claimsPrincipal.GetMsalAccountId();
+            string userId = claimsPrincipal.GetMsalAccountId();
             helper = new InMemoryTokenCacheHelper(userId, httpContext, memoryCache);
             return helper.GetMsalCacheInstance();
         }
     }
 
     public class InMemoryTokenCacheHelper
-    {
-        readonly string UserId = string.Empty;
-        readonly string CacheId = string.Empty;
-        readonly IMemoryCache memoryCache;
+    { 
+        private readonly string UserId;
+        private readonly string CacheId;
+        private readonly IMemoryCache memoryCache;
 
-
-        readonly TokenCache cache = new TokenCache();
+        private readonly TokenCache cache = new TokenCache();
 
         public InMemoryTokenCacheHelper(string userId, HttpContext httpcontext, IMemoryCache aspnetInMemoryCache)
         {
@@ -97,19 +96,19 @@ namespace Microsoft.AspNetCore.Authentication
         public void Persist()
         {
             // Reflect changes in the persistent store
-            var blob = cache.Serialize();
+            byte[] blob = cache.Serialize();
             memoryCache.Set(CacheId, blob);
         }
 
         // Triggered right before MSAL needs to access the cache.
         // Reload the cache from the persistent store in case it changed since the last access.
-        void BeforeAccessNotification(TokenCacheNotificationArgs args)
+        private void BeforeAccessNotification(TokenCacheNotificationArgs args)
         {
             Load();
         }
 
         // Triggered right after MSAL accessed the cache.
-        void AfterAccessNotification(TokenCacheNotificationArgs args)
+        private void AfterAccessNotification(TokenCacheNotificationArgs args)
         {
                 Persist();
         }
