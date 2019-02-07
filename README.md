@@ -107,13 +107,13 @@ You can clone this sample from your shell or command line:
         string preferred_username = identity.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value;
         <ul class="nav navbar-nav navbar-right">
             <li class="navbar-text">Hello @preferred_username</li>
-            <li><a asp-area="" asp-controller="Account" asp-action="SignOut">Sign out</a></li>
+            <li><a asp-area="AzureAD" asp-controller="Account" asp-action="SignOut">Sign out</a></li>
         </ul>
     }
     else
     {
         <ul class="nav navbar-nav navbar-right">
-            <li><a asp-area="" asp-controller="Account" asp-action="Signin">Sign in</a></li>
+            <li><a asp-area="AzureAD" asp-controller="Account" asp-action="Signin">Sign in</a></li>
         </ul>
     }
     ```
