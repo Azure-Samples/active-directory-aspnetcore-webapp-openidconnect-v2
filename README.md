@@ -79,7 +79,9 @@ Using the NuGet package manager, reference Microsoft.Identity.Client.
 ### Add additional files to support token acquisition
 
 1. Add the `Extensions\ITokenAcquisition.cs`, `Extensions\TokenAcquisition.cs`. These files define a token acquisition service leveraging MSAL.NET, which is used in the existing application by dependency injection. It's there that you'll find the MSAL.NET code that will redeem the authorization code acquired by ASP.NET Core, in order to get a token to add it to the token cache. Then controllers will call another of its methods to acquire tokens for the signed-in user.
-1. Add the `Extensions\ITokenCacheHelpers.cs` file, as well as `Extensions\ITokenCacheHelpers.cs`. This file proposes a cache for MSAL.NET Confidential client application based on the session backed and in-memory-distributed cache (these terms are ASP.NET core concepts)
+1. Add the `Extensions\ITokenCacheProvider.cs` file, as well as `Extensions\SessionTokenCacheHelper.cs`. This file proposes a cache for MSAL.NET Confidential client application based on the session backed and in-memory-distributed cache (these terms are ASP.NET core concepts).
+1. Add `Extensions\ClaimsPrincipalExtension.cs` file, which contains several extension methods needed by the #1 and #2.
+1. Add `Extensions\AadIssuerValidator.cs` file, which will allow the later IssuerValidator setting to work without reference issues.
 
 ### Update the `Startup.cs` file to enable TokenAcquisition service
 
