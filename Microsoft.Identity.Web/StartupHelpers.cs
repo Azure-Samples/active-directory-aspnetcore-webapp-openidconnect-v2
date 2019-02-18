@@ -7,6 +7,7 @@ using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.Client;
 using Microsoft.Identity.Web.Resource;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,13 +16,16 @@ namespace Microsoft.Identity.Web
 {
     public static class StartupHelpers
     {
+       static string[] emptyScopes = new string[0];
+
         /// <summary>
-        /// Add authentication with Microsoft identity platform v2.0 (AAD v2.0)
+        /// Add authentication with Microsoft identity platform v2.0 (AAD v2.0).
+        /// This supposes that the configuration files have a section named "AzureAD"
         /// </summary>
         /// <param name="services">Service collection to which to add authentication</param>
         /// <param name="configuration">Configuration</param>
         /// <returns></returns>
-        public static IServiceCollection AadAzureAdV2Authentication(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddAzureAdV2Authentication(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
                 .AddAzureAD(options => configuration.Bind("AzureAd", options));
@@ -54,6 +58,7 @@ namespace Microsoft.Identity.Web
                     // Avoid displaying the select account dialog
                     context.ProtocolMessage.LoginHint = user.GetLoginHint();
                     context.ProtocolMessage.DomainHint = user.GetDomainHint();
+                    await Task.FromResult(0);
                 };
 
                 // Avoids having users being presented the select account dialog when they are already signed-in
@@ -95,7 +100,7 @@ namespace Microsoft.Identity.Web
         /// <param name="services">Service collection to which to add authentication</param>
         /// <param name="initialScopes">Initial scopes to request at sign-in</param>
         /// <returns></returns>
-        public static IServiceCollection WithMsal(this IServiceCollection services, IEnumerable<string> initialScopes)
+        public static IServiceCollection AddMsal(this IServiceCollection services, IEnumerable<string> initialScopes)
         {
             services.AddTokenAcquisition();
 

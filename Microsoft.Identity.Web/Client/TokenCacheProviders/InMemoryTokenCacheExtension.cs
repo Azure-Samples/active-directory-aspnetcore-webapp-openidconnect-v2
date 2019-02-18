@@ -15,6 +15,8 @@ namespace Microsoft.Identity.Web.Client
         /// <returns>the service collection</returns>
         public static IServiceCollection AddInMemoryTokenCache(this IServiceCollection services)
         {
+            services.AddDistributedMemoryCache();
+
             // Token acquisition service
             services.AddSingleton<ITokenCacheProvider, InMemoryTokenCacheProvider>();
             return services;

@@ -30,9 +30,8 @@ namespace WebApp_OpenIDConnect_DotNet.Infrastructure
         public static void InitializeAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             // Token acquisition service and its cache implementation
-            services.AadAzureAdV2Authentication(configuration)
-                    .WithMsal(new string[] { Constants.ScopeUserRead })
-                    .AddDistributedMemoryCache()
+            services.AddAzureAdV2Authentication(configuration)
+                    .AddMsal(new string[] { Constants.ScopeUserRead })
                     .AddInMemoryTokenCache()
                     /* you could use a cookie based token cache by reaplacing the last
                      * trew lines by : .AddCookie().AddCookieBasedTokenCache()  */
