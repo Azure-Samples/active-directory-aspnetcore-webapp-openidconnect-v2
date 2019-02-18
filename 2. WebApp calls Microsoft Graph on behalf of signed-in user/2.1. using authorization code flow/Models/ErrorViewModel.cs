@@ -1,5 +1,3 @@
-using System;
-
 namespace WebApp_OpenIDConnect_DotNet.Models
 {
     public class ErrorViewModel

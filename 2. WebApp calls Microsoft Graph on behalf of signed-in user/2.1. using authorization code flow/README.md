@@ -74,7 +74,7 @@ Starting from the [previous tutorial](https://github.com/Azure-Samples/active-di
 
 ### Add a NuGet package reference to Microsoft.Identity.Client
 
-Using the NuGet package manager, reference Microsoft.Identity.Client (which is still in preview, so check "include preview" box)
+Using the NuGet package manager, reference Microsoft.Identity.Client.
 
 ### Add additional files to support token acquisition
 

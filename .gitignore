@@ -1,0 +1,11 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/2. WebApp calls Microsoft Graph on behalf of signed-in user/2.1. using authorization code flow/.vs/WebApp-OpenIDConnect-DotNet/v15
+/2. WebApp calls Microsoft Graph on behalf of signed-in user/2.1. using authorization code flow/bin/Debug/netcoreapp2.1
+/2. WebApp calls Microsoft Graph on behalf of signed-in user/2.1. using authorization code flow/obj
+/Microsoft.Identity.Web/bin/Debug
+/Microsoft.Identity.Web/obj
+/obj
