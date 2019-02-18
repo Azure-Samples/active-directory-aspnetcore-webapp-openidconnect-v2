@@ -10,3 +10,6 @@
 /Microsoft.Identity.Web/obj
 /obj
 /2. WebApp calls Microsoft Graph on behalf of signed-in user/2.1. using authorization code flow/.vs/config
+/1. WebApp signs-in users with Azure AD (OIDC)/1.3. WebApp signs-in work and school or personal accounts/.vs
+/1. WebApp signs-in users with Azure AD (OIDC)/1.3. WebApp signs-in work and school or personal accounts/bin/Debug/netcoreapp2.1
+/1. WebApp signs-in users with Azure AD (OIDC)/1.3. WebApp signs-in work and school or personal accounts/obj
