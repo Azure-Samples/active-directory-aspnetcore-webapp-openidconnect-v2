@@ -1,0 +1,63 @@
+{
+  "Sample": {
+    "Title": "An ASP.NET Core 2.x Web App which lets sign-in users with work and school or Microsoft personal accounts (and calls Microsoft Graph)",
+    "Level": 200,
+    "Client": "ASP.NET Core 2.x Web App",
+    "Service": "Microsoft Graph",
+    "RepositoryUrl": "active-directory-aspnetcore-webapp-openidconnect-v2",
+    "Endpoint": "AAD v2.0"
+  },
+
+  /*
+    This section describes the Azure AD Applications to configure, and their dependencies
+  */
+  "AADApps": [
+    {
+      "Id": "webApp",
+      "Name": "WebApp",
+      "Kind": "WebApp",
+      "HomePage": "https://localhost:44321/",
+      "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc",
+      "LogoutUrl": "https://localhost:44321/signout-oidc",
+      "PasswordCredentials": "Auto",
+      "RequiredResourcesAccess": [
+        {
+          "Resource": "Microsoft Graph",
+          "DelegatedPermissions": [ "User.Read" ]
+        }
+      ]
+    }
+  ],
+
+  /*
+    This section describes how to update the code in configuration files from the apps coordinates, once the apps
+    are created in Azure AD.
+    Each section describes a configuration file, for one of the apps, it's type (XML, JSon, plain text), its location
+    with respect to the root of the sample, and the mappping (which string in the config file is mapped to which value
+  */
+  "CodeConfiguration": [
+    {
+      "App": "webApp",
+      "SettingKind": "JSon",
+      "SettingFile": "\\..\\active-directory-aspnetcore-webapp-openidconnect-v2\\appsettings.json",
+      "Mappings": [
+        {
+          "key": "ClientId",
+          "value": ".AppId"
+        },
+        {
+          "key": "TenantId",
+          "value": "$tenantId"
+        },
+        {
+          "key": "Domain",
+          "value": "$tenantName"
+        },
+        {
+          "key": "TenantId",
+          "value": ".AppKey"
+        }
+      ]
+    }
+  ]
+}

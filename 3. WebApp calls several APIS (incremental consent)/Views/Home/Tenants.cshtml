@@ -1,0 +1,22 @@
+﻿@using System
+@using System.Collections.Generic
+@{
+    ViewData["Title"] = "Tenants";
+    IEnumerable<string> tenants = ViewData["tenants"] as IEnumerable<string>;
+}
+<h2>@ViewData["Title"]</h2>
+<h3>@ViewData["Message"]</h3>
+
+<table class="table table-striped table-condensed" style="font-family: monospace">
+    <tr>
+        <th>Tenant name</th>
+    </tr>
+
+    @foreach(string tenant in tenants)
+    {
+    <tr>
+        <td>@tenant</td>
+
+    </tr>
+    }
+</table>
