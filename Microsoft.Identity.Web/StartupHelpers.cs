@@ -40,7 +40,7 @@ namespace Microsoft.Identity.Web
                 // If you want to restrict the users that can sign-in to only one tenant
                 // set the tenant value in the appsettings.json file to the tenant ID 
                 // or domain of this organization
-                options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.ValidateAadIssuer;
+                options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.ForAadInstance(options.Authority).ValidateAadIssuer;
 
                 // If you want to restrict the users that can sign-in to several organizations
                 // Set the tenant value in the appsettings.json file to 'organizations', and add the

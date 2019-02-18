@@ -9,3 +9,4 @@
 /Microsoft.Identity.Web/bin/Debug
 /Microsoft.Identity.Web/obj
 /obj
+/2. WebApp calls Microsoft Graph on behalf of signed-in user/2.1. using authorization code flow/.vs/config
