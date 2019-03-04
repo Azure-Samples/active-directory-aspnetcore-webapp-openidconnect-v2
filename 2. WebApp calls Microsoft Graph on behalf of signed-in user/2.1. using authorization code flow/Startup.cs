@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -33,15 +31,15 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            // Add Graph
-            services.AddGraphService(Configuration);
-
-            // Token acquisition service and its cache implementation
+            // Token acquisition service based on MSAL.NET 
+            // and chosen token cache implementation
             services.AddAzureAdV2Authentication(Configuration)
                 .AddMsal(new string[] { Constants.ScopeUserRead })
                 .AddInMemoryTokenCache()
                     ;
 
+            // Add Graph
+            services.AddGraphService(Configuration);
 
             services.AddMvc(options =>
             {
