@@ -15,33 +15,37 @@ endpoint: AAD v2.0
 
 In this tutorial, you will learn, incrementally, how to add sign-in users to your Web App, and how to call Web APIs, either from Microsoft or your own. Finally, you'll learn best practices and how to deploy your app to Azure
 
-1. The first phase is to add sign-in to your Web App leveraging the Microsoft identity platform for developers (fomerly Azure AD v2.0). You'll learn how to use  the ASP.NET Core OpenID Connect middleware itself leveraging Microsoft Identity Model extensions for .NET to protect your Web App.
+1. The first phase is to [add sign-in to your Web App](1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)) leveraging the Microsoft identity platform for developers (fomerly Azure AD v2.0). You'll learn how to use  the ASP.NET Core OpenID Connect (OIDC) middleware itself leveraging [Microsoft Identity Model extensions for .NET](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki) to protect your Web App.
 
    ![Web apps signs-in users](./ReadmeFiles/Web-app-signs-in-users.svg)
 
    Depending on your business needs, you have the flexibility to decide which audience to sign-in to your application:
-   1. If you are a Line of business developer, you'll want to sign-in users in your organization.
-   1. If you are an ISV, you'll want to sign-in users in any organizations.
-   1. If you are an ISV targetting both organizations and individuals, you'll want to sign-in users with their work and school accounts or Microsoft personal accounts.
-   1. Whatever the audience you target, you can also write your application to work in national and sovereign clouds.
-   1. You might also want to sign-in users with their social identities using Microsoft Azure AD B2C.
-   1. Finally, you'll want to let users sign-out of our application
+   1. If you are a Line of business developer, you'll want to [sign-in users in your organization](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.2.%20in%20myy%20org).
+   1. If you are an ISV, you'll want to [sign-in users in any organization](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.2.%20in%20any%20org).
+   1. If you are an ISV targetting both organizations and individuals, you'll want to [sign-in users with their work and school accounts or Microsoft personal accounts](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.3.%20with%20work%20and%20school%20or%20personal%20accounts
+).
+   1. Whatever the audience you target, you can also ensure that your application signs-in users in [national and sovereign clouds](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.4.%20in%20national%20and%20sovereign%20clouds
+).
+   1. You might also want to [sign-in users with their social identities](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.5.%20with%20social%20identities%20(B2C)
+) using Microsoft Azure AD B2C.
+   1. Finally, you'll want to let users [sign-out](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.6.%20and%20lets%20them%20sign-out) of our application
 
 2. Your Web App might maintain its own resources (in that case you have all you need so far), but it could also be that it calls Microsoft APIs.
 
    ![Web apps calls Microsoft Graph](./ReadmeFiles/Web-app-calls-Microsoft-Graph.svg)
 
-   Learn how to call Microsoft Graph:
+   Learn how to update your Web App to [call Microsoft Graph](2.%20WebApp%20calls%20Microsoft%20Graph%20on%20behalf%20of%20signed-in%20user):
 
-   1. Using the authorization code flow, initiated by ASP.NET Core, but completed by Microsoft Authentication Library for .NET (MSAL.NET)
+   1. Using the [authorization code flow](2.%20WebApp%20calls%20Microsoft%20Graph%20on%20behalf%20of%20signed-in%20user/2.1.%20using%20authorization%20code%20flow
+)), initiated by ASP.NET Core, but completed by Microsoft Authentication Library for .NET (MSAL.NET)
    2. Learn how to customize the token cache serialization with different technologies depending on your needs (in memory cache, Session token cache, SQL Cache, Redis Cache)
    3. Learn the best practices and practices to avoid.
 
-3. Your Web App might also want to call other resources than Microsoft Graph.
+3. Your Web App might also want to call other Web APIs than Microsoft Graph.
 
    ![Web apps calls Microsoft APIs](./ReadmeFiles/web-app-calls-microsoft-apis.svg)
 
-   Learn how to call:
+   Learn how to [call several Microsoft APIS](./3.%20WebApp%20calls%20several%20APIS%20(incremental%20consent%20and%20CA)):
 
    1. the Azure Storage API. This is the opportunity to learn about incremental consent, and conditional access, and how to process them.
    2. the Azure ARM API. This is the opportunity to learn about admin consent.
@@ -60,7 +64,9 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
    1. Using certificates
    2. Using Managed identity
 
-Part of this tutorial, the complexities of ASP.NET Core OpenID connect middleware and MSAL.NET are encapsulated into a library project that you can reuse in your own code, to make it easier to build your Web Apps on top of Microsoft identity platform for developers: [Microsoft.Identity.Web](Microsoft.Identity.Web)
+### Reusable code for your Web Apps
+
+In this tutorial, the complexities of ASP.NET Core OpenID connect middleware and MSAL.NET are encapsulated into a library project that you can reuse in your own code, to make it easier to build your Web Apps on top of Microsoft identity platform for developers: [Microsoft.Identity.Web](Microsoft.Identity.Web)
 
 ### Out of scope
 
