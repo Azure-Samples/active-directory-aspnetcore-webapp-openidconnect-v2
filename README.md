@@ -20,7 +20,7 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
    ![Web apps signs-in users](./ReadmeFiles/Web-app-signs-in-users.svg)
 
    Depending on your business needs, you have the flexibility to decide which audience to sign-in to your application:
-   1. If you are a Line of business developer, you'll want to [sign-in users in your organization](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.2.%20in%20myy%20org).
+   1. If you are a Line of business developer, you'll want to [sign-in users in your organization](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.1.%20in%20my%20org).
    1. If you are an ISV, you'll want to [sign-in users in any organization](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.2.%20in%20any%20org).
    1. If you are an ISV targetting both organizations and individuals, you'll want to [sign-in users with their work and school accounts or Microsoft personal accounts](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.3.%20with%20work%20and%20school%20or%20personal%20accounts
 ).
@@ -36,10 +36,10 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
 
    Learn how to update your Web App to [call Microsoft Graph](2.%20WebApp%20calls%20Microsoft%20Graph%20on%20behalf%20of%20signed-in%20user):
 
-   1. Using the [authorization code flow](2.%20WebApp%20calls%20Microsoft%20Graph%20on%20behalf%20of%20signed-in%20user/2.1.%20using%20authorization%20code%20flow
-)), initiated by ASP.NET Core, but completed by Microsoft Authentication Library for .NET (MSAL.NET)
-   2. Learn how to customize the token cache serialization with different technologies depending on your needs (in memory cache, Session token cache, SQL Cache, Redis Cache)
-   3. Learn the best practices and practices to avoid.
+   1. Using the [authorization code flow](2.%20WebApp%20calls%20Microsoft%20Graph%20on%20behalf%20of%20signed-in%20user/2.1.%20using%20authorization%20code%20flow), initiated by ASP.NET Core, but completed by Microsoft Authentication Library for .NET (MSAL.NET)
+   2. Learn how to [customize the token cache serialization](2.%20WebApp%20calls%20Microsoft%20Graph%20on%20behalf%20of%20signed-in%20user/2.2.%20token%20cache%20serialization)
+) with different technologies depending on your needs (in memory cache, Session token cache, SQL Cache, Redis Cache)
+   3. Learn the [best practices and practices to avoid](./2.%20WebApp%20calls%20Microsoft%20Graph%20on%20behalf%20of%20signed-in%20user/2.3.%20best%20practices%20and%20practices%20to%20avoid) when calling an API.
 
 3. Your Web App might also want to call other Web APIs than Microsoft Graph.
 
@@ -54,23 +54,24 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
 
    ![Web apps calls Microsoft APIs](./ReadmeFiles/web-app-calls-your-api.svg)
 
-5. [Planned] Once you know how to sign-in users and call Web APIs from your Web App, you might want to restrict part of the application depending on the user having a role in the application or belonging to a group. Learn how to process authorization in your application:
+5. [Planned] Once you know how to sign-in users and call Web APIs from your Web App, you might want to restrict part of the application depending on the user having a role in the application or belonging to a group. So far you've learnt how to add and process authentication. Now learn how to [add authorization to your Web application](/5.%20Adding%20authorization%20(roles%20and%20groups)):
 
    1. with application roles
    2. with Azure AD groups.
 
-6. [Planned] Chances are that you want to deploy your complete app to Azure. Learn how to do that, applying best practices:
+6. [Planned] Chances are that you want to [deploy your complete app to Azure](./6.%20Deploy%20your%20full%20app%20to%20azure%20-%20best%20practices). Learn how to do that, applying best practices:
 
-   1. Using certificates
-   2. Using Managed identity
+   1. Changing the app registration to add more ReplyUris
+   2. Using certificates instead of client secrets
+   3. Possibly leveraging Managed identities to get these certificates from KeyVault
 
-### Reusable code for your Web Apps
+### Reusable code for your Web Apps and Web APIs
 
 In this tutorial, the complexities of ASP.NET Core OpenID connect middleware and MSAL.NET are encapsulated into a library project that you can reuse in your own code, to make it easier to build your Web Apps on top of Microsoft identity platform for developers: [Microsoft.Identity.Web](Microsoft.Identity.Web)
 
-### Out of scope
+### Daemon apps  - Out of scope
 
-This tutorial only covers the case the Web App calls a Web API on behalf of a user. If you are interested in Web Apps calling Web APIs with their own identity (daemon Web Apps), please see []()
+This tutorial only covers the case the Web App calls a Web API on behalf of a user. If you are interested in Web Apps calling Web APIs with their own identity (daemon Web Apps), please see [Build a daemon Web App with Microsoft Identity platform for developers](https://github.com/Azure-Samples/active-directory-dotnet-daemon-v2)
 
 ## How to run this sample
 
