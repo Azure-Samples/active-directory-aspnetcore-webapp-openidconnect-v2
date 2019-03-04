@@ -1,4 +1,4 @@
-﻿namespace WebApp_OpenIDConnect_DotNet.Services
+﻿namespace WebApp_OpenIDConnect_DotNet.Services.Arm
 {
     /// <summary>
     /// Result of Arm List tenant. We are only interested in Arm tenants

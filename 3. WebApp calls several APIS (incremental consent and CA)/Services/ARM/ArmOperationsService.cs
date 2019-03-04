@@ -1,16 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using WebApp_OpenIDConnect_DotNet.Infrastructure;
-using WebApp_OpenIDConnect_DotNet.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
 
-namespace WebApp_OpenIDConnect_DotNet.Services
+namespace WebApp_OpenIDConnect_DotNet.Services.Arm
 {
     public class ArmApiOperationService : IArmOperations
     {

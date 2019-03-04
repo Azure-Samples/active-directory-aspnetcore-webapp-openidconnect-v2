@@ -1,20 +1,23 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web.Client;
+using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Blob;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
-using WebApp_OpenIDConnect_DotNet.Interfaces;
 using WebApp_OpenIDConnect_DotNet.Models;
-using WebApp_OpenIDConnect_DotNet.Services;
+using WebApp_OpenIDConnect_DotNet.Services.Arm;
+using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
-        private readonly ITokenAcquisition   tokenAcquisition;
+        readonly ITokenAcquisition tokenAcquisition;
         private readonly IGraphApiOperations graphApiOperations;
         private readonly IArmOperations armOperations;
 
@@ -53,12 +56,34 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         public async Task<IActionResult> Tenants()
         {
             var accessToken =
-                await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new[] { $"{ArmApiOperationService.ArmResource}.default" });
+                await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new[] { $"{ArmApiOperationService.ArmResource}/user_impersonation" });
 
             var tenantIds = await armOperations.EnumerateTenantsIdsAccessibleByUser(accessToken);
 
             ViewData["tenants"] = new List<string>(tenantIds);
 
+            return View();
+        }
+		
+		[MsalUiRequiredExceptionFilter(Scopes = new[] { "https://storage.azure.com/user_impersonation" })]
+
+        public async Task<IActionResult> Blob()
+        {
+            var scopes = new string[] { "https://storage.azure.com/user_impersonation" };
+
+            var accessToken =
+                await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, scopes);
+
+            // create a blob on behalf of the user
+            TokenCredential tokenCredential = new TokenCredential(accessToken);
+            StorageCredentials storageCredentials = new StorageCredentials(tokenCredential);
+
+            // replace the URL below with your storage account URL
+            Uri blobUri = new Uri("https://blobstorageazuread.blob.core.windows.net/sample-container/Blob1.txt");
+            CloudBlockBlob blob = new CloudBlockBlob(blobUri, storageCredentials);
+            await blob.UploadTextAsync("Blob created by Azure AD authenticated user.");
+
+            ViewData["Message"] = "Blob successfully created";
             return View();
         }
 

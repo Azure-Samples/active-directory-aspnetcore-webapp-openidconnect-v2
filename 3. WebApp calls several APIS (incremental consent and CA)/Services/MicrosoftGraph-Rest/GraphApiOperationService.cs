@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
-using WebApp_OpenIDConnect_DotNet.Interfaces;
 
-namespace WebApp_OpenIDConnect_DotNet.Services
+namespace WebApp_OpenIDConnect_DotNet.Services.GraphOperations
 {
     public class GraphApiOperationService : IGraphApiOperations
     {
