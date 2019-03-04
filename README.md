@@ -7,7 +7,7 @@ client: ASP.NET Core .Web App
 service: Microsoft Graph, Azure Storage, ASP.NET Core Web API
 endpoint: AAD v2.0
 ---
-# Tutorial - Enable your Web Apps to sign-in users and calls APIs with the Microsoft identity platform for developers
+# Tutorial - Enable your Web Apps to sign-in users and call APIs with the Microsoft identity platform for developers
 
 ## About this tutorial
 
