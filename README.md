@@ -20,15 +20,12 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
    ![Web apps signs-in users](./ReadmeFiles/Web-app-signs-in-users.svg)
 
    Depending on your business needs, you have the flexibility to decide which audience to sign-in to your application:
-   1. If you are a Line of business developer, you'll want to [sign-in users in your organization](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.1.%20in%20my%20org).
-   1. If you are an ISV, you'll want to [sign-in users in any organization](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.2.%20in%20any%20org).
-   1. If you are an ISV targetting both organizations and individuals, you'll want to [sign-in users with their work and school accounts or Microsoft personal accounts](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.3.%20with%20work%20and%20school%20or%20personal%20accounts
-).
-   1. Whatever the audience you target, you can also ensure that your application signs-in users in [national and sovereign clouds](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.4.%20in%20national%20and%20sovereign%20clouds
-).
-   1. You might also want to [sign-in users with their social identities](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.5.%20with%20social%20identities%20(B2C)
-) using Microsoft Azure AD B2C.
-   1. Finally, you'll want to let users [sign-out](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.6.%20and%20lets%20them%20sign-out) of our application
+   1. If you are a Line of Business developer, you'll want to [sign-in users in your organization](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.1.%20in%20my%20org) with their work or school accounts.
+   1. If you are an ISV, you'll want to [sign-in users in any organization](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.2.%20in%20any%20org), still  with their work or school accounts.
+   1. If you are an ISV targetting both organizations and individuals, you'll want to [sign-in users with their work and school accounts or Microsoft personal accounts](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.3.%20with%20work%20and%20school%20or%20personal%20accounts).
+   1. If you target organizations (work or school accounts), you can also enable your application to sign-in users in [national and sovereign clouds](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.4.%20in%20national%20and%20sovereign%20clouds).
+   1. If you are a business wanting to connect with your customers, or with small business partners, you might also want to [sign-in users with their social identities](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.5.%20with%20social%20identities%20(B2C)) using Microsoft Azure AD B2C.
+   1. Finally, you'll want to let users [sign-out](./1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.6.%20and%20lets%20them%20sign-out) of our application, or globally of the browser.
 
 2. Your Web App might maintain its own resources (in that case you have all you need so far), but it could also be that it calls Microsoft APIs.
 
