@@ -2,232 +2,208 @@
 services: active-directory
 platforms: dotnet
 author: jmprieur
-level: 200
-client: ASP.NET Core 2.x Web App
-service: Microsoft Graph
+level: 100
+service: ASP.NET Core Web App
 endpoint: AAD v2.0
 ---
-# Integrating Azure AD V2 into an ASP.NET Core web app and calling the Microsoft Graph API on behalf of the user
+# Bulid an ASP.NET Core Web app signing-in users with the Microsoft identity platform
 
-> This sample is for ASP.NET Core 2.1
-> A previous version for ASP.NET 2.0 is available from the [aspnetcore2-1](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-1) branch
+> This sample is for Azure AD, not Azure AD B2C. See [active-directory-b2c-dotnetcore-webapp](https://github.com/Azure-Samples/active-directory-b2c-dotnetcore-webapp), until we incorporate the B2C variation in the tutorial.
 
 ![Build badge](https://identitydivision.visualstudio.com/_apis/public/build/definitions/a7934fdd-dcde-4492-a406-7fad6ac00e17/514/badge)
 
 ## Scenario
 
-This sample shows how to build a .NET Core 2.1 MVC Web app that uses OpenID Connect to sign in users. Users can use personal accounts (including outlook.com, live.com, and others) as well as work and school accounts from any company or organization that has integrated with Azure Active Directory. It leverages the ASP.NET Core OpenID Connect middleware.
+This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users. Users can use personal accounts (including outlook.com, live.com, and others) as well as work and school accounts from any company or organization that has integrated with Azure Active Directory. It leverages the ASP.NET Core OpenID Connect middleware.
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
 
-<!-- Activate when the signInAndCallMsGraph branch is ready
-> This is the first of a set of tutorials. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, learn how to enable you [Web App to call a Web API in the name of the user](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/signInAndCallMsGraph)
--->
+> This is the first phase of a set of tutorials. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, can can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2.%20WebApp%20calls%20Microsoft%20Graph%20on%20behalf%20of%20signed-in%20user)
 
 ## How to run this sample
 
 To run this sample:
 
-> Pre-requisites: go through how to run [this sample from the aspnetcore2-2 branch](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2
-). This page shows the incremental change required to call the Microsoft Graph API on behalf of a user that has successfully signed in to the web app.
+> Pre-requisites: Install .NET Core 2.1 or later (for example for Windows) by following the instructions at [.NET and C# - Get Started in 10 Minutes](https://www.microsoft.com/net/core). In addition to developing on Windows, you can develop on [Linux](https://www.microsoft.com/net/core#linuxredhat), [Mac](https://www.microsoft.com/net/core#macos), or [Docker](https://www.microsoft.com/net/core#dockercmd).
 
 ### Step 1: Register the sample with your Azure AD tenant
 
-You first need to have [registered](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2#step-1-register-the-sample-with-your-azure-ad-tenant) your app as described in [the first tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2)
+#### Choose the Azure AD tenant where you want to create your applications
 
-Then here are the extra steps:
+1. Sign in to the [Azure portal](https://portal.azure.com) using either a work or school account or a personal Microsoft account.
+1. If your account gives you access to more than one tenant, select your account in the top right corner, and set your portal session to the desired Azure AD tenant
+   (using **Switch Directory**).
 
-1. From the **Certificates & secrets** page, for your app registration, in the **Client secrets** section, choose **New client secret**:
+#### Register your app
 
-   - Type a key description (of instance `app secret`),
-   - Select a key duration of either **In 1 year**, **In 2 years**, or **Never Expires**.
-   - When you press the **Add** button, the key value will be displayed, copy, and save the value in a safe location.
-   - You'll need this key later to configure the project in Visual Studio. This key value will not be displayed again, nor retrievable by any other means.
-1. In the list of pages for the app, select **API permissions**, and notice that a delegated permission is set by default to Microsoft Graph for the scope **User.Read**
+1. In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations (Preview)**.
+1. In **App registrations (Preview)** page, select **New registration**.
+1. When the **Register an application page** appears, enter your application's registration information:
+   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp`.
+   - In the **Supported account types** section, select **Accounts in any organizational directory and personal Microsoft accounts (e.g. Skype, Xbox, Outlook.com)**.
+   - In the Redirect URI (optional) section, select **Web** in the combo-box.
+   - For the *Redirect URI*, enter the base URL for the sample. By default, this sample uses `https://localhost:44321/`.
+   - Select **Register** to create the application.
+1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the Visual Studio configuration file for this project.
+1. In the list of pages for the app, select **Authentication**.
+   - In the **Redirect URIs**, add a redirect URL of type Web and valued  `https://localhost:44321/signin-oidc`
+   - In the **Advanced settings** section set **Logout URL** to `https://localhost:44321/signout-oidc`
+   - In the **Advanced settings** | **Implicit grant** section, check **ID tokens** as this sample requires the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to sign-in the user.
+   - Select **Save**.
+
+> Note that unless the Web App calls a Web API no certificate or secret is needed.
 
 ### Step 2: Download/ Clone this sample code or build the application using a template
+
+This sample was created from the dotnet core 2.2 [dotnet new mvc](https://docs.microsoft.com/dotnet/core/tools/dotnet-new?tabs=netcore2x) template with `SingleOrg` authentication, and then tweaked to let it support tokens for the Azure AD V2 endpoint. You can clone/download this repository or create the sample from the command line:
+
+#### Option 1: Download/ clone this sample
 
 You can clone this sample from your shell or command line:
 
   ```console
-  git clone https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2
-  git checkout aspnetcore2-2-signInAndCallGraph
+git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial webapp
+cd webapp
+cd ""
   ```
 
-  In the appsettings.json file, replace:
+> Given that the name of the sample is pretty long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
-- the `ClientID` value with the *Application ID* from the application you registered in Application Registration portal,
-- the `TenantId` by `common`,
-- and the `ClientSecret` by the client secret you generated in Step 1.
+  In the **appsettings.json** file:
+  
+  - replace the `ClientID` value with the *Application ID* from the application you registered in Application Registration portal on *Step 1*.
+  - replace the `TenantId` value with `common`
+
+#### Option 2: Create the sample from the command line
+
+1. Run the following command to create a sample from the command line using the `SingleOrg` template:
+    ```console
+    dotnet new mvc --auth SingleOrg --client-id <Enter_the_Application_Id_here> --tenant-id common
+    ```
+
+    > Note: Replace *`Enter_the_Application_Id_here`* with the *Application Id* from the application Id you just registered in the Application Registration Portal.
+
+2. Open the **Startup.cs** file and in the `ConfigureServices` method, replace the following lines:
+
+   ```CSharp
+       services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
+               .AddAzureAD(options => Configuration.Bind("AzureAd", options));
+   ```
+
+   by this line:
+
+   ```CSharp
+   services.AddAzureAdV2Authentication(Configuration);
+   ```
+
+   This enables your application to use the Microsoft identity platform (fomerly Azure AD v2.0) endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
+
+3. Modify `Views\Shared\_LoginPartial.cshtml` to have the following content:
+
+    ```CSharp
+    @using System.Security.Claims
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        var identity = User.Identity as ClaimsIdentity; // Azure AD V2 endpoint specific
+        string preferred_username = identity.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value;
+        <ul class="nav navbar-nav navbar-right">
+            <li class="navbar-text">Hello @preferred_username</li>
+            <li><a asp-area="AzureAD" asp-controller="Account" asp-action="SignOut">Sign out</a></li>
+        </ul>
+    }
+    else
+    {
+        <ul class="nav navbar-nav navbar-right">
+            <li><a asp-area="AzureAD" asp-controller="Account" asp-action="Signin">Sign in</a></li>
+        </ul>
+    }
+    ```
+
+    > Note: This change is needed because certain token claims from Azure AD V1 endpoint (on which the original .NET core template is based) are different than Azure AD V2 endpoint. For more details see [ID Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens) and [Access Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens)
 
 ### Step 3: Run the sample
 
 1. Build the solution and run it.
 
-2. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Azure AD v2 endpoint. Sign in with your personal account or with a work or school account.
+2. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. The app immediately attempts to authenticate you via the Azure AD v2 endpoint. Sign in with your personal account or with work or school account.
 
-3. Go to the Contacts page, you should now see all kind of information about yourself (a call was made to the Microsoft Graph *me* endpoint)
+## Optional: Restrict sign-in access to your application
+
+By default, when you use the dotnet core template with `SingleOrg` authentication option and follow the instructions in this guide to configure the application to use the Azure Active Directory v2.0 endpoint, both personal accounts - like outlook.com, live.com, and others - as well as Work or school accounts from any organizations that are integrated with Azure AD can sign in to your application. These multi-tenant apps are typically used on SaaS applications.
+
+To restrict accounts types that can sign in to your application, use one of the options:
+
+### Option 1: Restrict access to only Work and School accounts
+
+Open **appsettings.json** and replace the line containing the `TenantId` value with `organizations`:
+
+```json
+"TenantId": "organizations",
+```
+
+### Option 2: Restrict access to only Microsoft personal accounts
+
+Open **appsettings.json** and replace the line containing the `TenantId` value with `consumers`:
+
+```json
+"TenantId": "consumers",
+```
+
+### Option 3: Restrict access to a single organization (single-tenant)
+
+You can restrict sign-in access for your application to only user accounts that are in a single Azure AD tenant - including *guest accounts* of that tenant. This scenario is a common for *line-of-business applications*:
+
+1. Open **appsettings.json** and replace the line containing the `TenantId` value with the domain of your tenant, for example, *contoso.onmicrosoft.com* or the guid for the Tenant ID:
+
+   ```json
+   "TenantId": "[Enter the domain of your tenant, e.g. contoso.onmicrosoft.com or the Tenant Id]",
+   ```
+
+### Option 4: Restrict access to a list of organizations
+
+You can restrict sign-in access to only user accounts that are in a specific list of Azure AD organizations:
+
+1. In your **Startup.cs** file, set the `ValidateIssuer` argument to **`true`**
+2. Add a `ValidIssuers` `TokenValidationParameters` parameter containing the list of allowed organizations.
+
+### Option 5: Use a custom method to validate issuers
+
+You can implement a custom method to validate issuers by using the **IssuerValidator** parameter. For more information about how to use this parameter, read about [Validating Tokens](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki/ValidatingTokens).
 
 ## About The code
 
-Starting from the [previous tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2), the code was incrementally updated by following these steps:
+This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Azure AD tenant. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Azure AD tenant where the app is registered. These values are  read from the `appsettings.json` file. The middleware takes care of:
 
-### Add a NuGet package reference to Microsoft.Identity.Client
+- Downloading the Azure AD metadata, finding the signing keys, and finding the issuer name for the tenant.
+- Processing OpenID Connect sign-in responses by validating the signature and issuer in an incoming JWT, extracting the user's claims, and putting the claims in `ClaimsPrincipal.Current`.
+- Integrating with the session cookie ASP.NET Core middleware to establish a session for the user.
 
-Using the NuGet package manager, reference Microsoft.Identity.Client.
+You can trigger the middleware to send an OpenID Connect sign-in request by decorating a class or method with the `[Authorize]` attribute or by issuing a challenge (see the `AccountController.cs` file):
 
-### Add additional files to support token acquisition
+The middleware in this project is created as a part of the open-source [ASP.NET Core Security](https://github.com/aspnet/aspnetcore) project.
 
-1. Add the `Extensions\ITokenAcquisition.cs`, `Extensions\TokenAcquisition.cs`. These files define a token acquisition service leveraging MSAL.NET, which is used in the existing application by dependency injection. It's there that you'll find the MSAL.NET code that will redeem the authorization code acquired by ASP.NET Core, in order to get a token to add it to the token cache. Then controllers will call another of its methods to acquire tokens for the signed-in user.
-1. Add the `Extensions\ITokenCacheHelpers.cs` file, as well as `Extensions\ITokenCacheHelpers.cs`. This file proposes a cache for MSAL.NET Confidential client application based on the session backed and in-memory-distributed cache (these terms are ASP.NET core concepts)
+## Next steps
 
-### Update the `Startup.cs` file to enable TokenAcquisition service
-
-In the `Startup.cs` file, in the `ConfigureServices(IServiceCollection services)` method:
-
-#### Enable a session cache
-
-After the following lines in the ConfigureServices(IServiceCollection services) method
-
-```CSharp
-services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
-   .AddAzureAD(options => Configuration.Bind("AzureAd", options));
-```
-
-add the following lines to enable:
-
-- the MSAL.NET token acquisition service (`AddTokenAcquisition`)
-- based on a session cache (the three other lines)
-
-```CSharp
-services.AddTokenAcquisition()
-    .AddDistributedMemoryCache()
-    .AddSession()
-    .AddSessionBasedTokenCache()
-```
-
-this last line adds a token acquisition service that leverages MSAL.NET to acquire tokens.
-
-#### Hook-up to the `OnAuthorizationCodeReceived` event to populate the token cache with a token for the user
-
-Once the user has signed-in, the ASP.NET middleware provides the Web App with the ability to be notified of events such as the fact that an authorization code was received. The following code hooks-up to the `OnAuthorizationCodeReceived` event in order to redeem the code itself and therefore acquire a token, which then will be cached so that it can be used later in the application (in particular in the controllers). To enable this code redemption, after the following line:
-
-```CSharp
-options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.ValidateAadIssuer
-```
-
-insert:
-
-```CSharp
- // Response type
- options.ResponseType = "id_token code";
- options.Scope.Add("offline_access");
- options.Scope.Add("User.Read");
-
- // Handling the auth code
- var handler = options.Events.OnAuthorizationCodeReceived;
- options.Events.OnAuthorizationCodeReceived = async context =>
- {
-  var _tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
-  await _tokenAcquisition.AddAccountToCacheFromAuthorizationCode(context, new string[] { "User.Read" });
-  await handler(context);
- };
-```
-
-#### Enable a session
-
-In the `Configure(IApplicationBuilder app, IHostingEnvironment env)` method, add the following lines
-
-```CSharp
-    // to use a session token cache
-    app.UseSession();
-```
-
-### Change the controller code to acquire a token and call Microsoft Graph
-
-In the `Controllers\HomeController.cs`file:
-
-1. Add a constructor to HomeController, making the ITokenAcquisition service available (used by the ASP.NET dependency injection mechanism)
-
-   ```CSharp
-   public HomeController(ITokenAcquisition tokenAcquisition)
-   {
-     this.tokenAcquisition = tokenAcquisition;
-   }
-   private ITokenAcquisition tokenAcquisition;
-   ```
-
-1. Change the `Contact()` action so that it calls the Microsoft Graph *me* endpoint. In case a token cannot be acquired, a challenge is attempted
-  to re-sign-in the user.
-
-      ```CSharp
-      public async Task<IActionResult> Contact()
-      {
-       string[] scopes = new string[] { "User.Read" };
-       try
-        {
-         string accessToken = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, User, scopes);
-         dynamic me = await CallGraphApiOnBehalfOfUser(accessToken);
-
-         ViewData["Me"] = me;
-         return View();
-        }
-        catch(MsalServiceException)
-        {
-         return Challenge();
-        }
-       }
-
-       private static async Task<dynamic> CallGraphApiOnBehalfOfUser(string accessToken)
-       {
-        //
-        // Call the Graph API and retrieve the user's profile.
-        //
-        HttpClient client = new HttpClient();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-        HttpResponseMessage response = await client.GetAsync("https://graph.microsoft.com/Beta/me");
-        string content = await response.Content.ReadAsStringAsync();
-        if (response.StatusCode == HttpStatusCode.OK)
-        {
-            dynamic me = JsonConvert.DeserializeObject(content);
-            return me;
-        }
-        else
-        {
-            throw new Exception(content);
-        }
-       }
-       ```
-
-### Change the code of the Contacts view to display the *me* object
-
-In `Views\Home\Contacts.cshtml`, insert the following code, which creates an
-HTML table displaying the properties of the *me* object as returned by Microsoft Graph.
-
-```CSharp
-<table>
-    <tr>
-        <td>Property</td>
-        <td>Value</td>
-    </tr>
-    @{
-        Newtonsoft.Json.Linq.JObject me = ViewData["me"] as Newtonsoft.Json.Linq.JObject;
-        IEnumerable<Newtonsoft.Json.Linq.JProperty> children = me.Properties();
-        foreach (Newtonsoft.Json.Linq.JProperty child in children)
-        {
-                <tr>
-                    <td>@child.Name</td>
-                    <td>@child.Value<td>
-                </tr>
-        }
-    }
-</table>
-```
+- Learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2.%20WebApp%20calls%20Microsoft%20Graph%20on%20behalf%20of%20signed-in%20user)
 
 ## Learn more
 
-You can learn more about the tokens by looking at the following articles in MSAL.NET's conceptual documentation:
+### Token validation
 
-- The [Authorization code flow](https://aka.ms/msal-net-authorization-code), which is used, after the user signed-in with Open ID Connect, in order to get a token and cache it for a later use. See [TokenAcquisition L 107](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/f99e913cc032e16c59b748241111e97108e87918/Extensions/TokenAcquisition.cs#L107) for details of this code
-- [AcquireTokenSilent](https://aka.ms/msal-net-acquiretokensilent ), which is used by the controller to get an access token for the downstream API. See [TokenAcquisition L 168](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/f99e913cc032e16c59b748241111e97108e87918/Extensions/TokenAcquisition.cs#L168) for details of this code
-- [Token cache serialization](msal-net-token-cache-serialization)
+To understand more about app registration, see:
+
+- [Quickstart: Register an application with the Microsoft identity platform (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
+- [Quickstart: Configure a client application to access web APIs (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
+
+The token validation is performed by the classes of the [Identity Model Extensions for DotNet](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet) library. Learn about customizing
+token validation by reading:
+
+- [Validating Tokens](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki/ValidatingTokens) in that library's conceptual documentation
+- [TokenValidationParameters](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.tokens.tokenvalidationparameters?view=azure-dotnet)'s reference documentation.
+
+<!-- Activate when the signInAndCallMsGraph branch is ready
+### Next steps - call a Web API from the Web App
+
+Now that  you understand how to sign in users in an ASP.NET Core Web App with Open ID Connect, learn how to [enable your Web App to call a Web API in the name of the user](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/signInAndCallMsGraph)
+-->
