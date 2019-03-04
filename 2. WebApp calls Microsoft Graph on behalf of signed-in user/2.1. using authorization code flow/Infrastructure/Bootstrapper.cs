@@ -14,37 +14,11 @@ namespace WebApp_OpenIDConnect_DotNet.Infrastructure
 {
     public static class Bootstrapper
     {
-        public static void InitializeDefault(this IServiceCollection services, IConfiguration configuration)
+        public static void AddGraphService(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<CookiePolicyOptions>(options =>
-                                                    {
-                                                        options.CheckConsentNeeded = context => true;
-                                                        options.MinimumSameSitePolicy = SameSiteMode.None;
-                                                    });
             services.Configure<WebOptions>(configuration);
-            //            services.Configure<AzureADOptions>(configuration.GetSection("AzureAd"));
-            //https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests
+            // https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests
             services.AddHttpClient<IGraphApiOperations, GraphApiOperationService>();
-        }
-
-        public static void InitializeAuthentication(this IServiceCollection services, IConfiguration configuration)
-        {
-            // Token acquisition service and its cache implementation
-            services.AddAzureAdV2Authentication(configuration)
-                    .AddMsal(new string[] { Constants.ScopeUserRead })
-                    .AddInMemoryTokenCache()
-                    /* you could use a cookie based token cache by reaplacing the last
-                     * trew lines by : .AddCookie().AddCookieBasedTokenCache()  */
-                    ;
-
-            services.AddMvc(options =>
-                {
-                    var policy = new AuthorizationPolicyBuilder()
-                        .RequireAuthenticatedUser()
-                        .Build();
-                    options.Filters.Add(new AuthorizeFilter(policy));
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
     }
 }
