@@ -20,7 +20,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="2.7.0" />
   </ItemGroup>
 
   <ItemGroup>

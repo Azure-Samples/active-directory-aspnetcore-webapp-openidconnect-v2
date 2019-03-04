@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace WebApp_OpenIDConnect_DotNet.Interfaces
+namespace WebApp_OpenIDConnect_DotNet.Services.GraphOperations
 {
     public interface IGraphApiOperations
     {

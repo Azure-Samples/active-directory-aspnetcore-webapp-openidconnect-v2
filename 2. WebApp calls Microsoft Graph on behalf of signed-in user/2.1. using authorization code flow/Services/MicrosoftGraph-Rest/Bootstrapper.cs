@@ -1,16 +1,7 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.Client;
-using WebApp_OpenIDConnect_DotNet.Interfaces;
-using WebApp_OpenIDConnect_DotNet.Services;
 
-namespace WebApp_OpenIDConnect_DotNet.Infrastructure
+namespace WebApp_OpenIDConnect_DotNet.Services.GraphOperations
 {
     public static class Bootstrapper
     {
