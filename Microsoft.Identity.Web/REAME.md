@@ -19,4 +19,11 @@ The library contains help classes to
   - `AddAzureAdV2Authentication` to add authentication with the Microsoft Identity platform (AAD v2.0)
   - `AddMsal` to add support for token acquistion with MSAL. This should be followed by one of the AddXXXTokenCache methods to express the token cache technology to use.
 
+## Learn more:
+You can learn more about the tokens by looking at the following articles in MSAL.NET's conceptual documentation:
+
+- The [Authorization code flow](https://aka.ms/msal-net-authorization-code), which is used, after the user signed-in with Open ID Connect, in order to get a token and cache it for a later use. See [TokenAcquisition L 107](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/f99e913cc032e16c59b748241111e97108e87918/Extensions/TokenAcquisition.cs#L107) for details of this code
+- [AcquireTokenSilent](https://aka.ms/msal-net-acquiretokensilent ), which is used by the controller to get an access token for the downstream API. See [TokenAcquisition L 168](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/f99e913cc032e16c59b748241111e97108e87918/Extensions/TokenAcquisition.cs#L168) for details of this code
+- [Token cache serialization](msal-net-token-cache-serialization)
+
   
