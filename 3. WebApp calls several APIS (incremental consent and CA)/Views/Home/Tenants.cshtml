@@ -2,21 +2,26 @@
 @using System.Collections.Generic
 @{
     ViewData["Title"] = "Tenants";
-    IEnumerable<string> tenants = ViewData["tenants"] as IEnumerable<string>;
+    IDictionary<string, string> tenants = ViewData["tenants"] as IDictionary<string, string>;
+    if (tenants == null)
+    {
+        tenants = (ViewData["tenants"] as IEnumerable<string>).ToDictionary(name => name);
+    }
 }
 <h2>@ViewData["Title"]</h2>
 <h3>@ViewData["Message"]</h3>
 
 <table class="table table-striped table-condensed" style="font-family: monospace">
     <tr>
+        <th>Tenant ID</th>
         <th>Tenant name</th>
     </tr>
 
-    @foreach(string tenant in tenants)
+    @foreach(var tenant in tenants)
     {
     <tr>
-        <td>@tenant</td>
-
+        <td>@tenant.Key</td>
+        <td>@tenant.Value</td>
     </tr>
     }
 </table>

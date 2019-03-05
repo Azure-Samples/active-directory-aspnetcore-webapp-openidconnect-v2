@@ -52,18 +52,23 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
         // Requires that the app has added the Azure Service Management / user_impersonation scope, and that
         // the admin tenant does not require admin consent for ARM.
-        [MsalUiRequiredExceptionFilter(Scopes = new[] { "https://management.azure.com/user_impersonation" })]
+        [MsalUiRequiredExceptionFilter(Scopes = new[] { "https://management.azure.com/user_impersonation", "user.read", "directory.read.all" })]
         public async Task<IActionResult> Tenants()
         {
             var accessToken =
                 await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new[] { $"{ArmApiOperationService.ArmResource}/user_impersonation" });
 
             var tenantIds = await armOperations.EnumerateTenantsIdsAccessibleByUser(accessToken);
-
-            ViewData["tenants"] = new List<string>(tenantIds);
+/*
+            var tenantsIdsAndNames =  await graphApiOperations.EnumerateTenantsIdAndNameAccessibleByUser(tenantIds,
+                async tenantId => { return await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new string[] { "Directory.Read.All" }, tenantId); });
+*/
+            ViewData["tenants"] = tenantIds;
 
             return View();
         }
+
+
 		
 		[MsalUiRequiredExceptionFilter(Scopes = new[] { "https://storage.azure.com/user_impersonation" })]
 
