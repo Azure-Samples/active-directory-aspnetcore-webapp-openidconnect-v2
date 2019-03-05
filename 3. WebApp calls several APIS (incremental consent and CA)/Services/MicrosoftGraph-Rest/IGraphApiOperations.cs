@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.Identity.Web.Client;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace WebApp_OpenIDConnect_DotNet.Services.GraphOperations
@@ -6,5 +10,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services.GraphOperations
     {
         Task<dynamic> GetUserInformation(string accessToken);
         Task<string> GetPhotoAsBase64Async(string accessToken);
+
+        Task<IDictionary<string, string>> EnumerateTenantsIdAndNameAccessibleByUser(IEnumerable<string> tenantIds, Func<string, Task<string>> getTokenForTenant);
     }
 }
