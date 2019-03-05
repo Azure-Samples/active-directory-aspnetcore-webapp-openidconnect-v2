@@ -11,14 +11,11 @@ namespace Microsoft.Identity.Web.Client
     public interface ITokenCacheProvider
     {
         /// <summary>
-        /// Get an MSAL.NET Token cache from the HttpContext, and possibly the AuthenticationProperties and Cookies sign-in scheme
+        /// Enables the token cache serialization
         /// </summary>
+        /// <param name="tokenCache">Token cache to serialize</param>
         /// <param name="httpContext">HttpContext</param>
-        /// <param name="authenticationProperties">Authentication properties (for the cookie based ccookie based token cache serialization). Can be <c>null</c>
-        /// if you don't want to use cookie based token cache serialization</param>
-        /// <param name="signInScheme">[Optional] Authentication properties (for the cookie based cookie based token cache serialization). Can be <c>null</c>
-        /// if you don't want to use cookie based token cache serialization</param>
-        /// <returns>A token cache to use in the application</returns>
-        TokenCache GetCache(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, AuthenticationProperties authenticationProperties, string signInScheme = null);
+        /// <param name="claimsPrincipal">Claims principal (account) for which to retrieve the cache</param>
+        void EnableSerialization(ITokenCache tokenCache, HttpContext httpContext, ClaimsPrincipal claimsPrincipal);
     }
 }

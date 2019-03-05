@@ -15,17 +15,17 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         SessionTokenCacheProvider helper;
 
         /// <summary>
-        /// Get an MSAL.NET Token cache from the HttpContext, and possibly the AuthenticationProperties and Cookies sign-in scheme
+        /// Enables the token cache serialization
         /// </summary>
+        /// <param name="tokenCache">Token cache to serialize</param>
         /// <param name="httpContext">HttpContext</param>
-        /// <param name="authenticationProperties">Authentication properties</param>
-        /// <param name="signInScheme">Sign-in scheme</param>
-        /// <returns>A token cache to use in the application</returns>
-        public TokenCache GetCache(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, AuthenticationProperties authenticationProperties, string signInScheme)
+        /// <param name="claimsPrincipal">Information about the user for which to serialize the cache. Can be 
+        /// null for an application token cache</param>
+        public void EnableSerialization(ITokenCache tokenCache, HttpContext httpContext, ClaimsPrincipal claimsPrincipal)
         {
-            string userId = claimsPrincipal.GetMsalAccountId();
-            helper = new SessionTokenCacheProvider(userId, httpContext);
-            return helper.GetMsalCacheInstance();
+            string userId = claimsPrincipal.GetMsalAccountId() ?? "_Application_";
+            helper = new SessionTokenCacheProvider(tokenCache, userId, httpContext);
+            helper.GetMsalCacheInstance();
         }
     }
 
@@ -36,22 +36,21 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         private string CacheId;
         private ISession session;
 
-        private TokenCache cache = new TokenCache();
+        private ITokenCache cache;
 
-        public SessionTokenCacheProvider(string userId, HttpContext httpcontext)
+        public SessionTokenCacheProvider(ITokenCache tokenCache, string userId, HttpContext httpcontext)
         {
             // not object, we want the SUB
+            this.cache = tokenCache;
             UserId = userId;
             CacheId = UserId + "_TokenCache";
             session = httpcontext.Session;
-            Load();
         }
 
-        public TokenCache GetMsalCacheInstance()
+        public ITokenCache GetMsalCacheInstance()
         {
             cache.SetBeforeAccess(BeforeAccessNotification);
             cache.SetAfterAccess(AfterAccessNotification);
-            Load();
             return cache;
         }
 
@@ -66,7 +65,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
                 if (session.TryGetValue(CacheId, out blob))
                 {
                     Debug.WriteLine($"INFO: Deserializing session {session.Id}, cacheId {CacheId}");
-                    cache.Deserialize(blob);
+                    cache.DeserializeMsalV3(blob);
                 }
                 else
                 {
@@ -88,7 +87,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
                 Debug.WriteLine($"INFO: Serializing session {session.Id}, cacheId {CacheId}");
 
                 // Reflect changes in the persistent store
-                byte[] blob = cache.Serialize();
+                byte[] blob = cache.SerializeMsalV3();
                 session.Set(CacheId, blob);
                 session.CommitAsync().Wait();
             }
