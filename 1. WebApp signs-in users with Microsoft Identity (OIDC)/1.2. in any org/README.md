@@ -3,10 +3,10 @@ services: active-directory
 platforms: dotnet
 author: jmprieur
 level: 100
-service: ASP.NET Core Web App
+client: ASP.NET Core Web App
 endpoint: AAD v2.0
 ---
-# Bulid an ASP.NET Core Web app signing-in users with the Microsoft identity platform
+# Build an ASP.NET Core Web app signing-in users in any org with the Microsoft identity platform
 
 > This sample is for Azure AD, not Azure AD B2C. See [active-directory-b2c-dotnetcore-webapp](https://github.com/Azure-Samples/active-directory-b2c-dotnetcore-webapp), until we incorporate the B2C variation in the tutorial.
 
@@ -83,7 +83,7 @@ You can clone this sample from your shell or command line:
   ```console
 git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial webapp
 cd webapp
-cd ""
+cd "1. WebApp signs-in users with Microsoft Identity (OIDC)\1.2. in any org"
   ```
 
 > Given that the name of the sample is pretty long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
@@ -91,14 +91,14 @@ cd ""
   In the **appsettings.json** file:
   
   - replace the `ClientID` value with the *Application ID* from the application you registered in Application Registration portal on *Step 1*.
-  - replace the `TenantId` value with `common`
+  - replace the `TenantId` value with `"organizations"`
 
 #### Option 2: Create the sample from the command line
 
 1. Run the following command to create a sample from the command line using the `SingleOrg` template:
 
     ```Sh
-    dotnet new mvc --auth SingleOrg --client-id <Enter_the_Application_Id_here> --tenant-id common
+    dotnet new mvc --auth SingleOrg --client-id <Enter_the_Application_Id_here> --tenant-id organizations
     ```
 
     > Note: Replace *`Enter_the_Application_Id_here`* with the *Application Id* from the application Id you just registered in the Application Registration Portal.
@@ -139,44 +139,6 @@ cd ""
 
 2. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. The app immediately attempts to authenticate you via the Azure AD v2 endpoint. Sign in with your personal account or with work or school account.
 
-## Optional: Restrict sign-in access to your application
-
-By default, when you use the dotnet core template with `SingleOrg` authentication option and follow the instructions in this guide to configure the application to use the Microsoft identity platform (fomerly Azure AD v2.0) endpoint, both personal accounts - like outlook.com, live.com, and others - as well as Work or school accounts from any organizations that are integrated with Azure AD can sign in to your application. These multi-tenant apps are typically used on SaaS applications.
-
-It's possible to restric the audience for your application by changing the audience in your application registration.
-
-Note that, using the same application resgistration you've done, you can also restrict the accounts types that can sign in to your application, by using one of these options:
-
-### Option 1: Restrict access to only Work and School accounts
-
-Open **appsettings.json** and replace the line containing the `TenantId` value with `organizations`:
-
-```json
-"TenantId": "organizations",
-```
-
-You can also learn from the [1. WebApp signs-in users with Microsoft Identity (OIDC) / in any org/](../1.2.%20in%20any%20org) step of the tutorial if you are interested in this use case. You will also learn how to restrict to this multi-tenant application to specific tenants.
-
-### Option 2: Restrict access to only Microsoft personal accounts
-
-Open **appsettings.json** and replace the line containing the `TenantId` value with `consumers`:
-
-```json
-"TenantId": "consumers",
-```
-
-### Option 3: Restrict access to a single organization (single-tenant)
-
-You can restrict sign-in access for your application to only user accounts that are in a single Azure AD tenant - including *guest accounts* of that tenant. This scenario is a common for *line-of-business applications*:
-
-1. Open **appsettings.json** and replace the line containing the `TenantId` value with the domain of your tenant, for example, *contoso.onmicrosoft.com* or the guid for the Tenant ID:
-
-   ```json
-   "TenantId": "[Enter the domain of your tenant, e.g. contoso.onmicrosoft.com or the Tenant Id]",
-   ```
-
-You can also learn from the [1. WebApp signs-in users with Microsoft Identity (OIDC) / in my org/](../1.1.%20in%20my%20org) step of the tutorial if you are interested in this use case
-
 ## About The code
 
 This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Azure AD tenant. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Azure AD tenant where the app is registered. These values are  read from the `appsettings.json` file. The middleware takes care of:
@@ -193,6 +155,7 @@ These steps are encapsulated in the [Microsoft.Identity.Web](..\..\Microsoft.Ide
 
 ## Next steps
 
+- Learn how to enable [your organization](../1.1.%20in%20my%20org) or [any Microsoft accounts](../1.3.%20with%20work%20and%20school%20or%20personal%20accounts) to sign-in
 - Learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2.%20WebApp%20calls%20Microsoft%20Graph%20on%20behalf%20of%20signed-in%20user)
 
 ## Learn more

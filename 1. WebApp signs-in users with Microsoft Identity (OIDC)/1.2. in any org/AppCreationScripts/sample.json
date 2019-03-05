@@ -1,10 +1,10 @@
 {
   "Sample": {
-    "Title": "An ASP.NET Core 2.x Web App which lets sign-in users with work and school or Microsoft personal accounts (and calls Microsoft Graph)",
+    "Title": "An ASP.NET Core 2.x Web App which lets sign-in users with work and school in any org",
     "Level": 200,
     "Client": "ASP.NET Core 2.x Web App",
     "Service": "Microsoft Graph",
-    "RepositoryUrl": "active-directory-aspnetcore-webapp-openidconnect-v2",
+    "RepositoryUrl": "microsoft-identity-platform-aspnetcore-webapp-tutorial",
     "Endpoint": "AAD v2.0"
   },
 
@@ -16,16 +16,10 @@
       "Id": "webApp",
       "Name": "WebApp",
       "Kind": "WebApp",
+      "Audience": "AzureADMultipleOrgs",
       "HomePage": "https://localhost:44321/",
       "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc",
       "LogoutUrl": "https://localhost:44321/signout-oidc",
-      "PasswordCredentials": "Auto",
-      "RequiredResourcesAccess": [
-        {
-          "Resource": "Microsoft Graph",
-          "DelegatedPermissions": [ "User.Read" ]
-        }
-      ]
     }
   ],
 
@@ -39,7 +33,7 @@
     {
       "App": "webApp",
       "SettingKind": "JSon",
-      "SettingFile": "\\..\\active-directory-aspnetcore-webapp-openidconnect-v2\\appsettings.json",
+      "SettingFile": "\\..\\appsettings.json",
       "Mappings": [
         {
           "key": "ClientId",
@@ -47,15 +41,11 @@
         },
         {
           "key": "TenantId",
-          "value": "$tenantId"
+          "value": "organizations"
         },
         {
           "key": "Domain",
           "value": "$tenantName"
-        },
-        {
-          "key": "TenantId",
-          "value": ".AppKey"
         }
       ]
     }

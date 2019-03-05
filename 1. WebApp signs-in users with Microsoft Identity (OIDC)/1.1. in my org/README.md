@@ -3,10 +3,10 @@ services: active-directory
 platforms: dotnet
 author: jmprieur
 level: 100
-service: ASP.NET Core Web App
+client: ASP.NET Core Web App
 endpoint: AAD v2.0
 ---
-# Bulid an ASP.NET Core Web app signing-in users with the Microsoft identity platform
+# Build an ASP.NET Core Web app signing-in users with the Microsoft identity platform
 
 > This sample is for Azure AD, not Azure AD B2C. See [active-directory-b2c-dotnetcore-webapp](https://github.com/Azure-Samples/active-directory-b2c-dotnetcore-webapp), until we incorporate the B2C variation in the tutorial.
 
@@ -84,7 +84,7 @@ You can clone this sample from your shell or command line:
   ```console
 git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial webapp
 cd webapp
-cd ""
+cd "1. WebApp signs-in users with Microsoft Identity (OIDC)\1.1. in my org"
   ```
 
 > Given that the name of the sample is pretty long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
