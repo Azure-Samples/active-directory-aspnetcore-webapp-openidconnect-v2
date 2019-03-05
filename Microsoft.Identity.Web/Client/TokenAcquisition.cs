@@ -137,8 +137,10 @@ namespace Microsoft.Identity.Web.Client
         /// </summary>
         /// <param name="context">HttpContext associated with the Controller or auth operation</param>
         /// <param name="scopes">Scopes to request for the downstream API to call</param>
+        /// <param name="tenantId">Enables to override the tenant/account for the same identity. This is useful in the 
+        /// cases where a given account is guest in other tenants, and you want to acquire tokens for a specific tenant</param>
         /// <returns>An access token to call on behalf of the user, the downstream API characterized by its scopes</returns>
-        public async Task<string> GetAccessTokenOnBehalfOfUser(HttpContext context, IEnumerable<string> scopes)
+        public async Task<string> GetAccessTokenOnBehalfOfUser(HttpContext context, IEnumerable<string> scopes, string tenant=null)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
@@ -148,7 +150,7 @@ namespace Microsoft.Identity.Web.Client
 
             // Use MSAL to get the right token to call the API
             var application = CreateApplication(context, context.User, null, AzureADDefaults.CookieScheme);
-            return await GetAccessTokenOnBehalfOfUser(application, context.User, scopes);
+            return await GetAccessTokenOnBehalfOfUser(application, context.User, scopes, tenant);
         }
 
 
@@ -273,11 +275,11 @@ namespace Microsoft.Identity.Web.Client
         /// </summary>
         /// <param name="claimsPrincipal">Claims principal for the user on behalf of whom to get a token 
         /// <param name="scopes">Scopes for the downstream API to call</param>
-        private async Task<string> GetAccessTokenOnBehalfOfUser(ConfidentialClientApplication application, ClaimsPrincipal claimsPrincipal, IEnumerable<string> scopes)
+        private async Task<string> GetAccessTokenOnBehalfOfUser(ConfidentialClientApplication application, ClaimsPrincipal claimsPrincipal, IEnumerable<string> scopes, string tenant)
         {
             string accountIdentifier = claimsPrincipal.GetMsalAccountId();
             string loginHint = claimsPrincipal.GetLoginHint();
-            return await GetAccessTokenOnBehalfOfUser(application, accountIdentifier, scopes, loginHint);
+            return await GetAccessTokenOnBehalfOfUser(application, accountIdentifier, scopes, loginHint, tenant);
         }
 
         /// <summary>
@@ -286,7 +288,7 @@ namespace Microsoft.Identity.Web.Client
         /// <param name="accountIdentifier">User account identifier for which to acquire a token. 
         /// See <see cref="Microsoft.Identity.Client.AccountId.Identifier"/></param>
         /// <param name="scopes">Scopes for the downstream API to call</param>
-        private async Task<string> GetAccessTokenOnBehalfOfUser(ConfidentialClientApplication application, string accountIdentifier, IEnumerable<string> scopes, string loginHint)
+        private async Task<string> GetAccessTokenOnBehalfOfUser(ConfidentialClientApplication application, string accountIdentifier, IEnumerable<string> scopes, string loginHint, string tenant)
         {
             if (accountIdentifier == null)
                 throw new ArgumentNullException(nameof(accountIdentifier));
@@ -304,7 +306,16 @@ namespace Microsoft.Identity.Web.Client
                 account = accounts.FirstOrDefault(a => a.Username == loginHint);
             }
 
-            AuthenticationResult result = await application.AcquireTokenSilentAsync(scopes.Except(scopesRequestedByMsalNet), account);
+            AuthenticationResult result;
+            if (string.IsNullOrWhiteSpace(tenant))
+            {
+                result = await application.AcquireTokenSilentAsync(scopes.Except(scopesRequestedByMsalNet), account);
+            }
+            else
+            {
+                string authority = application.Authority.Replace(new Uri(application.Authority).PathAndQuery, $"/{tenant}/");
+                result = await application.AcquireTokenSilentAsync(scopes.Except(scopesRequestedByMsalNet), account, authority, false);
+            }
             return result.AccessToken;
         }
 
