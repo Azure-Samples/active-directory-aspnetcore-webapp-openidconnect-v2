@@ -46,6 +46,13 @@ namespace Microsoft.Identity.Web
                 // or domain of this organization
                 options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.ForAadInstance(options.Authority).ValidateAadIssuer;
 
+                // Set the nameClaimType to be preferred_username.
+                // This change is needed because certain token claims from Azure AD V1 endpoint 
+                // (on which the original .NET core template is based) are different than Azure AD V2 endpoint. 
+                // For more details see [ID Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens) 
+                // and [Access Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens)
+                options.TokenValidationParameters.NameClaimType = "preferred_username";
+
                 // If you want to restrict the users that can sign-in to several organizations
                 // Set the tenant value in the appsettings.json file to 'organizations', and add the
                 // issuers you want to accept to options.TokenValidationParameters.ValidIssuers collection
