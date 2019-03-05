@@ -28,14 +28,38 @@ To run this sample:
 
 ### Step 1: Register the sample with your Azure AD tenant
 
+There is one project in this sample. To register it, you can:
+
+- either follow the steps [Step 2: Register the sample with your Azure Active Directory tenant](#step-2-register-the-sample-with-your-azure-active-directory-tenant) and [Step 3:  Configure the sample to use your Azure AD tenant](#choose-the-azure-ad-tenant-where-you-want-to-create-your-applications)
+- or use PowerShell scripts that:
+  - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you
+  - modify the Visual Studio projects' configuration files.
+
+If you want to use this automation:
+
+1. On Windows run PowerShell and navigate to the solution's folder
+1. In PowerShell run:
+
+   ```PowerShell
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+   ```
+
+1. Run the script to create your Azure AD application and configure the code of the sample application accordinly
+
+   ```PowerShell
+   .\AppCreationScripts\Configure.ps1
+   ```
+
+   > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
+
+1. Open the Visual Studio solution and click start
+
+If ou don't want to use this automation, follow the steps below
+
 #### Choose the Azure AD tenant where you want to create your applications
 
 1. Sign in to the [Azure portal](https://portal.azure.com) using either a work or school account or a personal Microsoft account.
-1. If your account gives you access to more than one tenant, select your account in the top right corner, and set your portal session to the desired Azure AD tenant
-   (using **Switch Directory**).
-
-#### Register your app
-
+1. If your account is present in more than one Azure AD tenant, select `Directory + Subscription` at the top right corner in the menu on top of the page, and switch your portal session to the desired Azure AD tenant.   
 1. In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations (Preview)**.
 1. In **App registrations (Preview)** page, select **New registration**.
 1. When the **Register an application page** appears, enter your application's registration information:
@@ -77,13 +101,16 @@ cd ""
 #### Option 2: Create the sample from the command line
 
 1. Run the following command to create a sample from the command line using the `SingleOrg` template:
-    ```console
+
+    ```Sh
     dotnet new mvc --auth SingleOrg --client-id <Enter_the_Application_Id_here> --tenant-id common
     ```
 
     > Note: Replace *`Enter_the_Application_Id_here`* with the *Application Id* from the application Id you just registered in the Application Registration Portal.
 
-2. Open the **Startup.cs** file and in the `ConfigureServices` method, replace the following lines:
+1. From the generated project (.csproj), add a reference to the `Microsoft.Identity.Web.csproj` project. It's used to simplify signing-in and, in the next tutorial phases, to get a token
+
+1. Open the **Startup.cs** file and in the `ConfigureServices` method, replace the following lines:
 
    ```CSharp
        services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
@@ -93,12 +120,12 @@ cd ""
    by this line:
 
    ```CSharp
-   services.AddAzureAdV2Authentication(Configuration);
+          services.AddAzureAdV2Authentication(Configuration);
    ```
 
    This enables your application to use the Microsoft identity platform (fomerly Azure AD v2.0) endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
 
-3. Modify `Views\Shared\_LoginPartial.cshtml` to have the following content:
+1. Modify `Views\Shared\_LoginPartial.cshtml` to have the following content:
 
     ```CSharp
     @using System.Security.Claims
