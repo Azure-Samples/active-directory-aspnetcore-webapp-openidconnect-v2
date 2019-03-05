@@ -118,7 +118,20 @@ namespace Microsoft.Identity.Web
         /// <param name="tenantId">Tenant Id of the account</param>
         /// <param name="objectId">Object Id of the account in this tenant ID</param>
         /// <returns>A ClaimsPrincipal containing these two claims</returns>
-        public static ClaimsPrincipal FromObjectIdAndTenantId(string tenantId, string objectId)
+        /// <example>
+        /// <code>
+        /// private async Task GetChangedMessagesAsync(IEnumerable<Notification> notifications)
+        /// {
+        ///  foreach (var notification in notifications)
+        ///  {
+        ///   SubscriptionStore subscription =
+        ///           subscriptionStore.GetSubscriptionInfo(notification.SubscriptionId);
+        ///  HttpContext.User = ClaimsPrincipalExtension.FromTenantIdAndObjectId(subscription.TenantId,
+        ///                                                                      subscription.UserId);
+        ///  string accessToken = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, scopes);,
+        /// </code>
+        /// </example>
+        public static ClaimsPrincipal FromTenantIdAndObjectId(string tenantId, string objectId)
         {
             var tidClaim = new Claim("tid", tenantId);
             var oidClaim = new Claim("oid", objectId);
