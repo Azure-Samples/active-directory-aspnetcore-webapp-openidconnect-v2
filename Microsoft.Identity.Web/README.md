@@ -4,6 +4,10 @@ This library contains a set of reusable classes useful in Web Applications and W
 
 The library contains help classes to
 
+- Bootstrap the web resource from the Startup.cs file in your web application by just calling a few methods
+  - `AddAzureAdV2Authentication` to add authentication with the Microsoft Identity platform (AAD v2.0), including managing the authority validation, and the sign-out.
+  - `AddMsal` to add support for token acquistion with MSAL.NET. This should be followed by one of the AddXXXTokenCache methods to express the token cache technology to use
+  
 - Protect Web resources (in the `Resources` folder)
   - `AadIssuerValidator` is used to validate the issuer in multi-tenant applications, taking into account the aliases for authorities exising in Azure AD. This class works both for Azure AD v1.0 and Microsoft Identity platform v2.0 web resources
   - `OpenIdConnectMiddlewareDiagnostics` helps you understand what happens in the Open Id Connect Middleware.
@@ -15,10 +19,6 @@ The library contains help classes to
   - Extensions methods allow you to choose the token cache implementation you want to have in your web resource (`AddSessionBasedTokenCache`, or `AddInMemoryTokenCache` for the moment)
   - `MsalUiRequiredExceptionFilterAttribute` allows for incremental consent by declaratively adding the attribute with the required scopes, on a controller action.
   
-- Bootstrap the web resource from the Startup.cs file in your web application by just calling a few methods
-  - `AddAzureAdV2Authentication` to add authentication with the Microsoft Identity platform (AAD v2.0)
-  - `AddMsal` to add support for token acquistion with MSAL. This should be followed by one of the AddXXXTokenCache methods to express the token cache technology to use.
-
 ## Learn more:
 You can learn more about the tokens by looking at the following articles in MSAL.NET's conceptual documentation:
 
