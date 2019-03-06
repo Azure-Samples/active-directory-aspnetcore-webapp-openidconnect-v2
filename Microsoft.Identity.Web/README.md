@@ -6,7 +6,18 @@ The library contains help classes to
 
 - Bootstrap the web resource from the Startup.cs file in your web application by just calling a few methods
   - `AddAzureAdV2Authentication` to add authentication with the Microsoft Identity platform (AAD v2.0), including managing the authority validation, and the sign-out.
+  
+    ```CSharp
+    services.AddAzureAdV2Authentication();
+    ```    
+    
   - `AddMsal` to add support for token acquistion with MSAL.NET. This should be followed by one of the AddXXXTokenCache methods to express the token cache technology to use
+  
+      ```CSharp
+    services.AddAzureAdV2Authentication() 
+            .AddMsal()
+            .AddInMemoryTokenCache();
+    ```    
   
     ![image](https://user-images.githubusercontent.com/13203188/53899064-a100ab80-4039-11e9-8869-fa9cffcd345a.png)
   
