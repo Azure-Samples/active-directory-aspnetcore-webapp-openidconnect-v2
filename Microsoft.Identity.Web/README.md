@@ -2,9 +2,9 @@
 
 This library contains a set of reusable classes useful in Web Applications and Web APIs (collectively referred to as Web resources) that sign-in users and call Web APIs
 
-The library contains help classes to
+The library contains helper classes to:
 
-- Bootstrap the web resource from the Startup.cs file in your web application by just calling a few methods
+- **Bootstrap the web resource from the Startup.cs file** in your web application by just calling a few methods
   - `AddAzureAdV2Authentication` to add authentication with the Microsoft Identity platform (AAD v2.0), including managing the authority validation, and the sign-out.
   
     ```CSharp
@@ -26,7 +26,7 @@ The library contains help classes to
   - `OpenIdConnectMiddlewareDiagnostics` helps you understand what happens in the Open Id Connect Middleware. This is a diagnostics class that can help you troubleshooting your Web apps.
   - `ClaimsPrincipalExtensions` provides a set of extension methods on `ClaimsPrincipal` helping getting information from the signed-in user. It's used in the other classes of the libraries.
 
-- Acquire a token to call protected APIs (in the `Client` folder)
+- **Acquire a token to call protected APIs** (in the `Client` folder)
   -  `ITokenAcquisition` is an interface implemented by a wrapper to MSAL.NET in confidential client applications, enabling you to simply get a token from the controllers, after adding them to the cache from OpenIDConnect events (in Web Apps), or JwtBearerMiddleware events (in the case of Web APIs)
   - Extensions methods allow you to choose the token cache implementation you want to have in your web resource (`AddSessionBasedTokenCache`, or `AddInMemoryTokenCache` for the moment)
   - `MsalUiRequiredExceptionFilterAttribute` allows for incremental consent by declaratively adding the attribute with the required scopes, on a controller action.
