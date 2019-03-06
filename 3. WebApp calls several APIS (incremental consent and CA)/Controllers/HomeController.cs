@@ -56,7 +56,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         public async Task<IActionResult> Tenants()
         {
             var accessToken =
-                await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new[] { $"{ArmApiOperationService.ArmResource}/user_impersonation" });
+                await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new[] { $"{ArmApiOperationService.ArmResource}user_impersonation" });
 
             var tenantIds = await armOperations.EnumerateTenantsIdsAccessibleByUser(accessToken);
 /*
