@@ -14,11 +14,11 @@ endpoint: AAD v2.0
 
 ## Scenario
 
-This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users. Users can only sign-in with their work and school accountsin their organization. It leverages the ASP.NET Core OpenID Connect middleware.
+This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users. Users can only sign-in with their `work and school` accounts in their organization. It leverages the ASP.NET Core OpenID Connect middleware.
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
 
-> This is the first phase of a set of tutorials. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, can can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2.%20WebApp%20calls%20Microsoft%20Graph%20on%20behalf%20of%20signed-in%20user)
+> This is the first chapter from a set of tutorials. Once you understand how to sign-in users in an ASP.NET Core Web App with OpenId Connect, you can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2.%20WebApp%20calls%20Microsoft%20Graph%20on%20behalf%20of%20signed-in%20user) in a later chapter.
 
 ## How to run this sample
 
@@ -87,7 +87,7 @@ cd webapp
 cd "1. WebApp signs-in users with Microsoft Identity (OIDC)\1.1. in my org"
   ```
 
-> Given that the name of the sample is pretty long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
+> Given that the name of the sample is very long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
   In the **appsettings.json** file:
   
