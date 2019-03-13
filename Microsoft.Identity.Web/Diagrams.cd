@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="Microsoft.Identity.Web.Resource.AadIssuerValidator">
+    <Position X="0.5" Y="6.25" Width="7.5" />
+    <Members>
+      <Method Name="AadIssuerValidator" Hidden="true" />
+      <Field Name="IssuerAliases" Hidden="true" />
+      <Field Name="issuerValidators" Hidden="true" />
+      <Method Name="TenantedIssuer" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>BAAAAEAAAAAAAAAAAAAAAAAAAAAQAAAAAgAAAEAAAAI=</HashCode>
+      <FileName>Resource\AadIssuerValidator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Microsoft.Identity.Web.Resource.IssuerConfigurationRetriever" BaseTypeListCollapsed="true">
+    <Position X="12.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Resource\AadIssuerValidator.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Microsoft.Identity.Web.Resource.IssuerMetadata" Collapsed="true">
+    <Position X="10.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEEAA=</HashCode>
+      <FileName>Resource\AadIssuerValidator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Microsoft.Identity.Web.Resource.Metadata">
+    <Position X="12.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAEAAAAAABAAAAAAAACAAAAAAAA=</HashCode>
+      <FileName>Resource\AadIssuerValidator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Microsoft.Identity.Web.Resource.OpenIdConnectMiddlewareDiagnostics">
+    <Position X="0.5" Y="0.5" Width="5.5" />
+    <Members>
+      <Field Name="onAuthenticationFailed" Hidden="true" />
+      <Field Name="onAuthorizationCodeReceived" Hidden="true" />
+      <Field Name="onMessageReceived" Hidden="true" />
+      <Field Name="onRedirectToIdentityProvider" Hidden="true" />
+      <Field Name="onRedirectToIdentityProviderForSignOut" Hidden="true" />
+      <Field Name="onRemoteSignOut" Hidden="true" />
+      <Field Name="onSignedOutCallbackRedirect" Hidden="true" />
+      <Field Name="onTokenResponseReceived" Hidden="true" />
+      <Field Name="onTokenValidated" Hidden="true" />
+      <Field Name="onUserInformationReceived" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AABAAABAAIIAAAQCAIAEAIBEAICCAAAAwgBAAEAAAgA=</HashCode>
+      <FileName>Resource\OpenIdConnectMiddlewareDiagnostics.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Microsoft.Identity.Web.ClaimsPrincipalExtension">
+    <Position X="10" Y="3.75" Width="7.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAkAAAAAAAAABAAAAAAAAAAAAAAAAAAIAAEAGAAA=</HashCode>
+      <FileName>ClaimPrincipalExtension.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Microsoft.Identity.Web.StartupHelpers">
+    <Position X="0.5" Y="4.5" Width="7" />
+    <Members>
+      <Field Name="emptyScopes" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAAAAgAAAAAACAAAAAAAAAAAA=</HashCode>
+      <FileName>StartupHelpers.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
