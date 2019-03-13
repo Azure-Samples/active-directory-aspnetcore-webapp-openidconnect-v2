@@ -20,9 +20,7 @@
 /3. WebApp calls several APIS (incremental consent and CA)/.vs
 /3. WebApp calls several APIS (incremental consent and CA)/bin
 /3. WebApp calls several APIS (incremental consent and CA)/obj
-/1. WebApp signs-in users with Microsoft Identity (OIDC)/1.3. with work and school or personal accounts/.vs/WebApp-OpenIDConnect-DotNet/v15
-/1. WebApp signs-in users with Microsoft Identity (OIDC)/1.3. with work and school or personal accounts/obj/Debug/netcoreapp2.2
+/1. WebApp signs-in users with Microsoft Identity (OIDC)/1.3. with work and school or personal accounts/.vs
 /1. WebApp signs-in users with Microsoft Identity (OIDC)/1.3. with work and school or personal accounts/obj
-/2. WebApp calls Microsoft Graph on behalf of signed-in user/2.2/.vs/WebApp-OpenIDConnect-DotNet/v15/Server/sqlite3
-/2. WebApp calls Microsoft Graph on behalf of signed-in user/2.2/WebApp-OpenIDConnect-DotNet-Cache-V2/obj
+/2. WebApp calls Microsoft Graph on behalf of signed-in user/2.2/.vs
 /2. WebApp calls Microsoft Graph on behalf of signed-in user/2.1. using authorization code flow/AppCreationScripts/Steps.md
