@@ -18,7 +18,7 @@ This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Conn
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
 
-> This is the first phase of a set of tutorials. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, can can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2.%20WebApp%20calls%20Microsoft%20Graph%20on%20behalf%20of%20signed-in%20user)
+> This is the first phase of a set of tutorials. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, can can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user)
 
 ## How to run this sample
 
@@ -90,7 +90,7 @@ You can clone this sample from your shell or command line:
 ```Sh
 git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial webapp
 cd webapp
-cd "1. WebApp signs-in users with Microsoft Identity (OIDC)\1.3. with work and school or personal accounts"
+cd "1-WebApp-OIDC\1-3-OrgsOrPersonal"
   ```
 
 > Given that the name of the sample is pretty long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
@@ -162,7 +162,7 @@ Open **appsettings.json** and replace the line containing the `TenantId` value w
 "TenantId": "organizations",
 ```
 
-You can also learn from the [1. WebApp signs-in users with Microsoft Identity (OIDC) / in any org/](../1.2.%20in%20any%20org) step of the tutorial if you are interested in this use case. You will also learn how to restrict to this multi-tenant application to specific tenants.
+You can also learn from the [1. WebApp signs-in users with Microsoft Identity (OIDC) / in any org/](../1-2-AnyOrg) step of the tutorial if you are interested in this use case. You will also learn how to restrict to this multi-tenant application to specific tenants.
 
 ### Option 2: Restrict access to only Microsoft personal accounts
 
@@ -182,7 +182,7 @@ You can restrict sign-in access for your application to only user accounts that 
    "TenantId": "[Enter the domain of your tenant, e.g. contoso.onmicrosoft.com or the Tenant Id]",
    ```
 
-You can also learn from the [1. WebApp signs-in users with Microsoft Identity (OIDC) / in my org/](../1.1.%20in%20my%20org) step of the tutorial if you are interested in this use case
+You can also learn from the [1. WebApp signs-in users with Microsoft Identity (OIDC) / in my org/](../1-1-MyOrg) step of the tutorial if you are interested in this use case
 
 ## Toubleshooting
 
@@ -208,7 +208,7 @@ These steps are encapsulated in the [Microsoft.Identity.Web](..\..\Microsoft.Ide
 
 ## Next steps
 
-- Learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2.%20WebApp%20calls%20Microsoft%20Graph%20on%20behalf%20of%20signed-in%20user)
+- Learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user)
 
 ## Learn more
 

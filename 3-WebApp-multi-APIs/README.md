@@ -51,7 +51,7 @@ You can clone this sample from your shell or command line:
 
   ```console
   git clone https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2
-  git checkout aspnetcore2-2-signInAndCallGraph
+  cd "3-WebApp-multi-APIs"
   ```
 
   In the appsettings.json file, replace:

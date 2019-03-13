@@ -18,7 +18,7 @@ This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Conn
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
 
-> This is the first phase of a set of tutorials. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, can can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2.%20WebApp%20calls%20Microsoft%20Graph%20on%20behalf%20of%20signed-in%20user)
+> This is the first phase of a set of tutorials. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, can can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user)
 
 ## How to run this sample
 
@@ -84,7 +84,7 @@ You can clone this sample from your shell or command line:
   ```console
 git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial webapp
 cd webapp
-cd "1. WebApp signs-in users with Microsoft Identity (OIDC)\1.1. in my org"
+cd "1-WebApp-OIDC\1-1-MyOrg"
   ```
 
 > Given that the name of the sample is pretty long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
@@ -164,8 +164,8 @@ These steps are encapsulated in the [Microsoft.Identity.Web](..\..\Microsoft.Ide
 
 ## Next steps
 
-- Learn how to enable [any organization](../1.2.%20in%20any%20org) or [any Microsoft accounts](../1.3.%20with%20work%20and%20school%20or%20personal%20accounts) to sign-in
-- Learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2.%20WebApp%20calls%20Microsoft%20Graph%20on%20behalf%20of%20signed-in%20user)
+- Learn how to enable [any organization](../1-2-AnyOrg) or [any Microsoft accounts](../1-3-OrgsOrPersonal) to sign-in
+- Learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user)
 
 ## Learn more
 
