@@ -7,13 +7,14 @@ client: ASP.NET Core 2.x Web App
 service: Microsoft Graph
 endpoint: AAD v2.0
 ---
-# Using the Microsoft identity platform to call the Microsoft Graph API from a Web App, on behalf of the signed-in user.
+
+# Using the Microsoft identity platform to call the Microsoft Graph API from an An ASP.NET Core 2.x Web App, on behalf of a user signing-in using their work and school or Microsoft personal account
 
 ![Build badge](https://identitydivision.visualstudio.com/_apis/public/build/definitions/a7934fdd-dcde-4492-a406-7fad6ac00e17/514/badge)
 
 ## Scenario
 
-Starting from a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users, this phase of the tutorial shows how to calls the Microsoft Graph me endpoint on behalf of the signed-in user. It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). Their complexities where encapsultated into the `Microsoft.Identity.Web` reusable library project part of this tutorial. Once again the notion of ASP.NET services injected by dependency injection is heavily used.
+Starting from a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users, this phase of the tutorial shows how to call  Microsoft Graph /me endpoint on behalf of the signed-in user. It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). Their complexities where encapsultated into the `Microsoft.Identity.Web` reusable library project part of this tutorial. Once again the notion of ASP.NET services injected by dependency injection is heavily used.
 
 ![Sign in with the Microsoft identity platform for developers (fomerly Azure AD v2.0)](ReadmeFiles/sign-in.png)
 
@@ -27,9 +28,9 @@ To run this sample:
 
 ### Step 1: Register the sample with your Azure AD tenant
 
-You first need to have [registered](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2#step-1-register-the-sample-with-your-azure-ad-tenant) your app as described in [the first tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2)
+You first need to [register](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2#step-1-register-the-sample-with-your-azure-ad-tenant) your app as described in [the first tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2)
 
-Then here are the extra steps:
+Then follow the following extra set of steps:
 
 1. From the **Certificates & secrets** page, for your app registration, in the **Client secrets** section, choose **New client secret**:
 
@@ -76,9 +77,9 @@ Go to the `"2. WebApp calls Microsoft Graph on behalf of signed-in use/2.1. usin
 
 ## About The code
 
-Starting from the [previous phase of the tutorial](../../1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)), the code was incrementally updated by following these steps:
+Starting from the [previous phase of the tutorial](../../1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)), the code was incrementally updated with the following steps:
 
-### Update the `Startup.cs` file to enable TokenAcquisition MSAL.NET based service
+### Update the `Startup.cs` file to enable TokenAcquisition by a MSAL.NET based service
 
 After the following lines in the ConfigureServices(IServiceCollection services) method, replace `services.AddAzureAdV2Authentication(Configuration);`, by the following lines:
 
@@ -96,12 +97,12 @@ After the following lines in the ConfigureServices(IServiceCollection services) 
 
 The two new lines of code:
 
-- enable MSAL.NET to hook-up to the OpenID Connect events and redeem the authorization code obtained by the ASP.NET Core middleware and get a token into the token cache, for use by the Controllers.
+- enable MSAL.NET to hook-up to the OpenID Connect events and redeem the authorization code obtained by the ASP.NET Core middleware and after obtaining a token, saves it into the token cache, for use by the Controllers.
 - Decide which token cache implementation to use. In this part of the phase, we'll use a simple in memory token cache, but next steps will show you other implementations you can benefit from, including distributed token caches based on a SQL database, or a Redis cache.
 
 ### Add additional files to call Microsoft Graph
 
-Add the `Services\Microsoft-Graph-Rest\*.cs` files. This is an implementation of a custom service which encapsultes the call to the Microsoft Graph me endpoint. Given an access token to access the Microsoft Graph, it's capable of getting the user information and the photo of the user.
+Add the `Services\Microsoft-Graph-Rest\*.cs` files. This is an implementation of a custom service which encapsultes the call to the Microsoft Graph /me endpoint. Given an access token for Microsoft Graph, it's capable of getting the user information and the photo of the user.
 
 ```CSharp
 public interface IGraphApiOperations
@@ -113,7 +114,7 @@ public interface IGraphApiOperations
 
 ### Update the `Startup.cs` file to enable the Microsoft Graph custom service
 
-Still in the `Startup.cs` file, add the following lines just after the following. This lines ensures that the GraphAPIService benefits from the optimized `HttpClient` management by ASP.NET Core
+Still in the `Startup.cs` file, add the following lines just after the following. This lines ensures that the GraphAPIService benefits from the optimized `HttpClient` management by ASP.NET Core.
 
 ```CSharp
     // Add Graph
@@ -213,5 +214,6 @@ HTML table displaying the properties of the *me* object as returned by Microsoft
   - 3rd party, or even [your own Web API](../../4.%20WebApp%20calls%20your%20own%20Web%20API), which will enable you to learn about custom scopes
 
 ## Learn more
+
 - Learn how [Microsoft.Identity.Web](../../Microsoft.Identity.Web) works, in particular hooks-up to the ASP.NET Core ODIC events
 - [Use HttpClientFactory to implement resilient HTTP requests](https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests) used by the Graph custom service

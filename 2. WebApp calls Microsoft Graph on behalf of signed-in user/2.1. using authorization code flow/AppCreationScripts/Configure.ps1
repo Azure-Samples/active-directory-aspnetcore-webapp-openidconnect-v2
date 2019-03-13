@@ -178,17 +178,17 @@ Function ConfigureApplications
     $user = Get-AzureADUser -ObjectId $creds.Account.Id
 
    # Create the webApp AAD application
-   Write-Host "Creating the AAD application (WebApp)"
+   Write-Host "Creating the AAD application (WebApp-OpenIDConnect-DotNet-code-v2)"
    # Get a 2 years application key for the webApp Application
    $pw = ComputePassword
    $fromDate = [DateTime]::Now;
    $key = CreateAppKey -fromDate $fromDate -durationInYears 2 -pw $pw
    $webAppAppKey = $pw
-   $webAppAadApplication = New-AzureADApplication -DisplayName "WebApp" `
+   $webAppAadApplication = New-AzureADApplication -DisplayName "WebApp-OpenIDConnect-DotNet-code-v2" `
                                                   -HomePage "https://localhost:44321/" `
                                                   -LogoutUrl "https://localhost:44321/signout-oidc" `
                                                   -ReplyUrls "https://localhost:44321/", "https://localhost:44321/signin-oidc" `
-                                                  -IdentifierUris "https://$tenantName/WebApp" `
+                                                  -IdentifierUris "https://$tenantName/WebApp-OpenIDConnect-DotNet-code-v2" `
                                                   -AvailableToOtherTenants $True `
                                                   -PasswordCredentials $key `
                                                   -Oauth2AllowImplicitFlow $true `
@@ -205,19 +205,19 @@ Function ConfigureApplications
     Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($webAppServicePrincipal.DisplayName)'"
    }
 
-   Write-Host "Done creating the webApp application (WebApp)"
+   Write-Host "Done creating the webApp application (WebApp-OpenIDConnect-DotNet-code-v2)"
 
    # URL of the AAD application in the Azure portal
    # Future? $webAppPortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$webAppAadApplication.AppId+"/objectId/"+$webAppAadApplication.ObjectId+"/isMSAApp/"
    $webAppPortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$webAppAadApplication.AppId+"/objectId/"+$webAppAadApplication.ObjectId+"/isMSAApp/"
-   Add-Content -Value "<tr><td>webApp</td><td>$currentAppId</td><td><a href='$webAppPortalUrl'>WebApp</a></td></tr>" -Path createdApps.html
+   Add-Content -Value "<tr><td>webApp</td><td>$currentAppId</td><td><a href='$webAppPortalUrl'>WebApp-OpenIDConnect-DotNet-code-v2</a></td></tr>" -Path createdApps.html
 
    $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.RequiredResourceAccess]
 
    # Add Required Resources Access (from 'webApp' to 'Microsoft Graph')
    Write-Host "Getting access from 'webApp' to 'Microsoft Graph'"
    $requiredPermissions = GetRequiredPermissions -applicationDisplayName "Microsoft Graph" `
-                                                -requiredDelegatedPermissions "User.Read";
+                                                -requiredDelegatedPermissions "User.Read" `
 
    $requiredResourcesAccess.Add($requiredPermissions)
 
@@ -226,9 +226,9 @@ Function ConfigureApplications
    Write-Host "Granted permissions."
 
    # Update config file for 'webApp'
-   $configFile = $pwd.Path + "\..\active-directory-aspnetcore-webapp-openidconnect-v2\appsettings.json"
+   $configFile = $pwd.Path + "\..\appsettings.json"
    Write-Host "Updating the sample code ($configFile)"
-   $dictionary = @{ "ClientId" = $webAppAadApplication.AppId;"TenantId" = $tenantId;"Domain" = $tenantName;"TenantId" = $webAppAppKey };
+   $dictionary = @{ "ClientId" = $webAppAadApplication.AppId;"TenantId" = $tenantId;"Domain" = $tenantName;"ClientSecret" = $webAppAppKey };
    UpdateTextFile -configFilePath $configFile -dictionary $dictionary
 
    Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  
