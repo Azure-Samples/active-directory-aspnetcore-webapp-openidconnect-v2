@@ -24,7 +24,7 @@ To run this sample:
 
 > Pre-requisites:
 >
-> go through the previous phase of the tutorial showing how the [WebApp signs-in users with Microsoft Identity (OIDC) / with work and school or personal accounts](../../1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.3.%20with%20work%20and%20school%20or%20personal%20accounts). This page shows the incremental change required to call the Microsoft Graph API on behalf of a user that has successfully signed in to the web app.
+> go through the previous phase of the tutorial showing how the [WebApp signs-in users with Microsoft Identity (OIDC) / with work and school or personal accounts](../../1-WebApp-OIDC/1-3-AnyOrgOrPersonal). This page shows the incremental change required to call the Microsoft Graph API on behalf of a user that has successfully signed in to the web app.
 
 ### Step 1: Register the sample with your Azure AD tenant
 
@@ -47,12 +47,13 @@ If you have not already,  clone this sample from your shell or command line:
   ```Sh
   git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial webapp
   cd webapp
+
   ```
 
-Go to the `"2. WebApp calls Microsoft Graph on behalf of signed-in use/2.1. using authorization code flow"` folder
+Go to the `"2-WebApp-graph-user\2-1-Call-MSGraph"` folder
 
  ```Sh
-  cd "2. WebApp calls Microsoft Graph on behalf of signed-in use\2.1. using authorization code flow"
+  cd "2-WebApp-graph-user\2-1-Call-MSGraph"
   ```
 
   In the appsettings.json file, replace, if you have not already:
@@ -77,7 +78,7 @@ Go to the `"2. WebApp calls Microsoft Graph on behalf of signed-in use/2.1. usin
 
 ## About The code
 
-Starting from the [previous phase of the tutorial](../../1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)), the code was incrementally updated with the following steps:
+Starting from the [previous phase of the tutorial](../../1-WebApp-OIDC), the code was incrementally updated with the following steps:
 
 ### Update the `Startup.cs` file to enable TokenAcquisition by a MSAL.NET based service
 
@@ -208,10 +209,10 @@ HTML table displaying the properties of the *me* object as returned by Microsoft
 
 ## Next steps
 
-- Learn how to enable distributed caches in [token cache serialization](../2.2.%20token%20cache%20serialization)
+- Learn how to enable distributed caches in [token cache serialization](../2-2-TokenCache)
 - Learn how the same principle you've just learnt can be used to call:
-  - [several Microsoft APIs](../../3.%20WebApp%20calls%20several%20APIS%20(incremental%20consent%20and%20CA)), which will enable you to learn how incremental consent and conditional access is managed in your Web App
-  - 3rd party, or even [your own Web API](../../4.%20WebApp%20calls%20your%20own%20Web%20API), which will enable you to learn about custom scopes
+  - [several Microsoft APIs](../../3-WebApp-multi-APIs), which will enable you to learn how incremental consent and conditional access is managed in your Web App
+  - 3rd party, or even [your own Web API](../../4-WebApp-your-API), which will enable you to learn about custom scopes
 
 ## Learn more
 

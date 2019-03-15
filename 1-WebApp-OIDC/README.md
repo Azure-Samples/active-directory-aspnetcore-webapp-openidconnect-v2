@@ -17,12 +17,12 @@ In this phase of the tutorial, you will learn, how to add sign-in users to your 
 
    Depending on your business needs, you have the flexibility to decide which audience to sign-in to your application:
 
-   1. If you are a Line of Business (LOB) developer, you'll want to [sign-in users in your organization](./1.1.%20in%20my%20org) with their work or school accounts.
-   1. If you are an ISV, you'll want to [sign-in users in any organization](./1.2.%20in%20any%20org), still  with their work or school accounts.
-   1. If you are an ISV targetting both organizations and individuals, you'll want to [sign-in users with their work and school accounts or Microsoft personal accounts](./1.3.%20with%20work%20and%20school%20or%20personal%20accounts).
-   1. If you target organizations (work or school accounts), you can also enable your application to sign-in users in [national and sovereign clouds](./1.4.%20in%20national%20and%20sovereign%20clouds).
-   1. If you are a business wanting to connect with your customers, or with small business partners, you might also want to [sign-in users with their social identities](./1.5.%20with%20social%20identities%20(B2C)) using Microsoft Azure AD B2C
-   1. Finally, you'll want to let users [sign-out](./1.6.%20and%20lets%20them%20sign-out) of our application, or of the browser
+   1. If you are a Line of Business (LOB) developer, you'll want to [sign-in users in your organization](./1-1-MyOrg) with their work or school accounts.
+   1. If you are an ISV, you'll want to [sign-in users in any organization](./1-2-AnyOrg), still  with their work or school accounts.
+   1. If you are an ISV targetting both organizations and individuals, you'll want to [sign-in users with their work and school accounts or Microsoft personal accounts](./1-3-AnyOrgOrPersonal).
+   1. If you target organizations (work or school accounts), you can also enable your application to sign-in users in [national and sovereign clouds](./1-4-Sovereign).
+   1. If you are a business wanting to connect with your customers, or with small business partners, you might also want to [sign-in users with their social identities](./1-5-B2C) using Microsoft Azure AD B2C
+   1. Finally, you'll want to let users [sign-out](./1-6-SignOut) of our application, or of the browser
 
 ## Next phases
 
