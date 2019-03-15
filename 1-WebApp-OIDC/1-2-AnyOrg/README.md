@@ -163,7 +163,7 @@ These steps are encapsulated in the [Microsoft.Identity.Web](..\..\Microsoft.Ide
 
 ## Next steps
 
-- Learn how to enable [your organization](../1-1-MyOrg) or [any Microsoft accounts](../1-3-OrgsOrPersonal) to sign-in
+- Learn how to enable [your organization](../1-1-MyOrg) or [any Microsoft accounts](../1-3-AnyOrgOrPersonal) to sign-in
 - Learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user)
 
 ## Learn more

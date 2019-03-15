@@ -90,7 +90,7 @@ You can clone this sample from your shell or command line:
 ```Sh
 git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial webapp
 cd webapp
-cd "1-WebApp-OIDC\1-3-OrgsOrPersonal"
+cd "1-WebApp-OIDC\1-3-AnyOrgOrPersonal"
   ```
 
 > Given that the name of the sample is pretty long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
