@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
-namespace Microsoft.Identity.Web.Resource
+namespace Microsoft.Identity.Web.Resources
 {
     public class OpenIdConnectMiddlewareDiagnostics
     {

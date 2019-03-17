@@ -3,21 +3,16 @@ using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.Client;
-using Microsoft.Identity.Web.Resource;
+using Microsoft.Identity.Web.Resources;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Microsoft.Identity.Web
 {
     public static class StartupHelpers
     {
-       static string[] emptyScopes = new string[0];
-
         /// <summary>
         /// Add authentication with Microsoft identity platform v2.0 (AAD v2.0).
         /// This supposes that the configuration files have a section named "AzureAD"
@@ -32,8 +27,6 @@ namespace Microsoft.Identity.Web
 
             services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
             {
-                options.Authority = options.Authority + "/v2.0/";
-
                 // Per the code below, this application signs in users in any Work and School
                 // accounts and any Microsoft Personal Accounts.
                 // If you want to direct Azure AD to restrict the users that can sign-in, change 
@@ -44,6 +37,11 @@ namespace Microsoft.Identity.Web
                 // If you want to restrict the users that can sign-in to only one tenant
                 // set the tenant value in the appsettings.json file to the tenant ID 
                 // or domain of this organization
+                options.Authority = options.Authority + "/v2.0/";
+
+                // If you want to restrict the users that can sign-in to several organizations
+                // Set the tenant value in the appsettings.json file to 'organizations', and add the
+                // issuers you want to accept to options.TokenValidationParameters.ValidIssuers collection
                 options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.ForAadInstance(options.Authority).ValidateAadIssuer;
 
                 // Set the nameClaimType to be preferred_username.
@@ -52,10 +50,6 @@ namespace Microsoft.Identity.Web
                 // For more details see [ID Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens) 
                 // and [Access Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens)
                 options.TokenValidationParameters.NameClaimType = "preferred_username";
-
-                // If you want to restrict the users that can sign-in to several organizations
-                // Set the tenant value in the appsettings.json file to 'organizations', and add the
-                // issuers you want to accept to options.TokenValidationParameters.ValidIssuers collection
 
                 // Handling the sign-out: removing the account from MSAL.NET cache
                 options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
