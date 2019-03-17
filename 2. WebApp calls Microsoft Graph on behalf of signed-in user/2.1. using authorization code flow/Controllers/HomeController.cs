@@ -12,13 +12,12 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-        readonly         ITokenAcquisition   tokenAcquisition;
+        readonly ITokenAcquisition tokenAcquisition;
         private readonly IGraphApiOperations graphApiOperations;
 
-        public HomeController(ITokenAcquisition   tokenAcquisition,
-                              IGraphApiOperations graphApiOperations)
+        public HomeController(ITokenAcquisition tokenAcquisition, IGraphApiOperations graphApiOperations)
         {
-            this.tokenAcquisition   = tokenAcquisition;
+            this.tokenAcquisition = tokenAcquisition;
             this.graphApiOperations = graphApiOperations;
         }
 
@@ -27,11 +26,10 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View();
         }
 
-        [MsalUiRequiredExceptionFilter(Scopes = new[] {Constants.ScopeUserRead})]
+        [MsalUiRequiredExceptionFilter(Scopes = new[] { Constants.ScopeUserRead })]
         public async Task<IActionResult> Profile()
         {
-            var accessToken =
-                await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new[] {Constants.ScopeUserRead});
+            var accessToken = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new[] { Constants.ScopeUserRead });
 
             var me = await graphApiOperations.GetUserInformation(accessToken);
             var photo = await graphApiOperations.GetPhotoAsBase64Async(accessToken);
@@ -46,7 +44,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

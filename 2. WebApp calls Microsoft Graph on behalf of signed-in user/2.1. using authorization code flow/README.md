@@ -81,18 +81,28 @@ Starting from the [previous phase of the tutorial](../../1.%20WebApp%20signs-in%
 
 ### Update the `Startup.cs` file to enable TokenAcquisition by a MSAL.NET based service
 
-After the following lines in the ConfigureServices(IServiceCollection services) method, replace `services.AddAzureAdV2Authentication(Configuration);`, by the following lines:
+After the following lines in the ConfigureServices(IServiceCollection services) method, replace the following line of code
 
 ```CSharp
- public void ConfigureServices(IServiceCollection services)
+public void ConfigureServices(IServiceCollection services)
+{
+    . . .
+    services.AddAzureAdV2Authentication(Configuration);
+```
+
+with
+
+```CSharp
+public void ConfigureServices(IServiceCollection services)
 {
     . . .
     // Token acquisition service based on MSAL.NET 
     // and chosen token cache implementation
     services.AddAzureAdV2Authentication(Configuration)
             .AddMsal(new string[] { Constants.ScopeUserRead })
-            .AddInMemoryTokenCache()
-            ;
+            .AddInMemoryAppTokenCache()
+            .AddInMemoryPerUserTokenCache();
+            
 ```
 
 The two new lines of code:

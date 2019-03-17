@@ -36,8 +36,8 @@ namespace WebApp_OpenIDConnect_DotNet
             // and chosen token cache implementation
             services.AddAzureAdV2Authentication(Configuration)
                 .AddMsal(new string[] { Constants.ScopeUserRead })
-                .AddInMemoryTokenCache()
-                    ;
+                .AddInMemoryAppTokenCache()
+                .AddInMemoryPerUserTokenCache();
 
             // Add Graph
             services.AddGraphService(Configuration);
