@@ -1,0 +1,17 @@
+1. Create a new `ASP.NET Core Web Application`.
+2. In the next screen, choose, `.NET Core` and `ASP.NET Core 2.2`. Choose `Web Application (Model-View-Controller)`
+
+```
+dotnet new mvc -n WebApp-Cache-V2 --auth SingleOrg --client-id 'd03fb8c2-2a04-446b-9947-7fe25f43d2da' --tenant-id '4d39e77c-b0f3-4253-ae0b-7068ddd47949' --org-read-access --domain "kalyankrishna.com"
+dotnet new sln --name "WebApp-OpenIDConnect-DotNet"
+dotnet sln add "WebApp-Cache-V2\WebApp-Cache-V2.csproj"
+
+```
+1. Add the active-directory-aspnetcore-webapp-openidconnect-v2\Microsoft.Identity.Web project to the solution
+1. Add Microsoft.Identity.Web as a reference in WebApp-Cache-V2 project.
+1. Open up WebApp-Cache-V2 project's properties and copy the SSL Url, next to the **Enable SSL** checkbox.
+1. Change the `Properties\launchSettings.json` applicationUrl to the https URl copied earlier.
+1. Add a folder named `Infrastructure` and copy the contents of the Constants.cs in it
+
+WebApp-Cache-V2
+d03fb8c2-2a04-446b-9947-7fe25f43d2da
