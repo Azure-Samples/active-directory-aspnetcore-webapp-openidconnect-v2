@@ -33,3 +33,6 @@
 /2. WebApp calls Microsoft Graph on behalf of signed-in user/2.2/WebApp-Cache-V2/obj
 /3-WebApp-multi-APIs/obj
 /2. WebApp calls Microsoft Graph on behalf of signed-in user/2.1. using authorization code flow/AppCreationScripts/createdApps.html
+/2. WebApp calls Microsoft Graph on behalf of signed-in user/2.2/AppCreationScripts/Steps.md
+/2. WebApp calls Microsoft Graph on behalf of signed-in user/2.2/AppCreationScripts/Quickstart.json
+/2. WebApp calls Microsoft Graph on behalf of signed-in user/2.2/AppCreationScripts/createdApps.html

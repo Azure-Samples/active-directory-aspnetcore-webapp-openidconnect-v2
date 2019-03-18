@@ -1,0 +1,232 @@
+---
+services: active-directory
+platforms: dotnet
+author: kalyankrishna1
+level: 200
+client: ASP.NET Core 2.x Web App
+service: Microsoft Graph
+endpoint: AAD v2.0
+---
+
+# Using the Microsoft identity platform to call the Microsoft Graph API from an An ASP.NET Core 2.x Web App, on behalf of a user signing-in using their work and school or Microsoft personal account
+
+![Build badge](https://identitydivision.visualstudio.com/_apis/public/build/definitions/a7934fdd-dcde-4492-a406-7fad6ac00e17/514/badge)
+
+## Scenario
+
+Starting from a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users, this chapter of the tutorial shows how to make a call to Microsoft Graph `/me` endpoint on behalf of the signed-in user. This sample additionally provides instructions on how to use Sql Server for caching tokens. 
+
+It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). The complexities of the library's integration with the ASP.NET Core dependency Injection patterns is encapsultated into the `Microsoft.Identity.Web` library project, which is a part of this tutorial. 
+
+![Sign in with the Microsoft identity platform for developers (fomerly Azure AD v2.0)](ReadmeFiles/sign-in.png)
+
+## How to run this sample
+
+To run this sample:
+
+> Pre-requisites:
+>
+> go through the previous phase of the tutorial showing how the [WebApp signs-in users with Microsoft Identity (OIDC) / with work and school or personal accounts](../../1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)/1.3.%20with%20work%20and%20school%20or%20personal%20accounts). This page shows the incremental change required to call the Microsoft Graph API on behalf of a user that has successfully signed in to the web app.
+
+### Step 1: Register the sample with your Azure AD tenant
+
+You first need to [register](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2#step-1-register-the-sample-with-your-azure-ad-tenant) your app as described in [the first tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2)
+
+Then follow the following extra set of steps:
+
+1. From the **Certificates & secrets** page, for your app registration, in the **Client secrets** section, choose **New client secret**:
+
+   - Type a key description (of instance `app secret`),
+   - Select a key duration of either **In 1 year**, **In 2 years**, or **Never Expires**.
+   - When you press the **Add** button, the key value will be displayed, copy, and save the value in a safe location.
+   - You'll need this key later to configure the project in Visual Studio. This key value will not be displayed again, nor retrievable by any other means.
+1. In the list of pages for the app, select **API permissions**, and notice that a delegated permission is set by default to Microsoft Graph for the scope **User.Read**
+
+### Step 2: Download/Clone/Go to the folder containing the sample code and build the application
+
+If you have not already,  clone this sample from your shell or command line:
+
+  ```Sh
+  git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial webapp
+  cd webapp
+  ```
+
+Go to the `"2. WebApp calls Microsoft Graph on behalf of signed-in use/2.2"` folder
+
+ ```Sh
+  cd "2. WebApp calls Microsoft Graph on behalf of signed-in use\2.2"`
+  ```
+
+  In the `appsettings.json` file, replace, if you have not already:
+
+- the `ClientID` value with the *Application ID* from the application you registered in Application Registration portal,
+- the `TenantId` by `common`, as here you chose to sign-in users with their work or school or personal account. In case you want to sign-in different audiences, refer back to the first phase of the tutorial
+- and the `ClientSecret` by the client secret you generated in Step 1.
+
+- In the `TokenCacheDbConnStr`, provide the Sql server conenction string to the database you wish to use for token caching.
+- In case you want to deploy your app in Sovereign or national clouds, ensure the `GraphApiUrl` option matches the one you want. By default this is Microsoft Graph in the Azure public cloud
+
+  ```JSon
+   "GraphApiUrl": "https://graph.microsoft.com"
+  ```
+
+### Step 3: Run the sample
+
+1. Build the solution and run it.
+
+2. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform (fomerly Azure AD v2.0) endpoint. Sign in with your personal account or with a work or school account.
+
+3. Go to the **Profile** page, you should now see all kind of information about yourself as well as your picture (a call was made to the Microsoft Graph */me* endpoint)
+
+## About The code
+
+Starting from the [previous phase of the tutorial](../../1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)), the code was incrementally updated with the following steps:
+
+### Update the `Startup.cs` file to enable TokenAcquisition by a MSAL.NET based service
+
+After the following lines in the ConfigureServices(IServiceCollection services) method, replace the following line of code
+
+```CSharp
+public void ConfigureServices(IServiceCollection services)
+{
+    . . .
+    services.AddAzureAdV2Authentication(Configuration);
+```
+
+with
+
+```CSharp
+public void ConfigureServices(IServiceCollection services)
+{
+    . . .
+    // Token acquisition service based on MSAL.NET 
+    // and chosen token cache implementation
+    services.AddAzureAdV2Authentication(Configuration)
+            .AddMsal(new string[] { Constants.ScopeUserRead })
+            .AddSqlAppTokenCache(Configuration)
+            .AddSqlPerUserTokenCache(Configuration);
+            
+```
+
+The aforementioned four lines of code are explained below.
+
+1. The first two lines enable MSAL.NET to hook-up to the OpenID Connect events to redeem the authorization code obtained by the ASP.NET Core middleware. After obtaining a token for Microsoft Graph, it saves it into the token cache, for use by the Controllers.
+1. The last two lines hook up the Sql server database based token caching solution to MSAL.NET. The Sql based token cache requires a **Connection string** named `TokenCacheDbConnStr` available in the **ConnectionStrings** collections of the **appsettings.js** configuration file. 
+
+### Add additional files to call Microsoft Graph
+
+Add the `Services\Microsoft-Graph-Rest\*.cs` files. This is an implementation of a custom service which encapsultes the call to the Microsoft Graph /me endpoint. Given an access token for Microsoft Graph, it's capable of getting the user information and the photo of the user.
+
+```CSharp
+public interface IGraphApiOperations
+{
+ Task<dynamic> GetUserInformation(string accessToken);
+ Task<string> GetPhotoAsBase64Async(string accessToken);
+}
+```
+
+### Update the `Startup.cs` file to enable the Microsoft Graph custom service
+
+Still in the `Startup.cs` file, add the following lines just after the following. This lines ensures that the GraphAPIService benefits from the optimized `HttpClient` management by ASP.NET Core.
+
+```CSharp
+    // Add Graph
+    services.AddGraphService(Configuration);
+```
+
+### Change the controller code to acquire a token and call Microsoft Graph
+
+In the `Controllers\HomeController.cs`file:
+
+1. Add a constructor to HomeController, making the ITokenAcquisition service available (used by the ASP.NET dependency injection mechanism)
+
+   ```CSharp
+   public HomeController(ITokenAcquisition tokenAcquisition, IGraphApiOperations graphApiOperations)
+   {
+     this.tokenAcquisition = tokenAcquisition;
+     this.graphApiOperations = graphApiOperations;
+
+   }
+   private ITokenAcquisition tokenAcquisition;
+   private readonly IGraphApiOperations graphApiOperations;
+   ```
+
+1. Add a `Profile()` action so that it calls the Microsoft Graph *me* endpoint. In case a token cannot be acquired, a challenge is attempted to re-sign-in the user, and have them consent to the requested scopes. This is expressed declaratively by the `MsalUiRequiredExceptionFilter`attribute. This attribute is part of the `Microsoft.Identity.Web` project and automatically manages incremental consent.
+
+   ```CSharp
+   [MsalUiRequiredExceptionFilter(Scopes = new[] {Constants.ScopeUserRead})]
+   public async Task<IActionResult> Profile()
+   {
+    var accessToken =
+    await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, 
+                                                     new[] {Constants.ScopeUserRead});
+
+    var me = await graphApiOperations.GetUserInformation(accessToken);
+    var photo = await graphApiOperations.GetPhotoAsBase64Async(accessToken);
+
+    ViewData["Me"] = me;
+    ViewData["Photo"] = photo;
+
+    return View();
+   }
+   ```
+
+### Add a Profile view to display the *me* object
+
+Add a new view `Views\Home\Profile.cshtml` and insert the following code, which creates an
+HTML table displaying the properties of the *me* object as returned by Microsoft Graph.
+
+```CSharp
+@using Newtonsoft.Json.Linq
+@{
+    ViewData["Title"] = "Profile";
+}
+<h2>@ViewData["Title"]</h2>
+<h3>@ViewData["Message"]</h3>
+
+<table class="table table-striped table-condensed" style="font-family: monospace">
+ <tr>
+    <th>Property</th>
+    <th>Value</th>
+ </tr>
+ <tr>
+   <td>photo</td>
+   <td>
+   @{
+     if (ViewData["photo"] != null)
+     {
+     <img style="margin: 5px 0; width: 150px" src="data:image/jpeg;base64, @ViewData["photo"]" />
+     }
+     else
+     {
+      <h3>NO PHOTO</h3>
+      <p>Check user profile in Azure Active Directory to add a photo.</p>
+     }
+    }
+    </td>
+  </tr>
+  @{
+    var me = ViewData["me"] as JObject;
+    var children = me.Properties();
+    foreach (var child in children)
+    {
+     <tr>
+       <td>@child.Name</td>
+       <td>@child.Value</td>
+     </tr>
+    }
+   }
+</table>
+```
+
+## Next steps
+
+- Learn how to enable distributed caches in [token cache serialization](../2.2.%20token%20cache%20serialization)
+- Learn how the same principle you've just learnt can be used to call:
+  - [several Microsoft APIs](../../3.%20WebApp%20calls%20several%20APIS%20(incremental%20consent%20and%20CA)), which will enable you to learn how incremental consent and conditional access is managed in your Web App
+  - 3rd party, or even [your own Web API](../../4.%20WebApp%20calls%20your%20own%20Web%20API), which will enable you to learn about custom scopes
+
+## Learn more
+
+- Learn how [Microsoft.Identity.Web](../../Microsoft.Identity.Web) works, in particular hooks-up to the ASP.NET Core ODIC events
+- [Use HttpClientFactory to implement resilient HTTP requests](https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests) used by the Graph custom service

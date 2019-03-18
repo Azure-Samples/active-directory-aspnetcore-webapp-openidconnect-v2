@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web.Client;
+using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
+using WebApp_OpenIDConnect_DotNet_Cache_V2.Infrastructure;
 using WebApp_OpenIDConnect_DotNet_Cache_V2.Models;
 
 namespace WebApp_OpenIDConnect_DotNet_Cache_V2.Controllers
@@ -12,13 +12,31 @@ namespace WebApp_OpenIDConnect_DotNet_Cache_V2.Controllers
     [Authorize]
     public class HomeController : Controller
     {
+        readonly ITokenAcquisition tokenAcquisition;
+        private readonly IGraphApiOperations graphApiOperations;
+
+        public HomeController(ITokenAcquisition tokenAcquisition, IGraphApiOperations graphApiOperations)
+        {
+            this.tokenAcquisition = tokenAcquisition;
+            this.graphApiOperations = graphApiOperations;
+        }
+
         public IActionResult Index()
         {
             return View();
         }
 
-        public IActionResult Privacy()
+        [MsalUiRequiredExceptionFilter(Scopes = new[] { Constants.ScopeUserRead })]
+        public async Task<IActionResult> Profile()
         {
+            var accessToken = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new[] { Constants.ScopeUserRead });
+
+            var me = await graphApiOperations.GetUserInformation(accessToken);
+            var photo = await graphApiOperations.GetPhotoAsBase64Async(accessToken);
+
+            ViewData["Me"] = me;
+            ViewData["Photo"] = photo;
+
             return View();
         }
 
