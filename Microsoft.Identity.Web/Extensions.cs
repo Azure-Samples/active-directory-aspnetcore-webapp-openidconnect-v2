@@ -188,7 +188,7 @@ namespace Microsoft.Identity.Web
         /// <returns></returns>
         public static IServiceCollection AddSessionAppTokenCache(this IServiceCollection services)
         {
-            services.AddSingleton<IMSALAppTokenCacheProvider, MSALAppSessionTokenCacheProvider>();
+            services.AddTransient<IMSALAppTokenCacheProvider, MSALAppSessionTokenCacheProvider>();
             return services;
         }
 
@@ -197,7 +197,7 @@ namespace Microsoft.Identity.Web
         /// <returns></returns>
         public static IServiceCollection AddSessionPerUserTokenCache(this IServiceCollection services)
         {
-            services.AddSingleton<IMSALUserTokenCacheProvider, MSALPerUserSessionTokenCacheProvider>();
+            services.AddTransient<IMSALUserTokenCacheProvider, MSALPerUserSessionTokenCacheProvider>();
             return services;
         }
 
@@ -212,7 +212,8 @@ namespace Microsoft.Identity.Web
             services.AddDbContext<TokenCacheDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("TokenCacheDbConnStr")));
 
-            services.AddSingleton<IMSALAppTokenCacheProvider, MSALAppSqlTokenCacheProvider>();
+            services.AddTransient<IMSALAppTokenCacheProvider, MSALAppSqlTokenCacheProvider>();
+
             return services;
         }
 
@@ -227,7 +228,7 @@ namespace Microsoft.Identity.Web
             services.AddDbContext<TokenCacheDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("TokenCacheDbConnStr")));
 
-            services.AddSingleton<IMSALUserTokenCacheProvider, MSALPerUserSqlTokenCacheProvider>();
+            services.AddTransient<IMSALUserTokenCacheProvider, MSALPerUserSqlTokenCacheProvider>();
             return services;
         }
 
@@ -252,7 +253,7 @@ namespace Microsoft.Identity.Web
         public static IServiceCollection AddTokenAcquisition(this IServiceCollection services)
         {
             // Token acquisition service
-            services.AddSingleton<ITokenAcquisition, TokenAcquisition>();
+            services.AddTransient<ITokenAcquisition, TokenAcquisition>();
             return services;
         }
     }
