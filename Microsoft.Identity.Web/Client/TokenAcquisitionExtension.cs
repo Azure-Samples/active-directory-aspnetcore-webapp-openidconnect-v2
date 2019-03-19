@@ -22,26 +22,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ***********************************************************************************************/
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.Identity.Client;
-using System.Security.Claims;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Identity.Web.Client;
+using System.Runtime.CompilerServices;
 
-namespace Microsoft.Identity.Web.Client.TokenCacheProviders
+[assembly: InternalsVisibleTo("TokenCache.Tests.Core")]
+
+namespace Microsoft.Identity.Web
 {
     /// <summary>
-    /// MSAL token cache provider interface for user accounts
+    /// Extension methods
     /// </summary>
-    public interface IMSALUserTokenCacheProvider
+    public static class TokenAcquisitionExtension
     {
-        /// <summary>Initializes this instance of TokenCacheProvider with essentials to initialize themselves.</summary>
-        /// <param name="tokenCache">The token cache instance of MSAL application</param>
-        /// <param name="httpcontext">The Httpcontext whose Session will be used for caching.This is required by some providers.</param>
-        /// <param name="user">The signed-in user for whom the cache needs to be established. Not needed by all providers.</param>
-        void Initialize(ITokenCache tokenCache, HttpContext httpcontext, ClaimsPrincipal user);
-
         /// <summary>
-        /// Clears the token cache for this user
+        /// Add the token acquisition service.
         /// </summary>
-        void Clear();
+        /// <param name="services">Service collection</param>
+        /// <returns>the service collection</returns>
+        /// <example>
+        /// This method is typically called from the Startup.ConfigureServices(IServiceCollection services)
+        /// Note that the implementation of the token cache can be chosen separately.
+        ///
+        /// <code>
+        /// // Token acquisition service and its cache implementation as a session cache
+        /// services.AddTokenAcquisition()
+        /// .AddDistributedMemoryCache()
+        /// .AddSession()
+        /// .AddSessionBasedTokenCache()
+        ///  ;
+        /// </code>
+        /// </example>
+        public static IServiceCollection AddTokenAcquisition(this IServiceCollection services)
+        {
+            // Token acquisition service
+            services.AddTransient<ITokenAcquisition, TokenAcquisition>();
+            return services;
+        }
     }
 }

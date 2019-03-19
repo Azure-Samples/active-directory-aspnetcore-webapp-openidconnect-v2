@@ -22,23 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ***********************************************************************************************/
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Client;
-using Microsoft.Identity.Web.Client;
-using Microsoft.Identity.Web.Client.TokenCacheProviders;
-using System.Runtime.CompilerServices;
+using System;
+using System.Collections.Generic;
 using System.Security.Claims;
-
-[assembly: InternalsVisibleTo("TokenCache.Tests.Core")]
+using System.Text;
 
 namespace Microsoft.Identity.Web
 {
-    /// <summary>
-    /// Extension methods
-    /// </summary>
-    public static class Extensions
+    public static class ClaimsPrincipalExtensions
     {
         /// <summary>
         /// Get the Account identifier for an MSAL.NET account from a ClaimsPrincipal
@@ -159,102 +151,6 @@ namespace Microsoft.Identity.Web
             }
 
             return null;
-        }
-
-        /// <summary>Adds the in memory based application token cache to the service collection.</summary>
-        /// <param name="services">The services collection to add to.</param>
-        /// <returns></returns>
-        public static IServiceCollection AddInMemoryAppTokenCache(this IServiceCollection services)
-        {
-            services.AddMemoryCache();
-
-            services.AddSingleton<IMSALAppTokenCacheProvider, MSALAppMemoryTokenCacheProvider>();
-            return services;
-        }
-
-        /// <summary>Adds the in memory based per user token cache to the service collection.</summary>
-        /// <param name="services">The services collection to add to.</param>
-        /// <returns></returns>
-        public static IServiceCollection AddInMemoryPerUserTokenCache(this IServiceCollection services)
-        {
-            services.AddMemoryCache();
-
-            services.AddSingleton<IMSALUserTokenCacheProvider, MSALPerUserMemoryTokenCacheProvider>();
-            return services;
-        }
-
-        /// <summary>Adds the Http session based application token cache to the service collection.</summary>
-        /// <param name="services">The services collection to add to.</param>
-        /// <returns></returns>
-        public static IServiceCollection AddSessionAppTokenCache(this IServiceCollection services)
-        {
-            services.AddTransient<IMSALAppTokenCacheProvider, MSALAppSessionTokenCacheProvider>();
-            return services;
-        }
-
-        /// <summary>Adds the http session based per user token cache to the service collection.</summary>
-        /// <param name="services">The services collection to add to.</param>
-        /// <returns></returns>
-        public static IServiceCollection AddSessionPerUserTokenCache(this IServiceCollection services)
-        {
-            services.AddTransient<IMSALUserTokenCacheProvider, MSALPerUserSessionTokenCacheProvider>();
-            return services;
-        }
-
-        /// <summary>Adds the Sql Server based application token cache to the service collection.</summary>
-        /// <param name="services">The services collection to add to.</param>
-        /// <param name="configuration">The configuration instance from where this method pulls the connection string to the Sql database.</param>
-        /// <returns></returns>
-        public static IServiceCollection AddSqlAppTokenCache(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddDataProtection();
-
-            services.AddDbContext<TokenCacheDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("TokenCacheDbConnStr")));
-
-            services.AddTransient<IMSALAppTokenCacheProvider, MSALAppSqlTokenCacheProvider>();
-
-            return services;
-        }
-
-        /// <summary>Adds the Sql Server based per user token cache to the service collection.</summary>
-        /// <param name="services">The services.</param>
-        /// <param name="configuration">The configuration instance from where this method pulls the connection string to the Sql database.</param>
-        /// <returns></returns>
-        public static IServiceCollection AddSqlPerUserTokenCache(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddDataProtection();
-
-            services.AddDbContext<TokenCacheDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("TokenCacheDbConnStr")));
-
-            services.AddTransient<IMSALUserTokenCacheProvider, MSALPerUserSqlTokenCacheProvider>();
-            return services;
-        }
-
-        /// <summary>
-        /// Add the token acquisition service.
-        /// </summary>
-        /// <param name="services">Service collection</param>
-        /// <returns>the service collection</returns>
-        /// <example>
-        /// This method is typically called from the Startup.ConfigureServices(IServiceCollection services)
-        /// Note that the implementation of the token cache can be chosen separately.
-        ///
-        /// <code>
-        /// // Token acquisition service and its cache implementation as a session cache
-        /// services.AddTokenAcquisition()
-        /// .AddDistributedMemoryCache()
-        /// .AddSession()
-        /// .AddSessionBasedTokenCache()
-        ///  ;
-        /// </code>
-        /// </example>
-        public static IServiceCollection AddTokenAcquisition(this IServiceCollection services)
-        {
-            // Token acquisition service
-            services.AddTransient<ITokenAcquisition, TokenAcquisition>();
-            return services;
         }
     }
 }

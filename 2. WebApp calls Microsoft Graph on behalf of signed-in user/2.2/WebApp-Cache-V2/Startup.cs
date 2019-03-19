@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Identity.Web;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using WebApp_OpenIDConnect_DotNet_Cache_V2.Infrastructure;
+using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.Client.TokenCacheProviders;
 using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
+using WebApp_OpenIDConnect_DotNet_Cache_V2.Infrastructure;
 
 namespace WebApp_OpenIDConnect_DotNet_Cache_V2
 {
@@ -38,7 +32,7 @@ namespace WebApp_OpenIDConnect_DotNet_Cache_V2
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            // Token acquisition service based on MSAL.NET 
+            // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
             services.AddAzureAdV2Authentication(Configuration)
                     .AddMsal(new string[] { Constants.ScopeUserRead })
@@ -57,8 +51,6 @@ namespace WebApp_OpenIDConnect_DotNet_Cache_V2
             })
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
-
-
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
