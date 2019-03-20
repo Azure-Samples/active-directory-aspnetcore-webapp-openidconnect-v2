@@ -36,3 +36,5 @@
 /2. WebApp calls Microsoft Graph on behalf of signed-in user/2.2/AppCreationScripts/Steps.md
 /2. WebApp calls Microsoft Graph on behalf of signed-in user/2.2/AppCreationScripts/Quickstart.json
 /2. WebApp calls Microsoft Graph on behalf of signed-in user/2.2/AppCreationScripts/createdApps.html
+/2. WebApp calls Microsoft Graph on behalf of signed-in user/2.2/bin/Debug/netcoreapp2.2
+/2. WebApp calls Microsoft Graph on behalf of signed-in user/2.2/obj

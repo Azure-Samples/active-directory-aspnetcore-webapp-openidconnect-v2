@@ -49,8 +49,8 @@ This function removes the Azure AD applications for the sample. These applicatio
     # Removes the applications
     Write-Host "Cleaning-up applications from tenant '$tenantName'"
 
-    Write-Host "Removing 'webApp' (WebApp-SqlCache-V2) if needed"
-    $app=Get-AzureADApplication -Filter "DisplayName eq 'WebApp-SqlCache-V2'"  
+    Write-Host "Removing 'webApp' (WebApp-OpenIDConnect-DotNet-code-v2) if needed"
+    $app=Get-AzureADApplication -Filter "DisplayName eq 'WebApp-OpenIDConnect-DotNet-code-v2'"  
 
     if ($app)
     {

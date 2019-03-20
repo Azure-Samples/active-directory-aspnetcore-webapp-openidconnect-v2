@@ -14,11 +14,11 @@
   "AADApps": [
     {
       "Id": "webApp",
-      "Name": "WebApp-SqlCache-V2",
+      "Name": "WebApp-OpenIDConnect-DotNet-code-v2",
       "Kind": "WebApp",
-      "HomePage": "https://localhost:44394/",
-      "ReplyUrls": "https://localhost:44394/, https://localhost:44394/signin-oidc",
-      "LogoutUrl": "https://localhost:44394/signout-oidc",
+      "HomePage": "https://localhost:44321/",
+      "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc",
+      "LogoutUrl": "https://localhost:44321/signout-oidc",
       "PasswordCredentials": "Auto",
       "RequiredResourcesAccess": [
         {
@@ -39,7 +39,7 @@
     {
       "App": "webApp",
       "SettingKind": "JSon",
-      "SettingFile": "\\..\\WebApp-Cache-V2\\appsettings.json",
+      "SettingFile": "\\..\\appsettings.json",
       "Mappings": [
         {
           "key": "ClientId",
