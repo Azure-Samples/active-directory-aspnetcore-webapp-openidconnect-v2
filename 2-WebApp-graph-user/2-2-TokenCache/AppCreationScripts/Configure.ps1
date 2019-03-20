@@ -233,7 +233,9 @@ Function ConfigureApplications
 
    Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  
    
-   Write-Host "Remember to set the 'TokenCacheDbConnStr' in appsettings.config before you run the project"
+   Write-Host -ForeGroundColor Green "#######################################################################################################################################################"
+   Write-Host -ForeGroundColor Red "NOTE :Remember to go through the section 'Configure a Sql server database for token caching' in Readme to configure the toekn caching database  before you run the project"
+   Write-Host -ForeGroundColor Green "#######################################################################################################################################################"
 }
 
 # Pre-requisites

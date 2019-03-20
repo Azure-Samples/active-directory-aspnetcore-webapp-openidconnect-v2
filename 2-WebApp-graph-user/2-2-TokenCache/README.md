@@ -126,8 +126,15 @@ Open the solution in Visual Studio to configure the projects
 1. Find the app key `TenantId` and replace the existing value with your Azure AD tenant ID.
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
 1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp-OpenIDConnect-DotNet-code-v2` app, in the Azure portal.
-1. In the `TokenCacheDbConnStr` key, provide the Sql server conenction string to the database you wish to use for token caching.
 1. In case you want to deploy your app in Sovereign or national clouds, ensure the `GraphApiUrl` option matches the one you want. By default this is Microsoft Graph in the Azure public cloud
+
+#### Configure a Sql server database for token caching
+
+1. In the `TokenCacheDbConnStr` key, provide the Sql server conenction string to the database you wish to use for token caching.
+1. If you do not have an existing database and tables needed for token caching, this sample can use  [EF Core- code first](https://docs.microsoft.com/en-us/ef/core/get-started/aspnetcore/new-db?tabs=visual-studio) to create a database and tables for you. to do that, follow the steps below.
+    1. In the file `Microsoft.Identity.Web\Client\TokenCacheProviders\Sql\MSALAppSqlTokenCacheProviderExtension.cs`, uncomment the code under the **// Uncomment the following lines to create the database.**. This comment exists once in the **AddSqlAppTokenCache** and **AddSqlPerUserTokenCache**  methods.
+    1. Run the solution again, when a user signs-in the very first time, the Entity Framework will create the database and tables  `AppTokenCache` and `UserTokenCache` for app and user token caching respectively.
+
 
 ### Step 3: Run the sample
 
