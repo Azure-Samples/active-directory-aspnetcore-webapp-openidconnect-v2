@@ -88,7 +88,30 @@ git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcor
 cd webapp
 ```
 
-> Given that the name of the sample is pretty long, that it has sub-folders and so are the name of the referenced NuGet pacakges, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
+### Option 2: Restrict access to a list of organizations
+
+You can restrict sign-in access to only user accounts that are in a specific list of Azure AD organizations:
+
+1. In your **Extensions\AzureAdAuthenticationBuilderExtensions.cs** file, set the `ValidateIssuer` argument to **`true`**
+2. Add a `ValidIssuers` `TokenValidationParameters` parameter containing the list of allowed organizations.
+
+### Option 3: Use a custom method to validate issuers
+
+You can implement a custom method to validate issuers by using the **IssuerValidator** parameter. For more information about how to use this parameter, read about the [TokenValidationParameters class](https://msdn.microsoft.com/library/system.identitymodel.tokens.tokenvalidationparameters.aspx) on MSDN.
+
+### Variations
+
+You can also decide which types of user accounts can sign in to your Web App by changing the Authority. The picture below shows all the possibilities
+
+![Variations](ReadmeFiles/v2-variations.png)
+
+## About the code
+
+This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Azure AD tenant. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app and the URL of the Azure AD tenant where the app is registered, which is read from the `appsettings.json` file. The middleware takes care of:
+
+- Downloading the Azure AD metadata, finding the signing keys, and finding the issuer name for the tenant.
+- Processing OpenID Connect sign-in responses by validating the signature and issuer in an incoming JWT, extracting the user's claims, and putting the claims in `ClaimsPrincipal.Current`.
+- Integrating with the session cookie ASP.NET Core middleware to establish a session for the user.
 
 - We recommend that you start by the first part [1. WebApp signs-in users with Microsoft identity (OIDC)](1.%20WebApp%20signs-in%20users%20with%20Microsoft%20Identity%20(OIDC)) where you will learn how to sign-in users within your own organization
 - It's however possible to start at any phase of the tutorial as the full code is provided in each folder.
@@ -107,9 +130,10 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
 
 If you'd like to contribute to this sample, see [CONTRIBUTING.MD](/CONTRIBUTING.md).
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information, see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+The token validation is performed by the classes of the [Identity Model Extensions for DotNet](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet) library. Learn how to customize
+token validation by reading the *Conceptual Documentation* section of [ValidatingTokens](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki/ValidatingTokens).
 
-## Other samples and documentation
+### Next steps - call a Web API from the Web App
 
 - the documentation for the Microsoft identity platform for developers is available from [https://aka.ms/aadv2](https://aka.ms/aadv2)
 - Other samples for the Microsoft identity platform for developers are available from [https://aka.ms/aaddevsamplesv2](https://aka.ms/aaddevsamplesv2)
