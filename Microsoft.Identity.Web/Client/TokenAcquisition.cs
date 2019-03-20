@@ -1,4 +1,28 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿/************************************************************************************************
+The MIT License (MIT)
+
+Copyright (c) 2015 Microsoft Corporation
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+***********************************************************************************************/
+
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +31,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.AppConfig;
+using Microsoft.Identity.Web.Client.TokenCacheProviders;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,37 +43,6 @@ using System.Threading.Tasks;
 namespace Microsoft.Identity.Web.Client
 {
     /// <summary>
-    /// Extension class enabling adding the TokenAcquisition service
-    /// </summary>
-    public static class TokenAcquisitionExtension
-    {
-        /// <summary>
-        /// Add the token acquisition service.
-        /// </summary>
-        /// <param name="services">Service collection</param>
-        /// <returns>the service collection</returns>
-        /// <example>
-        /// This method is typically called from the Startup.ConfigureServices(IServiceCollection services)
-        /// Note that the implementation of the token cache can be chosen separately.
-        /// 
-        /// <code>
-        /// // Token acquisition service and its cache implementation as a session cache
-        /// services.AddTokenAcquisition()
-        /// .AddDistributedMemoryCache()
-        /// .AddSession()
-        /// .AddSessionBasedTokenCache()
-        ///  ;
-        /// </code>
-        /// </example>
-        public static IServiceCollection AddTokenAcquisition(this IServiceCollection services)
-        {
-            // Token acquisition service
-            services.AddSingleton<ITokenAcquisition, TokenAcquisition>();
-            return services;
-        }
-    }
-
-    /// <summary>
     /// Token acquisition service
     /// </summary>
     public class TokenAcquisition : ITokenAcquisition
@@ -56,27 +50,38 @@ namespace Microsoft.Identity.Web.Client
         private readonly AzureADOptions azureAdOptions;
         private ConfidentialClientApplicationOptions _applicationOptions;
 
-        private readonly ITokenCacheProvider tokenCacheProvider;
+        private readonly IMSALAppTokenCacheProvider AppTokenCacheProvider;
+        private readonly IMSALUserTokenCacheProvider UserTokenCacheProvider;
 
         /// <summary>
         /// Constructor of the TokenAcquisition service. This requires the Azure AD Options to 
         /// configure the confidential client application and a token cache provider.
         /// This constructor is called by ASP.NET Core dependency injection
         /// </summary>
-        /// <param name="options">Options to configure the application</param>
-        public TokenAcquisition(ITokenCacheProvider tokenCacheProvider, IConfiguration configuration)
+        /// <param name="appTokenCacheProvider">The App token cache provider</param>
+        /// <param name="userTokenCacheProvider">The User token cache provider</param>
+        /// <param name="configuration"></param>
+        public TokenAcquisition(IConfiguration configuration, IMSALAppTokenCacheProvider appTokenCacheProvider, IMSALUserTokenCacheProvider userTokenCacheProvider)
         {
             azureAdOptions = new AzureADOptions();
             configuration.Bind("AzureAD", azureAdOptions);
+
             _applicationOptions = new ConfidentialClientApplicationOptions();
             configuration.Bind("AzureAD", _applicationOptions);
-            this.tokenCacheProvider = tokenCacheProvider;
+
+            this.AppTokenCacheProvider = appTokenCacheProvider;
+            this.UserTokenCacheProvider = userTokenCacheProvider;
         }
 
         /// <summary>
         /// Scopes which are already requested by MSAL.NET. they should not be re-requested;
         /// </summary>
-        private readonly string[] scopesRequestedByMsalNet = new string[] { OidcConstants.ScopeOpenId, OidcConstants.ScopeProfile, OidcConstants.ScopeOfflineAccess };
+        private readonly string[] scopesRequestedByMsalNet = new string[]
+        {
+            OidcConstants.ScopeOpenId,
+            OidcConstants.ScopeProfile,
+            OidcConstants.ScopeOfflineAccess
+        };
 
         /// <summary>
         /// In a Web App, adds, to the MSAL.NET cache, the account of the user authenticating to the Web App, when the authorization code is received (after the user
@@ -119,7 +124,7 @@ namespace Microsoft.Identity.Web.Client
                 // even if it's not done yet, so that it does not concurrently call the Token endpoint.
                 context.HandleCodeRedemption();
 
-                var application = CreateApplication(context.HttpContext, context.Principal);
+                var application = this.BuildConfidentialClientApplication(context.HttpContext, context.Principal);
 
                 // Do not share the access token with ASP.NET Core otherwise ASP.NET will cache it and will not send the OAuth 2.0 request in
                 // case a further call to AcquireTokenByAuthorizationCodeAsync in the future for incremental consent (getting a code requesting more scopes)
@@ -153,10 +158,9 @@ namespace Microsoft.Identity.Web.Client
                 throw new ArgumentNullException(nameof(scopes));
 
             // Use MSAL to get the right token to call the API
-            var application = CreateApplication(context, context.User);
+            var application = this.BuildConfidentialClientApplication(context, context.User);
             return await GetAccessTokenOnBehalfOfUser(application, context.User, scopes, tenant);
         }
-
 
         /// <summary>
         /// In a Web API, adds to the MSAL.NET cache, the account of the user for which a bearer token was received when the Web API was called.
@@ -239,7 +243,7 @@ namespace Microsoft.Identity.Web.Client
         public async Task RemoveAccount(RedirectContext context)
         {
             ClaimsPrincipal user = context.HttpContext.User;
-            IConfidentialClientApplication app = CreateApplication(context.HttpContext, user);
+            IConfidentialClientApplication app = this.BuildConfidentialClientApplication(context.HttpContext, user);
             IAccount account = await app.GetAccountAsync(context.HttpContext.User.GetMsalAccountId());
 
             // Workaround for the guest account
@@ -248,6 +252,10 @@ namespace Microsoft.Identity.Web.Client
                 var accounts = await app.GetAccountsAsync();
                 account = accounts.FirstOrDefault(a => a.Username == user.GetLoginHint());
             }
+
+            this.AppTokenCacheProvider?.Clear();
+            this.UserTokenCacheProvider?.Clear();
+
             await app.RemoveAsync(account);
         }
 
@@ -259,20 +267,30 @@ namespace Microsoft.Identity.Web.Client
         /// <param name="authenticationProperties"></param>
         /// <param name="signInScheme"></param>
         /// <returns></returns>
-        private IConfidentialClientApplication CreateApplication(HttpContext httpContext, ClaimsPrincipal claimsPrincipal)
+        private IConfidentialClientApplication BuildConfidentialClientApplication(HttpContext httpContext, ClaimsPrincipal claimsPrincipal)
         {
             var request = httpContext.Request;
             string currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, azureAdOptions.CallbackPath ?? string.Empty);
             string authority = $"{azureAdOptions.Instance}{azureAdOptions.TenantId}/";
+
             var app = ConfidentialClientApplicationBuilder.CreateWithApplicationOptions(_applicationOptions)
                .WithRedirectUri(currentUri)
                .WithAuthority(authority)
                .Build();
-            tokenCacheProvider.EnableSerialization(app.UserTokenCache, httpContext, claimsPrincipal);
-            return app;
+
+            // Initialize token cache providers
+            if (this.AppTokenCacheProvider != null)
+            {
+                this.AppTokenCacheProvider.Initialize(app.AppTokenCache, httpContext);
         }
 
+            if (this.UserTokenCacheProvider != null)
+            {
+                this.UserTokenCacheProvider.Initialize(app.UserTokenCache, httpContext, claimsPrincipal);
+            }
 
+            return app;
+        }
 
         /// <summary>
         /// Gets an access token for a downstream API on behalf of the user described by its claimsPrincipal
@@ -343,7 +361,7 @@ namespace Microsoft.Identity.Web.Client
                     // TODO: Understand if we could support other kind of client assertions (SAML);
                 }
 
-                var application = CreateApplication(httpContext, principal);
+                var application = BuildConfidentialClientApplication(httpContext, principal);
 
                 // .Result to make sure that the cache is filled-in before the controller tries to get access tokens
                 var result = application.AcquireTokenOnBehalfOfAsync(requestedScopes.Except(scopesRequestedByMsalNet), userAssertion).Result;

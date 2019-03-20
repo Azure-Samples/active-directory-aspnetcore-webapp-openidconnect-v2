@@ -67,7 +67,7 @@ namespace Microsoft.Identity.Web.Resource
             else
             {
                 string authorityHost = new Uri(aadAuthority).Authority;
-                // In the constructor, we hit the Azure Ad issuer metadata endpoint and cache the aliases. The data is cached for 24 hrs by default.
+                // In the constructor, we hit the Azure AD issuer metadata endpoint and cache the aliases. The data is cached for 24 hrs.
                 string AzureADIssuerMetadataUrl = "https://login.microsoftonline.com/common/discovery/instance?authorization_endpoint=https://login.microsoftonline.com/common/oauth2/v2.0/authorize&api-version=1.1";
                 ConfigurationManager<IssuerMetadata> configManager = new ConfigurationManager<IssuerMetadata>(AzureADIssuerMetadataUrl, new IssuerConfigurationRetriever());
                 IssuerMetadata issuerMetadata = configManager.GetConfigurationAsync().Result;
@@ -106,12 +106,10 @@ namespace Microsoft.Identity.Web.Resource
             {
                 throw new ArgumentNullException(nameof(validationParameters), $"{nameof(validationParameters)} cannot be null.");
             }
-
-            // Extract the tenant Id from the claims
-            string tenantId = jwtToken.Claims.FirstOrDefault(c => c.Type == "tid")?.Value;
+            string tenantId = this.GetTenantIdFromClaims(jwtToken);
             if (string.IsNullOrWhiteSpace(tenantId))
             {
-                throw new SecurityTokenInvalidIssuerException("The `tid` claim is not present in the token obtained from Azure Active Directory.");
+                throw new SecurityTokenInvalidIssuerException("The `tenantId` claim is not present in the token obtained from Azure Active Directory.");
             }
 
             // Build a list of valid tenanted issuers from the provided TokenValidationParameters.
@@ -145,6 +143,24 @@ namespace Microsoft.Identity.Web.Resource
 
             // If a valid issuer is not found, throw
             throw new SecurityTokenInvalidIssuerException("Issuer does not match any of the valid issuers provided for this application.");
+        }
+
+        /// <summary>Gets the tenant id from claims.</summary>
+        /// <param name="jwtToken">The JWT token with the claims collection.</param>
+        /// <returns>A string containing tenantId, if focund or an empty string</returns>
+        private string GetTenantIdFromClaims(JwtSecurityToken jwtToken)
+        {
+            string tenantId;
+
+            // Extract the tenant Id from the claims
+            tenantId = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimConstants.TenantId)?.Value;
+
+            if(string.IsNullOrWhiteSpace(tenantId))
+            {
+                tenantId = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimConstants.tid)?.Value;
+            }
+
+            return tenantId;
         }
 
         private static string TenantedIssuer(string i, string tenantId)

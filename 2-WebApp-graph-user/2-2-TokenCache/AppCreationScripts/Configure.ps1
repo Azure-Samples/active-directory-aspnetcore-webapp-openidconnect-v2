@@ -232,6 +232,8 @@ Function ConfigureApplications
    UpdateTextFile -configFilePath $configFile -dictionary $dictionary
 
    Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  
+   
+   Write-Host "Remember to set the 'TokenCacheDbConnStr' in appsettings.config before you run the project"
 }
 
 # Pre-requisites
