@@ -35,14 +35,15 @@ namespace WebApp_OpenIDConnect_DotNet
 
             services.AddOptions();
 
-            var memoryCacheoptions = new MSALMemoryTokenCacheOptions { AbsoluteExpiration = DateTimeOffset.Now.AddHours(12) };
+            var memoryCacheoptions = new MSALMemoryTokenCacheOptions { AbsoluteExpiration = DateTimeOffset.Now.AddDays(14) };
 
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
             services.AddAzureAdV2Authentication(Configuration)
                 .AddInMemoryAppTokenCache(memoryCacheoptions)
+                .AddInMemoryPerUserTokenCache(memoryCacheoptions)
                 .AddMsal(new string[] { Constants.ScopeUserRead });
-            
+
             // Add Graph
             services.AddGraphService(Configuration);
 
