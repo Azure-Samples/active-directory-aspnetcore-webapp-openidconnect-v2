@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.Client;
 using Microsoft.Identity.Web.Client.TokenCacheProviders;
+using System;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
 
@@ -33,12 +33,16 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            // Token acquisition service based on MSAL.NET 
+            services.AddOptions();
+
+            var memoryCacheoptions = new MSALMemoryTokenCacheOptions { AbsoluteExpiration = DateTimeOffset.Now.AddHours(12) };
+
+            // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
             services.AddAzureAdV2Authentication(Configuration)
-                .AddMsal(new string[] { Constants.ScopeUserRead })
-                .AddInMemoryAppTokenCache();
-
+                .AddInMemoryAppTokenCache(memoryCacheoptions)
+                .AddMsal(new string[] { Constants.ScopeUserRead });
+            
             // Add Graph
             services.AddGraphService(Configuration);
 
@@ -51,8 +55,6 @@ namespace WebApp_OpenIDConnect_DotNet
             })
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
-
-
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

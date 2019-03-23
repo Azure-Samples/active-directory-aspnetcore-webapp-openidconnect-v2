@@ -1,5 +1,5 @@
-﻿/************************************************************************************************
-The MIT License (MIT)
+/*
+ The MIT License (MIT)
 
 Copyright (c) 2015 Microsoft Corporation
 
@@ -20,17 +20,33 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-***********************************************************************************************/
+*/
 
-namespace Microsoft.Identity.Web
+using System;
+
+namespace Microsoft.Identity.Web.Client.TokenCacheProviders
 {
     /// <summary>
-    /// claim keys constants
+    /// MSAL's memory token cache options
     /// </summary>
-    public static class ClaimConstants
+    public class MSALMemoryTokenCacheOptions
     {
-        public const string ObjectId = "http://schemas.microsoft.com/identity/claims/objectidentifier";
-        public const string TenantId = "http://schemas.microsoft.com/identity/claims/tenantid";
-        public const string tid = "tid";
+        /// <summary>
+        /// Gets or sets the value of The fixed date and time at which the cache entry will expire..
+        /// The duration till the tokens are kept in memory cache. In production, a higher value , upto 90 days is recommended.
+        /// </summary>
+        /// <value>
+        /// The AbsoluteExpiration value.
+        /// </value>
+        public DateTimeOffset AbsoluteExpiration
+        {
+            get;
+            set;
+        }
+
+        public MSALMemoryTokenCacheOptions()
+        {
+            this.AbsoluteExpiration = DateTimeOffset.Now.AddHours(12);
+        }
     }
 }

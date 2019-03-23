@@ -22,7 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Identity.Web.Client.TokenCacheProviders
 {
@@ -33,7 +35,13 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <returns></returns>
         public static IServiceCollection AddSessionAppTokenCache(this IServiceCollection services)
         {
-            services.AddTransient<IMSALAppTokenCacheProvider, MSALAppSessionTokenCacheProvider>();
+            services.AddScoped<IMSALAppTokenCacheProvider>(factory =>
+            {
+                var optionsMonitor = factory.GetRequiredService<IOptionsMonitor<AzureADOptions>>();
+
+                return new MSALAppSessionTokenCacheProvider(optionsMonitor);
+            });
+
             return services;
         }
 
@@ -42,7 +50,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <returns></returns>
         public static IServiceCollection AddSessionPerUserTokenCache(this IServiceCollection services)
         {
-            services.AddTransient<IMSALUserTokenCacheProvider, MSALPerUserSessionTokenCacheProvider>();
+            services.AddScoped<IMSALUserTokenCacheProvider, MSALPerUserSessionTokenCacheProvider>();
             return services;
         }
     }

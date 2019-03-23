@@ -26,12 +26,11 @@ using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Security.Claims;
 
 namespace Microsoft.Identity.Web.Client.TokenCacheProviders
 {
@@ -67,22 +66,24 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         internal string ActiveClientId;
 
         /// <summary>Initializes a new instance of the <see cref="EFMSALAppTokenCache"/> class.</summary>
-        /// <param name="configuration">The apps configuration</param>
-        /// <param name="protectionProvider">The data protection provider. Requires the caller to have used serviceCollection.AddDataProtection();</param>
         /// <param name="tokenCacheDbContext">The TokenCacheDbContext DbContext to read and write from Sql server.</param>
-        public MSALAppSqlTokenCacheProvider(IConfiguration configuration, IDataProtectionProvider protectionProvider, TokenCacheDbContext tokenCacheDbContext)
+        /// <param name="azureAdOptionsAccessor"></param>
+        /// <param name="protectionProvider">The data protection provider. Requires the caller to have used serviceCollection.AddDataProtection();</param>
+        public MSALAppSqlTokenCacheProvider(TokenCacheDbContext tokenCacheDbContext, IOptionsMonitor<AzureADOptions> azureAdOptionsAccessor, IDataProtectionProvider protectionProvider)
         {
             if (protectionProvider == null)
             {
-                throw new ArgumentNullException(nameof(protectionProvider), "The app token cache needs an IDataProtectionProvider to operate. Please use 'serviceCollection.AddDataProtection();' to add the data protection provider to the service collection");
+                throw new ArgumentNullException(nameof(protectionProvider), $"The app token cache needs an {nameof(IDataProtectionProvider)} to operate. Please use 'serviceCollection.AddDataProtection();' to add the data protection provider to the service collection");
             }
+
+            if (azureAdOptionsAccessor.CurrentValue == null && string.IsNullOrWhiteSpace(azureAdOptionsAccessor.CurrentValue.ClientId))
+            {
+                throw new ArgumentNullException(nameof(protectionProvider), $"The app token cache needs {nameof(AzureADOptions)}, populated with both Sql connection string and clientId to initialize.");
+            }
+
             this.DataProtector = protectionProvider.CreateProtector("MSAL");
-
             this.TokenCacheDb = tokenCacheDbContext;
-
-            AzureADOptions azureAdOptions = new AzureADOptions();
-            configuration.Bind("AzureAD", azureAdOptions);
-            this.ActiveClientId = azureAdOptions.ClientId;
+            this.ActiveClientId = azureAdOptionsAccessor.CurrentValue.ClientId;
         }
 
         /// <summary>Initializes this instance of TokenCacheProvider with essentials to initialize themselves.</summary>
@@ -197,7 +198,6 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         {
             return this.TokenCacheDb.AppTokenCache.Where(c => c.ClientID == this.ActiveClientId).OrderByDescending(d => d.LastWrite);
         }
-        
     }
 
     /// <summary>

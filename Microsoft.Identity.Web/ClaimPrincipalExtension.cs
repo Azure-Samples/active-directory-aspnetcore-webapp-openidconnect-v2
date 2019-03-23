@@ -1,5 +1,4 @@
 ﻿using Microsoft.Identity.Client;
-using System;
 using System.Security.Claims;
 
 namespace Microsoft.Identity.Web
@@ -141,7 +140,7 @@ namespace Microsoft.Identity.Web
             return principal;
         }
 
-/// <summary>
+        /// <summary>
         /// Builds a ClaimsPrincipal from an IAccount
         /// </summary>
         /// <param name="account">The IAccount instance.</param>
@@ -153,7 +152,7 @@ namespace Microsoft.Identity.Web
                 var identity = new ClaimsIdentity();
                 identity.AddClaim(new Claim(ClaimConstants.ObjectId, account.HomeAccountId.ObjectId));
                 identity.AddClaim(new Claim(ClaimConstants.TenantId, account.HomeAccountId.TenantId));
-                identity.AddClaim(new Claim(ClaimConstants.UserprincipalName, account.Username));
+                identity.AddClaim(new Claim(ClaimTypes.Upn, account.Username));
                 return new ClaimsPrincipal(identity);
             }
 

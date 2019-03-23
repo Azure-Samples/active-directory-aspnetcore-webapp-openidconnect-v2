@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using System;
 
@@ -49,20 +50,36 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         internal IMemoryCache memoryCache;
 
         /// <summary>
-        /// The duration till the tokens are kept in memory cache. In production, a higher value , upto 90 days is recommended.
-        /// </summary>
-        private readonly DateTimeOffset cacheDuration = DateTimeOffset.Now.AddHours(12);
-
-        /// <summary>
         /// The internal handle to the client's instance of the Cache
         /// </summary>
         private ITokenCache ApptokenCache;
 
-        private IConfiguration Configuration;
+        private readonly MSALMemoryTokenCacheOptions CacheOptions;
 
-        public MSALAppMemoryTokenCacheProvider(IConfiguration configuration, IMemoryCache cache)
+        /// <summary>
+        /// The App's whose cache we are maintaining.
+        /// </summary>
+        private string AppId;
+
+        public MSALAppMemoryTokenCacheProvider(IMemoryCache cache,
+            MSALMemoryTokenCacheOptions option,
+            IOptionsMonitor<AzureADOptions> azureAdOptionsAccessor)
         {
-            this.Configuration = configuration;
+            if (option != null)
+            {
+                this.CacheOptions = new MSALMemoryTokenCacheOptions();
+            }
+            else
+            {
+                this.CacheOptions = option;
+            }
+
+            if (azureAdOptionsAccessor.CurrentValue == null && string.IsNullOrWhiteSpace(azureAdOptionsAccessor.CurrentValue.ClientId))
+            {
+                throw new ArgumentNullException(nameof(AzureADOptions), $"The app token cache needs {nameof(AzureADOptions)}, populated with clientId to initialize.");
+            }
+
+            this.AppId = azureAdOptionsAccessor.CurrentValue.ClientId;
             this.memoryCache = cache;
         }
 
@@ -71,10 +88,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="httpcontext">The Httpcontext whose Session will be used for caching.This is required by some providers.</param>
         public void Initialize(ITokenCache tokenCache, HttpContext httpcontext)
         {
-            AzureADOptions azureAdOptions = new AzureADOptions();
-            this.Configuration.Bind("AzureAD", azureAdOptions);
-
-            this.AppCacheId = azureAdOptions.ClientId + "_AppTokenCache";
+            this.AppCacheId = this.AppId + "_AppTokenCache";
 
             this.ApptokenCache = tokenCache;
             this.ApptokenCache.SetBeforeAccess(this.AppTokenCacheBeforeAccessNotification);
@@ -108,7 +122,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         private void PersistAppTokenCache()
         {
             // Reflect changes in the persistence store
-            this.memoryCache.Set(this.AppCacheId, this.ApptokenCache.SerializeMsalV3(), this.cacheDuration);
+            this.memoryCache.Set(this.AppCacheId, this.ApptokenCache.SerializeMsalV3(), CacheOptions.AbsoluteExpiration);
         }
 
         /// <summary>

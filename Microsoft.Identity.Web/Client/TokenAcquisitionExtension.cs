@@ -22,8 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ***********************************************************************************************/
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web.Client;
+using Microsoft.Identity.Web.Client.TokenCacheProviders;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("TokenCache.Tests.Core")]
@@ -56,7 +58,15 @@ namespace Microsoft.Identity.Web
         public static IServiceCollection AddTokenAcquisition(this IServiceCollection services)
         {
             // Token acquisition service
-            services.AddTransient<ITokenAcquisition, TokenAcquisition>();
+            services.AddScoped<ITokenAcquisition>(factory =>
+            {
+                var config = factory.GetRequiredService<IConfiguration>();
+                var apptokencacheprovider = factory.GetService<IMSALAppTokenCacheProvider>();
+                var usertokencacheprovider = factory.GetService<IMSALUserTokenCacheProvider>();
+
+                return new TokenAcquisition(config, apptokencacheprovider, usertokencacheprovider);
+            });
+
             return services;
         }
     }

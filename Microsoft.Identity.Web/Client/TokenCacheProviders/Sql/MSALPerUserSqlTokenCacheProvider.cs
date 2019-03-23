@@ -67,23 +67,24 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <summary>Initializes a new instance of the <see cref="EFMSALPerUserTokenCache"/> class.</summary>
         /// <param name="protectionProvider">The data protection provider. Requires the caller to have used serviceCollection.AddDataProtection();</param>
         /// <param name="tokenCacheDbContext">The DbContext to the database where tokens will be cached.</param>
-        public MSALPerUserSqlTokenCacheProvider(IDataProtectionProvider protectionProvider, TokenCacheDbContext tokenCacheDbContext)
-            : this(protectionProvider, tokenCacheDbContext, ClaimsPrincipal.Current)
+        public MSALPerUserSqlTokenCacheProvider(TokenCacheDbContext tokenCacheDbContext, IDataProtectionProvider protectionProvider)
+            : this(tokenCacheDbContext, protectionProvider, ClaimsPrincipal.Current)
         {
         }
 
-        /// <summary>Initializes a new instance of the <see cref="EFMSALPerUserTokenCache"/> class.</summary>
-        /// <param name="protectionProvider">The data protection provider. Requires the caller to have used serviceCollection.AddDataProtection();</param>
-        /// <param name="tokenCacheDbContext">The DbContext to the database where tokens will be cached.</param>
-        /// <param name="user">The user for whom this cache is for.</param>
-        public MSALPerUserSqlTokenCacheProvider(IDataProtectionProvider protectionProvider, TokenCacheDbContext tokenCacheDbContext, ClaimsPrincipal user)
+        /// <summary>Initializes a new instance of the <see cref="MSALPerUserSqlTokenCacheProvider"/> class.</summary>
+        /// <param name="tokenCacheDbContext">The token cache database context.</param>
+        /// <param name="protectionProvider">The protection provider.</param>
+        /// <param name="user">The current user .</param>
+        /// <exception cref="ArgumentNullException">protectionProvider - The app token cache needs an {nameof(IDataProtectionProvider)}</exception>
+        public MSALPerUserSqlTokenCacheProvider(TokenCacheDbContext tokenCacheDbContext, IDataProtectionProvider protectionProvider, ClaimsPrincipal user)
         {
             if (protectionProvider == null)
             {
-                throw new ArgumentNullException(nameof(protectionProvider), "The app token cache needs an IDataProtectionProvider to operate. Please use 'serviceCollection.AddDataProtection();' to add the data protection provider to the service collection");
+                throw new ArgumentNullException(nameof(protectionProvider), $"The app token cache needs an {nameof(IDataProtectionProvider)} to operate. Please use 'serviceCollection.AddDataProtection();' to add the data protection provider to the service collection");
             }
-            this.DataProtector = protectionProvider.CreateProtector("MSAL");
 
+            this.DataProtector = protectionProvider.CreateProtector("MSAL");
             this.TokenCacheDb = tokenCacheDbContext;
             this.SignedInUser = user;
         }

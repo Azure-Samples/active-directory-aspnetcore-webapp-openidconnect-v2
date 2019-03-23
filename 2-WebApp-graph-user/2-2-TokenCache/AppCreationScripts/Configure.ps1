@@ -232,10 +232,6 @@ Function ConfigureApplications
    UpdateTextFile -configFilePath $configFile -dictionary $dictionary
 
    Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  
-   
-   Write-Host -ForeGroundColor Green "#######################################################################################################################################################"
-   Write-Host -ForeGroundColor Red "NOTE :Remember to go through the section 'Configure a Sql server database for token caching' in Readme to configure the toekn caching database  before you run the project"
-   Write-Host -ForeGroundColor Green "#######################################################################################################################################################"
 }
 
 # Pre-requisites

@@ -24,7 +24,7 @@ SOFTWARE.
 
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using System;
 using System.Diagnostics;
@@ -61,21 +61,18 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         private static ReaderWriterLockSlim SessionLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
 
         /// <summary>
-        /// The Apps whose cache we are maintaining.
+        /// The App's whose cache we are maintaining.
         /// </summary>
         private string AppId;
 
-        /// <summary>
-        /// The Azure AD configuration to be read by the app.
-        /// </summary>
-        private readonly AzureADOptions azureAdOptions;
-
-        public MSALAppSessionTokenCacheProvider(IConfiguration configuration)
+        public MSALAppSessionTokenCacheProvider(IOptionsMonitor<AzureADOptions> azureAdOptionsAccessor)
         {
-            azureAdOptions = new AzureADOptions();
-            configuration.Bind("AzureAD", azureAdOptions);
+            if (azureAdOptionsAccessor.CurrentValue == null && string.IsNullOrWhiteSpace(azureAdOptionsAccessor.CurrentValue.ClientId))
+            {
+                throw new ArgumentNullException(nameof(AzureADOptions), $"The app token cache needs {nameof(AzureADOptions)}, populated with clientId to initialize.");
+            }
 
-            this.AppId = azureAdOptions.ClientId;
+            this.AppId = azureAdOptionsAccessor.CurrentValue.ClientId;
         }
 
         /// <summary>Initializes this instance of TokenCacheProvider with essentials to initialize themselves.</summary>
@@ -83,7 +80,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="httpcontext">The Httpcontext whose Session will be used for caching.This is required by some providers.</param>
         public void Initialize(ITokenCache tokenCache, HttpContext httpcontext)
         {
-            this.AppCacheId = azureAdOptions.ClientId + "_AppTokenCache";
+            this.AppCacheId = this.AppId + "_AppTokenCache";
             this.HttpContext = httpcontext;
 
             this.ApptokenCache = tokenCache;

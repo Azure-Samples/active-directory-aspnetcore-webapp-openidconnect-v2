@@ -48,3 +48,5 @@
 /6-Deploy-to-Azure/bin
 /6-Deploy-to-Azure/obj
 /2-WebApp-graph-user/2-2-TokenCache/AppCreationScripts/createdApps.html
+/2-WebApp-graph-user/2-1-Call-MSGraph/AppCreationScripts/createdApps.html
+/2-WebApp-graph-user/2-2-TokenCache/AppCreationScripts/Steps.md

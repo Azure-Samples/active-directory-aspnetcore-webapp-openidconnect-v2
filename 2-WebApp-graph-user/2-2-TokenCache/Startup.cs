@@ -32,12 +32,12 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            // Token acquisition service based on MSAL.NET 
+            // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
             services.AddAzureAdV2Authentication(Configuration)
                 .AddMsal(new string[] { Constants.ScopeUserRead })
-                    .AddSqlAppTokenCache(Configuration)
-                    .AddSqlPerUserTokenCache(Configuration);
+                    .AddSqlAppTokenCache(new MSALSqlTokenCacheOptions(Configuration.GetConnectionString("TokenCacheDbConnStr")))
+                    .AddSqlPerUserTokenCache(new MSALSqlTokenCacheOptions(Configuration.GetConnectionString("TokenCacheDbConnStr")));
 
             // Add Graph
             services.AddGraphService(Configuration);

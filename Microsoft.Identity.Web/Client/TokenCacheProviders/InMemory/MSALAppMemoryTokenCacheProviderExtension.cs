@@ -22,7 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Identity.Web.Client.TokenCacheProviders
 {
@@ -30,23 +33,35 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
     {
         /// <summary>Adds the in memory based application token cache to the service collection.</summary>
         /// <param name="services">The services collection to add to.</param>
-        /// <returns></returns>
-        public static IServiceCollection AddInMemoryAppTokenCache(this IServiceCollection services)
+        /// <param name="cacheOptions"></param>
+        public static IServiceCollection AddInMemoryAppTokenCache(this IServiceCollection services, MSALMemoryTokenCacheOptions cacheOptions)
         {
             services.AddMemoryCache();
 
-            services.AddSingleton<IMSALAppTokenCacheProvider, MSALAppMemoryTokenCacheProvider>();
+            services.AddSingleton<IMSALAppTokenCacheProvider>(factory =>
+            {
+                var memoryCache = factory.GetRequiredService<IMemoryCache>();
+                var optionsMonitor = factory.GetRequiredService<IOptionsMonitor<AzureADOptions>>();
+
+                return new MSALAppMemoryTokenCacheProvider(memoryCache, cacheOptions, optionsMonitor);
+            });
+
             return services;
         }
 
         /// <summary>Adds the in memory based per user token cache to the service collection.</summary>
         /// <param name="services">The services collection to add to.</param>
         /// <returns></returns>
-        public static IServiceCollection AddInMemoryPerUserTokenCache(this IServiceCollection services)
+        public static IServiceCollection AddInMemoryPerUserTokenCache(this IServiceCollection services, MSALMemoryTokenCacheOptions cacheOptions)
         {
             services.AddMemoryCache();
 
-            services.AddSingleton<IMSALUserTokenCacheProvider, MSALPerUserMemoryTokenCacheProvider>();
+            services.AddSingleton<IMSALUserTokenCacheProvider>(factory =>
+            {
+                var memoryCache = factory.GetRequiredService<IMemoryCache>();
+                return new MSALPerUserMemoryTokenCacheProvider(memoryCache, cacheOptions);
+            });
+
             return services;
         }
     }

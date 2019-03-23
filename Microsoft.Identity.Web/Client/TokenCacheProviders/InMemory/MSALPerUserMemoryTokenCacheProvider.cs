@@ -26,7 +26,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
-using System;
 using System.Security.Claims;
 
 namespace Microsoft.Identity.Web.Client.TokenCacheProviders
@@ -44,11 +43,6 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         internal IMemoryCache memoryCache;
 
         /// <summary>
-        /// The duration till the tokens are kept in memory cache. In production, a higher value, upto 90 days is recommended.
-        /// </summary>
-        private readonly DateTimeOffset cacheDuration = DateTimeOffset.Now.AddHours(12);
-
-        /// <summary>
         /// The internal handle to the client's instance of the Cache
         /// </summary>
         private ITokenCache UserTokenCache;
@@ -58,11 +52,22 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// </summary>
         internal ClaimsPrincipal SignedInUser;
 
+        private readonly MSALMemoryTokenCacheOptions CacheOptions;
+
         /// <summary>Initializes a new instance of the <see cref="MSALPerUserMemoryTokenCache"/> class.</summary>
         /// <param name="cache">The memory cache instance</param>
-        public MSALPerUserMemoryTokenCacheProvider(IMemoryCache cache)
+        public MSALPerUserMemoryTokenCacheProvider(IMemoryCache cache, MSALMemoryTokenCacheOptions option)
         {
             this.memoryCache = cache;
+
+            if (option != null)
+            {
+                this.CacheOptions = new MSALMemoryTokenCacheOptions();
+            }
+            else
+            {
+                this.CacheOptions = option;
+            }
         }
 
         /// <summary>Initializes this instance of TokenCacheProvider with essentials to initialize themselves.</summary>
@@ -118,7 +123,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         private void PersistUserTokenCache()
         {
             // Ideally, methods that load and persist should be thread safe.MemoryCache.Get() is thread safe.
-            this.memoryCache.Set(this.GetMsalAccountId(), this.UserTokenCache.SerializeMsalV3(), this.cacheDuration);
+            this.memoryCache.Set(this.GetMsalAccountId(), this.UserTokenCache.SerializeMsalV3(), this.CacheOptions.AbsoluteExpiration);
         }
 
         /// <summary>
