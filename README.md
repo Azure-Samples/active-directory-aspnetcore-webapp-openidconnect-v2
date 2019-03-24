@@ -36,7 +36,7 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
    Learn how to update your Web App to [call Microsoft Graph](2-WebApp-graph-user):
 
    1. Using the [authorization code flow](2-WebApp-graph-user/2-1-Call-MSGraph), initiated by ASP.NET Core, but completed by Microsoft Authentication Library for .NET (MSAL.NET)
-   2. Learn how to [**coming soon**]  [customize the token cache serialization](2-WebApp-graph-user/2-2-TokenCache)
+   2. Learn how to [customize the token cache serialization](2-WebApp-graph-user/2-2-TokenCache)
 ) with different technologies depending on your needs (in memory cache, Session token cache, SQL Cache, Redis Cache)
    3. Learn the [**coming soon**]  [best practices and practices to avoid](./2-WebApp-graph-user/2-3-Best-Practices) when calling an API.
 
