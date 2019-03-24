@@ -44,9 +44,9 @@ namespace Microsoft.Identity.Web.Resource
         /// </summary>
         private readonly SortedSet<string> IssuerAliases;
 
-        const string FallBackAuthority = "https://login.microsoftonline.com/";
+        private const string FallBackAuthority = "https://login.microsoftonline.com/";
 
-        static IDictionary<string, AadIssuerValidator> issuerValidators = new Dictionary<string, AadIssuerValidator>();
+        private static IDictionary<string, AadIssuerValidator> issuerValidators = new Dictionary<string, AadIssuerValidator>();
 
         private AadIssuerValidator(IEnumerable<string> aliases)
         {
@@ -67,7 +67,7 @@ namespace Microsoft.Identity.Web.Resource
             else
             {
                 string authorityHost = new Uri(aadAuthority).Authority;
-                // In the constructor, we hit the Azure Ad issuer metadata endpoint and cache the aliases. The data is cached for 24 hrs by default.
+                // In the constructor, we hit the Azure AD issuer metadata endpoint and cache the aliases. The data is cached for 24 hrs.
                 string AzureADIssuerMetadataUrl = "https://login.microsoftonline.com/common/discovery/instance?authorization_endpoint=https://login.microsoftonline.com/common/oauth2/v2.0/authorize&api-version=1.1";
                 ConfigurationManager<IssuerMetadata> configManager = new ConfigurationManager<IssuerMetadata>(AzureADIssuerMetadataUrl, new IssuerConfigurationRetriever());
                 IssuerMetadata issuerMetadata = configManager.GetConfigurationAsync().Result;
@@ -107,11 +107,10 @@ namespace Microsoft.Identity.Web.Resource
                 throw new ArgumentNullException(nameof(validationParameters), $"{nameof(validationParameters)} cannot be null.");
             }
 
-            // Extract the tenant Id from the claims
-            string tenantId = jwtToken.Claims.FirstOrDefault(c => c.Type == "tid")?.Value;
+            string tenantId = GetTenantIdFromClaims(jwtToken);
             if (string.IsNullOrWhiteSpace(tenantId))
             {
-                throw new SecurityTokenInvalidIssuerException("The `tid` claim is not present in the token obtained from Azure Active Directory.");
+                throw new SecurityTokenInvalidIssuerException("Neither `tid` nor `tenantId` claim is present in the token obtained from Microsoft Identity Platform.");
             }
 
             // Build a list of valid tenanted issuers from the provided TokenValidationParameters.
@@ -128,7 +127,7 @@ namespace Microsoft.Identity.Web.Resource
                 allValidTenantedIssuers.Add(TenantedIssuer(validationParameters.ValidIssuer, tenantId));
             }
 
-            // Looking for a valid issuer which authority would be one of the aliases of the authority declared in the 
+            // Looking for a valid issuer which authority would be one of the aliases of the authority declared in the
             // Web app / Web API, and which tenantId would be the one for the token
             foreach (string validIssuer in allValidTenantedIssuers)
             {
@@ -145,6 +144,24 @@ namespace Microsoft.Identity.Web.Resource
 
             // If a valid issuer is not found, throw
             throw new SecurityTokenInvalidIssuerException("Issuer does not match any of the valid issuers provided for this application.");
+        }
+
+        /// <summary>Gets the tenant id from claims.</summary>
+        /// <param name="jwtToken">The JWT token with the claims collection.</param>
+        /// <returns>A string containing tenantId, if found or an empty string</returns>
+        private string GetTenantIdFromClaims(JwtSecurityToken jwtToken)
+        {
+            string tenantId;
+
+            // Extract the tenant Id from the claims
+            tenantId = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimConstants.tid)?.Value;
+
+            if (string.IsNullOrWhiteSpace(tenantId))
+            {
+                tenantId = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimConstants.TenantId)?.Value;
+            }
+
+            return tenantId;
         }
 
         private static string TenantedIssuer(string i, string tenantId)

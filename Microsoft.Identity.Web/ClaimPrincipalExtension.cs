@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Microsoft.Identity.Client;
 using System.Security.Claims;
 
 namespace Microsoft.Identity.Web
@@ -15,13 +15,12 @@ namespace Microsoft.Identity.Web
             string userObjectId = GetObjectId(claimsPrincipal);
             string tenantId = GetTenantId(claimsPrincipal);
 
-            if (string.IsNullOrWhiteSpace(userObjectId)) // TODO: find a better typed exception
-                throw new ArgumentOutOfRangeException("Missing claim 'http://schemas.microsoft.com/identity/claims/objectidentifier' or 'oid' ");
+            if (!string.IsNullOrWhiteSpace(userObjectId) && !string.IsNullOrWhiteSpace(tenantId))
+            {
+                return $"{userObjectId}.{tenantId}";
+            }
 
-            if (string.IsNullOrWhiteSpace(tenantId))
-                throw new ArgumentOutOfRangeException("Missing claim 'http://schemas.microsoft.com/identity/claims/tenantid' or 'tid' ");
-
-            return $"{userObjectId}.{tenantId}";
+            return null;
         }
 
         /// <summary>
@@ -29,9 +28,9 @@ namespace Microsoft.Identity.Web
         /// </summary>
         /// <param name="claimsPrincipal">Claims principal from which to retrieve the unique object id</param>
         /// <returns>Unique object ID of the identity, or <c>null</c> if it cannot be found</returns>
-        private static string GetObjectId(ClaimsPrincipal claimsPrincipal)
+        public static string GetObjectId(this ClaimsPrincipal claimsPrincipal)
         {
-            string userObjectId = claimsPrincipal.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier");
+            string userObjectId = claimsPrincipal.FindFirstValue(ClaimConstants.ObjectId);
             if (string.IsNullOrEmpty(userObjectId))
             {
                 userObjectId = claimsPrincipal.FindFirstValue("oid");
@@ -45,9 +44,9 @@ namespace Microsoft.Identity.Web
         /// </summary>
         /// <param name="claimsPrincipal">Claims principal from which to retrieve the tenant id</param>
         /// <returns>Tenant ID of the identity, or <c>null</c> if it cannot be found</returns>
-        private static string GetTenantId(ClaimsPrincipal claimsPrincipal)
+        public static string GetTenantId(this ClaimsPrincipal claimsPrincipal)
         {
-            string tenantId = claimsPrincipal.FindFirstValue("http://schemas.microsoft.com/identity/claims/tenantid");
+            string tenantId = claimsPrincipal.FindFirstValue(ClaimConstants.TenantId);
             if (string.IsNullOrEmpty(tenantId))
             {
                 tenantId = claimsPrincipal.FindFirstValue("tid");
@@ -81,7 +80,6 @@ namespace Microsoft.Identity.Web
                 tenantId == msaTenantId ? "consumers" : "organizations";
             return domainHint;
         }
-
 
         /// <summary>
         /// Get the display name for the signed-in user, based on their claims principal
@@ -140,6 +138,25 @@ namespace Microsoft.Identity.Web
             var principal = new ClaimsPrincipal();
             principal.AddIdentity(claimsIdentity);
             return principal;
+        }
+
+        /// <summary>
+        /// Builds a ClaimsPrincipal from an IAccount
+        /// </summary>
+        /// <param name="account">The IAccount instance.</param>
+        /// <returns>A ClaimsPrincipal built from IAccount</returns>
+        public static ClaimsPrincipal ToClaimsPrincipal(this IAccount account)
+        {
+            if (account != null)
+            {
+                var identity = new ClaimsIdentity();
+                identity.AddClaim(new Claim(ClaimConstants.ObjectId, account.HomeAccountId.ObjectId));
+                identity.AddClaim(new Claim(ClaimConstants.TenantId, account.HomeAccountId.TenantId));
+                identity.AddClaim(new Claim(ClaimTypes.Upn, account.Username));
+                return new ClaimsPrincipal(identity);
+            }
+
+            return null;
         }
     }
 }

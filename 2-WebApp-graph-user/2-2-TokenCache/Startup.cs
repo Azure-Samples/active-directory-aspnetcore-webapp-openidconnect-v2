@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.Client.TokenCacheProviders;
-using System;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
 
@@ -33,16 +32,12 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddOptions();
-
-            var memoryCacheoptions = new MSALMemoryTokenCacheOptions { AbsoluteExpiration = DateTimeOffset.Now.AddDays(14) };
-
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
             services.AddAzureAdV2Authentication(Configuration)
-                .AddInMemoryAppTokenCache(memoryCacheoptions)
-                .AddInMemoryPerUserTokenCache(memoryCacheoptions)
-                .AddMsal(new string[] { Constants.ScopeUserRead });
+                .AddMsal(new string[] { Constants.ScopeUserRead })
+                    .AddSqlAppTokenCache(new MSALSqlTokenCacheOptions(Configuration.GetConnectionString("TokenCacheDbConnStr")))
+                    .AddSqlPerUserTokenCache(new MSALSqlTokenCacheOptions(Configuration.GetConnectionString("TokenCacheDbConnStr")));
 
             // Add Graph
             services.AddGraphService(Configuration);

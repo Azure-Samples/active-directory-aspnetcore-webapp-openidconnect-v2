@@ -44,7 +44,7 @@ Then follow the following extra set of steps:
 
 If you have not already,  clone this sample from your shell or command line:
 
-  ```Sh
+  ```Shell
   git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial webapp
   cd webapp
 
@@ -92,8 +92,7 @@ After the following lines in the ConfigureServices(IServiceCollection services) 
     // and chosen token cache implementation
     services.AddAzureAdV2Authentication(Configuration)
             .AddMsal(new string[] { Constants.ScopeUserRead })
-            .AddInMemoryTokenCache()
-            ;
+            .AddInMemoryTokenCache();
 ```
 
 The two new lines of code:
