@@ -26,11 +26,23 @@ using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using System;
 
 namespace Microsoft.Identity.Web.Client.TokenCacheProviders
 {
     public static class MSALAppMemoryTokenCacheProviderExtension
     {
+        public static IServiceCollection AddInMemoryTokenCaches(this IServiceCollection services, MSALMemoryTokenCacheOptions cacheOptions = null)
+        {
+            var memoryCacheoptions = (cacheOptions == null) ? new MSALMemoryTokenCacheOptions { AbsoluteExpiration = DateTimeOffset.Now.AddDays(14) }
+            : cacheOptions;
+
+            AddInMemoryAppTokenCache(services, memoryCacheoptions);
+            AddInMemoryPerUserTokenCache(services, memoryCacheoptions);
+            return services;
+        }
+
+
         /// <summary>Adds the in memory based application token cache to the service collection.</summary>
         /// <param name="services">The services collection to add to.</param>
         /// <param name="cacheOptions"></param>

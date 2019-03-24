@@ -252,7 +252,7 @@ namespace Microsoft.Identity.Web.Client
                 account = accounts.FirstOrDefault(a => a.Username == user.GetLoginHint());
             }
 
-            this.AppTokenCacheProvider?.Clear();
+ //           this.AppTokenCacheProvider?.Clear();
             this.UserTokenCacheProvider?.Clear();
 
             await app.RemoveAsync(account);
