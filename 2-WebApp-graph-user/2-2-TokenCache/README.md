@@ -8,7 +8,7 @@ service: Microsoft Graph
 endpoint: AAD v2.0
 ---
 
-# Using the Microsoft identity platform to call the Microsoft Graph API from an An ASP.NET Core 2.x Web App, on behalf of a user signing-in using their work and school or Microsoft personal account
+# Call the Microsoft Graph API from an An ASP.NET Core 2.x Web App, using Sql Server for caching tokens
 
 ![Build badge](https://identitydivision.visualstudio.com/_apis/public/build/definitions/a7934fdd-dcde-4492-a406-7fad6ac00e17/514/badge)
 
@@ -16,7 +16,7 @@ endpoint: AAD v2.0
 
 Starting from a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users, this chapter of the tutorial shows how to make a call to Microsoft Graph `/me` endpoint on behalf of the signed-in user. This sample additionally provides instructions on how to use Sql Server for caching tokens.
 
-It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). The complexities of the library's integration with the ASP.NET Core dependency Injection patterns is encapsultated into the `Microsoft.Identity.Web` library project, which is a part of this tutorial. 
+It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). The complexities of the library's integration with the ASP.NET Core dependency Injection patterns is encapsultated into the `Microsoft.Identity.Web` library project, which is a part of this tutorial.
 
 ![Sign in with the Microsoft identity platform for developers (fomerly Azure AD v2.0)](ReadmeFiles/sign-in.png)
 
@@ -70,7 +70,7 @@ Go to the `"2-WebApp-graph-user\2-2-TokenCache"` folder
 
 3. Go to the **Profile** page, you should now see all kind of information about yourself as well as your picture (a call was made to the Microsoft Graph */me* endpoint)
 
-> Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../issues) page.
+> Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
 
 ## About The code
 
