@@ -127,6 +127,7 @@ Function ConfigureApplications
 
 
    # Update config file for 'webApp'
+   $commonendpoint = "common"
    $configFile = $pwd.Path + "\..\appsettings.json"
    Write-Host "Updating the sample code ($configFile)"
    $dictionary = @{ "ClientId" = $webAppAadApplication.AppId;"TenantId" = $commonendpoint;"Domain" = $tenantName };
