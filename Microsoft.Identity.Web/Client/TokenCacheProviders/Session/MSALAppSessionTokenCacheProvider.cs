@@ -65,6 +65,9 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// </summary>
         private string AppId;
 
+        /// <summary>Initializes a new instance of the <see cref="MSALAppSessionTokenCacheProvider"/> class.</summary>
+        /// <param name="azureAdOptionsAccessor">The azure ad options accessor.</param>
+        /// <exception cref="ArgumentNullException">AzureADOptions - The app token cache needs {nameof(AzureADOptions)}</exception>
         public MSALAppSessionTokenCacheProvider(IOptionsMonitor<AzureADOptions> azureAdOptionsAccessor)
         {
             if (azureAdOptionsAccessor.CurrentValue == null && string.IsNullOrWhiteSpace(azureAdOptionsAccessor.CurrentValue.ClientId))

@@ -128,7 +128,8 @@ namespace Microsoft.Identity.Web.Client
                 // Do not share the access token with ASP.NET Core otherwise ASP.NET will cache it and will not send the OAuth 2.0 request in
                 // case a further call to AcquireTokenByAuthorizationCodeAsync in the future for incremental consent (getting a code requesting more scopes)
                 // Share the ID Token
-                var result = await application.AcquireTokenByAuthorizationCodeAsync(context.ProtocolMessage.Code, scopes.Except(scopesRequestedByMsalNet));
+                var result = await application.AcquireTokenByAuthorizationCode(scopes.Except(scopesRequestedByMsalNet), context.ProtocolMessage.Code)
+                                              .ExecuteAsync();
                 context.HandleCodeRedemption(null, result.IdToken);
             }
             catch (MsalException ex)
@@ -330,12 +331,15 @@ namespace Microsoft.Identity.Web.Client
             AuthenticationResult result;
             if (string.IsNullOrWhiteSpace(tenant))
             {
-                result = await application.AcquireTokenSilentAsync(scopes.Except(scopesRequestedByMsalNet), account);
+                result = await application.AcquireTokenSilent(scopes.Except(scopesRequestedByMsalNet), account)
+                                           .ExecuteAsync();
             }
             else
             {
                 string authority = application.Authority.Replace(new Uri(application.Authority).PathAndQuery, $"/{tenant}/");
-                result = await application.AcquireTokenSilentAsync(scopes.Except(scopesRequestedByMsalNet), account, authority, false);
+                result = await application.AcquireTokenSilent(scopes.Except(scopesRequestedByMsalNet), account)
+                                          .WithAuthority(authority)
+                                          .ExecuteAsync();
             }
             return result.AccessToken;
         }
@@ -363,7 +367,9 @@ namespace Microsoft.Identity.Web.Client
                 var application = BuildConfidentialClientApplication(httpContext, principal);
 
                 // .Result to make sure that the cache is filled-in before the controller tries to get access tokens
-                var result = application.AcquireTokenOnBehalfOfAsync(requestedScopes.Except(scopesRequestedByMsalNet), userAssertion).Result;
+                var result = application.AcquireTokenOnBehalfOf(requestedScopes.Except(scopesRequestedByMsalNet), userAssertion)
+                                        .ExecuteAsync()
+                                        .GetAwaiter().GetResult();
             }
             catch (MsalException ex)
             {
