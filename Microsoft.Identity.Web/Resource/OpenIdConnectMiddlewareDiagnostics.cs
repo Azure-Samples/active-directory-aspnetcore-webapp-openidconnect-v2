@@ -6,6 +6,10 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace Microsoft.Identity.Web.Resource
 {
+    /// <summary>
+    /// Diagnostics used in the Open Id Connect middleware
+    /// (used in Web Apps)
+    /// </summary>
     public class OpenIdConnectMiddlewareDiagnostics
     {
         //
