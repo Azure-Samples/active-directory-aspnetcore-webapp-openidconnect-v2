@@ -14,7 +14,7 @@ endpoint: AAD v2.0
 
 ## Scenario
 
-This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users. Users can only sign-in with their `work and school` accounts in their organization. It leverages the ASP.NET Core OpenID Connect middleware.
+This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users. Users can only sign-in with their `work and school` accounts in their own organization. It leverages the ASP.NET Core OpenID Connect middleware.
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
 
@@ -53,25 +53,33 @@ There is one project in this sample. To register it, you can:
 
 #### Choose the Azure AD tenant where you want to create your applications
 
+As a first step you'll need to:
+
 1. Sign in to the [Azure portal](https://portal.azure.com) using either a work or school account or a personal Microsoft account.
-1. If your account is present in more than one Azure AD tenant, select `Directory + Subscription` at the top right corner in the menu on top of the page, and switch your portal session to the desired Azure AD tenant.
-1. In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations (Preview)**.
-1. In **App registrations (Preview)** page, select **New registration**.
+1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory**.
+   Change your portal session to the desired Azure AD tenant.
+
+#### Register the webApp app (WebApp)
+
+1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
+1. Select **New registration**.
 1. When the **Register an application page** appears, enter your application's registration information:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp`.
-   - In the **Supported account types** section, select **Accounts in this organizational directory only *(name of your org)***.
-   - In the Redirect URI (optional) section, select **Web** in the combo-box.
-   - For the *Redirect URI*, enter the base URL for the sample. By default, this sample uses `https://localhost:44321/`.
-   - Select **Register** to create the application.
+   - In the **Supported account types** section, select **Accounts in this organizational directory only ({tenant name})**.
+     > Note that there are more than one redirect URIs. You'll need to add them from the **Authentication** tab later after the app has been created succesfully.
+1. Select **Register** to create the application.
 1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the Visual Studio configuration file for this project.
-1. Still in the **Overview** page, find the **Directory (tenant) ID** value and record it for later.
-1. In the list of pages for the app, select **Authentication**.
-   - In the **Redirect URIs**, add a redirect URL of type Web and valued  `https://localhost:44321/signin-oidc`
+1. In the list of pages for the app, select **Authentication**..
+   - In the Redirect URIs section, select **Web** in the combo-box and enter the following redirect URIs.
+       - `https://localhost:44321/`
+       - `https://localhost:44321/signin-oidc`
    - In the **Advanced settings** section set **Logout URL** to `https://localhost:44321/signout-oidc`
-   - In the **Advanced settings** | **Implicit grant** section, check **ID tokens** as this sample requires the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to sign-in the user.
-   - Select **Save**.
+   - In the **Advanced settings** | **Implicit grant** section, check **ID tokens** as this sample requires
+     the [Implicit grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to
+     sign-in the user, and call an API.
+1. Select **Save**.
 
-> Note that unless the Web App calls a Web API no certificate or secret is needed.
+> Note that unless the Web App calls a Web API, no certificate or secret is needed.
 
 ### Step 2: Download/ Clone this sample code or build the application using a template
 
@@ -92,7 +100,8 @@ cd "1-WebApp-OIDC\1-1-MyOrg"
   In the **appsettings.json** file:
   
   - replace the `ClientID` value with the *Application ID* from the application you registered in Application Registration portal on *Step 1*.
-  - replace the `TenantId` value with he *Tenant ID* where you registered your Application on *Step 1*.
+  - replace the `TenantId` value with the *Tenant ID* where you registered your Application on *Step 1*.
+  - replace the `Domain` value with the *Azure AD domain name*,  e.g. contoso.onmicrosoft.com where you registered your Application on *Step 1*.
 
 #### Option 2: Create the sample from the command line
 
@@ -139,6 +148,8 @@ cd "1-WebApp-OIDC\1-1-MyOrg"
 1. Build the solution and run it.
 
 2. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. The app immediately attempts to authenticate you via the Azure AD v2 endpoint. Sign in with your personal account or with work or school account.
+
+> Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page. 
 
 ## Toubleshooting
 
