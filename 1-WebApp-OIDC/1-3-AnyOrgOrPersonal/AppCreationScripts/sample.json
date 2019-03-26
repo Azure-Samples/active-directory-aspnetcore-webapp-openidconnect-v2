@@ -1,6 +1,6 @@
 {
   "Sample": {
-    "Title": "An ASP.NET Core 2.x Web App which lets sign-in users with work and school or Microsoft personal accounts",
+    "Title": "An ASP.NET Core 2.x Web App which sign-in users with either work and school or Microsoft personal accounts",
     "Level": 200,
     "Client": "ASP.NET Core 2.x Web App",
     "Service": "Microsoft Graph",
@@ -19,7 +19,7 @@
       "Audience" : "AzureADandPersonalMicrosoftAccount",
        "HomePage": "https://localhost:44321/",
       "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc",
-      "LogoutUrl": "https://localhost:44321/signout-oidc",
+      "LogoutUrl": "https://localhost:44321/signout-oidc"
     }
   ],
 
@@ -41,7 +41,7 @@
         },
         {
           "key": "TenantId",
-          "value": "common"
+          "value": "$commonendpoint"
         },
         {
           "key": "Domain",
