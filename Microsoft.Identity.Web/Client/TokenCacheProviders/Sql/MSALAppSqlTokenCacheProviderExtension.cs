@@ -32,11 +32,20 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
 {
     public static class MSALAppSqlTokenCacheProviderExtension
     {
-        /// <summary>
-        /// Adds the Sql Server based application token cache to the service collection.
-        /// </summary>
-        /// <param name="services">The services collection to add to.</param>
+        /// <summary>Adds the app and per user SQL token caches.</summary>
         /// <param name="configuration">The configuration instance from where this method pulls the connection string to the Sql database.</param>
+        /// <param name="sqlTokenCacheOptions">The MSALSqlTokenCacheOptions is used by the caller to specify the Sql connection string</param>
+        /// <returns></returns>
+        public static IServiceCollection AddSqlTokenCaches(this IServiceCollection services, MSALSqlTokenCacheOptions sqlTokenCacheOptions)
+        {
+            AddSqlAppTokenCache(services, sqlTokenCacheOptions);
+            AddSqlPerUserTokenCache(services, sqlTokenCacheOptions);
+            return services;
+        }
+
+        /// <summary>Adds the Sql Server based application token cache to the service collection.</summary>
+        /// <param name="services">The services collection to add to.</param>
+        /// <param name="sqlTokenCacheOptions">The MSALSqlTokenCacheOptions is used by the caller to specify the Sql connection string</param>
         /// <returns></returns>
         public static IServiceCollection AddSqlAppTokenCache(this IServiceCollection services, MSALSqlTokenCacheOptions sqlTokenCacheOptions)
         {
@@ -66,8 +75,8 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         }
 
         /// <summary>Adds the Sql Server based per user token cache to the service collection.</summary>
-        /// <param name="services">The services.</param>
-        /// <param name="configuration">The configuration instance from where this method pulls the connection string to the Sql database.</param>
+        /// <param name="services">The services collection to add to.</param>
+        /// <param name="sqlTokenCacheOptions">The MSALSqlTokenCacheOptions is used by the caller to specify the Sql connection string</param>
         /// <returns></returns>
         public static IServiceCollection AddSqlPerUserTokenCache(this IServiceCollection services, MSALSqlTokenCacheOptions sqlTokenCacheOptions)
         {
