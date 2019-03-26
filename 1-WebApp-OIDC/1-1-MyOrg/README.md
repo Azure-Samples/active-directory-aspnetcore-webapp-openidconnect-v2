@@ -18,7 +18,7 @@ This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Conn
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
 
-> This is the first phase of a set of tutorials. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, can can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user) in a later chapter
+> This is the first phase of a set of tutorials. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user) in a later chapter
 
 ## How to run this sample
 
