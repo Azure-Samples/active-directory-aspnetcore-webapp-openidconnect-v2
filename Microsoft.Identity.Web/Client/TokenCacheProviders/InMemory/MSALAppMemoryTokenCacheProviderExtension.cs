@@ -32,6 +32,10 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
 {
     public static class MSALAppMemoryTokenCacheProviderExtension
     {
+        /// <summary>Adds both the app and per-user in-memory token caches.</summary>
+        /// <param name="services">The services collection to add to.</param>
+        /// <param name="cacheOptions">the MSALMemoryTokenCacheOptions allows the caller to set the token cache expiration</param>
+        /// <returns></returns>
         public static IServiceCollection AddInMemoryTokenCaches(this IServiceCollection services, MSALMemoryTokenCacheOptions cacheOptions = null)
         {
             var memoryCacheoptions = (cacheOptions == null) ? new MSALMemoryTokenCacheOptions { AbsoluteExpiration = DateTimeOffset.Now.AddDays(14) }
@@ -43,9 +47,9 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         }
 
 
-        /// <summary>Adds the in memory based application token cache to the service collection.</summary>
+        /// <summary>Adds the in-memory based application token cache to the service collection.</summary>
         /// <param name="services">The services collection to add to.</param>
-        /// <param name="cacheOptions"></param>
+        /// <param name="cacheOptions">the MSALMemoryTokenCacheOptions allows the caller to set the token cache expiration</param>
         public static IServiceCollection AddInMemoryAppTokenCache(this IServiceCollection services, MSALMemoryTokenCacheOptions cacheOptions)
         {
             services.AddMemoryCache();
@@ -61,8 +65,9 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             return services;
         }
 
-        /// <summary>Adds the in memory based per user token cache to the service collection.</summary>
+        /// <summary>Adds the in-memory based per user token cache to the service collection.</summary>
         /// <param name="services">The services collection to add to.</param>
+        /// <param name="cacheOptions">the MSALMemoryTokenCacheOptions allows the caller to set the token cache expiration</param>
         /// <returns></returns>
         public static IServiceCollection AddInMemoryPerUserTokenCache(this IServiceCollection services, MSALMemoryTokenCacheOptions cacheOptions)
         {

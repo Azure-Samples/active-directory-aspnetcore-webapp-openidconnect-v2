@@ -30,6 +30,17 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
 {
     public static class MSALAppSessionTokenCacheProviderExtension
     {
+        /// <summary>Adds both App and per-user session token caches.</summary>
+        /// <param name="services">The services collection to add to.</param>
+        /// <returns></returns>
+        public static IServiceCollection AddSessionTokenCaches(this IServiceCollection services)
+        {
+            AddSessionAppTokenCache(services);
+            AddSessionPerUserTokenCache(services);
+
+            return services;
+        }
+
         /// <summary>Adds the Http session based application token cache to the service collection.</summary>
         /// <param name="services">The services collection to add to.</param>
         /// <returns></returns>
