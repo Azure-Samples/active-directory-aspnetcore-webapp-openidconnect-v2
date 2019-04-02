@@ -22,15 +22,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ***********************************************************************************************/
 
-using Microsoft.IdentityModel.Protocols;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace Microsoft.Identity.Web.Resource
 {
@@ -42,43 +44,51 @@ namespace Microsoft.Identity.Web.Resource
         /// <summary>
         /// A list of all Issuers across the various Azure AD instances
         /// </summary>
-        private readonly SortedSet<string> IssuerAliases;
-
-        private const string FallBackAuthority = "https://login.microsoftonline.com/";
-
-        private static IDictionary<string, AadIssuerValidator> issuerValidators = new Dictionary<string, AadIssuerValidator>();
+        private readonly SortedSet<string> _issuerAliases;
+        private const string _fallBackAuthority = "https://login.microsoftonline.com/";
+        private static IDictionary<string, AadIssuerValidator> _issuerValidators = new ConcurrentDictionary<string, AadIssuerValidator>();
+        private static string _azureADIssuerMetadataUrl = "https://login.microsoftonline.com/common/discovery/instance?authorization_endpoint=https://login.microsoftonline.com/common/oauth2/v2.0/authorize&api-version=1.1";
+        private static ConfigurationManager<IssuerMetadata> _configManager = new ConfigurationManager<IssuerMetadata>(_azureADIssuerMetadataUrl, new IssuerConfigurationRetriever());
 
         private AadIssuerValidator(IEnumerable<string> aliases)
         {
-            IssuerAliases = new SortedSet<string>(aliases);
+            _issuerAliases = new SortedSet<string>(aliases);
         }
 
         /// <summary>
-        /// Retrieves the AadIssuerValidator for a given authority
+        /// Gets a <see cref="AadIssuerValidator"/> for an authority.
         /// </summary>
-        /// <param name="aadAuthority"></param>
-        /// <returns></returns>
-        public static AadIssuerValidator ForAadInstance(string aadAuthority)
+        /// <param name="aadAuthority">the authority to create the validator for.</param>
+        /// <returns>a <see cref="AadIssuerValidator"/> for the aadAuthority.</returns>
+        /// <exception cref="ArgumentNullException">if <paramref name="aadAuthority"/> is null or empty.</exception>
+        public static AadIssuerValidator GetIssuerValidator(string aadAuthority)
         {
-            if (issuerValidators.ContainsKey(aadAuthority))
+            if (string.IsNullOrEmpty(aadAuthority))
+                throw new ArgumentNullException(nameof(aadAuthority));
+
+            if (_issuerValidators.TryGetValue(aadAuthority, out AadIssuerValidator aadIssuerValidator))
             {
-                return issuerValidators[aadAuthority];
+                return aadIssuerValidator;
             }
             else
             {
-                string authorityHost = new Uri(aadAuthority).Authority;
                 // In the constructor, we hit the Azure AD issuer metadata endpoint and cache the aliases. The data is cached for 24 hrs.
-                string AzureADIssuerMetadataUrl = "https://login.microsoftonline.com/common/discovery/instance?authorization_endpoint=https://login.microsoftonline.com/common/oauth2/v2.0/authorize&api-version=1.1";
-                ConfigurationManager<IssuerMetadata> configManager = new ConfigurationManager<IssuerMetadata>(AzureADIssuerMetadataUrl, new IssuerConfigurationRetriever());
-                IssuerMetadata issuerMetadata = configManager.GetConfigurationAsync().Result;
+                var issuerMetadata = _configManager.GetConfigurationAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                string authorityHost;
+                try
+                {
+                     authorityHost = new Uri(aadAuthority).Authority;
+                }
+                catch
+                {
+                    authorityHost = null;
+                }
 
                 // Add issuer aliases of the chosen authority
-                string authority = authorityHost ?? FallBackAuthority;
+                string authority = authorityHost ?? _fallBackAuthority;
                 var aliases = issuerMetadata.Metadata.Where(m => m.Aliases.Any(a => a == authority)).SelectMany(m => m.Aliases).Distinct();
-                AadIssuerValidator issuerValidator = new AadIssuerValidator(aliases);
-
-                issuerValidators.Add(authority, issuerValidator);
-                return issuerValidator;
+                _issuerValidators[authority] = new AadIssuerValidator(aliases);
+                return _issuerValidators[authority];
             }
         }
 
@@ -94,79 +104,78 @@ namespace Microsoft.Identity.Web.Resource
         /// accepts both V1 and V2 tokens).
         /// Authority aliasing is also taken into account</remarks>
         /// <returns>The <c>issuer</c> if it's valid, or otherwise <c>SecurityTokenInvalidIssuerException</c> is thrown</returns>
+        /// <exception cref="ArgumentNullException"> if <paramref name="securityToken"/> is null.</exception>
+        /// <exception cref="ArgumentNullException"> if <paramref name="validationParameters"/> is null.</exception>
+        /// <exception cref="SecurityTokenInvalidIssuerException">if the issuer </exception>
         public string ValidateAadIssuer(string issuer, SecurityToken securityToken, TokenValidationParameters validationParameters)
         {
-            JwtSecurityToken jwtToken = securityToken as JwtSecurityToken;
-            if (jwtToken == null)
-            {
-                throw new ArgumentNullException(nameof(securityToken), $"{nameof(securityToken)} cannot be null.");
-            }
+            if (securityToken == null)
+                throw new ArgumentNullException(nameof(securityToken));
 
             if (validationParameters == null)
-            {
-                throw new ArgumentNullException(nameof(validationParameters), $"{nameof(validationParameters)} cannot be null.");
-            }
+                throw new ArgumentNullException(nameof(validationParameters));
 
-            string tenantId = GetTenantIdFromClaims(jwtToken);
+
+            string tenantId = GetTenantIdFromToken(securityToken);
             if (string.IsNullOrWhiteSpace(tenantId))
-            {
                 throw new SecurityTokenInvalidIssuerException("Neither `tid` nor `tenantId` claim is present in the token obtained from Microsoft Identity Platform.");
-            }
 
-            // Build a list of valid tenanted issuers from the provided TokenValidationParameters.
-            List<string> allValidTenantedIssuers = new List<string>();
-
-            IEnumerable<string> validIssuers = validationParameters.ValidIssuers;
-            if (validIssuers != null)
-            {
-                allValidTenantedIssuers.AddRange(validIssuers.Select(i => TenantedIssuer(i, tenantId)));
-            }
-
-            if (validationParameters.ValidIssuer != null)
-            {
-                allValidTenantedIssuers.Add(TenantedIssuer(validationParameters.ValidIssuer, tenantId));
-            }
-
-            // Looking for a valid issuer which authority would be one of the aliases of the authority declared in the
-            // Web app / Web API, and which tenantId would be the one for the token
-            foreach (string validIssuer in allValidTenantedIssuers)
-            {
-                Uri uri = new Uri(validIssuer);
-                if (IssuerAliases.Contains(uri.Authority))
-                {
-                    string trimmedLocalPath = uri.LocalPath.Trim('/');
-                    if (trimmedLocalPath == tenantId || trimmedLocalPath == $"{tenantId}/v2.0")
-                    {
+            if (validationParameters.ValidIssuers != null)
+                foreach (var validIssuer in validationParameters.ValidIssuers)
+                    if (IsValidIssuer(validIssuer, tenantId))
                         return issuer;
-                    }
-                }
-            }
+
+            if (IsValidIssuer(validationParameters.ValidIssuer, tenantId))
+                return issuer;
 
             // If a valid issuer is not found, throw
-            throw new SecurityTokenInvalidIssuerException("Issuer does not match any of the valid issuers provided for this application.");
+            // brentsch - todo, create a list of all the possible valid issuers in TokenValidationParameters
+            throw new SecurityTokenInvalidIssuerException($"Issuer: '{issuer}', does not match any of the valid issuers provided for this application.");
         }
 
-        /// <summary>Gets the tenant id from claims.</summary>
-        /// <param name="jwtToken">The JWT token with the claims collection.</param>
-        /// <returns>A string containing tenantId, if found or an empty string</returns>
-        private string GetTenantIdFromClaims(JwtSecurityToken jwtToken)
+        private bool IsValidIssuer(string validIssuer, string tenantId)
         {
-            string tenantId;
+            if (string.IsNullOrEmpty(validIssuer))
+                return false;
 
-            // Extract the tenant Id from the claims
-            tenantId = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimConstants.tid)?.Value;
-
-            if (string.IsNullOrWhiteSpace(tenantId))
+            try
             {
-                tenantId = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimConstants.TenantId)?.Value;
+                var uri = new Uri(validIssuer.Replace("{tenantid}", tenantId));
+                if (_issuerAliases.Contains(uri.Authority))
+                {
+                    string trimmedLocalPath = uri.LocalPath.Trim('/');
+                    return (trimmedLocalPath == tenantId || trimmedLocalPath == $"{tenantId}/v2.0");
+                }
+            }
+            catch
+            {
+                // if something faults, ignore
             }
 
-            return tenantId;
+            return false;
         }
 
-        private static string TenantedIssuer(string i, string tenantId)
+        /// <summary>Gets the tenant id from a token.</summary>
+        /// <param name="securityToken">A JWT token.</param>
+        /// <returns>A string containing tenantId, if found or <see cref="string.Empty"/>.</returns>
+        /// <remarks>Only <see cref="JwtSecurityToken"/> and <see cref="JsonWebToken"/> are acceptable types.</remarks>
+        private static string GetTenantIdFromToken(SecurityToken securityToken)
         {
-            return i.Replace("{tenantid}", tenantId);
+            if (securityToken is JwtSecurityToken jwtSecurityToken)
+            {
+                if (jwtSecurityToken.Payload.TryGetValue(ClaimConstants.Tid, out object tenantId))
+                    return tenantId as string;
+            }
+
+            // brentsch - todo, TryGetPayloadValue is available in 5.5.0
+            if (securityToken is JsonWebToken  jsonWebToken)
+            {
+                var tid = jsonWebToken.GetPayloadValue<string>(ClaimConstants.Tid);
+                if (tid != null)
+                    return tid;
+            }
+
+            return string.Empty;
         }
     }
 
@@ -180,23 +189,19 @@ namespace Microsoft.Identity.Web.Resource
         /// <param name="retriever">The <see cref="T:Microsoft.IdentityModel.Protocols.IDocumentRetriever"/> to use to read the discovery document.</param>
         /// <param name="cancel">A cancellation token that can be used by other objects or threads to receive notice of cancellation. <see cref="T:System.Threading.CancellationToken"/>.</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">address - Azure AD Issuer metadata address url is required
+        /// <exception cref="ArgumentNullException">if <paramref name="address"/> is null or empty.
         /// or
         /// retriever - No metadata document retriever is provided</exception>
         public async Task<IssuerMetadata> GetConfigurationAsync(string address, IDocumentRetriever retriever, CancellationToken cancel)
         {
-            if (string.IsNullOrWhiteSpace(address))
+            if (string.IsNullOrEmpty(address))
                 throw new ArgumentNullException(nameof(address), $"Azure AD Issuer metadata address url is required");
 
             if (retriever == null)
-            {
                 throw new ArgumentNullException(nameof(retriever), $"No metadata document retriever is provided");
-            }
 
             string doc = await retriever.GetDocumentAsync(address, cancel).ConfigureAwait(false);
-            IssuerMetadata metadata = JsonConvert.DeserializeObject<IssuerMetadata>(doc);
-
-            return metadata;
+            return JsonConvert.DeserializeObject<IssuerMetadata>(doc);
         }
     }
 
