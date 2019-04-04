@@ -24,7 +24,6 @@
         }
       ],
       "oauth2AllowIdTokenImplicitFlow": true,
-      "oauth2AllowImplicitFlow": true,
       "logoutUrl": "https://localhost:44321/signout-callback-oidc",
       "requiredResourceAccess": [
         {
