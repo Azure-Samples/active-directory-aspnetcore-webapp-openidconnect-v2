@@ -47,7 +47,7 @@ There is one project in this sample. To register it, you can:
 
    > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
 
-  4. Once you've run the script, please ensure that you've followedthe following manual steps. Azure AD PowerShell does not yet create an app whose audience is `Work or School + personal accounts`. This audience setting is possible from the Azure portal:
+  4. Once you've run the script, please ensure that you've followed the following manual steps. Azure AD PowerShell does not yet create an app whose audience is `Work or School + personal accounts`. This audience setting is only possible from the Azure portal as of today:
   5. Sign in to the [Azure portal](https://portal.azure.com) using either a work or school account or a personal Microsoft account.
   6. If your account is present in more than one Azure AD tenant, select `Directory + Subscription` at the top right corner in the menu on top of the page, and switch your portal session to the desired Azure AD tenant.
   7. In the left-hand navigation blades, select the **Azure Active Directory** service, and then select **App registrations (Preview)**.
