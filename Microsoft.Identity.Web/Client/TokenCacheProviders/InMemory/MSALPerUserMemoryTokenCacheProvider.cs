@@ -122,6 +122,11 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// </summary>
         private void PersistUserTokenCache()
         {
+            string cacheKey = this.GetMsalAccountId();
+
+            if (string.IsNullOrWhiteSpace(cacheKey))
+                return;
+
             // Ideally, methods that load and persist should be thread safe.MemoryCache.Get() is thread safe.
             this.memoryCache.Set(this.GetMsalAccountId(), this.UserTokenCache.SerializeMsalV3(), this.CacheOptions.AbsoluteExpiration);
         }
@@ -168,6 +173,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
         private void UserTokenCacheBeforeWriteNotification(TokenCacheNotificationArgs args)
         {
+            // Since we are using a MemoryCache ,whose methods are threads safe, we need not to do anything in this handler.
         }
 
         /// <summary>
