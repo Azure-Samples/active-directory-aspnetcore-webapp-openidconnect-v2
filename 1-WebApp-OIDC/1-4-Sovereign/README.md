@@ -1,7 +1,7 @@
 ---
 services: active-directory
 platforms: dotnet
-author: jmprieur
+author: jmprieur, negoe
 level: 100
 client: ASP.NET Core Web App
 endpoint: AAD v2.0
@@ -14,7 +14,13 @@ This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Conn
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
 
+National clouds (aka Sovereign clouds) are physically isolated instances of Azure. These regions of Azure are designed to make sure that data residency, sovereignty, and compliance requirements are honored within geographical boundaries.
 
+In addition to the public cloud​, Azure Active Directory is deployed in the following National clouds:  
+
+- Azure US Government
+- Azure China 21Vianet
+- Azure Germany
 
 Note that, enabling your application for sovereign clouds requires you to:
 
@@ -24,43 +30,38 @@ Note that, enabling your application for sovereign clouds requires you to:
 
 More details in [Authentication in National Clouds](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-national-cloud)
 
-> This part of the tutorial is work in progress.
 
-<!-- ## How to run this sample
+
+## How to run this sample
 
 To run this sample:
 
 > Pre-requisites: Install .NET Core 2.2 or later (for example for Windows) by following the instructions at [.NET and C# - Get Started in 10 Minutes](https://www.microsoft.com/net/core). In addition to developing on Windows, you can develop on [Linux](https://www.microsoft.com/net/core#linuxredhat), [Mac](https://www.microsoft.com/net/core#macos), or [Docker](https://www.microsoft.com/net/core#dockercmd).
 
-### Step 1: Register the sample with your Azure AD tenant
 
-There is one project in this sample. To register it, you can:
+### Step 1: Download/Clone this sample code 
+This sample was created from the dotnet core 2.2 [dotnet new mvc](https://docs.microsoft.com/dotnet/core/tools/dotnet-new?tabs=netcore2x) template with `SingleOrg` authentication, and then tweaked to let it support tokens for the Azure AD V2 endpoint.
 
-- either use PowerShell scripts that **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you and modify the Visual Studio projects' configuration files. If you want to use this automation:
+You can clone this sample from your shell or command line:
 
-  1. On Windows run PowerShell and navigate to the solution's folder
-  2. In PowerShell run:
-
-  ```PowerShell
-  Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+  ```console
+git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial webapp
+cd webapp
+cd "1-WebApp-OIDC\1-1-MyOrg"
   ```
 
-  3. Run the script to create your Azure AD application and configure the code of the sample application accordinly
+> Given that the name of the sample is very long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
-  ```PowerShell
-  .\AppCreationScripts\Configure.ps1
-  ```
+### Step 2: Register the sample with your Azure AD tenant
 
-   > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
+1. Sign in to the [Azure portal](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-national-cloud#app-registration-endpoints) of the National Cloud of your choice using either a work or school account.
 
-  4. Open the Visual Studio solution and click start. That's it!
+> Note: Azure Germany doesn't support **App registrations (Preview)* experience.
 
-- or, if you don't want to use automation, follow the steps below:
+2. Choose the Azure AD tenant where you want to create your applications
+      - If your account is present in more than one Azure AD tenant, select profile button at the top right corner in the menu on top of the page and select `Switch Directory`.
+      - On `Directory + Subscription` switch your portal session to the desired Azure AD tenant.
 
-#### Choose the Azure AD tenant where you want to create your applications
-
-1. Sign in to the [Azure portal](https://portal.azure.com) using either a work or school account or a personal Microsoft account.
-1. If your account is present in more than one Azure AD tenant, select `Directory + Subscription` at the top right corner in the menu on top of the page, and switch your portal session to the desired Azure AD tenant.
 1. In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations (Preview)**.
 1. In **App registrations (Preview)** page, select **New registration**.
 1. When the **Register an application page** appears, enter your application's registration information:
@@ -79,28 +80,15 @@ There is one project in this sample. To register it, you can:
 
 > Note that unless the Web App calls a Web API no certificate or secret is needed.
 
-### Step 2: Download/ Clone this sample code or build the application using a template
+### Step 3: Configure your App
 
-This sample was created from the dotnet core 2.2 [dotnet new mvc](https://docs.microsoft.com/dotnet/core/tools/dotnet-new?tabs=netcore2x) template with `SingleOrg` authentication, and then tweaked to let it support tokens for the Azure AD V2 endpoint. You can clone/download this repository or create the sample from the command line:
-
-#### Option 1: Download/ clone this sample
-
-You can clone this sample from your shell or command line:
-
-  ```console
-git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial webapp
-cd webapp
-cd "1-WebApp-OIDC\1-1-MyOrg"
-  ```
-
-> Given that the name of the sample is very long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
-
-  In the **appsettings.json** file:
+#### Option 1:  In the **appsettings.json** file:
   
-  - replace the `ClientID` value with the *Application ID* from the application you registered in Application Registration portal on *Step 1*.
-  - replace the `TenantId` value with he *Tenant ID* where you registered your Application on *Step 1*.
+  - replace the `Instance` value with the relevant authority value for the National Cloud, your application is registered with. [List of authority of National Clouds](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-national-cloud#azure-ad-authentication-endpoints)
+  -  replace the `ClientID` value with the *Application ID* from the application you registered in Application Registration portal on *Step 2*.
+  - replace the `TenantId` value with the *Tenant ID* where you registered your Application on *Step 2*.
 
-#### Option 2: Create the sample from the command line
+#### Option 2: Create and configure sample from the command line
 
 1. Run the following command to create a sample from the command line using the `SingleOrg` template:
 
@@ -134,7 +122,7 @@ cd "1-WebApp-OIDC\1-1-MyOrg"
             services.AddAzureAdV2Authentication(Configuration);
      ```
 
-     This enables your application to use the Microsoft identity platform (fomerly Azure AD v2.0) endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
+     This enables your application to use the Microsoft identity platform (formerly known as Azure AD v2.0) endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
 
     1. Change the `Properties\launchSettings.json` file to ensure that you start your web app from <https://localhost:44321> as registered. For this:
     - update the `sslPort` of the `iisSettings` section to be `44321`
