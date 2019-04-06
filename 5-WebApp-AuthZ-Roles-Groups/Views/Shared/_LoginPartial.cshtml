@@ -2,7 +2,7 @@
 @if (User.Identity.IsAuthenticated)
 {
     <ul class="nav navbar-nav navbar-right">
-        <li class="navbar-text">Hello @User.Identity.Name!</li>
+        <li>@Html.ActionLink(User.Identity.Name + "!", "Index", "UserProfile", routeValues: null)</li>
         <li><a asp-area="AzureAD" asp-controller="Account" asp-action="SignOut">Sign out</a></li>
     </ul>
 }

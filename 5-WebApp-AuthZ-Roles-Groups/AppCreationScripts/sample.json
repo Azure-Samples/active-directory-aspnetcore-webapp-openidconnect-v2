@@ -1,6 +1,6 @@
 {
   "Sample": {
-    "Title": "Add authorization using AppRoles an groups to an ASP.NET Core Web app thats signs-in users with the Microsoft identity platform",
+    "Title": "Add authorization using groups & group claims to an ASP.NET Core Web app thats signs-in users with the Microsoft identity platform",
     "Level": 400,
     "Client": "ASP.NET Core 2.x Web App",
     "Service": "Microsoft Graph",
@@ -14,20 +14,18 @@
   "AADApps": [
     {
       "Id": "webApp",
-      "Name": "WebApp",
+      "Name": "WebApp-GroupClaims",
       "Kind": "WebApp",
       "Audience": "AzureADMyOrg",
       "HomePage": "https://localhost:44321/",
       "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc, https://localhost:44321/Account/EndSession",
       "LogoutUrl": "https://localhost:44321/signout-oidc",
+      "PasswordCredentials": "Auto",
       "RequiredResourcesAccess": [
         {
           "Resource": "Microsoft Graph",
           "DelegatedPermissions": [ "Directory.Read.All" ]
         }
-      ],
-      "ManualSteps": [
-        { "Comment": "Follow the instructions in Readme oh how to change the manifest to include GroupMembershipClaims." }
       ]
     }
   ],

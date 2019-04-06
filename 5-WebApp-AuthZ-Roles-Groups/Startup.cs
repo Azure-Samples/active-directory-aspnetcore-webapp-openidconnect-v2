@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.Client.TokenCacheProviders;
+using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -31,7 +33,11 @@ namespace WebApp_OpenIDConnect_DotNet
             });
 
             // Sign-in users with the Microsoft identity platform
-            services.AddAzureAdV2Authentication(Configuration);
+            services.AddAzureAdV2Authentication(Configuration)
+                    .AddMsal(new string[] { "User.Read", "Directory.Read.All" })
+                    .AddInMemoryTokenCaches();
+
+            services.AddMSGraphService(Configuration);
 
             services.AddMvc(options =>
             {

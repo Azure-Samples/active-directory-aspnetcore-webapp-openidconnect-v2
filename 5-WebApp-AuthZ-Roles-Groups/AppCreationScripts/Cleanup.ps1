@@ -49,8 +49,8 @@ This function removes the Azure AD applications for the sample. These applicatio
     # Removes the applications
     Write-Host "Cleaning-up applications from tenant '$tenantName'"
 
-    Write-Host "Removing 'webApp' (WebApp) if needed"
-    $app=Get-AzureADApplication -Filter "DisplayName eq 'WebApp'"  
+    Write-Host "Removing 'webApp' (WebApp-GroupClaims) if needed"
+    $app=Get-AzureADApplication -Filter "DisplayName eq 'WebApp-GroupClaims'"  
 
     if ($app)
     {
