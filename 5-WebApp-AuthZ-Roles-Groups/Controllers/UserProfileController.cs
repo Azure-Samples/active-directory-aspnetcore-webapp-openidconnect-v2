@@ -11,13 +11,12 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
     public class UserProfileController : Controller
     {
         private readonly ITokenAcquisition tokenAcquisition;
-        private readonly IMSGraphService graphApiOperations;
+        private readonly IMSGraphService graphService;
 
-        public UserProfileController(ITokenAcquisition tokenAcquisition,
-                              IMSGraphService MSGraphService)
+        public UserProfileController(ITokenAcquisition tokenAcquisition, IMSGraphService MSGraphService)
         {
             this.tokenAcquisition = tokenAcquisition;
-            this.graphApiOperations = MSGraphService;
+            this.graphService = MSGraphService;
         }
 
         [MsalUiRequiredExceptionFilter(Scopes = new[] { Constants.ScopeUserRead, Constants.ScopeDirectoryReadAll })]
@@ -25,9 +24,9 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         {
             string accessToken = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new[] { Constants.ScopeUserRead, Constants.ScopeDirectoryReadAll });
 
-            User me = await graphApiOperations.GetMeAsync(accessToken);
-            var photo = await graphApiOperations.GetMyPhotoAsync(accessToken);
-            IList<Group> groups = await graphApiOperations.GetMyMemberOfGroupsAsync(accessToken);
+            User me = await graphService.GetMeAsync(accessToken);
+            var photo = await graphService.GetMyPhotoAsync(accessToken);
+            IList<Group> groups = await graphService.GetMyMemberOfGroupsAsync(accessToken);
 
             ViewData["Me"] = me;
             ViewData["Photo"] = photo;

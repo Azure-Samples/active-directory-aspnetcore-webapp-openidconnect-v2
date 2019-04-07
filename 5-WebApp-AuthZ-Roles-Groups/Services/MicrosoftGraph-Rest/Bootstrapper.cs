@@ -13,6 +13,11 @@ namespace WebApp_OpenIDConnect_DotNet.Services.GraphOperations
             services.AddHttpClient<IGraphApiOperations, GraphApiOperationService>();
         }
 
+        /// <summary>
+        /// Adds support for IMSGraphService, which provides interaction with Microsoft Graph using Graph SDK.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configuration"></param>
         public static void AddMSGraphService(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<WebOptions>(configuration);

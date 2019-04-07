@@ -24,6 +24,7 @@ SOFTWARE.
 
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -93,12 +94,15 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             services.AddDbContext<TokenCacheDbContext>(options =>
                 options.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString));
 
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
             services.AddScoped<IMSALUserTokenCacheProvider>(factory =>
             {
                 var dpprovider = factory.GetRequiredService<IDataProtectionProvider>();
                 var tokenCacheDbContext = factory.GetRequiredService<TokenCacheDbContext>();
+                var httpcontext = factory.GetRequiredService<IHttpContextAccessor>();
 
-                return new MSALPerUserSqlTokenCacheProvider(tokenCacheDbContext, dpprovider);
+                return new MSALPerUserSqlTokenCacheProvider(tokenCacheDbContext, dpprovider, httpcontext);
             });
 
             return services;

@@ -191,6 +191,7 @@ Function ConfigureApplications
                                                   -IdentifierUris "https://$tenantName/WebApp-GroupClaims" `
                                                   -PasswordCredentials $key `
                                                   -Oauth2AllowImplicitFlow $true `
+                                                  -GroupMembershipClaims "SecurityGroup" `
                                                   -PublicClient $False
 
    $currentAppId = $webAppAadApplication.AppId

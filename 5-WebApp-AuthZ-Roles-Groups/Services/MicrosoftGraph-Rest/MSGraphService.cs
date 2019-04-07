@@ -78,6 +78,147 @@ namespace WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph
             return null;
         }
 
+        public async Task<IList<Group>> GetCurrentUsersGroupsAsync(string accessToken)
+        {
+            IUserMemberOfCollectionWithReferencesPage memberOfGroups = null;
+            IList<Group> groups = new List<Group>();
+
+            try
+            {
+                PrepareAuthenticatedClient(accessToken);
+
+                memberOfGroups = await graphServiceClient.Me.MemberOf.Request().GetAsync();
+
+                if (memberOfGroups != null)
+                {
+                    do
+                    {
+                        foreach (var directoryObject in memberOfGroups.CurrentPage)
+                        {
+                            if (directoryObject is Group)
+                            {
+                                Group group = directoryObject as Group;
+                                // Trace.WriteLine("Got group: " + group.Id);
+                                groups.Add(group as Group);
+                            }
+                        }
+                        if (memberOfGroups.NextPageRequest != null)
+                        {
+                            memberOfGroups = await memberOfGroups.NextPageRequest.GetAsync();
+                        }
+                        else
+                        {
+                            memberOfGroups = null;
+                        }
+                    } while (memberOfGroups != null);
+                }
+
+                return groups;
+            }
+            catch (ServiceException e)
+            {
+                Trace.Fail("We could not get user groups: " + e.Error.Message);
+                return null;
+            }
+        }
+
+        public async Task<IList<DirectoryRole>> GetCurrentUserDirectoryRolesAsync(string accessToken)
+        {
+            IUserMemberOfCollectionWithReferencesPage memberOfDirectoryRoles = null;
+            IList<DirectoryRole> DirectoryRoles = new List<DirectoryRole>();
+
+            try
+            {
+                PrepareAuthenticatedClient(accessToken);
+                memberOfDirectoryRoles = await graphServiceClient.Me.MemberOf.Request().GetAsync();
+
+                if (memberOfDirectoryRoles != null)
+                {
+                    do
+                    {
+                        foreach (var directoryObject in memberOfDirectoryRoles.CurrentPage)
+                        {
+                            if (directoryObject is DirectoryRole)
+                            {
+                                DirectoryRole DirectoryRole = directoryObject as DirectoryRole;
+                                // Trace.WriteLine("Got DirectoryRole: " + DirectoryRole.Id);
+                                DirectoryRoles.Add(DirectoryRole as DirectoryRole);
+                            }
+                        }
+                        if (memberOfDirectoryRoles.NextPageRequest != null)
+                        {
+                            memberOfDirectoryRoles = await memberOfDirectoryRoles.NextPageRequest.GetAsync();
+                        }
+                        else
+                        {
+                            memberOfDirectoryRoles = null;
+                        }
+                    } while (memberOfDirectoryRoles != null);
+                }
+
+                return DirectoryRoles;
+            }
+            catch (ServiceException e)
+            {
+                Trace.Fail("We could not get user DirectoryRoles: " + e.Error.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// A more efficient implementation that gets both group and role membership in one call
+        /// </summary>
+        /// <returns></returns>
+        public async Task<UserGroupsAndDirectoryRoles> GetCurrentUserGroupsAndRolesAsync(string accessToken)
+        {
+            UserGroupsAndDirectoryRoles userGroupsAndDirectoryRoles = new UserGroupsAndDirectoryRoles();
+            IUserMemberOfCollectionWithReferencesPage memberOfDirectoryRoles = null;
+
+            try
+            {
+                PrepareAuthenticatedClient(accessToken);
+                memberOfDirectoryRoles = await graphServiceClient.Me.MemberOf.Request().GetAsync();
+
+                if (memberOfDirectoryRoles != null)
+                {
+                    do
+                    {
+                        foreach (var directoryObject in memberOfDirectoryRoles.CurrentPage)
+                        {
+                            if (directoryObject is Group)
+                            {
+                                Group group = directoryObject as Group;
+                                // Trace.WriteLine($"Got group: {group.Id}- '{group.DisplayName}'");
+                                userGroupsAndDirectoryRoles.Groups.Add(group);
+                            }
+                            else if (directoryObject is DirectoryRole)
+                            {
+                                DirectoryRole role = directoryObject as DirectoryRole;
+                                // Trace.WriteLine($"Got DirectoryRole: {role.Id}- '{role.DisplayName}'");
+                                userGroupsAndDirectoryRoles.DirectoryRoles.Add(role);
+                            }
+                        }
+                        if (memberOfDirectoryRoles.NextPageRequest != null)
+                        {
+                            userGroupsAndDirectoryRoles.HasOverageClaim = true; //check if this matches 150 per token limit
+                            memberOfDirectoryRoles = await memberOfDirectoryRoles.NextPageRequest.GetAsync();
+                        }
+                        else
+                        {
+                            memberOfDirectoryRoles = null;
+                        }
+                    } while (memberOfDirectoryRoles != null);
+                }
+
+                return userGroupsAndDirectoryRoles;
+            }
+            catch (ServiceException e)
+            {
+                Trace.Fail("We could not get user groups and roles: " + e.Error.Message);
+                return null;
+            }
+        }
+
         // Get the groups that the current user is a direct member of.
         // This snippet requires an admin work account.
         public async Task<List<Group>> GetMyMemberOfGroupsAsync(string accessToken)
@@ -158,7 +299,6 @@ namespace WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph
             if (graphServiceClient == null)
             {
                 // Create Microsoft Graph client.
-                // graphServiceClient.BaseUrl = webOptions.GraphApiUrl;
 
                 try
                 {
@@ -166,7 +306,10 @@ namespace WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph
                                                                          new DelegateAuthenticationProvider(
                                                                              async (requestMessage) =>
                                                                              {
-                                                                                 requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
+                                                                                 await Task.Run(() =>
+                                                                                 {
+                                                                                     requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
+                                                                                 });
                                                                              }));
                 }
                 catch (Exception ex)

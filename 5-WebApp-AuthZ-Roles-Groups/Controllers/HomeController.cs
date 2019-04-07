@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 using WebApp_OpenIDConnect_DotNet.Models;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
@@ -14,6 +15,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
         public IActionResult Index()
         {
+            ViewData["User"] = HttpContext.User;
             return View();
         }
 

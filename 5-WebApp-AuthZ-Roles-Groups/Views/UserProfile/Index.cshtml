@@ -1,9 +1,15 @@
 ﻿@using Newtonsoft.Json.Linq
 @{
-    ViewData["Title"] = "Profile";
+    ViewData["Title"] = "Profile & Groups";
 }
 <h2>@ViewData["Title"]</h2>
 <h3>@ViewData["Message"]</h3>
+
+<h2>
+    This  page shows information about the user obtained from Microsoft Graph.
+</h2>
+<p><img src="~/images/CallGroups.png" height="280" width="480" /></p>
+
 
 <table class="table table-striped table-condensed" style="font-family: monospace">
     <tr>
@@ -16,7 +22,7 @@
             @{
                 if (ViewData["Photo"] != null)
                 {
-                    <img style="margin: 5px 0; width: 150px" src="data:image/jpeg;base64, @ViewData["photo"]" />
+                    <img style="margin: 5px 0; width: 150px" src="data:image/jpeg;base64, @ViewData["Photo"]" />
                 }
                 else
                 {
@@ -26,31 +32,37 @@
             }
         </td>
     </tr>
-    @{
-        var user = ViewData["Me"] as Microsoft.Graph.User;
-    }
-    <table class="table table-bordered table-striped">
-        <tr>
-            <td>Display Name</td>
-            <td>@user.DisplayName</td>
-        </tr>
-        <tr>
-            <td>First Name</td>
-            <td>@user.GivenName</td>
-        </tr>
-        <tr>
-            <td>Last Name</td>
-            <td>@user.Surname</td>
-        </tr>
-    </table>
 </table>
+@{
+    var user = ViewData["Me"] as Microsoft.Graph.User;
+}
+<table class="table table-bordered table-striped">
+    <tr>
+        <td>Display Name</td>
+        <td>@user.DisplayName</td>
+    </tr>
+    <tr>
+        <td>First Name</td>
+        <td>@user.GivenName</td>
+    </tr>
+    <tr>
+        <td>Last Name</td>
+        <td>@user.Surname</td>
+    </tr>
+</table>
+<h3>Your Current Groups:</h3>
+
+<h4 style="color:blue">Group Membership Acquired via GraphAPI Calls. </h4>
+
 <table class="table table-striped table-bordered table-condensed table-hover">
     <tr>
         <th>Name</th>
-        <th>ObjectID</th>
+        <th>Group's ObjectID</th>
     </tr>
 
-    @foreach (Microsoft.Graph.Group group in (List<Microsoft.Graph.Group>)ViewData["Groups"])
+    @foreach (Microsoft.Graph.Group group in (List
+ <Microsoft.Graph.Group>
+     )ViewData["Groups"])
     {
         <tr>
             <td>@group.DisplayName</td>

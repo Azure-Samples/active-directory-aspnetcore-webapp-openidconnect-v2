@@ -52,3 +52,5 @@
 /2-WebApp-graph-user/2-2-TokenCache/AppCreationScripts/Steps.md
 /5-WebApp-AuthZ-Roles-Groups/AppCreationScripts/Steps.md
 /5-WebApp-AuthZ-Roles-Groups/AppCreationScripts/Quickstart.json
+/5-WebApp-AuthZ-Roles-Groups/WebApp-OpenIDConnect-DotNet.csproj.user
+/5-WebApp-AuthZ-Roles-Groups/AppCreationScripts/createdApps.html

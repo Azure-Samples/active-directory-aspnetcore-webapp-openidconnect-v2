@@ -21,6 +21,7 @@
       "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc, https://localhost:44321/Account/EndSession",
       "LogoutUrl": "https://localhost:44321/signout-oidc",
       "PasswordCredentials": "Auto",
+      "GroupMembershipClaims": "SecurityGroup",
       "RequiredResourcesAccess": [
         {
           "Resource": "Microsoft Graph",

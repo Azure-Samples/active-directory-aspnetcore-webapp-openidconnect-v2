@@ -1,11 +1,45 @@
-﻿@{
-    ViewData["Title"] = "Add authorization using groups & group claims to an ASP.NET Core Web app";
+﻿@using System.Security.Claims
+@{
+    ViewData["Title"] = "Add authorization using groups & group claims";
 }
 
-    <h1>
-        Add authorization using groups & group claims to an ASP.NET Core Web app thats signs-in users with the Microsoft identity platform
-    </h1>
+<h2>
+    Add authorization using groups & group claims to an ASP.NET Core Web app thats signs-in users with the Microsoft identity platform
+</h2>
 <p>
-    This sample shows how to build a .NET Core 2.1 MVC Web app that uses OpenID Connect to sign in users. Users can use personal accounts (including outlook.com, live.com, and others) as well as work and school accounts from any company or organization that has integrated with Azure Active Directory. It leverages the ASP.NET Core OpenID Connect middleware.
+    This sample shows how to build an  .NET Core 2.1 MVC Web app that uses Azure AD Groups for authorization. It leverages the ASP.NET Core OpenID Connect middleware to sign-in users.
 </p>
-<img src="https://github.com/snobu/active-directory-aspnetcore-webapp-openidconnect-v2/raw/cachefix/ReadmeFiles/sign-in.png"/>
+<img src="https://github.com/snobu/active-directory-aspnetcore-webapp-openidconnect-v2/raw/cachefix/ReadmeFiles/sign-in.png" />
+
+<h4 style="color:blue">Claims from the signed-in user's token</h4>
+
+
+@{
+    var user = ViewData["User"] as ClaimsPrincipal;
+}
+
+<table class="table table-striped table-bordered table-condensed table-hover">
+    <tr>
+        <th>ClaimType</th>
+        <th>Value</th>
+    </tr>
+
+    @foreach (var claim in user.Claims)
+    {
+<tr>
+    @{
+        if (claim.Type == "groups")
+        {
+            <td><b>@claim.Type</b></td>
+        }
+        else
+        {
+            <td>@claim.Type</td>
+        }
+    }
+
+    <td>@claim.Value</td>
+</tr>
+    }
+
+</table>
