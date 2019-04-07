@@ -38,7 +38,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         private static ReaderWriterLockSlim SessionLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
 
         /// <summary>
-        /// Once the user signes in, this will not be null and can be ontained via a call to ClaimsPrincipal.Current
+        /// Once the user signes in, this will not be null and can be ontained via a call to HttpContext.User
         /// </summary>
         internal ClaimsPrincipal SignedInUser;
 
@@ -220,7 +220,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <summary>
         /// Explores the Claims of a signed-in user (if available) to populate the unique Id of this cache's instance.
         /// </summary>
-        /// <returns>The signed in user's object.tenant Id , if available in the ClaimsPrincipal.Current instance</returns>
+        /// <returns>The signed in user's object.tenant Id , if available in the HttpContext.User instance</returns>
         internal string GetSignedInUsersUniqueId()
         {
             if (this.SignedInUser != null)

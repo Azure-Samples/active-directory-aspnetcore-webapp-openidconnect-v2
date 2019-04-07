@@ -122,6 +122,11 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// </summary>
         private void PersistUserTokenCache()
         {
+            string cacheKey = this.GetMsalAccountId();
+
+            if (string.IsNullOrWhiteSpace(cacheKey))
+                return;
+
             // Ideally, methods that load and persist should be thread safe.MemoryCache.Get() is thread safe.
             this.memoryCache.Set(this.GetMsalAccountId(), this.UserTokenCache.SerializeMsalV3(), this.CacheOptions.AbsoluteExpiration);
         }
