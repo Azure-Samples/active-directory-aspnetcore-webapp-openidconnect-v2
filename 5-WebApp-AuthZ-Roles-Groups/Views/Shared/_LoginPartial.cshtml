@@ -1,8 +1,8 @@
-@using Microsoft.Identity.Web
+@using System.Security.Principal
 @if (User.Identity.IsAuthenticated)
 {
     <ul class="nav navbar-nav navbar-right">
-        <li class="navbar-text">Hello @User.GetDisplayName()!</li>
+        <li>@Html.ActionLink(User.Identity.Name + "!", "Index", "UserProfile", routeValues: null)</li>
         <li><a asp-area="AzureAD" asp-controller="Account" asp-action="SignOut">Sign out</a></li>
     </ul>
 }

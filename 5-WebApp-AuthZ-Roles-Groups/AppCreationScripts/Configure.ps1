@@ -178,20 +178,20 @@ Function ConfigureApplications
     $user = Get-AzureADUser -ObjectId $creds.Account.Id
 
    # Create the webApp AAD application
-   Write-Host "Creating the AAD application (WebApp-OpenIDConnect-DotNet-code-v2)"
+   Write-Host "Creating the AAD application (WebApp-GroupClaims)"
    # Get a 2 years application key for the webApp Application
    $pw = ComputePassword
    $fromDate = [DateTime]::Now;
    $key = CreateAppKey -fromDate $fromDate -durationInYears 2 -pw $pw
    $webAppAppKey = $pw
-   $webAppAadApplication = New-AzureADApplication -DisplayName "WebApp-OpenIDConnect-DotNet-code-v2" `
+   $webAppAadApplication = New-AzureADApplication -DisplayName "WebApp-GroupClaims" `
                                                   -HomePage "https://localhost:44321/" `
                                                   -LogoutUrl "https://localhost:44321/signout-oidc" `
-                                                  -ReplyUrls "https://localhost:44321/", "https://localhost:44321/signin-oidc" `
-                                                  -IdentifierUris "https://$tenantName/WebApp-OpenIDConnect-DotNet-code-v2" `
-                                                  -AvailableToOtherTenants $True `
+                                                  -ReplyUrls "https://localhost:44321/", "https://localhost:44321/signin-oidc", "https://localhost:44321/Account/EndSession" `
+                                                  -IdentifierUris "https://$tenantName/WebApp-GroupClaims" `
                                                   -PasswordCredentials $key `
                                                   -Oauth2AllowImplicitFlow $true `
+                                                  -GroupMembershipClaims "SecurityGroup" `
                                                   -PublicClient $False
 
    $currentAppId = $webAppAadApplication.AppId
@@ -205,19 +205,19 @@ Function ConfigureApplications
     Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($webAppServicePrincipal.DisplayName)'"
    }
 
-   Write-Host "Done creating the webApp application (WebApp-OpenIDConnect-DotNet-code-v2)"
+   Write-Host "Done creating the webApp application (WebApp-GroupClaims)"
 
    # URL of the AAD application in the Azure portal
    # Future? $webAppPortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$webAppAadApplication.AppId+"/objectId/"+$webAppAadApplication.ObjectId+"/isMSAApp/"
    $webAppPortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$webAppAadApplication.AppId+"/objectId/"+$webAppAadApplication.ObjectId+"/isMSAApp/"
-   Add-Content -Value "<tr><td>webApp</td><td>$currentAppId</td><td><a href='$webAppPortalUrl'>WebApp-OpenIDConnect-DotNet-code-v2</a></td></tr>" -Path createdApps.html
+   Add-Content -Value "<tr><td>webApp</td><td>$currentAppId</td><td><a href='$webAppPortalUrl'>WebApp-GroupClaims</a></td></tr>" -Path createdApps.html
 
    $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.RequiredResourceAccess]
 
    # Add Required Resources Access (from 'webApp' to 'Microsoft Graph')
    Write-Host "Getting access from 'webApp' to 'Microsoft Graph'"
    $requiredPermissions = GetRequiredPermissions -applicationDisplayName "Microsoft Graph" `
-                                                -requiredDelegatedPermissions "User.Read" `
+                                                -requiredDelegatedPermissions "Directory.Read.All" `
 
    $requiredResourcesAccess.Add($requiredPermissions)
 

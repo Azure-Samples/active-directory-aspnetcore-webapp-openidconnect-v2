@@ -1,44 +1,21 @@
-﻿using System.Diagnostics;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web.Client;
-using WebApp_OpenIDConnect_DotNet.Infrastructure;
+using System.Diagnostics;
+using System.Security.Claims;
 using WebApp_OpenIDConnect_DotNet.Models;
-using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
-        readonly         ITokenAcquisition   tokenAcquisition;
-        private readonly IGraphApiOperations graphApiOperations;
-
-        public HomeController(ITokenAcquisition   tokenAcquisition,
-                              IGraphApiOperations graphApiOperations)
+        public HomeController()
         {
-            this.tokenAcquisition   = tokenAcquisition;
-            this.graphApiOperations = graphApiOperations;
         }
 
         public IActionResult Index()
         {
-            return View();
-        }
-
-        [MsalUiRequiredExceptionFilter(Scopes = new[] {Constants.ScopeUserRead})]
-        public async Task<IActionResult> Profile()
-        {
-            var accessToken =
-                await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new[] {Constants.ScopeUserRead});
-
-            var me = await graphApiOperations.GetUserInformation(accessToken);
-            var photo = await graphApiOperations.GetPhotoAsBase64Async(accessToken);
-
-            ViewData["Me"] = me;
-            ViewData["Photo"] = photo;
-
+            ViewData["User"] = HttpContext.User;
             return View();
         }
 
