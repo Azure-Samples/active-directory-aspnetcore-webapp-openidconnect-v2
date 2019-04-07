@@ -153,24 +153,24 @@ Since the `groups` claim contains the object ids of the security groups than act
 // Startup.Auth.cs
 public void ConfigureAuth(IAppBuilder app)
 {
-	app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
-	app.UseCookieAuthentication(new CookieAuthenticationOptions());
+    app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
+    app.UseCookieAuthentication(new CookieAuthenticationOptions());
 
-	//Configure OpenIDConnect, register callbacks for OpenIDConnect Notifications
-	app.UseOpenIdConnectAuthentication(
-	new OpenIdConnectAuthenticationOptions
-	{
-		ClientId = ConfigHelper.ClientId,
-		Authority = String.Format(CultureInfo.InvariantCulture, ConfigHelper.AadInstance, ConfigHelper.Tenant),
-	            PostLogoutRedirectUri = ConfigHelper.PostLogoutRedirectUri,
-		TokenValidationParameters = new System.IdentityModel.Tokens.TokenValidationParameters
-		{
-			ValidateIssuer = false,
-			RoleClaimType = "groups",
-		},
-		
-		// [removed for] brevity
-    });
+    //Configure OpenIDConnect, register callbacks for OpenIDConnect Notifications
+    app.UseOpenIdConnectAuthentication(
+    new OpenIdConnectAuthenticationOptions
+    {
+        ClientId = ConfigHelper.ClientId,
+        Authority = String.Format(CultureInfo.InvariantCulture, ConfigHelper.AadInstance, ConfigHelper.Tenant),
+                PostLogoutRedirectUri = ConfigHelper.PostLogoutRedirectUri,
+        TokenValidationParameters = new System.IdentityModel.Tokens.TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            RoleClaimType = "groups",
+        },
+        
+        // [removed for] brevity
+    });
 }
 
 

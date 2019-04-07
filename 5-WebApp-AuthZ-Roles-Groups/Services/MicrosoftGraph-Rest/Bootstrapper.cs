@@ -13,15 +13,12 @@ namespace WebApp_OpenIDConnect_DotNet.Services.GraphOperations
             services.AddHttpClient<IGraphApiOperations, GraphApiOperationService>();
         }
 
-        /// <summary>
-        /// Adds support for IMSGraphService, which provides interaction with Microsoft Graph using Graph SDK.
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configuration"></param>
+        /// <summary>Adds support for IMSGraphService, which provides interaction with Microsoft Graph using Graph SDK.</summary>
+        /// <param name="services">The services collection to add to</param>
+        /// <param name="configuration">The app configuration </param>
         public static void AddMSGraphService(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<WebOptions>(configuration);
-            // https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests
             services.AddSingleton<IMSGraphService, MSGraphService>();
         }
     }

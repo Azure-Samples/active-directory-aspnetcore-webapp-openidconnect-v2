@@ -23,13 +23,13 @@ SOFTWARE.
 ***********************************************************************************************/
 
 using Microsoft.Graph;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph
 {
+    /// <summary>
+    /// An entity class that holds both groups and roles for a user.
+    /// </summary>
     public class UserGroupsAndDirectoryRoles
     {
         public UserGroupsAndDirectoryRoles()
@@ -39,16 +39,20 @@ namespace WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph
             this.DirectoryRoles = new List<DirectoryRole>();
         }
 
+        /// <summary>Gets or sets a value indicating whether this user's groups claim will result in an overage </summary>
+        /// <value>
+        ///   <c>true</c> if this instance has overage claim; otherwise, <c>false</c>.</value>
         public bool HasOverageClaim { get; set; }
 
-        public List<string> GroupIds{ get; set; }
+        /// <summary>Gets or sets the group ids.</summary>
+        /// <value>The group ids.</value>
+        public List<string> GroupIds { get; set; }
 
+        /// <summary>Gets or sets the groups.</summary>
+        /// <value>The groups.</value>
         public List<Group> Groups { get; set; }
 
-        /// <summary>
-        /// Gets or sets the App roles
-        /// </summary>
+        /// <summary>Gets or sets the App roles</summary>
         public List<DirectoryRole> DirectoryRoles { get; set; }
-        
     }
 }

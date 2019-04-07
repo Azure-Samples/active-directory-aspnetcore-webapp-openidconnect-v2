@@ -1,4 +1,28 @@
-﻿using Microsoft.Extensions.Options;
+﻿/************************************************************************************************
+The MIT License (MIT)
+
+Copyright (c) 2015 Microsoft Corporation
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+***********************************************************************************************/
+
+using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 using System;
 using System.Collections.Generic;
@@ -10,6 +34,9 @@ using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
 
 namespace WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph
 {
+    /// <summary>
+    /// MSGraph service has samples to show how to call Microsoft Graph using the Graph SDK
+    /// </summary>
     public class MSGraphService : IMSGraphService
     {
         private readonly WebOptions webOptions;
@@ -17,11 +44,16 @@ namespace WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph
         // the Graph SDK's GraphServiceClient
         private GraphServiceClient graphServiceClient;
 
+        /// <summary>Initializes a new instance of the <see cref="MSGraphService"/> class.</summary>
+        /// <param name="webOptionValue">The web option value.</param>
         public MSGraphService(IOptions<WebOptions> webOptionValue)
         {
             webOptions = webOptionValue.Value;
         }
 
+        /// <summary>Gets basic details about the signed-in user.</summary>
+        /// <param name="accessToken">The access token for MS Graph.</param>
+        /// <returns>A detail of the User object</returns>
         public async Task<User> GetMeAsync(string accessToken)
         {
             User currentUserObject;
@@ -40,6 +72,9 @@ namespace WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph
             return currentUserObject;
         }
 
+        /// <summary>Gets the signed-in user's photo.</summary>
+        /// <param name="accessToken">The access token for MS Graph.</param>
+        /// <returns>The photo of the signed-in user as a base64 string</returns>
         public async Task<string> GetMyPhotoAsync(string accessToken)
         {
             PrepareAuthenticatedClient(accessToken);
@@ -78,6 +113,10 @@ namespace WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph
             return null;
         }
 
+
+        /// <summary>Gets the groups the signed-in user's is a member of.</summary>
+        /// <param name="accessToken">The access token for MS Graph.</param>
+        /// <returns>A list of Groups</returns>
         public async Task<IList<Group>> GetCurrentUsersGroupsAsync(string accessToken)
         {
             IUserMemberOfCollectionWithReferencesPage memberOfGroups = null;
@@ -122,6 +161,13 @@ namespace WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph
             }
         }
 
+        /// <summary>
+        /// Gets the current user directory roles.
+        /// </summary>
+        /// <param name="accessToken">The access token for MS Graph.</param>
+        /// <returns>
+        /// A list of directory roles
+        /// </returns>
         public async Task<IList<DirectoryRole>> GetCurrentUserDirectoryRolesAsync(string accessToken)
         {
             IUserMemberOfCollectionWithReferencesPage memberOfDirectoryRoles = null;
@@ -165,10 +211,14 @@ namespace WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph
             }
         }
 
+
         /// <summary>
-        /// A more efficient implementation that gets both group and role membership in one call
+        /// Gets the signed-in user groups and roles. A more efficient implementation that gets both group and role membership in one call
         /// </summary>
-        /// <returns></returns>
+        /// <param name="accessToken">The access token for MS Graph.</param>
+        /// <returns>
+        /// A list of UserGroupsAndDirectoryRoles
+        /// </returns>
         public async Task<UserGroupsAndDirectoryRoles> GetCurrentUserGroupsAndRolesAsync(string accessToken)
         {
             UserGroupsAndDirectoryRoles userGroupsAndDirectoryRoles = new UserGroupsAndDirectoryRoles();
@@ -218,9 +268,14 @@ namespace WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph
                 return null;
             }
         }
-
-        // Get the groups that the current user is a direct member of.
-        // This snippet requires an admin work account.
+        
+        /// <summary>
+        /// Gets the groups the signed-in user's is a direct member of.
+        /// </summary>
+        /// <param name="accessToken">The access token for MS Graph.</param>
+        /// <returns>
+        /// A list of Groups
+        /// </returns>
         public async Task<List<Group>> GetMyMemberOfGroupsAsync(string accessToken)
         {
             List<Group> groups = new List<Group>();
@@ -262,6 +317,13 @@ namespace WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph
             return groups;
         }
 
+        /// <summary>
+        /// Gets the users in a tenant.
+        /// </summary>
+        /// <param name="accessToken">The access token for MS Graph.</param>
+        /// <returns>
+        /// A list of users
+        /// </returns>
         public async Task<List<User>> GetUsersAsync(string accessToken)
         {
             List<User> allUsers = new List<User>();
@@ -294,6 +356,10 @@ namespace WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph
             return allUsers;
         }
 
+        /// <summary>
+        /// Prepares the authenticated client.
+        /// </summary>
+        /// <param name="accessToken">The access token.</param>
         private void PrepareAuthenticatedClient(string accessToken)
         {
             if (graphServiceClient == null)
