@@ -26,8 +26,19 @@
             }
         </td>
     </tr>
-    @{
-        var me = ViewData["me"] as JObject;
+    @{       
+        var me = ViewData["me"] as Microsoft.Graph.User;
+        var properties = me.GetType().GetProperties();
+        foreach (var child in properties)
+        {
+            <tr>
+                <td>@child.Name</td>
+                <td>@child.GetValue(me)</td>
+            </tr>
+        }
+
+        /* Old Code */
+        @*var me = ViewData["me"] as JObject;
         var children = me.Properties();
         foreach (var child in children)
         {
@@ -35,6 +46,7 @@
                 <td>@child.Name</td>
                 <td>@child.Value</td>
             </tr>
-        }
+        }*@
+
     }
 </table>

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web.Client;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Models;
+using WebApp_OpenIDConnect_DotNet.Services;
 using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
@@ -30,14 +31,26 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         [MsalUiRequiredExceptionFilter(Scopes = new[] {Constants.ScopeUserRead})]
         public async Task<IActionResult> Profile()
         {
-            var accessToken =
-                await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new[] {Constants.ScopeUserRead});
+            // Initialize the GraphServiceClient.   
+            var graphClient = await GraphServiceClientFactory.GetAuthenticatedGraphClient(async () =>
+            {
+                string result = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(
+                       HttpContext, new[] { Constants.ScopeUserRead });
+                return result;
+            });
 
-            var me = await graphApiOperations.GetUserInformation(accessToken);
-            var photo = await graphApiOperations.GetPhotoAsBase64Async(accessToken);
-
+            var me = await graphClient.Me.Request().GetAsync();
             ViewData["Me"] = me;
-            ViewData["Photo"] = photo;
+
+            try
+            {
+                var photo = await graphClient.Me.Photo.Request().GetAsync();
+                ViewData["Photo"] = photo;
+            }
+            catch (System.Exception)
+            {
+                ViewData["Photo"] = null;
+            }                       
 
             return View();
         }
