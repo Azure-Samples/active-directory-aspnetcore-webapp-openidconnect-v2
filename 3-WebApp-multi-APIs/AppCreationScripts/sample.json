@@ -24,6 +24,14 @@
         {
           "Resource": "Microsoft Graph",
           "DelegatedPermissions": [ "User.Read" ]
+        },
+        {
+          "Resource": "Azure Service Management",
+          "DelegatedPermissions": [ "user_impersonation" ]
+        },
+        {
+          "Resource": "Azure Storage",
+          "DelegatedPermissions": [ "user_impersonation" ]
         }
       ]
     }
@@ -39,7 +47,7 @@
     {
       "App": "webApp",
       "SettingKind": "JSon",
-      "SettingFile": "\\..\\active-directory-aspnetcore-webapp-openidconnect-v2\\appsettings.json",
+      "SettingFile": "\\..\\appsettings.json",
       "Mappings": [
         {
           "key": "ClientId",
@@ -54,7 +62,7 @@
           "value": "$tenantName"
         },
         {
-          "key": "TenantId",
+          "key": "ClientSecret",
           "value": ".AppKey"
         }
       ]
