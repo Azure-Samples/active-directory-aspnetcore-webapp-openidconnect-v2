@@ -8,7 +8,6 @@ using Microsoft.Identity.Web.Client;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Models;
 using WebApp_OpenIDConnect_DotNet.Services;
-using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
@@ -16,13 +15,10 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
     public class HomeController : Controller
     {
         readonly         ITokenAcquisition   tokenAcquisition;
-        private readonly IGraphApiOperations graphApiOperations;
 
-        public HomeController(ITokenAcquisition   tokenAcquisition,
-                              IGraphApiOperations graphApiOperations)
+        public HomeController(ITokenAcquisition   tokenAcquisition)
         {
             this.tokenAcquisition   = tokenAcquisition;
-            this.graphApiOperations = graphApiOperations;
         }
 
         public IActionResult Index()
