@@ -30,7 +30,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Identity.Client;
-using Microsoft.Identity.Client.AppConfig;
 using Microsoft.Identity.Web.Client.TokenCacheProviders;
 using Microsoft.Net.Http.Headers;
 using System;
@@ -395,7 +394,7 @@ namespace Microsoft.Identity.Web.Client
         {
             // A user interaction is required, but we are in a Web API, and therefore, we need to report back to the client through an wwww-Authenticate header https://tools.ietf.org/html/rfc6750#section-3.1
             string proposedAction = "consent";
-            if (msalSeviceException.ErrorCode == MsalUiRequiredException.InvalidGrantError)
+            if (msalSeviceException.ErrorCode == MsalError.InvalidGrantError)
             {
                 if (AcceptedTokenVersionIsNotTheSameAsTokenVersion(msalSeviceException))
                 {
