@@ -27,7 +27,13 @@ namespace Microsoft.Identity.Web.Client
         
         public override void OnException(ExceptionContext context)
         {
-            if (context.Exception is MsalUiRequiredException msalUiRequiredException)
+            MsalUiRequiredException msalUiRequiredException = context.Exception as MsalUiRequiredException;
+            if (msalUiRequiredException == null)
+            {
+                msalUiRequiredException = context.Exception?.InnerException as MsalUiRequiredException;
+            }
+
+            if (msalUiRequiredException!=null)
             {
                 if (CanBeSolvedByReSignInUser(msalUiRequiredException))
                 {
