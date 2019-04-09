@@ -65,7 +65,7 @@ Go to the `"2-WebApp-graph-user\2-1-Call-MSGraph"` folder
 - In case you want to deploy your app in Sovereign or national clouds, ensure the `GraphApiUrl` option matches the one you want. By default this is Microsoft Graph in the Azure public cloud
 
   ```JSon
-   "GraphApiUrl": "https://graph.microsoft.com"
+   "GraphApiUrl": "https://graph.microsoft.com/v1.0"
   ```
 
 ### Step 3: Run the sample
