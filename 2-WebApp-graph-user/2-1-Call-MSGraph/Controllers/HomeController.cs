@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,13 +41,16 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                 return result;
             });
 
+            // Get user profile info.
             var me = await graphClient.Me.Request().GetAsync();
             ViewData["Me"] = me;
 
             try
             {
-                var photo = await graphClient.Me.Photo.Request().GetAsync();
-                ViewData["Photo"] = photo;
+                // Get user photo
+                var photoStream = await graphClient.Me.Photo.Content.Request().GetAsync();
+                byte[] photoByte = ((MemoryStream)photoStream).ToArray();
+                ViewData["Photo"] = Convert.ToBase64String(photoByte);
             }
             catch (System.Exception)
             {
