@@ -12,18 +12,19 @@ namespace WebApp_OpenIDConnect_DotNet.Services
                                                                                  string baseUrl = null)
         {
   
-            return new GraphServiceClient(baseUrl, new XX(acquireAccessToken));
+            return new GraphServiceClient(baseUrl, new CustomAuthenticationProvider(acquireAccessToken));
         }
     }
 
-    class XX : IAuthenticationProvider
+    class CustomAuthenticationProvider : IAuthenticationProvider
     {
-        public XX(Func<Task<string>> acquireAccessToken)
+        public CustomAuthenticationProvider(Func<Task<string>> acquireTokenCallback)
         {
-            this.acquireAccessToken = acquireAccessToken;
+            acquireAccessToken = acquireTokenCallback;
         }
 
         private Func<Task<string>> acquireAccessToken;
+
         public async Task AuthenticateRequestAsync(HttpRequestMessage request)
         {
             string accessToken = await acquireAccessToken.Invoke();
@@ -31,7 +32,6 @@ namespace WebApp_OpenIDConnect_DotNet.Services
             // Append the access token to the request.
             request.Headers.Authorization = new AuthenticationHeaderValue(
                 Infrastructure.Constants.BearerAuthorizationScheme, accessToken);
-
         }
     }
 }
