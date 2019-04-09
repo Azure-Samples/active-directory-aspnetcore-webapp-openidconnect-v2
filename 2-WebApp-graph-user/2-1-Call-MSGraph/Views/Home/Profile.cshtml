@@ -31,22 +31,23 @@
         var properties = me.GetType().GetProperties();
         foreach (var child in properties)
         {
-            <tr>
-                <td>@child.Name</td>
-                <td>@child.GetValue(me)</td>
-            </tr>
-        }
+            object value = child.GetValue(me);
+            string stringRepresentation;
+            if (!(value is string) && value is IEnumerable<string>)
+            {
+                stringRepresentation = "["
+                    + string.Join(", ", (value as IEnumerable<string>).OfType<object>().Select(c => c.ToString()))
+                    + "]";
+            }
+            else
+            {
+                stringRepresentation = value?.ToString();
+            }
 
-        /* Old Code */
-        @*var me = ViewData["me"] as JObject;
-        var children = me.Properties();
-        foreach (var child in children)
-        {
             <tr>
-                <td>@child.Name</td>
-                <td>@child.Value</td>
+                <td> @child.Name </td>
+                <td> @stringRepresentation </td>
             </tr>
-        }*@
-
+        }      
     }
 </table>
