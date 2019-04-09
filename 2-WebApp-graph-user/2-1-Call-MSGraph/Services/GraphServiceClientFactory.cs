@@ -9,12 +9,13 @@ namespace WebApp_OpenIDConnect_DotNet.Services
 {
     public class GraphServiceClientFactory
     {
-        public static async Task<GraphServiceClient> GetAuthenticatedGraphClient(Func<Task<string>> acquireAccessToken)
+        public static async Task<GraphServiceClient> GetAuthenticatedGraphClient(Func<Task<string>> acquireAccessToken, 
+                                                                                 string baseUrl = null)
         {
             // Fetch the access token
             string accessToken = await acquireAccessToken.Invoke();
 
-            return new GraphServiceClient(new DelegateAuthenticationProvider(
+            return new GraphServiceClient(baseUrl, new DelegateAuthenticationProvider(
                     async (requestMessage) =>
                     {
                         // Append the access token to the request.

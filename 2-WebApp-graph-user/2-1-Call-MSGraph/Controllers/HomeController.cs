@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web.Client;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Models;
@@ -15,10 +16,13 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
     public class HomeController : Controller
     {
         readonly         ITokenAcquisition   tokenAcquisition;
+        readonly         WebOptions          webOptions;
 
-        public HomeController(ITokenAcquisition   tokenAcquisition)
+        public HomeController(ITokenAcquisition   tokenAcquisition,
+                              IOptions<WebOptions> webOptionValue)
         {
             this.tokenAcquisition   = tokenAcquisition;
+            this.webOptions = webOptionValue.Value;
         }
 
         public IActionResult Index()
@@ -35,7 +39,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                 string result = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(
                        HttpContext, new[] { Constants.ScopeUserRead });
                 return result;
-            });
+            }, webOptions.GraphApiUrl);
 
             // Get user profile info.
             var me = await graphClient.Me.Request().GetAsync();
