@@ -1,11 +1,14 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web.Client;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Models;
-using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
+using WebApp_OpenIDConnect_DotNet.Services;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
@@ -13,13 +16,13 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
     public class HomeController : Controller
     {
         readonly         ITokenAcquisition   tokenAcquisition;
-        private readonly IGraphApiOperations graphApiOperations;
+        readonly         WebOptions          webOptions;
 
         public HomeController(ITokenAcquisition   tokenAcquisition,
-                              IGraphApiOperations graphApiOperations)
+                              IOptions<WebOptions> webOptionValue)
         {
             this.tokenAcquisition   = tokenAcquisition;
-            this.graphApiOperations = graphApiOperations;
+            this.webOptions = webOptionValue.Value;
         }
 
         public IActionResult Index()
@@ -30,14 +33,29 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         [MsalUiRequiredExceptionFilter(Scopes = new[] {Constants.ScopeUserRead})]
         public async Task<IActionResult> Profile()
         {
-            var accessToken =
-                await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new[] {Constants.ScopeUserRead});
+            // Initialize the GraphServiceClient.   
+            var graphClient = await GraphServiceClientFactory.GetAuthenticatedGraphClient(async () =>
+            {
+                string result = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(
+                       HttpContext, new[] { Constants.ScopeUserRead });
+                return result;
+            }, webOptions.GraphApiUrl);
 
-            var me = await graphApiOperations.GetUserInformation(accessToken);
-            var photo = await graphApiOperations.GetPhotoAsBase64Async(accessToken);
-
+            // Get user profile info.
+            var me = await graphClient.Me.Request().GetAsync();
             ViewData["Me"] = me;
-            ViewData["Photo"] = photo;
+
+            try
+            {
+                // Get user photo
+                var photoStream = await graphClient.Me.Photo.Content.Request().GetAsync();
+                byte[] photoByte = ((MemoryStream)photoStream).ToArray();
+                ViewData["Photo"] = Convert.ToBase64String(photoByte);
+            }
+            catch (System.Exception)
+            {
+                ViewData["Photo"] = null;
+            }                       
 
             return View();
         }

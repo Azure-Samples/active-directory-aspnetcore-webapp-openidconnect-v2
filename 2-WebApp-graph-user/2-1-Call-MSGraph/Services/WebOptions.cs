@@ -1,4 +1,4 @@
-namespace WebApp_OpenIDConnect_DotNet.Services.GraphOperations
+﻿namespace WebApp_OpenIDConnect_DotNet.Services
 {
     public class WebOptions
     {
