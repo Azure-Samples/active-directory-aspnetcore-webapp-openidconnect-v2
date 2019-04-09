@@ -10,7 +10,7 @@ endpoint: AAD v2.0
 
 ## Scenario
 
-This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users. Users can only sign in with their `work and school` accounts in their organization **belonging to national or sovereign clouds**. This sample use  US Government cloud scenario. It leverages the ASP.NET Core OpenID Connect middleware.
+This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users. Users can only sign in with their 'work and school' accounts in their organization **belonging to national or sovereign clouds**. This sample use  US Government cloud scenario. It leverages the ASP.NET Core OpenID Connect middleware.
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
 
@@ -47,7 +47,7 @@ You can clone this sample from your shell or command line:
   ```console
 git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial webapp
 cd webapp
-cd "1-WebApp-OIDC/1-4-Sovereign"
+cd "1-WebApp-OIDC\1-4-Sovereign"
   ```
 
 > Given that the name of the sample is very long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
@@ -55,10 +55,10 @@ cd "1-WebApp-OIDC/1-4-Sovereign"
 ### Step 2: Register the sample with your Azure AD tenant
 
 1. Sign in to the [US Government Azure portal](https://portal.azure.us)
-    
-    - For registering your app in other National Clouds go to [App Registration endpoints](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-national-cloud#app-registration-endpoints) of the National Cloud of your choice using either a work or school account.
 
-> Note: Azure Germany doesn't support **App registrations (Preview)* experience.
+   > For registering your app in other National Clouds go to [App Registration endpoints](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-national-cloud#app-registration-endpoints) of the National Cloud of your choice using either a work or school account.
+   >
+   > Note: Azure Germany doesn't support **App registrations (Preview)* experience.
 
 2. Choose the Azure AD tenant where you want to create your applications
       - If your account is present in more than one Azure AD tenant, select profile button at the top-right corner in the menu on top of the page and select `Switch Directory`.
@@ -172,4 +172,3 @@ To understand more about app registration, see:
 - [Quickstart: Register an application with the Microsoft identity platform (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
 - [Quickstart: Configure a client application to access web APIs (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
 
--->
