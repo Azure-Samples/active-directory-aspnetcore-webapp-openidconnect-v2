@@ -1,0 +1,37 @@
+{
+  /*
+  This section describes the Azure AD  Applications to configure, and their dependencies
+  */
+
+  "Sample": {
+    "Title": "Add authorization using groups & group claims to an ASP.NET Core Web app thats signs-in users with the Microsoft identity platform",
+    "Level": 400,
+    "Client": "ASP.NET Core 2.x Web App"
+  },
+  "AppRegistrations": [
+    {
+      "x-ms-id": "microsoft-identity-platform-aspnetcore-webapp-tutorial",
+      "x-ms-name": "microsoft-identity-platform-aspnetcore-webapp-tutorial",
+      "x-ms-version": "2.0",
+      "replyUrlsWithType": [
+        {
+          "url": "urn:ietf:wg:oauth:2.0:oob",
+          "type": "InstalledClient"
+        }
+      ],
+      "requiredResourceAccess": [
+        {
+          "x-ms-resourceAppName": "Microsoft Graph",
+          "resourceAppId": "00000003-0000-0000-c000-000000000000",
+          "resourceAccess": [
+            {
+              "id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d",
+              "type": "Scope",
+              "x-ms-name": "user.read"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

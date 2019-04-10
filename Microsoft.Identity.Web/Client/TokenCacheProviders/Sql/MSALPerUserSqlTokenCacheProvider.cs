@@ -67,8 +67,9 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <summary>Initializes a new instance of the <see cref="EFMSALPerUserTokenCache"/> class.</summary>
         /// <param name="protectionProvider">The data protection provider. Requires the caller to have used serviceCollection.AddDataProtection();</param>
         /// <param name="tokenCacheDbContext">The DbContext to the database where tokens will be cached.</param>
-        public MSALPerUserSqlTokenCacheProvider(TokenCacheDbContext tokenCacheDbContext, IDataProtectionProvider protectionProvider)
-            : this(tokenCacheDbContext, protectionProvider, ClaimsPrincipal.Current)
+        /// <param name="httpContext">The current HttpContext that has a user signed-in</param>
+        public MSALPerUserSqlTokenCacheProvider(TokenCacheDbContext tokenCacheDbContext, IDataProtectionProvider protectionProvider, IHttpContextAccessor httpContext)
+            : this(tokenCacheDbContext, protectionProvider, httpContext?.HttpContext?.User)
         {
         }
 
@@ -113,7 +114,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <summary>
         /// Explores the Claims of a signed-in user (if available) to populate the unique Id of this cache's instance.
         /// </summary>
-        /// <returns>The signed in user's object.tenant Id , if available in the ClaimsPrincipal.Current instance</returns>
+        /// <returns>The signed in user's object.tenant Id , if available in the HttpContext.User instance</returns>
         private string GetSignedInUsersUniqueId()
         {
             if (this.SignedInUser != null)
