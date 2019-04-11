@@ -17,7 +17,16 @@ endpoint: AAD v2.0
 
 In this tutorial, you will learn, incrementally, how to add sign-in users to your Web App, and how to call Web APIs, either from Microsoft or your own. Finally, you'll learn best practices and how to deploy your app to Azure
 
-[![Tutorial Overview](./ReadmeFiles/aspnetcore-webapp-tutorial.svg)](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/raw/master/ReadmeFiles/aspnetcore-webapp-tutorial.svg?sanitize=true)
+[![Tutorial Overview](./ReadmeFiles/aspnetcore-webapp-tutorial.svg)](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/raw/master/ReadmeFiles/aspnetcore-webapp-tutorial-alt.svg?sanitize=true)
+
+> Note
+>
+> We recommend that you right click on the picture above and open it in a new tab, or a new windows. You'll see a clickable image:
+>
+> - clicking on a metro/railway station will get you directly to the README.md for the corresponding part of the tutorial (some are still in progress)
+> - clicking on some of the connectors between stations will get you to an incremental README.md showing how to get from one part of the tutorial to the next (that's for instance the case for the Sign-in ... stations)
+
+### Details of the phases
 
 1. The first phase is to [add sign-in to your Web App](1-WebApp-OIDC) leveraging the Microsoft identity platform for developers (fomerly Azure AD v2.0). You'll learn how to use  the ASP.NET Core OpenID Connect (OIDC) middleware itself leveraging [Microsoft Identity Model extensions for .NET](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki) to protect your Web App.
 
