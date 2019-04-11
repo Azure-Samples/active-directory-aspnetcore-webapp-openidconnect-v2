@@ -57,8 +57,8 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
 
 5. [Planned] [**in progress*] Once you know how to sign-in users and call Web APIs from your Web App, you might want to restrict part of the application depending on the user having a role in the application or belonging to a group. So far you've learnt how to add and process authentication. Now learn how to [add authorization to your Web application](./5-WebApp-AuthZ):
 
-   1. [with application roles](./5-WebApp-AuthZ/Roles)
-   2. [with Azure AD groups](./5-WebApp-AuthZ/Groups)
+   1. [with application roles](./5-WebApp-AuthZ/5-1-Roles)
+   2. [with Azure AD groups](./5-WebApp-AuthZ/5-2-Groups)
 
 6. [Planned][**coming soon**]  Chances are that you want to [deploy your complete app to Azure](./6-Deploy-to-Azure). Learn how to do that, applying best practices:
 
