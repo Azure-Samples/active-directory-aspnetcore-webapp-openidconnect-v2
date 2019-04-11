@@ -9,7 +9,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
     public class GraphServiceClientFactory
     {
         public static GraphServiceClient GetAuthenticatedGraphClient(Func<Task<string>> acquireAccessToken, 
-                                                                                 string baseUrl = null)
+                                                                                 string baseUrl)
         {
   
             return new GraphServiceClient(baseUrl, new CustomAuthenticationProvider(acquireAccessToken));
