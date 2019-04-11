@@ -61,3 +61,9 @@
 /5-WebApp-AuthZ/Roles/obj
 /5-WebApp-AuthZ/Groups/AppCreationScripts/Steps.md
 /5-WebApp-AuthZ/Groups/AppCreationScripts/createdApps.html
+/5-WebApp-AuthZ/5-1-Roles/.vs
+/5-WebApp-AuthZ/5-1-Roles/bin/Debug/netcoreapp2.2
+/5-WebApp-AuthZ/5-1-Roles/obj
+/5-WebApp-AuthZ/5-2-Groups/.vs
+/5-WebApp-AuthZ/5-2-Groups/bin/Debug/netcoreapp2.2
+/5-WebApp-AuthZ/5-2-Groups/obj
