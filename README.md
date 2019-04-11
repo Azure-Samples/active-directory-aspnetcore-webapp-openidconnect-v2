@@ -31,9 +31,9 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
    1. If you are a Line of Business (LOB) developer, you'll want to [sign-in users in your organization](./1-WebApp-OIDC/1-1-MyOrg) with their work or school accounts.
    1. If you are an ISV, you'll want to [sign-in users in any organization](./1-WebApp-OIDC/1-2-AnyOrg), still  with their work or school accounts.
    1. If you are an ISV targetting both organizations and individuals, you'll want to [sign-in users with their work and school accounts or Microsoft personal accounts](./1-WebApp-OIDC/1-3-AnyOrgOrPersonal).
-   1. LOB developer or ISV, if you target organizations (work or school accounts), you can also enable your application to sign-in users in [**coming soon**]  [national and sovereign clouds](./1-WebApp-OIDC/1-4-Sovereign).
+   1. LOB developer or ISV, if you target organizations (work or school accounts), you can also enable your application to sign-in users in [**in progress**]  [national and sovereign clouds](./1-WebApp-OIDC/1-4-Sovereign).
    1. If you are a business wanting to connect with your customers, or with small business partners, you might also want to [**coming soon**]  [sign-in users with their social identities](./1-WebApp-OIDC/1-5-B2C) using Microsoft Azure AD B2C.
-   1. Finally, you'll want to let users [**coming soon**] [sign-out](./1-WebApp-OIDC/1-6-SignOut) of our application, or globally of the browser.
+   1. Finally, you'll want to let users [sign-out](./1-WebApp-OIDC/1-6-SignOut) of our application, or globally of the browser.
 
 2. Your Web App might maintain its own resources (in that case you have all you need so far), but it could also be that it calls Microsoft APIs.
 
@@ -50,7 +50,7 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
 
    ![Web apps calls Microsoft APIs](./ReadmeFiles/web-app-calls-microsoft-apis.svg)
 
-   Learn how  [**in-progress**]  [call several Microsoft APIS](./3-WebApp-multi-APIs), feature conditional access and claims challenge:
+   Learn how to [call several Microsoft APIS](./3-WebApp-multi-APIs), feature conditional access and claims challenge:
 
    1. the Azure Storage API. This is the opportunity to learn about incremental consent, and conditional access, and how to process them.
    2. the Azure ARM API. This is the opportunity to learn about admin consent.
@@ -59,10 +59,10 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
 
    ![Web apps calls Microsoft APIs](./ReadmeFiles/web-app-calls-your-api.svg)
 
-5. [Planned] [**coming soon**] Once you know how to sign-in users and call Web APIs from your Web App, you might want to restrict part of the application depending on the user having a role in the application or belonging to a group. So far you've learnt how to add and process authentication. Now learn how to [add authorization to your Web application](/5-WebApp-Auth):
+5. [Planned] [**in progress*] Once you know how to sign-in users and call Web APIs from your Web App, you might want to restrict part of the application depending on the user having a role in the application or belonging to a group. So far you've learnt how to add and process authentication. Now learn how to [add authorization to your Web application](./5-WebApp-AuthZ):
 
-   1. [with application roles](./5-WebApp-AuthZ\Roles)
-   2. [with Azure AD groups](./5-WebApp-AuthZ\Groups)
+   1. [with application roles](./5-WebApp-AuthZ/5-1-Roles)
+   2. [with Azure AD groups](./5-WebApp-AuthZ/5-2-Groups)
 
 6. [Planned][**coming soon**]  Chances are that you want to [deploy your complete app to Azure](./6-Deploy-to-Azure). Learn how to do that, applying best practices:
 

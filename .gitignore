@@ -54,10 +54,16 @@
 /1. WebApp signs-in users with Microsoft Identity (OIDC)/1.1. in my org/obj
 /1. WebApp signs-in users with Microsoft Identity (OIDC)/1.2. in any org/obj
 /5-WebApp-AuthZ/Groups/.vs
-/5-WebApp-AuthZ/Groups/AppCreationScripts/Steps.md
-/5-WebApp-AuthZ/Groups/AppCreationScripts/createdApps.html
 /5-WebApp-AuthZ/Groups/bin/Debug/netcoreapp2.2
 /5-WebApp-AuthZ/Groups/obj
-/5-WebApp-AuthZ/Roles/.vs/WebApp-OpenIDConnect-DotNet/v15/Server/sqlite3
+/5-WebApp-AuthZ/Roles/.vs
 /5-WebApp-AuthZ/Roles/obj/Debug/netcoreapp2.2
 /5-WebApp-AuthZ/Roles/obj
+/5-WebApp-AuthZ/Groups/AppCreationScripts/Steps.md
+/5-WebApp-AuthZ/Groups/AppCreationScripts/createdApps.html
+/5-WebApp-AuthZ/5-1-Roles/.vs
+/5-WebApp-AuthZ/5-1-Roles/bin/Debug/netcoreapp2.2
+/5-WebApp-AuthZ/5-1-Roles/obj
+/5-WebApp-AuthZ/5-2-Groups/.vs
+/5-WebApp-AuthZ/5-2-Groups/bin/Debug/netcoreapp2.2
+/5-WebApp-AuthZ/5-2-Groups/obj
