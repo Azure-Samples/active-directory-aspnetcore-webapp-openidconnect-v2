@@ -18,18 +18,17 @@ Starting from a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in us
 
 ![Sign in with the Microsoft identity platform for developers (formerly Azure AD v2.0)](ReadmeFiles/sign-in.png)
 
+## How to run this sample
 
-<!-- ## How to run this sample -->
-
-<!-- To run this sample:
+To run this sample:
 
 > Pre-requisites:
 >
-> go through the previous phase of the tutorial showing how the [WebApp signs-in users with Microsoft Identity (OIDC) / with work and school or personal accounts](../../1-WebApp-OIDC/1-3-AnyOrgOrPersonal). This page shows the incremental change required to call the Microsoft Graph API on behalf of a user that has successfully signed in to the web app.
+> go through the previous phase of the tutorial showing how the [WebApp signs-in users with Microsoft Identity (OIDC) / with work and school](../../1-WebApp-OIDC/1-2-AnyOrg). This page shows the incremental change required to call the Microsoft Graph API on behalf of a user that has successfully signed in to the web app.
 
 ### Step 1: Register the sample with your Azure AD tenant
 
-You first need to [register](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2#step-1-register-the-sample-with-your-azure-ad-tenant) your app as described in [the first tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2)
+You first need to [register](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-4-Sovereign#step-2-register-the-sample-with-your-azure-ad-tenant) your app as described in [Web app signing-in users in Sovereign](hhttps://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-4-Sovereign#scenario)
 
 Then follow the following extra set of steps:
 
@@ -51,29 +50,30 @@ If you have not already,  clone this sample from your shell or command line:
 
   ```
 
-Go to the `"2-WebApp-graph-user\2-1-Call-MSGraph"` folder
+Go to the `"2-WebApp-graph-user\2-4-Sovereign-Call-MSGraph"` folder
 
  ```Sh
-  cd "2-WebApp-graph-user\2-1-Call-MSGraph"
+  cd "2-WebApp-graph-user\2-4-Sovereign-Call-MSGraph"
   ```
 
   In the appsettings.json file, replace, if you have not already:
 
 - the `ClientID` value with the *Application ID* from the application you registered in Application Registration portal,
-- the `TenantId` by `common`, as here you chose to sign-in users with their work or school or personal account. In case you want to sign-in different audiences, refer back to the first phase of the tutorial
+- the `TenantId` by `organizations`, as here you chose to sign-in users with their work or school  account. In case you want to sign-in different audiences, refer back to the first phase of the tutorial
 - and the `ClientSecret` by the client secret you generated in Step 1.
 
-- In case you want to deploy your app in Sovereign or national clouds, ensure the `GraphApiUrl` option matches the one you want. By default this is Microsoft Graph in the Azure public cloud
+-  The `GraphApiUrl` for US Government cloud is
 
   ```JSon
-   "GraphApiUrl": "https://graph.microsoft.com"
+   "GraphApiUrl": "https://graph.microsoft.us"
   ```
+In case you want to deploy your app in other sovereign or national clouds, go to [Microsoft Graph service root endpoints](https://docs.microsoft.com/en-us/graph/deployments#microsoft-graph-and-graph-explorer-service-root-endpoints). 
 
 ### Step 3: Run the sample
 
 1. Build the solution and run it.
 
-2. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform (fomerly Azure AD v2.0) endpoint. Sign in with your personal account or with a work or school account.
+2. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform (formerly Azure AD v2.0) endpoint. Sign in with your personal account or with a work or school account.
 
 3. Go to the **Profile** page, you should now see all kind of information about yourself as well as your picture (a call was made to the Microsoft Graph */me* endpoint)
 
@@ -103,7 +103,7 @@ The two new lines of code:
 
 ### Add additional files to call Microsoft Graph
 
-Add the `Services\Microsoft-Graph-Rest\*.cs` files. This is an implementation of a custom service which encapsultes the call to the Microsoft Graph /me endpoint. Given an access token for Microsoft Graph, it's capable of getting the user information and the photo of the user.
+Add the `Services\Microsoft-Graph-Rest\*.cs` files. This is an implementation of a custom service, which encapsulates the call to the Microsoft Graph /me endpoint. Given an access token for Microsoft Graph, it's capable of getting the user information and the photo of the user.
 
 ```CSharp
 public interface IGraphApiOperations
@@ -115,7 +115,7 @@ public interface IGraphApiOperations
 
 ### Update the `Startup.cs` file to enable the Microsoft Graph custom service
 
-Still in the `Startup.cs` file, add the following lines just after the following. This lines ensures that the GraphAPIService benefits from the optimized `HttpClient` management by ASP.NET Core.
+Still in the `Startup.cs` file, add the following lines just after the following. This line ensures that the GraphAPIService benefits from the optimized `HttpClient` management by ASP.NET Core.
 
 ```CSharp
     // Add Graph
@@ -210,9 +210,9 @@ HTML table displaying the properties of the *me* object as returned by Microsoft
 ## Next steps
 
 - Learn how to enable distributed caches in [token cache serialization](../2-2-TokenCache)
-- Learn how the same principle you've just learnt can be used to call:
+- Learn how the same principle you've learnt can be used to call:
   - [several Microsoft APIs](../../3-WebApp-multi-APIs), which will enable you to learn how incremental consent and conditional access is managed in your Web App
-  - 3rd party, or even [your own Web API](../../4-WebApp-your-API), which will enable you to learn about custom scopes
+  - Third party, or even [your own Web API](../../4-WebApp-your-API), which will enable you to learn about custom scopes
 
 ## Learn more
 
