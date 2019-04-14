@@ -67,3 +67,6 @@
 /5-WebApp-AuthZ/5-2-Groups/.vs
 /5-WebApp-AuthZ/5-2-Groups/bin/Debug/netcoreapp2.2
 /5-WebApp-AuthZ/5-2-Groups/obj
+/5-WebApp-AuthZ/5-1-Roles/AppCreationScripts/createdApps.html
+/5-WebApp-AuthZ/5-1-Roles/AppCreationScripts/Steps.md
+/5-WebApp-AuthZ/5-1-Roles/WebApp-OpenIDConnect-DotNet.csproj.user

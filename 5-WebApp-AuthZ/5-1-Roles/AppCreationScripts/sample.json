@@ -25,7 +25,7 @@
       "RequiredResourcesAccess": [
         {
           "Resource": "Microsoft Graph",
-          "DelegatedPermissions": [ "User.ReadBasic.All","Directory.Read.All" ]
+          "DelegatedPermissions": [ "User.Read", "User.ReadBasic.All","Directory.Read.All" ]
         }
       ],"ManualSteps": [
         { "Comment": "Run the ..\\CreateUsersAndRoles.ps1 command to automatically create a number of users, app roles and assign users to these roles or refer to the 'Define your application roles' section in README on how to configure your newly created app further for this sample." }
