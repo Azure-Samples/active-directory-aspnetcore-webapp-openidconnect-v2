@@ -1,7 +1,7 @@
 {
   "Sample": {
     "Title": "Add authorization using app roles & roles claims to an ASP.NET Core Web app thats signs-in users with the Microsoft identity platform",
-    "Level": 400,
+    "Level": 300,
     "Client": "ASP.NET Core 2.x Web App",
     "Service": "Microsoft Graph",
     "RepositoryUrl": "microsoft-identity-platform-aspnetcore-webapp-tutorial",

@@ -17,17 +17,22 @@ endpoint: AAD v2.0
 This sample shows how a .NET Core 2.2 MVC Web app that uses [OpenID Connect](https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-protocols-openid-connect-code) to sign in users. It also obtains the security group the signed-in user is assigned to as a claim in their token.
 Security groups are a popular means to implement authorization.
 
-Authorization in Azure AD can also be done with Application Roles, as shown in [WebApp-RoleClaims-DotNet](https://github.com/Azure-Samples/active-directory-dotnet-webapp-roleclaims). Azure AD Groups and Application Roles are by no means mutually exclusive - they can be used in tandem to provide even finer grained access control.
+Authorization in Azure AD can also be done with Application Roles, as shown in [WebApp-RoleClaims](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/5-WebApp-AuthZ/5-1-Roles). Azure AD Groups and Application Roles are by no means mutually exclusive - they can be used in tandem to provide even finer grained access control.
 
 ![Build badge](https://identitydivision.visualstudio.com/_apis/public/build/definitions/a7934fdd-dcde-4492-a406-7fad6ac00e17/514/badge)
 
 ## Scenario
 
-This sample first leverages the ASP.NET Core OpenID Connect middleware to sign in the user. On the home page it displays the various `claims` that the user's [ID Token](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens) contained. The ID token is used by the asp.net security middleware to build the [ClaimsPrincipal](https://docs.microsoft.com/en-us/dotnet/api/system.security.claims.claimsprincipal), accessible via HttpContext.User.
+This sample first leverages the ASP.NET Core OpenID Connect middleware to sign in the user. On the home page it displays the various `claims` that the user's [ID Token](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens) contained. The ID token is used by the asp.net security middleware to build the [ClaimsPrincipal](https://docs.microsoft.com/en-us/dotnet/api/system.security.claims.claimsprincipal), accessible via **HttpContext.User**.
 
-![Sign in with Azure AD](ReadmeFiles/sign-in.png)
+![Sign in with the Microsoft identity platform for developers (formerly Azure AD v2.0)](ReadmeFiles/sign-in.png)
 
 > This is the fifth chapter of a set of tutorials. Once you understand how to receive the group memberships in a user's claims, you can try the sample [Add authorization using app roles & roles claims to an ASP.NET Core Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ-Roles) to learn about how to use the App roles in an app using the Microsoft Identity Platform to authenticate users. 
+
+> Pre-requisites:
+>
+> go through the previous phase of the tutorial showing how the [Using the Microsoft identity platform to call the Microsoft Graph API from an An ASP.NET Core 2.x Web App](../../2-WebApp-graph-user/2-1-Call-MSGraph). This page shows the incremental change needed to set up application roles and retrieve them in your app when a user signs in..
+
 
 To run this sample, you'll need:
 
@@ -51,13 +56,13 @@ or download and exact the repository .zip file.
 
 > Given that the name of the sample is pretty long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
-Navigate to the `"5-WebApp-AuthZ-Roles-Groups"` folder
+Navigate to the `"5-WebApp-AuthZ"` folder
 
  ```Sh
-  cd "5-WebApp-AuthZ-Roles-Groups"
+  cd "5-2-Groups"
   ```
 
-### Step 3: Configure your application to receive group claims
+### Step 3: Configure your application to receive the **groups** claims
 
 1. In your application settings page on the Application Registration Portal (preview), click on "Manifest" to open the inline manifest editor.
 2. Edit the manifest by locating the "groupMembershipClaims" setting, and setting its value to "SecurityGroup".
@@ -72,7 +77,7 @@ Navigate to the `"5-WebApp-AuthZ-Roles-Groups"` folder
 }
 ```
 
-4. To receive the `groups` claim with the object id of the security groups, make sure that the user accounts you plan to sign-in in is assigned to a few security groups in this AAD tenant.
+4. To receive the `groups` claim with the object id of the security groups, make sure that the user accounts you plan to sign-in to this app is assigned to a few security groups in this AAD tenant.
 
 ### Step 3: Run the sample
 
@@ -232,7 +237,7 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## Next steps
 
-- Learn how to use app roles. [Add authorization using app roles & roles claims to an ASP.NET Core Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ-Roles).
+- Learn how to use app roles. [Add authorization using app roles & roles claims to a Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-1-Roles).
 
 ## Learn more
 

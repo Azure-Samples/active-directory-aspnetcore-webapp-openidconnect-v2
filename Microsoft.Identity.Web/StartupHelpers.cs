@@ -51,7 +51,7 @@ namespace Microsoft.Identity.Web
                 // and [Access Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens)
                 options.TokenValidationParameters.NameClaimType = "preferred_username";
 
-                // Set the claim type which the AuthorizeAttribue will use to look for Roles.
+                // The claim in the Jwt token where App roles are available.
                 options.TokenValidationParameters.RoleClaimType = "roles";
 
                 // Handling the sign-out: removing the account from MSAL.NET cache
