@@ -96,8 +96,16 @@ You can clone this sample from your shell or command line:
         options.TokenValidationParameters.ValidateIssuer = false;
     });
     ```
+    
+3. Still in **Startup.cs**, add the following `using` statements to the top of the file:
 
-3. Modify `Views\Shared\_LoginPartial.cshtml` to have the following content:
+   ```CSharp
+   using Microsoft.AspNetCore.Authentication.OAuth.Claims;
+   using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+   using System.Security.Claims;
+   ```
+
+4. Modify `Views\Shared\_LoginPartial.cshtml` to have the following content:
 
     ```CSharp
     @using System.Security.Claims
