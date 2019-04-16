@@ -241,12 +241,15 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## Learn more
 
+- Learn how [Microsoft.Identity.Web](../../Microsoft.Identity.Web) works, in particular hooks-up to the ASP.NET Core ODIC events
+
 To understand more about app registration, see:
 
 - [Quickstart: Register an application with the Microsoft identity platform (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
 - [Quickstart: Configure a client application to access web APIs (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
-- 
-- To understand more about groups roles and the various claims in tokens, see:
+
+To understand more about groups roles and the various claims in tokens, see:
+
 - [Azure Active Directory app manifest](https://docs.microsoft.com/en-us/azure/active-directory/develop/reference-app-manifest)
 - [ID tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens)
 - [Azure Active Directory access tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens)
