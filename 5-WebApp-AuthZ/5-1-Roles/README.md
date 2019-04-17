@@ -203,7 +203,7 @@ When you click on the page that fetches the signed-in user's roles and group ass
         {
      ```
 
-1. In the `AddAzureAdV2Authentication` method of `StartupHelper.cs', the following line instructs the asp.net security middleware to use the **roles** claim to fetch roles for authorization:
+1. In the `ConfigureServices` method of `Startup.cs', the following line instructs the asp.net security middleware to use the **roles** claim to fetch roles for authorization:
 
      ```CSharp
                 // The claim in the Jwt token where App roles are available.
