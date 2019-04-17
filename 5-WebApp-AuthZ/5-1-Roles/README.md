@@ -218,7 +218,7 @@ When you click on the page that fetches the signed-in user's roles and group ass
         {
      ```
 
-The following method is also added with the `Authorize` attribute with the name of the app role **DirectoryViewers**, that permits listing of roles and groups the signed-in user is assigned to.
+1. The following method is also added with the `Authorize` attribute with the name of the app role **DirectoryViewers**, that permits listing of roles and groups the signed-in user is assigned to.
 
     ```CSharp
         [Authorize(Roles = AppRoles.DirectoryViewers)]

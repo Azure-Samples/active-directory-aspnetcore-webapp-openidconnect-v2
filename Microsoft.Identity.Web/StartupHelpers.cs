@@ -51,9 +51,6 @@ namespace Microsoft.Identity.Web
                 // and [Access Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens)
                 options.TokenValidationParameters.NameClaimType = "preferred_username";
 
-                // The claim in the Jwt token where App roles are available.
-                options.TokenValidationParameters.RoleClaimType = "roles";
-
                 // Handling the sign-out: removing the account from MSAL.NET cache
                 options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
                 {

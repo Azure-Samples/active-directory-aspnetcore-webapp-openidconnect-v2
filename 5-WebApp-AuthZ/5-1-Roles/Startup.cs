@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -44,11 +46,17 @@ namespace WebApp_OpenIDConnect_DotNet
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
             services.AddAzureAdV2Authentication(Configuration)
-                    .AddMsal(new string[] { Constants.ScopeUserRead })
-                    .AddInMemoryTokenCaches();
+                                .AddMsal(new string[] { Constants.ScopeUserRead })
+                                .AddInMemoryTokenCaches();
 
             // Add Graph
             services.AddGraphService(Configuration);
+
+            services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
+            {
+                // The claim in the Jwt token where App roles are available.
+                options.TokenValidationParameters.RoleClaimType = "roles";
+            });
 
             services.AddMvc(options =>
             {
