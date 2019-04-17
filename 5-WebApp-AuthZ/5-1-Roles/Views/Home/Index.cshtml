@@ -1,11 +1,59 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using System.Security.Claims
+@{
+    ViewData["Title"] = "Add authorization using app roles & roles claims";
 }
 
-<h1>
-    Integrating Azure AD V2 into an ASP.NET Core web app and calling the Microsoft Graph API on behalf of the user
-</h1>
+<h2>
+    Integrating Azure AD V2 into an ASP.NET Core web app and using Azure AD app roles for authorization.
+</h2>
 <p>
-    This sample shows how to build a .NET Core 2.1 MVC Web app that uses OpenID Connect to sign in users. Users can use personal accounts (including outlook.com, live.com, and others) as well as work and school accounts from any company or organization that has integrated with Azure Active Directory. It leverages the ASP.NET Core OpenID Connect middleware.
+    This sample shows how to build a .NET Core 2.1 MVC Web app that uses Azure AD app roles for authorization. It leverages the ASP.NET Core OpenID Connect middleware to sign-in users.
 </p>
-<img src="https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/raw/master/2-WebApp-graph-user/2-1-Call-MSGraph/ReadmeFiles/sign-in.png"/>
+<img src="~/images/GetApplications.png" height="280" width="480" />
+<br />
+
+<h3 style="color:blue">Try one of the following Azure App Role driven operations</h3>
+
+<table>
+    <tr>
+        <td></td>
+        <td><a href="~/Home/Users">List all users in the tenant (you need to be a member of the 'UserReaders' role)</a></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><a href="~/Account/Groups">List all the groups and roles the signed in user is a member of (you need to be a member of the 'DirectoryViewers' role)</a></td>
+    </tr>
+</table>
+<br />
+<h3 style="color:blue">Claims from the signed-in user's token</h3>
+
+
+@{
+    var user = ViewData["User"] as ClaimsPrincipal;
+}
+
+<table class="table table-striped table-bordered table-condensed table-hover">
+    <tr>
+        <th>ClaimType</th>
+        <th>Value</th>
+    </tr>
+
+    @foreach (var claim in user.Claims)
+    {
+    <tr>
+        @{
+        if (claim.Type == "roles" || claim.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
+        {
+        <td><b>@claim.Type</b></td>
+        }
+        else
+        {
+        <td>@claim.Type</td>
+        }
+        }
+
+        <td>@claim.Value</td>
+    </tr>
+    }
+
+</table>

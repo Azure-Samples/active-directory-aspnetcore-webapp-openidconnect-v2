@@ -5,18 +5,28 @@ param(
     [string] $tenantId
 )
 
-if ((Get-Module -ListAvailable -Name "AzureAD") -eq $null) { 
-    Install-Module "AzureAD" -Scope CurrentUser 
-} 
 Import-Module AzureAD
 $ErrorActionPreference = 'Stop'
 
-Function Cleanup
+Function RemoveUser([string]$userPrincipal)
 {
-<#
-.Description
-This function removes the Azure AD applications for the sample. These applications were created by the Configure.ps1 script
-#>
+    $user = Get-AzureADUser -Filter "UserPrincipalName eq '$userPrincipal'"
+    if ($user)
+    {
+        Write-Host "Removing User '($userPrincipal)'"
+        Remove-AzureADUser -ObjectId $user.ObjectId
+    }
+    else {
+        Write-Host "Failed to remove user '($userPrincipal)'"
+    }
+}
+
+Function CleanupUsers
+{
+    <#
+    .Description
+    This function removes the users created in the Azure AD tenant by the CreateUsersAndRoles.ps1 script.
+    #>
 
     # $tenantId is the Active Directory Tenant. This is a GUID which represents the "Directory ID" of the AzureAD tenant 
     # into which you want to create the apps. Look it up in the Azure portal in the "Properties" of the Azure AD. 
@@ -43,21 +53,26 @@ This function removes the Azure AD applications for the sample. These applicatio
     {
         $tenantId = $creds.Tenant.Id
     }
+
     $tenant = Get-AzureADTenantDetail
+
     $tenantName =  ($tenant.VerifiedDomains | Where { $_._Default -eq $True }).Name
-    
-    # Removes the applications
-    Write-Host "Cleaning-up applications from tenant '$tenantName'"
 
-    Write-Host "Removing 'webApp' (WebApp-RolesClaims) if needed"
-    $app=Get-AzureADApplication -Filter "DisplayName eq 'WebApp-RolesClaims'"  
+    $appName = "WebApp-RolesClaims"
 
-    if ($app)
-    {
-        Remove-AzureADApplication -ObjectId $app.ObjectId
-        Write-Host "Removed."
-    }
+    # Removes the users created for the application
+    Write-Host "Removing Users"
+    RemoveUser -userPrincipal "$appName-DirectoryViewers@$tenantName"
+    RemoveUser -userPrincipal "$appName-UserReaders@$tenantName"
 
+    Write-Host "finished removing  users created for this app." 
 }
 
-Cleanup -Credential $Credential -tenantId $TenantId
+# Pre-requisites
+if ((Get-Module -ListAvailable -Name "AzureAD") -eq $null) { 
+    Install-Module "AzureAD" -Scope CurrentUser 
+} 
+Import-Module AzureAD
+$ErrorActionPreference = 'Stop'
+
+CleanupUsers -Credential $Credential -tenantId $TenantId

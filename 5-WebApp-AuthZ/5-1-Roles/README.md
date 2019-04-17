@@ -1,22 +1,51 @@
 ---
 services: active-directory
 platforms: dotnet
-author: jmprieur
-level: 200
+author: kalyankrishna1
+level: 300
 client: ASP.NET Core 2.x Web App
 service: Microsoft Graph
 endpoint: AAD v2.0
 ---
 
-# Using the Microsoft identity platform to call the Microsoft Graph API from an An ASP.NET Core 2.x Web App, on behalf of a user signing-in using their work and school or Microsoft personal account
+# Add authorization using **app roles** & **roles** claims to an ASP.NET Core web app thats signs-in users with the Microsoft identity platform
+
+## About this sample
+
+### Overview
+
+This sample shows how a .NET Core 2.2 MVC Web app that uses [OpenID Connect](https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-protocols-openid-connect-code) to sign in users and use Azure AD Application Roles (app roles) for authorization. App roles, along with Security groups are popular means to implement authorization.
+
+This application implements RBAC using Azure AD's Application Roles & Role Claims feature. Another approach is to use Azure AD Groups and Group Claims, as shown in [WebApp-GroupClaims](../../../5-WebApp-AuthZ/5-2-Groups). Azure AD Groups and Application Roles are by no means mutually exclusive; they can be used in tandem to provide even finer grained access control.
 
 ![Build badge](https://identitydivision.visualstudio.com/_apis/public/build/definitions/a7934fdd-dcde-4492-a406-7fad6ac00e17/514/badge)
 
+Using RBAC with Application Roles and Role Claims, developers can securely enforce authorization policies with minimal effort on their part.
+
+- A Microsoft Identity Platform Office Hours session covered Azure AD App roles and security groups, featuring this scenario and this sample. A recording of the session is is provided in this video [Using Security Groups and Application Roles in your apps](https://www.youtube.com/watch?v=V8VUPixLSiM)
+
+For more information about how the protocols work in this scenario and other scenarios, see [Authentication Scenarios for Azure AD](http://go.microsoft.com/fwlink/?LinkId=394414).
+
 ## Scenario
 
-Starting from a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users, this phase of the tutorial shows how to call  Microsoft Graph /me endpoint on behalf of the signed-in user. It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). Their complexities where encapsultated into the `Microsoft.Identity.Web` reusable library project part of this tutorial. Once again the notion of ASP.NET services injected by dependency injection is heavily used.
+This sample first leverages the ASP.NET Core OpenID Connect middleware to sign in the user. On the home page it displays the various `claims` that the user's [ID Token](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens) contained. The ID token is used by the asp.net security middleware to build the [ClaimsPrincipal](https://docs.microsoft.com/en-us/dotnet/api/system.security.claims.claimsprincipal), accessible via **HttpContext.User** in the code.
 
-![Sign in with the Microsoft identity platform for developers (fomerly Azure AD v2.0)](ReadmeFiles/sign-in.png)
+This web application allows users to list all users in their tenant or a list of all the roles and groups the signed in user is assigned to depending on the app role they have been assigned to. The idea is to provide an example of how, within an application, access to certain functionality is restricted to subsets of users depending on which role they belong to.
+
+This kind of authorization is implemented using role-based access control (RBAC). When using RBAC, an administrator grants permissions to roles, not to individual users or groups. The administrator can then assign roles to different users and groups to control who has then access to certain content and functionality.  
+
+This sample application defines the following two *Application Roles*:
+
+- `DirectoryViewers`: Have the ability to view any directory user's roles and security group assignments.
+- `UserReaders`: Have the ability to view a list of users in the directory.
+
+These application roles are defined in the [Azure portal](https://portal.azure.com) in the application's registration manifest.  When a user signs into the application, Azure AD emits a `roles` claim for each role that the user has been granted individually to the user in the from of role membership.  Assignment of users and groups to roles can be done through the portal's UI, or programmatically using the [Microsoft Graph](https://graph.microsoft.com) and [Azure AD PowerShell](https://docs.microsoft.com/en-us/powershell/module/azuread/?view=azureadps-2.0).  In this sample, application role management is done through the Azure portal or using PowerShell.
+
+NOTE: Role claims are not currently emitted for guest users in a tenant
+
+![Sign in with the Microsoft identity platform for developers (formerly Azure AD v2.0)](ReadmeFiles/sign-in.png)
+
+> This is the sixth chapter of a set of tutorials. In the chapter before this one, you learned how to receive the group memberships in a user's claims. In this one you will learn about how to use the App roles in an app using the Microsoft Identity Platform to authenticate users.
 
 ## How to run this sample
 
@@ -24,196 +53,200 @@ To run this sample:
 
 > Pre-requisites:
 >
-> go through the previous phase of the tutorial showing how the [WebApp signs-in users with Microsoft Identity (OIDC) / with work and school or personal accounts](../../1-WebApp-OIDC/1-3-AnyOrgOrPersonal). This page shows the incremental change required to call the Microsoft Graph API on behalf of a user that has successfully signed in to the web app.
+> go through the previous phase of the tutorial showing how the [Using the Microsoft identity platform to call the Microsoft Graph API from an An ASP.NET Core 2.x Web App](../../2-WebApp-graph-user/2-1-Call-MSGraph). This page shows the incremental change needed to set up application roles and retrieve them in your app when a user signs in.
 
-### Step 1: Register the sample with your Azure AD tenant
+To run this sample, you'll need:
 
-You first need to [register](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2#step-1-register-the-sample-with-your-azure-ad-tenant) your app as described in [the first tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2)
+- [Visual Studio 2017](https://aka.ms/vsdownload) or just the [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
+- An Internet connection
+- A Windows machine (necessary if you want to run the app on Windows)
+- An OS X machine (necessary if you want to run the app on Mac)
+- A Linux machine (necessary if you want to run the app on Linux)
+- An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/en-us/documentation/articles/active-directory-howto-tenant/)
+- A user account in your Azure AD tenant. This sample will not work with a Microsoft account (formerly Windows Live account). Therefore, if you signed in to the [Azure portal](https://portal.azure.com) with a Microsoft account and have never created a user account in your directory before, you need to do that now.
 
-Then follow the following extra set of steps:
+### Step 1:  Clone or download this repository
 
-1. From the **Certificates & secrets** page, for your app registration, in the **Client secrets** section, choose **New client secret**:
+From your shell or command line:
 
-   - Type a key description (of instance `app secret`),
-   - Select a key duration of either **In 1 year**, **In 2 years**, or **Never Expires**.
-   - When you press the **Add** button, the key value will be displayed, copy, and save the value in a safe location.
-   - You'll need this key later to configure the project in Visual Studio. This key value will not be displayed again, nor retrievable by any other means.
-1. In the list of pages for the app, select **API permissions**, and notice that a delegated permission is set by default to Microsoft Graph for the scope **User.Read**
+```Shell
+git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial.git
+```
 
-### Step 2: Download/Clone/Go to the folder containing the sample code and build the application
+or download and exact the repository .zip file.
 
-If you have not already,  clone this sample from your shell or command line:
+> Given that the name of the sample is pretty long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
-  ```Shell
-  git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial webapp
-  cd webapp
-
-  ```
-
-Go to the `"2-WebApp-graph-user\2-1-Call-MSGraph"` folder
+Navigate to the `"5-WebApp-AuthZ"` folder
 
  ```Sh
-  cd "2-WebApp-graph-user\2-1-Call-MSGraph"
+  cd "5-1-Roles"
   ```
 
-  In the appsettings.json file, replace, if you have not already:
+### Step 2: Configure your application to receive the **roles** claims
 
-- the `ClientID` value with the *Application ID* from the application you registered in Application Registration portal,
-- the `TenantId` by `common`, as here you chose to sign-in users with their work or school or personal account. In case you want to sign-in different audiences, refer back to the first phase of the tutorial
-- and the `ClientSecret` by the client secret you generated in Step 1.
+1. In your application settings page on the Application Registration Portal (preview), click on "Manifest" to open the inline manifest editor.
+2. Edit the manifest by locating the "groupMembershipClaims" setting, and setting its value to "SecurityGroup".
+3. Save the manifest.
 
-- In case you want to deploy your app in Sovereign or national clouds, ensure the `GraphApiUrl` option matches the one you want. By default this is Microsoft Graph in the Azure public cloud
+```JSON
+{
+  ...
+  "errorUrl": null,
+  "groupMembershipClaims": "SecurityGroup",
+  ...
+}
+```
 
-  ```JSon
-   "GraphApiUrl": "https://graph.microsoft.com/v1.0"
-  ```
+1. To receive the `roles` claim with the name of the app roles this user is assigned to, make sure that the user accounts you plan to sign-in to this app is assigned to the app roles of this app.
 
-### Step 3: Run the sample
+#### Step 3: Define your Application Roles
 
-1. Build the solution and run it.
+1. In the blade for your  application in Azure Portal, click **Manifest**.
+1. Edit the manifest by locating the `appRoles` setting and adding the two Application Roles.  The role definitions are provided in the JSON code block below.  Leave the `allowedMemberTypes` to **User** only.  Each role definition in this manifest must have a different valid **Guid** for the "id" property. Note that the `"value"` property of each role is set to the exact strings **DirectoryViewers** and **UserReaders** (as these strings are used in the code in the application).
+1. Save the manifest.
 
-2. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform (fomerly Azure AD v2.0) endpoint. Sign in with your personal account or with a work or school account.
+The content of `appRoles` should be the following (the `id` can be any unique Guid)
 
-3. Go to the **Profile** page, you should now see all kind of information about yourself as well as your picture (a call was made to the Microsoft Graph */me* endpoint)
+```JSon
+{
+  ...
+    "appRoles": [
+        {
+            "allowedMemberTypes": [
+                "User"
+            ],
+            "description": "User readers can read basic profiles of all users in the directory",
+            "displayName": "UserReaders",
+            "id": "a816142a-2e8e-46c4-9997-f984faccb625",
+            "isEnabled": true,
+            "lang": null,
+            "origin": "Application",
+            "value": "UserReaders"
+        },
+        {
+            "allowedMemberTypes": [
+                "User"
+            ],
+            "description": "Directory viewers can view objects in the whole directory.",
+            "displayName": "DirectoryViewers",
+            "id": "72ff9f52-8011-49e0-a4f4-cc1bb26206fa",
+            "isEnabled": true,
+            "lang": null,
+            "origin": "Application",
+            "value": "DirectoryViewers"
+        }
+    ],
+ ...
+}
+```
+
+- You can also use PowerShell scripts that **automatically** creates these two roles for your app. They additionally create two users in your tenant and assign them to these two roles. If you want to use this automation:
+
+  1. In PowerShell run the following command to create the two roles and users.
+
+     ```PowerShell
+     .\AppCreationScripts\CreateUsersAndRoles.ps1
+     ```
+
+  1. Run the following command to remove the two roles and users once you done testing.
+
+     ```PowerShell
+     .\AppCreationScripts\CleanupUsersAndRoles.ps1
+     ```
+
+> Remember to make changes in the following line (the app name) in the powershell scripts to ensure that the scripts target the app you intended to use.
+
+ ```PowerShell
+      $app = Get-AzureADApplication -Filter "DisplayName eq 'WebApp-RolesClaims'"
+ ```
+
+   > More details on how to run the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
+
+### Step 4: Run the sample
+
+1. Clean the solution, rebuild the solution, and run it.
+
+1. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform (formerly Azure AD v2.0) endpoint. Sign in with a work or school account.
+
+1. You will be prompted to consent during the sign-in process.
+
+![First time Consent](ReadmeFiles/Sign-in-Consent)
+
+1. On the home page, the app lists the various claims it obtained from your [ID token](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens). You'd notice a claim named `roles`. There will be one `roles` claim for each app role the signed-in use is assigned to.
+
+1. There also are two links provided on the home page under the **Try one of the following Azure App Role driven operations** heading. These links will result in an access denied error if the signed-in user is not present in the expected role. Sign-out and sign-in with a user account with the correct role assignment to view the contents of these pages.
+
+> Note: You need to be a tenant admin to view the page that lists all the groups and roles the signed-in user is assigned to. It requires the **Directory.Read.All** permission to work. If you run into the **AADSTS65001: The user or administrator has not consented to use the application** error, provide [admin consent](https://docs.microsoft.com/en-us/azure/active-directory/manage-apps/configure-user-consent#grant-admin-consent-when-registering-an-app-in-the-azure-portal) to your app in the portal. Sign-out and sign-in again to make the page work as expected.
+
+When you click on the page that fetches the signed-in user's roles and group assignments, the sample will attempt to obtain consent from you for the **Directory.Read.All** permission using [incremental consent](https://docs.microsoft.com/en-us/azure/active-directory/develop/azure-ad-endpoint-comparison#incremental-and-dynamic-consent).
+
+> Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
 
 ## About The code
 
-Starting from the [previous phase of the tutorial](../../1-WebApp-OIDC), the code was incrementally updated with the following steps:
+1. In the `ConfigureServices` method of `Startup.cs', add the following line:
 
-### Update the `Startup.cs` file to enable TokenAcquisition by a MSAL.NET based service
+     ```CSharp
+            // This is required to be instantiated before the OpenIdConnectOptions starts getting configured.
+            // By default, the claims mapping will map claim names in the old format to accommodate older SAML applications.
+            // 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role' instead of 'roles'
+            // This flag ensures that the ClaimsIdentity claims collection will be built from the claims in the token
+            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+     ```
 
-After the following lines in the ConfigureServices(IServiceCollection services) method, replace `services.AddAzureAdV2Authentication(Configuration);`, by the following lines:
+1. In the `HomeController.cs`, the following method is added with the `Authorize` attribute with the name of the app role **UserReaders**, that permits listing of users in the tenant.
 
-```CSharp
- public void ConfigureServices(IServiceCollection services)
-{
-    . . .
-    // Token acquisition service based on MSAL.NET 
-    // and chosen token cache implementation
-    services.AddAzureAdV2Authentication(Configuration)
-            .AddMsal(new string[] { Constants.ScopeUserRead })
-            .AddInMemoryTokenCache();
-```
+    ```CSharp
+        [Authorize(Roles = AppRoles.UserReaders )]
+        public async Task<IActionResult> Users()
+        {
+     ```
 
-The two new lines of code:
+1. In the `ConfigureServices` method of `Startup.cs', the following line instructs the asp.net security middleware to use the **roles** claim to fetch roles for authorization:
 
-- enable MSAL.NET to hook-up to the OpenID Connect events and redeem the authorization code obtained by the ASP.NET Core middleware and after obtaining a token, saves it into the token cache, for use by the Controllers.
-- Decide which token cache implementation to use. In this part of the phase, we'll use a simple in memory token cache, but next steps will show you other implementations you can benefit from, including distributed token caches based on a SQL database, or a Redis cache.
+     ```CSharp
+                // The claim in the Jwt token where App roles are available.
+                options.TokenValidationParameters.RoleClaimType = "roles";
+     ```
 
-### Add additional files to call Microsoft Graph
+1. A new class called `AccountController.cs` is introduced. This contains the code to intercept the default AccessDenied error's route and present the user with an option to sign-out and sign-back in with a different account that has access to the required role.
 
-Add the `Services\Microsoft-Graph-Rest\*.cs` files. This is an implementation of a custom service which encapsultes the call to the Microsoft Graph /me endpoint. Given an access token for Microsoft Graph, it's capable of getting the user information and the photo of the user.
+    ```CSharp
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+     ```
 
-```CSharp
-public interface IGraphApiOperations
-{
- Task<dynamic> GetUserInformation(string accessToken);
- Task<string> GetPhotoAsBase64Async(string accessToken);
-}
-```
+1. The following method is also added with the `Authorize` attribute with the name of the app role **DirectoryViewers**, that permits listing of roles and groups the signed-in user is assigned to.
 
-### Update the `Startup.cs` file to enable the Microsoft Graph custom service
+    ```CSharp
+        [Authorize(Roles = AppRoles.DirectoryViewers)]
+        public async Task<IActionResult> Groups()
+        {
+     ```
 
-Still in the `Startup.cs` file, add the following lines just after the following. This lines ensures that the GraphAPIService benefits from the optimized `HttpClient` management by ASP.NET Core.
-
-```CSharp
-    // Add Graph
-    services.AddGraphService(Configuration);
-```
-
-### Change the controller code to acquire a token and call Microsoft Graph
-
-In the `Controllers\HomeController.cs`file:
-
-1. Add a constructor to HomeController, making the ITokenAcquisition service available (used by the ASP.NET dependency injection mechanism)
-
-   ```CSharp
-   public HomeController(ITokenAcquisition tokenAcquisition, IGraphApiOperations graphApiOperations)
-   {
-     this.tokenAcquisition = tokenAcquisition;
-     this.graphApiOperations = graphApiOperations;
-
-   }
-   private ITokenAcquisition tokenAcquisition;
-   private readonly IGraphApiOperations graphApiOperations;
-   ```
-
-1. Add a `Profile()` action so that it calls the Microsoft Graph *me* endpoint. In case a token cannot be acquired, a challenge is attempted to re-sign-in the user, and have them consent to the requested scopes. This is expressed declaratively by the `MsalUiRequiredExceptionFilter`attribute. This attribute is part of the `Microsoft.Identity.Web` project and automatically manages incremental consent.
-
-   ```CSharp
-   [MsalUiRequiredExceptionFilter(Scopes = new[] {Constants.ScopeUserRead})]
-   public async Task<IActionResult> Profile()
-   {
-    var accessToken =
-    await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, 
-                                                     new[] {Constants.ScopeUserRead});
-
-    var me = await graphApiOperations.GetUserInformation(accessToken);
-    var photo = await graphApiOperations.GetPhotoAsBase64Async(accessToken);
-
-    ViewData["Me"] = me;
-    ViewData["Photo"] = photo;
-
-    return View();
-   }
-   ```
-
-### Add a Profile view to display the *me* object
-
-Add a new view `Views\Home\Profile.cshtml` and insert the following code, which creates an
-HTML table displaying the properties of the *me* object as returned by Microsoft Graph.
-
-```CSharp
-@using Newtonsoft.Json.Linq
-@{
-    ViewData["Title"] = "Profile";
-}
-<h2>@ViewData["Title"]</h2>
-<h3>@ViewData["Message"]</h3>
-
-<table class="table table-striped table-condensed" style="font-family: monospace">
- <tr>
-    <th>Property</th>
-    <th>Value</th>
- </tr>
- <tr>
-   <td>photo</td>
-   <td>
-   @{
-     if (ViewData["photo"] != null)
-     {
-     <img style="margin: 5px 0; width: 150px" src="data:image/jpeg;base64, @ViewData["photo"]" />
-     }
-     else
-     {
-      <h3>NO PHOTO</h3>
-      <p>Check user profile in Azure Active Directory to add a photo.</p>
-     }
-    }
-    </td>
-  </tr>
-  @{
-    var me = ViewData["me"] as JObject;
-    var children = me.Properties();
-    foreach (var child in children)
-    {
-     <tr>
-       <td>@child.Name</td>
-       <td>@child.Value</td>
-     </tr>
-    }
-   }
-</table>
-```
+1. The views, `Users.cshtml` and `Groups.cshtml` have the code to display the users in a tenant and roles and groups the signed-in user is assigned to respectively.
 
 ## Next steps
 
-- Learn how to enable distributed caches in [token cache serialization](../2-2-TokenCache)
-- Learn how the same principle you've just learnt can be used to call:
-  - [several Microsoft APIs](../../3-WebApp-multi-APIs), which will enable you to learn how incremental consent and conditional access is managed in your Web App
-  - 3rd party, or even [your own Web API](../../4-WebApp-your-API), which will enable you to learn about custom scopes
+- Learn how to use app roles. [Add authorization using security groups & groups claims to a Web app thats signs-in users with the Microsoft identity platform](../../../../5-WebApp-AuthZ/5-1-Groups).
 
 ## Learn more
 
 - Learn how [Microsoft.Identity.Web](../../Microsoft.Identity.Web) works, in particular hooks-up to the ASP.NET Core ODIC events
-- [Use HttpClientFactory to implement resilient HTTP requests](https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests) used by the Graph custom service
+
+To understand more about app registration, see:
+
+- [Quickstart: Register an application with the Microsoft identity platform (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
+- [Quickstart: Configure a client application to access web APIs (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
+
+To understand more about groups roles and the various claims in tokens, see:
+
+- [Azure Active Directory app manifest](https://docs.microsoft.com/en-us/azure/active-directory/develop/reference-app-manifest)
+- [ID tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens)
+- [Azure Active Directory access tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens)
+- [Microsoft Graph permissions reference](https://docs.microsoft.com/en-us/graph/permissions-reference)
+- [user: getMemberObjects function](https://docs.microsoft.com/en-us/graph/api/user-getmemberobjects?view=graph-rest-1.0)
+- [Application roles](https://docs.microsoft.com/en-us/azure/architecture/multitenant-identity/app-roles)
+- [Token validation](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki/ValidatingTokens)

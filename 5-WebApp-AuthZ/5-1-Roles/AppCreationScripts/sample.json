@@ -1,10 +1,10 @@
 {
   "Sample": {
-    "Title": "Using the Microsoft identity platform to call the Microsoft Graph API from an An ASP.NET Core 2.x Web App, on behalf of a user signing-in using their work and school or Microsoft personal account",
-    "Level": 200,
+    "Title": "Add authorization using app roles & roles claims to an ASP.NET Core Web app thats signs-in users with the Microsoft identity platform",
+    "Level": 300,
     "Client": "ASP.NET Core 2.x Web App",
     "Service": "Microsoft Graph",
-    "RepositoryUrl": "active-directory-aspnetcore-webapp-openidconnect-v2",
+    "RepositoryUrl": "microsoft-identity-platform-aspnetcore-webapp-tutorial",
     "Endpoint": "AAD v2.0"
   },
 
@@ -14,17 +14,21 @@
   "AADApps": [
     {
       "Id": "webApp",
-      "Name": "WebApp-OpenIDConnect-DotNet-code-v2",
+      "Name": "WebApp-RolesClaims",
       "Kind": "WebApp",
+      "Audience": "AzureADMyOrg",
       "HomePage": "https://localhost:44321/",
       "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc",
       "LogoutUrl": "https://localhost:44321/signout-oidc",
       "PasswordCredentials": "Auto",
+      "GroupMembershipClaims": "SecurityGroup",
       "RequiredResourcesAccess": [
         {
           "Resource": "Microsoft Graph",
-          "DelegatedPermissions": [ "User.Read" ]
+          "DelegatedPermissions": [ "User.Read", "User.ReadBasic.All","Directory.Read.All" ]
         }
+      ],"ManualSteps": [
+        { "Comment": "Run the ..\\CreateUsersAndRoles.ps1 command to automatically create a number of users, app roles and assign users to these roles or refer to the 'Define your application roles' section in README on how to configure your newly created app further for this sample." }
       ]
     }
   ],

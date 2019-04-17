@@ -1,0 +1,45 @@
+﻿@using Microsoft.Graph
+@{
+    ViewData["Title"] = "Groups";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Groups</h2>
+
+<h3 style="color:blue">Groups this user belongs to..</h3>
+
+
+@{
+    var directoryObjects = ViewData["Groups"] as IList<DirectoryObject>;
+}
+
+<table class="table table-striped table-bordered table-condensed table-hover">
+    <tr>
+        <th>Type</th>
+        <th>Id</th>
+        <th>Name</th>
+    </tr>
+
+    @foreach (var directoryObject in directoryObjects)
+    {
+        <tr>
+            @{ if (directoryObject is Group)
+                {
+                    Group group = directoryObject as Group;
+                    <td><b>Group</b></td>
+                    <td>@group.Id</td>
+                    <td><b>@group.DisplayName</b></td>
+                }
+                else if (directoryObject is DirectoryRole)
+                {
+                    DirectoryRole role = directoryObject as DirectoryRole;
+                    <td><b>Role</b></td>
+                    <td>@role.Id</td>
+                    <td><b>@role.DisplayName</b></td>
+                }
+            }
+        </tr>
+    }
+
+</table>
+

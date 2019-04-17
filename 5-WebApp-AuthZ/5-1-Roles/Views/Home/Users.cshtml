@@ -1,0 +1,25 @@
+﻿@using Newtonsoft.Json.Linq
+@using Microsoft.Graph
+@{
+    ViewData["Title"] = "Users list";
+}
+
+<h2>Users in your tenant</h2>
+
+<table class="table table-striped table-condensed" style="font-family: monospace">
+    <tr>
+        <th>Property</th>
+        <th>Value</th>
+    </tr>
+    @{
+        IList<User> users = ViewData["Users"] as IList<User>;
+
+        foreach (var user in users)
+        {
+            <tr>
+                <td>@user.DisplayName</td>
+                <td>@user.UserPrincipalName</td>
+            </tr>
+        }
+    }
+</table>
