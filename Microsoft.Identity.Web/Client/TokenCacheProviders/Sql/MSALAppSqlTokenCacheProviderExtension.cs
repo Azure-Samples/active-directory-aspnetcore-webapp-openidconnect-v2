@@ -53,7 +53,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             // Uncomment the following lines to create the database. In production scenarios, the database
             // will most probably be already present.
             //var tokenCacheDbContextBuilder = new DbContextOptionsBuilder<TokenCacheDbContext>();
-            //tokenCacheDbContextBuilder.UseSqlServer(configuration.GetConnectionString("TokenCacheDbConnStr"));
+            //tokenCacheDbContextBuilder.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString);
 
             //var tokenCacheDbContext = new TokenCacheDbContext(tokenCacheDbContextBuilder.Options);
             //tokenCacheDbContext.Database.EnsureCreated();
@@ -84,7 +84,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             // Uncomment the following lines to create the database. In production scenarios, the database
             // will most probably be already present.
             //var tokenCacheDbContextBuilder = new DbContextOptionsBuilder<TokenCacheDbContext>();
-            //tokenCacheDbContextBuilder.UseSqlServer(configuration.GetConnectionString("TokenCacheDbConnStr"));
+            //tokenCacheDbContextBuilder.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString);
 
             //var tokenCacheDbContext = new TokenCacheDbContext(tokenCacheDbContextBuilder.Options);
             //tokenCacheDbContext.Database.EnsureCreated();
