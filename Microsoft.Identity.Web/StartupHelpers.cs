@@ -7,6 +7,7 @@ using Microsoft.Identity.Web.Client;
 using Microsoft.Identity.Web.Resource;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Microsoft.Identity.Web
@@ -51,17 +52,6 @@ namespace Microsoft.Identity.Web
                 // and [Access Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens)
                 options.TokenValidationParameters.NameClaimType = "preferred_username";
 
-                // Handling the sign-out: removing the account from MSAL.NET cache
-                options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
-                {
-                    var user = context.HttpContext.User;
-
-                    // Avoid displaying the select account dialog
-                    context.ProtocolMessage.LoginHint = user.GetLoginHint();
-                    context.ProtocolMessage.DomainHint = user.GetDomainHint();
-                    await Task.FromResult(0);
-                };
-
                 // Avoids having users being presented the select account dialog when they are already signed-in
                 // for instance when going through incremental consent
                 options.Events.OnRedirectToIdentityProvider = context =>
@@ -72,7 +62,7 @@ namespace Microsoft.Identity.Web
                         context.ProtocolMessage.LoginHint = login;
                         context.ProtocolMessage.DomainHint = context.Properties.GetParameter<string>(OpenIdConnectParameterNames.DomainHint);
 
-                        // delete the loginhint and domainHint from the Properties when we are done otherwise
+                        // delete the login_hint and domainHint from the Properties when we are done otherwise
                         // it will take up extra space in the cookie.
                         context.Properties.Parameters.Remove(OpenIdConnectParameterNames.LoginHint);
                         context.Properties.Parameters.Remove(OpenIdConnectParameterNames.DomainHint);
@@ -87,7 +77,7 @@ namespace Microsoft.Identity.Web
 
                     return Task.FromResult(0);
                 };
-                
+
                 // If you want to debug, or just understand the OpenIdConnect events, just
                 // uncomment the following line of code
                 // OpenIdConnectMiddlewareDiagnostics.Subscribe(options.Events);
@@ -140,6 +130,12 @@ namespace Microsoft.Identity.Web
                     // Remove the account from MSAL.NET token cache
                     var _tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
                     await _tokenAcquisition.RemoveAccount(context);
+
+                    var user = context.HttpContext.User;
+
+                    // Avoid displaying the select account dialog
+                    context.ProtocolMessage.LoginHint = user.GetLoginHint();
+                    context.ProtocolMessage.DomainHint = user.GetDomainHint();
                 };
             });
             return services;
