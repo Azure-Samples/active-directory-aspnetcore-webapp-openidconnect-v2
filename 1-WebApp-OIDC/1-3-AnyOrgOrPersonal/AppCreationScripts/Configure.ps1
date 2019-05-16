@@ -64,6 +64,8 @@ Function ConfigureApplications
    so that they are consistent with the Applications parameters
 #> 
 
+    $commonendpoint = "common"
+
     # $tenantId is the Active Directory Tenant. This is a GUID which represents the "Directory ID" of the AzureAD tenant
     # into which you want to create the apps. Look it up in the Azure portal in the "Properties" of the Azure AD.
 
@@ -114,8 +116,8 @@ Function ConfigureApplications
    $owner = Get-AzureADApplicationOwner -ObjectId $webAppAadApplication.ObjectId
    if ($owner -eq $null)
    { 
-    Add-AzureADApplicationOwner -ObjectId $webAppAadApplication.ObjectId -RefObjectId $user.ObjectId
-    Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($webAppServicePrincipal.DisplayName)'"
+        Add-AzureADApplicationOwner -ObjectId $webAppAadApplication.ObjectId -RefObjectId $user.ObjectId
+        Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($webAppServicePrincipal.DisplayName)'"
    }
 
    Write-Host "Done creating the webApp application (WebApp)"
@@ -127,12 +129,19 @@ Function ConfigureApplications
 
 
    # Update config file for 'webApp'
-   $commonendpoint = "common"
    $configFile = $pwd.Path + "\..\appsettings.json"
    Write-Host "Updating the sample code ($configFile)"
-   $dictionary = @{ "ClientId" = $webAppAadApplication.AppId;"TenantId" = $commonendpoint;"Domain" = $tenantName };
+   $dictionary = @{ "ClientId" = $webAppAadApplication.AppId;"Domain" = $tenantName;"TenantId" = $commonendpoint };
    UpdateTextFile -configFilePath $configFile -dictionary $dictionary
+   Write-Host ""
+   Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+   Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
+   Write-Host "- For 'webApp'"
+   Write-Host "  - Navigate to '$webAppPortalUrl'"
+   Write-Host "  - Navigate to the portal and change the ','signInAudeince' to 'AzureADandPersonalMicrosoftAccount'  in the app's manifest !" -ForegroundColor Red 
 
+   Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+     
    Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  
 }
 

@@ -19,10 +19,15 @@
       "Audience" : "AzureADandPersonalMicrosoftAccount",
        "HomePage": "https://localhost:44321/",
       "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc",
-      "LogoutUrl": "https://localhost:44321/signout-oidc"
-    }
-  ],
+      "LogoutUrl": "https://localhost:44321/signout-oidc",
+      "ManualSteps": [
+        {
+          "Comment" :  "Navigate to the portal and change the ','signInAudeince' to 'AzureADandPersonalMicrosoftAccount'  in the app's manifest !"
+        }
+      ]
 
+    }  
+  ],
   /*
     This section describes how to update the code in configuration files from the apps coordinates, once the apps
     are created in Azure AD.
@@ -40,12 +45,12 @@
           "value": ".AppId"
         },
         {
-          "key": "TenantId",
-          "value": "$commonendpoint"
-        },
-        {
           "key": "Domain",
           "value": "$tenantName"
+        },
+        {
+          "key": "TenantId",
+          "value": "$commonendpoint"
         }
       ]
     }
