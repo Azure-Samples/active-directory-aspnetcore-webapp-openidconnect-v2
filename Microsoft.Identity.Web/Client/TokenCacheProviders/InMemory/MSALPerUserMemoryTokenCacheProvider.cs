@@ -89,7 +89,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
                 return;
             }
 
-            this.LoadUserTokenCacheFromMemory();
+            this.LoadUserTokenCacheFromMemory(this.UserTokenCache);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         }
 
         /// <summary>Loads the user token cache from memory.</summary>
-        private void LoadUserTokenCacheFromMemory()
+        private void LoadUserTokenCacheFromMemory(ITokenCache tokenCache)
         {
             string cacheKey = this.GetMsalAccountId();
 
@@ -114,13 +114,13 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
                 return;
 
             byte[] tokenCacheBytes = (byte[])this.memoryCache.Get(this.GetMsalAccountId());
-            this.UserTokenCache.DeserializeMsalV3(tokenCacheBytes);
+            tokenCache.DeserializeMsalV3(tokenCacheBytes);
         }
 
         /// <summary>
         /// Persists the user token blob to the memoryCache.
         /// </summary>
-        private void PersistUserTokenCache()
+        private void PersistUserTokenCache(ITokenCache tokenCache)
         {
             string cacheKey = this.GetMsalAccountId();
 
@@ -128,7 +128,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
                 return;
 
             // Ideally, methods that load and persist should be thread safe.MemoryCache.Get() is thread safe.
-            this.memoryCache.Set(this.GetMsalAccountId(), this.UserTokenCache.SerializeMsalV3(), this.CacheOptions.AbsoluteExpiration);
+            this.memoryCache.Set(this.GetMsalAccountId(), tokenCache.SerializeMsalV3(), this.CacheOptions.AbsoluteExpiration);
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             this.memoryCache.Remove(this.GetMsalAccountId());
 
             // Nulls the currently deserialized instance
-            this.LoadUserTokenCacheFromMemory();
+            this.LoadUserTokenCacheFromMemory(UserTokenCache);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             // if the access operation resulted in a cache update
             if (args.HasStateChanged)
             {
-                this.PersistUserTokenCache();
+                this.PersistUserTokenCache(args.TokenCache);
             }
         }
 
@@ -164,7 +164,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
         private void UserTokenCacheBeforeAccessNotification(TokenCacheNotificationArgs args)
         {
-            this.LoadUserTokenCacheFromMemory();
+            this.LoadUserTokenCacheFromMemory(args.TokenCache);
         }
 
         /// <summary>
