@@ -145,6 +145,8 @@ Function ConfigureApplications
    so that they are consistent with the Applications parameters
 #> 
 
+    $commonendpoint = "common"
+
     # $tenantId is the Active Directory Tenant. This is a GUID which represents the "Directory ID" of the AzureAD tenant
     # into which you want to create the apps. Look it up in the Azure portal in the "Properties" of the Azure AD.
 
@@ -201,8 +203,8 @@ Function ConfigureApplications
    $owner = Get-AzureADApplicationOwner -ObjectId $webAppAadApplication.ObjectId
    if ($owner -eq $null)
    { 
-    Add-AzureADApplicationOwner -ObjectId $webAppAadApplication.ObjectId -RefObjectId $user.ObjectId
-    Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($webAppServicePrincipal.DisplayName)'"
+        Add-AzureADApplicationOwner -ObjectId $webAppAadApplication.ObjectId -RefObjectId $user.ObjectId
+        Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($webAppServicePrincipal.DisplayName)'"
    }
 
    Write-Host "Done creating the webApp application (WebApp)"
@@ -217,7 +219,21 @@ Function ConfigureApplications
    # Add Required Resources Access (from 'webApp' to 'Microsoft Graph')
    Write-Host "Getting access from 'webApp' to 'Microsoft Graph'"
    $requiredPermissions = GetRequiredPermissions -applicationDisplayName "Microsoft Graph" `
-                                                -requiredDelegatedPermissions "User.Read";
+                                                -requiredDelegatedPermissions "User.Read" `
+
+   $requiredResourcesAccess.Add($requiredPermissions)
+
+   # Add Required Resources Access (from 'webApp' to 'Windows Azure Service Management API')
+   Write-Host "Getting access from 'webApp' to 'Windows Azure Service Management API'"
+   $requiredPermissions = GetRequiredPermissions -applicationDisplayName "Windows Azure Service Management API" `
+                                                -requiredDelegatedPermissions "user_impersonation" `
+
+   $requiredResourcesAccess.Add($requiredPermissions)
+
+   # Add Required Resources Access (from 'webApp' to 'Azure Storage')
+   Write-Host "Getting access from 'webApp' to 'Azure Storage'"
+   $requiredPermissions = GetRequiredPermissions -applicationDisplayName "Azure Storage" `
+                                                -requiredDelegatedPermissions "user_impersonation" `
 
    $requiredResourcesAccess.Add($requiredPermissions)
 
@@ -226,11 +242,11 @@ Function ConfigureApplications
    Write-Host "Granted permissions."
 
    # Update config file for 'webApp'
-   $configFile = $pwd.Path + "\..\active-directory-aspnetcore-webapp-openidconnect-v2\appsettings.json"
+   $configFile = $pwd.Path + "\..\appsettings.json"
    Write-Host "Updating the sample code ($configFile)"
-   $dictionary = @{ "ClientId" = $webAppAadApplication.AppId;"TenantId" = $tenantId;"Domain" = $tenantName;"TenantId" = $webAppAppKey };
+   $dictionary = @{ "ClientId" = $webAppAadApplication.AppId;"TenantId" = $tenantId;"Domain" = $tenantName;"ClientSecret" = $webAppAppKey };
    UpdateTextFile -configFilePath $configFile -dictionary $dictionary
-
+  
    Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  
 }
 

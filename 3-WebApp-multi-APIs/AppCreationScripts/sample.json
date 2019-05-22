@@ -26,7 +26,7 @@
           "DelegatedPermissions": [ "User.Read" ]
         },
         {
-          "Resource": "Azure Service Management",
+          "Resource": "Windows Azure Service Management API",
           "DelegatedPermissions": [ "user_impersonation" ]
         },
         {
