@@ -12,7 +12,7 @@ IF SUFFICIENT INFORMATION IS NOT PROVIDED VIA THE FOLLOWING TEMPLATE THE ISSUE M
 - [ ] regression (a behavior that used to work and stopped in a new release)
 ```
 
-## The issue was found for the following scenario:
+### The issue was found for the following scenario:
 
 Please add an 'x' for the scenario(s) where you found an issue
 
