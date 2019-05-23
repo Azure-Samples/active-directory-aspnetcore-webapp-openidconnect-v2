@@ -64,6 +64,9 @@ namespace Microsoft.Identity.Web.Client
         /// <param name="configuration"></param>
         public TokenAcquisition(IConfiguration configuration, IMSALAppTokenCacheProvider appTokenCacheProvider, IMSALUserTokenCacheProvider userTokenCacheProvider)
         {
+            if (configuration == null)
+                throw new ArgumentNullException(nameof(configuration));
+
             azureAdOptions = new AzureADOptions();
             configuration.Bind("AzureAD", azureAdOptions);
 
@@ -136,6 +139,7 @@ namespace Microsoft.Identity.Web.Client
             }
             catch (MsalException ex)
             {
+                // brentsch - todo, write to a log
                 Debug.WriteLine(ex.Message);
                 throw;
             }
