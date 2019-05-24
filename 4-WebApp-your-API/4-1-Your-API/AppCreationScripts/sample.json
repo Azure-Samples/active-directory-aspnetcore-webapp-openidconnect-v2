@@ -1,0 +1,109 @@
+{
+  "Sample": {
+    "Title": "A WPF application that calls a Web API running on ASP.NET Core 2.0 protected by Azure AD using OAuth 2.0 access tokens. ",
+    "Level": 200,
+    "Client": ".NET Desktop (WPF)",
+    "Service": "ASP.NET Core Web API",
+    "RepositoryUrl": "active-directory-dotnet-native-aspnetcore-v2",
+    "Endpoint": "AAD v2.0"
+  },
+
+  /*
+    This section describes the Azure AD Applications to configure, and their dependencies
+  */
+  "AADApps": [
+    {
+      "Id": "service",
+      "Name": "TodoListService (active-directory-dotnet-native-aspnetcore-v2)",
+      "Kind": "WebApi",
+      "HomePage": "https://localhost:44351/",
+      "PasswordCredentials": "Auto",
+      "RequiredResourcesAccess": [
+        {
+          "Resource": "Microsoft Graph",
+          "DelegatedPermissions": [ "User.Read" ]
+        }
+      ],
+      "ManualSteps": [
+        {
+          "Comment": "Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'."
+        },
+        {
+          "Comment": "[Optional] If you are a tenant admin, you can navigate to the API Permisions page and select 'Grant admin consent for (your tenant)'"
+        }
+      ]
+    },
+    {
+      "Id": "client",
+      "Name": "TodoListClient (active-directory-dotnet-native-aspnetcore-v2)",
+      "Kind": "Desktop",
+      "RequiredResourcesAccess": [
+        {
+          "Resource": "service",
+          "DelegatedPermissions": [ "user_impersonation" ]
+        }
+      ],
+      "ManualSteps": [
+        {
+          "Comment": "Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'."
+        }
+      ]
+    }
+  ],
+
+  /*
+    This section describes how to update the code in configuration files from the apps coordinates, once the apps
+    are created in Azure AD.
+    Each section describes a configuration file, for one of the apps, it's type (XML, JSon, plain text), its location
+    with respect to the root of the sample, and the mappping (which string in the config file is mapped to which value
+  */
+  "CodeConfiguration": [
+    {
+      "App": "service",
+      "SettingKind": "Text",
+      "SettingFile": "\\..\\TodoListService\\appsettings.json",
+      "Mappings": [
+        {
+          "key": "Domain",
+          "value": "$tenantName"
+        },
+        {
+          "key": "TenantId",
+          "value": "$tenantId"
+        },
+        {
+          "key": "ClientId",
+          "value": "service.AppId"
+        },
+        {
+          "key": "ClientSecret",
+          "value": "service.AppKey"
+        }
+      ]
+    },
+
+    {
+      "App": "client",
+      "SettingKind": "XML",
+      "SettingFile": "\\..\\TodoListClient\\App.Config",
+      "Mappings": [
+        //{
+        //  "key": "ida:Tenant",
+        //  "value": "$tenantName"
+        //},
+        {
+          "key": "ida:ClientId",
+          "value": ".AppId"
+        },
+        {
+          "key": "todo:TodoListScope",
+          "value": "service.Scope"
+        },
+        {
+          "key": "todo:TodoListBaseAddress",
+          "value": "service.HomePage"
+        }
+      ]
+    }
+  ]
+}

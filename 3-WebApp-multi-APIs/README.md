@@ -89,6 +89,7 @@ After the following lines in the ConfigureServices(IServiceCollection services) 
             .AddInMemoryTokenCache();
     services.AddHttpClient<IArmOperations, ArmApiOperationService>();
 ```
+
 This enables to add the Azure Resource manager micro-service to use the HttpClient by dependency injection.
 
 ### Add the `Services\ARM` sub folder
