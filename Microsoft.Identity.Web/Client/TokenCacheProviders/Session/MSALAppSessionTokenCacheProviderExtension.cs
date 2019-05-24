@@ -48,9 +48,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         {
             services.AddScoped<IMSALAppTokenCacheProvider>(factory =>
             {
-                var optionsMonitor = factory.GetRequiredService<IOptionsMonitor<AzureADOptions>>();
-
-                return new MSALAppSessionTokenCacheProvider(optionsMonitor);
+                return new MSALAppSessionTokenCacheProvider(factory.GetRequiredService<IOptionsMonitor<AzureADOptions>>());
             });
 
             return services;

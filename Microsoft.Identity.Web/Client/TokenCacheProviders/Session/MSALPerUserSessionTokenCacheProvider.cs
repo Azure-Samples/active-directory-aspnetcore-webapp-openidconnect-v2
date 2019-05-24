@@ -24,6 +24,7 @@ SOFTWARE.
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Identity.Client;
+using System;
 using System.Diagnostics;
 using System.Security.Claims;
 using System.Threading;
@@ -31,14 +32,14 @@ using System.Threading;
 namespace Microsoft.Identity.Web.Client.TokenCacheProviders
 {
     /// <summary>
-    /// This is a MSAL's TokenCache implementation for one user. It uses Http session as a backend store
+    /// This is a MSAL's TokenCache implementation for one user. It uses Http session as a back end store
     /// </summary>
     public class MSALPerUserSessionTokenCacheProvider : IMSALUserTokenCacheProvider
     {
         private static ReaderWriterLockSlim SessionLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
 
         /// <summary>
-        /// Once the user signes in, this will not be null and can be ontained via a call to HttpContext.User
+        /// Once the user signs in, this will not be null and can be obtained via a call to ClaimsPrincipal.Current
         /// </summary>
         internal ClaimsPrincipal SignedInUser;
 
@@ -58,20 +59,17 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         }
 
         /// <summary>Initializes the cache instance</summary>
-        /// <param name="tokenCache">The ITokenCache passed through the constructor</param>
-        /// <param name="httpcontext">The current HttpContext</param>
+        /// <param name="tokenCache">The <see cref="ITokenCache"/> passed through the constructor</param>
+        /// <param name="httpcontext">The current <see cref="HttpContext" /></param>
         /// <param name="user">The signed in user's ClaimPrincipal, could be null.
         /// If the calling app has it available, then it should pass it themselves.</param>
         public void Initialize(ITokenCache tokenCache, HttpContext httpcontext, ClaimsPrincipal user)
         {
-            this.HttpContext = httpcontext;
-
-            this.UserTokenCache = tokenCache;
-
+            this.HttpContext = httpcontext ?? throw new ArgumentNullException(nameof(httpcontext));
+            this.UserTokenCache = tokenCache ?? throw new ArgumentNullException(nameof(tokenCache));
             this.UserTokenCache.SetBeforeAccess(this.UserTokenCacheBeforeAccessNotification);
             this.UserTokenCache.SetAfterAccess(this.UserTokenCacheAfterAccessNotification);
             this.UserTokenCache.SetBeforeWrite(this.UserTokenCacheBeforeWriteNotification);
-
             if (user == null)
             {
                 // No users signed in yet, so we return
@@ -88,17 +86,14 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         private void LoadUserTokenCacheFromSession()
         {
             this.HttpContext.Session.LoadAsync().Wait();
-
             string cacheKey = this.GetSignedInUsersUniqueId();
-
             if (string.IsNullOrWhiteSpace(cacheKey))
                 return;
 
             SessionLock.EnterReadLock();
             try
             {
-                byte[] blob;
-                if (this.HttpContext.Session.TryGetValue(cacheKey, out blob))
+                if (this.HttpContext.Session.TryGetValue(cacheKey, out byte[] blob))
                 {
                     Debug.WriteLine($"INFO: Deserializing session {this.HttpContext.Session.Id}, cacheId {cacheKey}");
                     this.UserTokenCache.DeserializeMsalV3(blob);
@@ -120,12 +115,10 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         private void PersistUserTokenCache()
         {
             string cacheKey = this.GetSignedInUsersUniqueId();
-
             if (string.IsNullOrWhiteSpace(cacheKey))
                 return;
 
             SessionLock.EnterWriteLock();
-
             try
             {
                 Debug.WriteLine($"INFO: Serializing session {this.HttpContext.Session.Id}, cacheId {cacheKey}");
@@ -147,12 +140,10 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         public void Clear()
         {
             string cacheKey = this.GetSignedInUsersUniqueId();
-
             if (string.IsNullOrWhiteSpace(cacheKey))
                 return;
 
             SessionLock.EnterWriteLock();
-
             try
             {
                 Debug.WriteLine($"INFO: Clearing session {this.HttpContext.Session.Id}, cacheId {cacheKey}");
@@ -203,9 +194,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         private void SetSignedInUserFromNotificationArgs(TokenCacheNotificationArgs args)
         {
             if (this.SignedInUser == null && args.Account != null)
-            {
                 this.SignedInUser = args.Account.ToClaimsPrincipal();
-            }
         }
 
         /// <summary>
@@ -214,6 +203,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
         private void UserTokenCacheBeforeAccessNotification(TokenCacheNotificationArgs args)
         {
+            // TODO - args is never used
             this.LoadUserTokenCacheFromSession();
         }
 
@@ -224,9 +214,8 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         internal string GetSignedInUsersUniqueId()
         {
             if (this.SignedInUser != null)
-            {
                 return this.SignedInUser.GetMsalAccountId();
-            }
+
             return null;
         }
     }
