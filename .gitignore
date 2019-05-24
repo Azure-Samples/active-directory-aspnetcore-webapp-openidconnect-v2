@@ -72,3 +72,9 @@
 /5-WebApp-AuthZ/5-1-Roles/WebApp-OpenIDConnect-DotNet.csproj.user
 *.user
 *.saz
+/4-WebApp-your-API/4-1-Your-API/.vs/Web-API-Calls-Graph/v16
+/4-WebApp-your-API/4-1-Your-API/packages
+/4-WebApp-your-API/4-1-Your-API/TodoListClient/bin/Debug
+/4-WebApp-your-API/4-1-Your-API/TodoListClient/obj/Debug
+/4-WebApp-your-API/4-1-Your-API/TodoListService/obj
+/4-WebApp-your-API/4-1-Your-API/TodoListService/bin/Debug/netcoreapp2.2
