@@ -76,6 +76,17 @@ namespace Microsoft.Identity.Web
                 // and [Access Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens)
                 options.TokenValidationParameters.NameClaimType = "preferred_username";
 
+                // Handling the sign-out
+                options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
+                {
+                    var user = context.HttpContext.User;
+
+                    // Avoid displaying the select account dialog
+                    context.ProtocolMessage.LoginHint = user.GetLoginHint();
+                    context.ProtocolMessage.DomainHint = user.GetDomainHint();
+                    await Task.FromResult(0);
+                };
+
                 // Avoids having users being presented the select account dialog when they are already signed-in
                 // for instance when going through incremental consent
                 options.Events.OnRedirectToIdentityProvider = context =>
@@ -154,12 +165,6 @@ namespace Microsoft.Identity.Web
                     // Remove the account from MSAL.NET token cache
                     var _tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
                     await _tokenAcquisition.RemoveAccount(context);
-
-                    var user = context.HttpContext.User;
-
-                    // Avoid displaying the select account dialog
-                    context.ProtocolMessage.LoginHint = user.GetLoginHint();
-                    context.ProtocolMessage.DomainHint = user.GetDomainHint();
                 };
             });
             return services;
