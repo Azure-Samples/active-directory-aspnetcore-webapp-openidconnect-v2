@@ -34,23 +34,13 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
     /// An implementation of token cache for both Confidential and Public clients backed by MemoryCache.
     /// MemoryCache is useful in Api scenarios where there is no HttpContext.Session to cache data.
     /// </summary>
-    /// <seealso cref="https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/token-cache-serialization"/>
+    /// <seealso cref="https://aka.ms/msal-net-token-cache-serialization"/>
     public class MSALPerUserMemoryTokenCacheProvider : IMSALUserTokenCacheProvider
     {
         /// <summary>
         /// The backing MemoryCache instance
         /// </summary>
         internal IMemoryCache memoryCache;
-
-        /// <summary>
-        /// The internal handle to the client's instance of the Cache
-        /// </summary>
-        private ITokenCache UserTokenCache;
-
-        /// <summary>
-        /// Once the user signes in, this will not be null and can be ontained via a call to Thread.CurrentPrincipal
-        /// </summary>
-        internal ClaimsPrincipal SignedInUser;
 
         private readonly MSALMemoryTokenCacheOptions CacheOptions;
 
@@ -70,76 +60,31 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             }
         }
 
+        // WORKAROUND TO MSAL.NET issue https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/issues/1179
+        // Warning does not necessarily work concurrently as each user would 
+        string userId;
+
         /// <summary>Initializes this instance of TokenCacheProvider with essentials to initialize themselves.</summary>
         /// <param name="tokenCache">The token cache instance of MSAL application</param>
         /// <param name="httpcontext">The Httpcontext whose Session will be used for caching.This is required by some providers.</param>
         /// <param name="user">The signed-in user for whom the cache needs to be established. Not needed by all providers.</param>
         public void Initialize(ITokenCache tokenCache, HttpContext httpcontext, ClaimsPrincipal user)
         {
-            this.SignedInUser = user;
+            // WORKAROUND TO MSAL.NET issue https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/issues/1179
+            // Warning does not necessarily work concurrently as each user would override userId
+            userId = user.GetMsalAccountId();
 
-            this.UserTokenCache = tokenCache;
-            this.UserTokenCache.SetBeforeAccess(this.UserTokenCacheBeforeAccessNotification);
-            this.UserTokenCache.SetAfterAccess(this.UserTokenCacheAfterAccessNotification);
-            this.UserTokenCache.SetBeforeWrite(this.UserTokenCacheBeforeWriteNotification);
-
-            if (this.SignedInUser == null)
-            {
-                // No users signed in yet, so we return
-                return;
-            }
-
-            this.LoadUserTokenCacheFromMemory();
-        }
-
-        /// <summary>
-        /// Explores the Claims of a signed-in user (if available) to populate the unique Id of this cache's instance.
-        /// </summary>
-        /// <returns>The signed in user's object.tenant Id , if available in the ClaimsPrincipal.Current instance</returns>
-        internal string GetMsalAccountId()
-        {
-            if (this.SignedInUser != null)
-            {
-                return this.SignedInUser.GetMsalAccountId();
-            }
-            return null;
-        }
-
-        /// <summary>Loads the user token cache from memory.</summary>
-        private void LoadUserTokenCacheFromMemory()
-        {
-            string cacheKey = this.GetMsalAccountId();
-
-            if (string.IsNullOrWhiteSpace(cacheKey))
-                return;
-
-            byte[] tokenCacheBytes = (byte[])this.memoryCache.Get(this.GetMsalAccountId());
-            this.UserTokenCache.DeserializeMsalV3(tokenCacheBytes);
-        }
-
-        /// <summary>
-        /// Persists the user token blob to the memoryCache.
-        /// </summary>
-        private void PersistUserTokenCache()
-        {
-            string cacheKey = this.GetMsalAccountId();
-
-            if (string.IsNullOrWhiteSpace(cacheKey))
-                return;
-
-            // Ideally, methods that load and persist should be thread safe.MemoryCache.Get() is thread safe.
-            this.memoryCache.Set(this.GetMsalAccountId(), this.UserTokenCache.SerializeMsalV3(), this.CacheOptions.AbsoluteExpiration);
+            tokenCache.SetBeforeAccess(this.UserTokenCacheBeforeAccessNotification);
+            tokenCache.SetAfterAccess(this.UserTokenCacheAfterAccessNotification);
+            tokenCache.SetBeforeWrite(this.UserTokenCacheBeforeWriteNotification);
         }
 
         /// <summary>
         /// Clears the TokenCache's copy of this user's cache.
         /// </summary>
-        public void Clear()
+        public void Clear(string accountId)
         {
-            this.memoryCache.Remove(this.GetMsalAccountId());
-
-            // Nulls the currently deserialized instance
-            this.LoadUserTokenCacheFromMemory();
+            this.memoryCache.Remove(accountId);
         }
 
         /// <summary>
@@ -148,12 +93,23 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
         private void UserTokenCacheAfterAccessNotification(TokenCacheNotificationArgs args)
         {
-            this.SetSignedInUserFromNotificationArgs(args);
-
             // if the access operation resulted in a cache update
             if (args.HasStateChanged)
             {
-                this.PersistUserTokenCache();
+                string cacheKey = args?.Account?.HomeAccountId?.Identifier;
+
+                // WORKAROUND TO MSAL.NET https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/issues/1179
+                if (string.IsNullOrEmpty(cacheKey))
+                {
+                    cacheKey = userId;
+                }
+
+                if (string.IsNullOrWhiteSpace(cacheKey))
+                    return;
+
+                // Ideally, methods that load and persist should be thread safe.MemoryCache.Get() is thread safe.
+                this.memoryCache.Set(cacheKey, args.TokenCache.SerializeMsalV3(), this.CacheOptions.AbsoluteExpiration);
+
             }
         }
 
@@ -164,7 +120,19 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
         private void UserTokenCacheBeforeAccessNotification(TokenCacheNotificationArgs args)
         {
-            this.LoadUserTokenCacheFromMemory();
+            string cacheKey = args.Account?.HomeAccountId?.Identifier;
+
+            // WORKAROUND TO MSAL.NET https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/issues/1179
+            if (string.IsNullOrEmpty(cacheKey))
+            {
+                cacheKey = userId;
+            }
+
+            if (string.IsNullOrWhiteSpace(cacheKey))
+                return;
+
+            byte[] tokenCacheBytes = (byte[])this.memoryCache.Get(cacheKey);
+            args.TokenCache.DeserializeMsalV3(tokenCacheBytes, shouldClearExistingCache:true);
         }
 
         /// <summary>
@@ -173,19 +141,6 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
         private void UserTokenCacheBeforeWriteNotification(TokenCacheNotificationArgs args)
         {
-        }
-
-        /// <summary>
-        /// To keep the cache, ClaimsPrincipal and Sql in sync, we ensure that the user's object Id we obtained by MSAL after
-        /// successful sign-in is set as the key for the cache.
-        /// </summary>
-        /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
-        private void SetSignedInUserFromNotificationArgs(TokenCacheNotificationArgs args)
-        {
-            if (this.SignedInUser == null && args.Account != null)
-            {
-                this.SignedInUser = args.Account.ToClaimsPrincipal();
-            }
         }
     }
 }

@@ -39,24 +39,18 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         private static ReaderWriterLockSlim SessionLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
 
         /// <summary>
-        /// Once the user signs in, this will not be null and can be obtained via a call to ClaimsPrincipal.Current
-        /// </summary>
-        internal ClaimsPrincipal SignedInUser;
-
-        /// <summary>
         /// The HTTP context being used by this app
         /// </summary>
         internal HttpContext HttpContext = null;
-
-        /// <summary>
-        /// The internal handle to the client's instance of the Cache
-        /// </summary>
-        private ITokenCache UserTokenCache;
 
         /// <summary>Initializes a new instance of the <see cref="MSALPerUserSessionTokenCache"/> class.</summary>
         public MSALPerUserSessionTokenCacheProvider()
         {
         }
+
+        // WORKAROUND TO MSAL.NET issue https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/issues/1179
+        // Warning does not necessarily work concurrently as each user would 
+        string userId;
 
         /// <summary>Initializes the cache instance</summary>
         /// <param name="tokenCache">The <see cref="ITokenCache"/> passed through the constructor</param>
@@ -65,83 +59,26 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// If the calling app has it available, then it should pass it themselves.</param>
         public void Initialize(ITokenCache tokenCache, HttpContext httpcontext, ClaimsPrincipal user)
         {
+            // WORKAROUND TO MSAL.NET issue https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/issues/1179
+            // Warning does not necessarily work concurrently as each user would override userId
+            userId = user.GetMsalAccountId();
+
             this.HttpContext = httpcontext ?? throw new ArgumentNullException(nameof(httpcontext));
-            this.UserTokenCache = tokenCache ?? throw new ArgumentNullException(nameof(tokenCache));
-            this.UserTokenCache.SetBeforeAccess(this.UserTokenCacheBeforeAccessNotification);
-            this.UserTokenCache.SetAfterAccess(this.UserTokenCacheAfterAccessNotification);
-            this.UserTokenCache.SetBeforeWrite(this.UserTokenCacheBeforeWriteNotification);
-            if (user == null)
+            if (tokenCache == null)
             {
-                // No users signed in yet, so we return
-                return;
+                throw new ArgumentNullException(nameof(tokenCache));
             }
-
-            this.SignedInUser = user;
-            this.LoadUserTokenCacheFromSession();
-        }
-
-        /// <summary>
-        /// Loads the user token cache from http session.
-        /// </summary>
-        private void LoadUserTokenCacheFromSession()
-        {
-            this.HttpContext.Session.LoadAsync().Wait();
-            string cacheKey = this.GetSignedInUsersUniqueId();
-            if (string.IsNullOrWhiteSpace(cacheKey))
-                return;
-
-            SessionLock.EnterReadLock();
-            try
-            {
-                if (this.HttpContext.Session.TryGetValue(cacheKey, out byte[] blob))
-                {
-                    Debug.WriteLine($"INFO: Deserializing session {this.HttpContext.Session.Id}, cacheId {cacheKey}");
-                    this.UserTokenCache.DeserializeMsalV3(blob);
-                }
-                else
-                {
-                    Debug.WriteLine($"INFO: cacheId {cacheKey} not found in session {this.HttpContext.Session.Id}");
-                }
-            }
-            finally
-            {
-                SessionLock.ExitReadLock();
-            }
-        }
-
-        /// <summary>
-        /// Persists the user token blob to the Http session.
-        /// </summary>
-        private void PersistUserTokenCache()
-        {
-            string cacheKey = this.GetSignedInUsersUniqueId();
-            if (string.IsNullOrWhiteSpace(cacheKey))
-                return;
-
-            SessionLock.EnterWriteLock();
-            try
-            {
-                Debug.WriteLine($"INFO: Serializing session {this.HttpContext.Session.Id}, cacheId {cacheKey}");
-
-                // Reflect changes in the persistent store
-                byte[] blob = this.UserTokenCache.SerializeMsalV3();
-                this.HttpContext.Session.Set(cacheKey, blob);
-                this.HttpContext.Session.CommitAsync().Wait();
-            }
-            finally
-            {
-                SessionLock.ExitWriteLock();
-            }
+            tokenCache.SetBeforeAccess(this.UserTokenCacheBeforeAccessNotification);
+            tokenCache.SetAfterAccess(this.UserTokenCacheAfterAccessNotification);
+            tokenCache.SetBeforeWrite(this.UserTokenCacheBeforeWriteNotification);
         }
 
         /// <summary>
         /// Clears the TokenCache's copy of this user's cache.
         /// </summary>
-        public void Clear()
+        public void Clear(string accountId)
         {
-            string cacheKey = this.GetSignedInUsersUniqueId();
-            if (string.IsNullOrWhiteSpace(cacheKey))
-                return;
+            string cacheKey = accountId;
 
             SessionLock.EnterWriteLock();
             try
@@ -156,16 +93,12 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             {
                 SessionLock.ExitWriteLock();
             }
-
-            // Nulls the currently deserialized instance
-            this.LoadUserTokenCacheFromSession();
         }
 
         /// <summary>
         /// if you want to ensure that no concurrent write take place, use this notification to place a lock on the entry
         /// </summary>
         /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
-
         private void UserTokenCacheBeforeWriteNotification(TokenCacheNotificationArgs args)
         {
             // Since we obtain and release lock right before and after we read the Http session, we need not do anything here.
@@ -177,24 +110,34 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
         private void UserTokenCacheAfterAccessNotification(TokenCacheNotificationArgs args)
         {
-            this.SetSignedInUserFromNotificationArgs(args);
-
             // if the access operation resulted in a cache update
             if (args.HasStateChanged)
             {
-                this.PersistUserTokenCache();
-            }
-        }
+                string cacheKey = args.Account?.HomeAccountId?.Identifier;
+                // WORKAROUND TO MSAL.NET https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/issues/1179
+                if (string.IsNullOrEmpty(cacheKey))
+                {
+                    cacheKey = userId;
+                }
 
-        /// <summary>
-        /// To keep the cache, ClaimsPrincipal and Sql in sync, we ensure that the user's object Id we obtained by MSAL after
-        /// successful sign-in is set as the key for the cache.
-        /// </summary>
-        /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
-        private void SetSignedInUserFromNotificationArgs(TokenCacheNotificationArgs args)
-        {
-            if (this.SignedInUser == null && args.Account != null)
-                this.SignedInUser = args.Account.ToClaimsPrincipal();
+                if (string.IsNullOrWhiteSpace(cacheKey))
+                    return;
+
+                SessionLock.EnterWriteLock();
+                try
+                {
+                    Debug.WriteLine($"INFO: Serializing session {this.HttpContext.Session.Id}, cacheId {cacheKey}");
+
+                    // Reflect changes in the persistent store
+                    byte[] blob = args.TokenCache.SerializeMsalV3();
+                    this.HttpContext.Session.Set(cacheKey, blob);
+                    this.HttpContext.Session.CommitAsync().Wait();
+                }
+                finally
+                {
+                    SessionLock.ExitWriteLock();
+                }
+            }
         }
 
         /// <summary>
@@ -203,20 +146,33 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
         private void UserTokenCacheBeforeAccessNotification(TokenCacheNotificationArgs args)
         {
-            // TODO - args is never used
-            this.LoadUserTokenCacheFromSession();
-        }
+            this.HttpContext.Session.LoadAsync().Wait();
+            string cacheKey = args.Account?.HomeAccountId?.Identifier;
+            // WORKAROUND TO MSAL.NET https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/issues/1179
+            if (string.IsNullOrEmpty(cacheKey))
+            {
+                cacheKey = userId;
+            }
+            if (string.IsNullOrWhiteSpace(cacheKey))
+                return;
 
-        /// <summary>
-        /// Explores the Claims of a signed-in user (if available) to populate the unique Id of this cache's instance.
-        /// </summary>
-        /// <returns>The signed in user's object.tenant Id , if available in the HttpContext.User instance</returns>
-        internal string GetSignedInUsersUniqueId()
-        {
-            if (this.SignedInUser != null)
-                return this.SignedInUser.GetMsalAccountId();
-
-            return null;
+            SessionLock.EnterReadLock();
+            try
+            {
+                if (this.HttpContext.Session.TryGetValue(cacheKey, out byte[] blob))
+                {
+                    Debug.WriteLine($"INFO: Deserializing session {this.HttpContext.Session.Id}, cacheId {cacheKey}");
+                    args.TokenCache.DeserializeMsalV3(blob, shouldClearExistingCache: true);
+                }
+                else
+                {
+                    Debug.WriteLine($"INFO: cacheId {cacheKey} not found in session {this.HttpContext.Session.Id}");
+                }
+            }
+            finally
+            {
+                SessionLock.ExitReadLock();
+            }
         }
     }
 }
