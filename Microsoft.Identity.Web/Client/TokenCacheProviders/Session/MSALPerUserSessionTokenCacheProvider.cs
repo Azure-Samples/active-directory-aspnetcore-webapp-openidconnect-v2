@@ -41,16 +41,15 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <summary>
         /// The HTTP context being used by this app
         /// </summary>
-        internal HttpContext HttpContext = null;
+        internal HttpContext HttpContext { get { return httpContextAccessor.HttpContext; } }
+
+        IHttpContextAccessor httpContextAccessor;
 
         /// <summary>Initializes a new instance of the <see cref="MSALPerUserSessionTokenCache"/> class.</summary>
-        public MSALPerUserSessionTokenCacheProvider()
+        public MSALPerUserSessionTokenCacheProvider(IHttpContextAccessor httpContextAccessor)
         {
+            this.httpContextAccessor = httpContextAccessor;
         }
-
-        // WORKAROUND TO MSAL.NET issue https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/issues/1179
-        // Warning does not necessarily work concurrently as each user would 
-        string userId;
 
         /// <summary>Initializes the cache instance</summary>
         /// <param name="tokenCache">The <see cref="ITokenCache"/> passed through the constructor</param>
@@ -59,11 +58,6 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// If the calling app has it available, then it should pass it themselves.</param>
         public void Initialize(ITokenCache tokenCache, HttpContext httpcontext, ClaimsPrincipal user)
         {
-            // WORKAROUND TO MSAL.NET issue https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/issues/1179
-            // Warning does not necessarily work concurrently as each user would override userId
-            userId = user.GetMsalAccountId();
-
-            this.HttpContext = httpcontext ?? throw new ArgumentNullException(nameof(httpcontext));
             if (tokenCache == null)
             {
                 throw new ArgumentNullException(nameof(tokenCache));
@@ -114,10 +108,9 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             if (args.HasStateChanged)
             {
                 string cacheKey = args.Account?.HomeAccountId?.Identifier;
-                // WORKAROUND TO MSAL.NET https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/issues/1179
                 if (string.IsNullOrEmpty(cacheKey))
                 {
-                    cacheKey = userId;
+                    cacheKey = httpContextAccessor.HttpContext.User.GetMsalAccountId();
                 }
 
                 if (string.IsNullOrWhiteSpace(cacheKey))
@@ -148,10 +141,9 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         {
             this.HttpContext.Session.LoadAsync().Wait();
             string cacheKey = args.Account?.HomeAccountId?.Identifier;
-            // WORKAROUND TO MSAL.NET https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/issues/1179
             if (string.IsNullOrEmpty(cacheKey))
             {
-                cacheKey = userId;
+                cacheKey = httpContextAccessor.HttpContext.User.GetMsalAccountId();
             }
             if (string.IsNullOrWhiteSpace(cacheKey))
                 return;
