@@ -36,7 +36,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
     /// An implementation of token cache for Confidential clients backed by MemoryCache.
     /// MemoryCache is useful in Api scenarios where there is no HttpContext to cache data.
     /// </summary>
-    /// <seealso cref="https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/token-cache-serialization"/>
+    /// <seealso cref="https://aka.ms/msal-net-token-cache-serialization"/>
     public class MSALAppMemoryTokenCacheProvider : IMSALAppTokenCacheProvider
     {
         /// <summary>
@@ -49,17 +49,12 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// </summary>
         internal IMemoryCache memoryCache;
 
-        /// <summary>
-        /// The internal handle to the client's instance of the Cache
-        /// </summary>
-        private ITokenCache ApptokenCache;
-
         private readonly MSALMemoryTokenCacheOptions CacheOptions;
 
         /// <summary>
         /// The App's whose cache we are maintaining.
         /// </summary>
-        private string AppId;
+        private readonly string AppId;
 
         public MSALAppMemoryTokenCacheProvider(IMemoryCache cache,
             MSALMemoryTokenCacheOptions option,
@@ -90,12 +85,9 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         {
             this.AppCacheId = this.AppId + "_AppTokenCache";
 
-            this.ApptokenCache = tokenCache;
-            this.ApptokenCache.SetBeforeAccess(this.AppTokenCacheBeforeAccessNotification);
-            this.ApptokenCache.SetAfterAccess(this.AppTokenCacheAfterAccessNotification);
-            this.ApptokenCache.SetBeforeWrite(this.AppTokenCacheBeforeWriteNotification);
-
-            this.LoadAppTokenCacheFromMemory();
+            tokenCache.SetBeforeAccess(this.AppTokenCacheBeforeAccessNotification);
+            tokenCache.SetAfterAccess(this.AppTokenCacheAfterAccessNotification);
+            tokenCache.SetBeforeWrite(this.AppTokenCacheBeforeWriteNotification);
         }
 
         /// <summary>
@@ -108,32 +100,11 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         }
 
         /// <summary>
-        /// Loads the application's token from memory cache.
-        /// </summary>
-        private void LoadAppTokenCacheFromMemory()
-        {
-            byte[] tokenCacheBytes = (byte[])this.memoryCache.Get(this.AppCacheId);
-            this.ApptokenCache.DeserializeMsalV3(tokenCacheBytes);
-        }
-
-        /// <summary>
-        /// Persists the application's token to the cache.
-        /// </summary>
-        private void PersistAppTokenCache()
-        {
-            // Reflect changes in the persistence store
-            this.memoryCache.Set(this.AppCacheId, this.ApptokenCache.SerializeMsalV3(), CacheOptions.AbsoluteExpiration);
-        }
-
-        /// <summary>
         /// Clears the token cache for this app
         /// </summary>
         public void Clear()
         {
             this.memoryCache.Remove(this.AppCacheId);
-
-            // Nulls the currently deserialized instance
-            this.LoadAppTokenCacheFromMemory();
         }
 
         /// <summary>
@@ -142,7 +113,9 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
         private void AppTokenCacheBeforeAccessNotification(TokenCacheNotificationArgs args)
         {
-            this.LoadAppTokenCacheFromMemory();
+            // Load the token cache from memory
+            byte[] tokenCacheBytes = (byte[])this.memoryCache.Get(this.AppCacheId);
+            args.TokenCache.DeserializeMsalV3(tokenCacheBytes, shouldClearExistingCache: true);
         }
 
         /// <summary>
@@ -154,7 +127,8 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             // if the access operation resulted in a cache update
             if (args.HasStateChanged)
             {
-                this.PersistAppTokenCache();
+                // Reflect changes in the persistence store
+                this.memoryCache.Set(this.AppCacheId, args.TokenCache.SerializeMsalV3(), CacheOptions.AbsoluteExpiration);
             }
         }
     }

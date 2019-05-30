@@ -29,6 +29,9 @@ namespace Microsoft.Identity.Web
             // Added
             services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
             {
+                // Reinitialize the options as this has changed to JwtBearerOptions to pick configuration values for attributes unique to JwtBearerOptions 
+                configuration.Bind("AzureAd", options);
+
                 // This is an Azure AD v2.0 Web API
                 options.Authority += "/v2.0";
 

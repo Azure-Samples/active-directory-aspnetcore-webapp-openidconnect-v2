@@ -35,7 +35,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
     /// <summary>
     /// An implementation of token cache for Confidential clients backed by Http session.
     /// </summary>
-    /// <seealso cref="https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/token-cache-serialization"/>
+    /// <seealso cref="https://aka.ms/msal-net-token-cache-serialization"/>
     public class MSALAppSessionTokenCacheProvider : IMSALAppTokenCacheProvider
     {
         /// <summary>
@@ -52,11 +52,6 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// The duration till the tokens are kept in memory cache. In production, a higher value , upto 90 days is recommended.
         /// </summary>
         private readonly DateTimeOffset cacheDuration = DateTimeOffset.Now.AddHours(12);
-
-        /// <summary>
-        /// The internal handle to the client's instance of the Cache
-        /// </summary>
-        private ITokenCache ApptokenCache;
 
         private static ReaderWriterLockSlim SessionLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
 
@@ -86,12 +81,9 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             this.AppCacheId = this.AppId + "_AppTokenCache";
             this.HttpContext = httpcontext;
 
-            this.ApptokenCache = tokenCache;
-            this.ApptokenCache.SetBeforeAccess(this.AppTokenCacheBeforeAccessNotification);
-            this.ApptokenCache.SetAfterAccess(this.AppTokenCacheAfterAccessNotification);
-            this.ApptokenCache.SetBeforeWrite(this.AppTokenCacheBeforeWriteNotification);
-
-            this.LoadAppTokenCacheFromSession();
+            tokenCache.SetBeforeAccess(this.AppTokenCacheBeforeAccessNotification);
+            tokenCache.SetAfterAccess(this.AppTokenCacheAfterAccessNotification);
+            tokenCache.SetBeforeWrite(this.AppTokenCacheBeforeWriteNotification);
         }
 
         /// <summary>
@@ -104,9 +96,30 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         }
 
         /// <summary>
-        /// Loads the application's tokens from session cache.
+        /// Clears the TokenCache's copy of this user's cache.
         /// </summary>
-        private void LoadAppTokenCacheFromSession()
+        public void Clear()
+        {
+            SessionLock.EnterWriteLock();
+            try
+            {
+                Debug.WriteLine($"INFO: Clearing session {this.HttpContext.Session.Id}, cacheId {this.AppCacheId}");
+
+                // Reflect changes in the persistent store
+                this.HttpContext.Session.Remove(this.AppCacheId);
+                this.HttpContext.Session.CommitAsync().Wait();
+            }
+            finally
+            {
+                SessionLock.ExitWriteLock();
+            }
+        }
+
+        /// <summary>
+        /// Triggered right before MSAL needs to access the cache. Reload the cache from the persistence store in case it changed since the last access.
+        /// </summary>
+        /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
+        private void AppTokenCacheBeforeAccessNotification(TokenCacheNotificationArgs args)
         {
             this.HttpContext.Session.LoadAsync().Wait();
 
@@ -117,7 +130,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
                 if (this.HttpContext.Session.TryGetValue(this.AppCacheId, out blob))
                 {
                     Debug.WriteLine($"INFO: Deserializing session {this.HttpContext.Session.Id}, cacheId {this.AppCacheId}");
-                    this.ApptokenCache.DeserializeMsalV3(blob);
+                    args.TokenCache.DeserializeMsalV3(blob, shouldClearExistingCache: true);
                 }
                 else
                 {
@@ -131,61 +144,6 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         }
 
         /// <summary>
-        /// Persists the application token's to session cache.
-        /// </summary>
-        private void PersistAppTokenCache()
-        {
-            SessionLock.EnterWriteLock();
-
-            try
-            {
-                Debug.WriteLine($"INFO: Serializing session {this.HttpContext.Session.Id}, cacheId {this.AppCacheId}");
-
-                // Reflect changes in the persistent store
-                byte[] blob = this.ApptokenCache.SerializeMsalV3();
-                this.HttpContext.Session.Set(this.AppCacheId, blob);
-                this.HttpContext.Session.CommitAsync().Wait();
-            }
-            finally
-            {
-                SessionLock.ExitWriteLock();
-            }
-        }
-
-        /// <summary>
-        /// Clears the TokenCache's copy of this user's cache.
-        /// </summary>
-        public void Clear()
-        {
-            SessionLock.EnterWriteLock();
-
-            try
-            {
-                Debug.WriteLine($"INFO: Clearing session {this.HttpContext.Session.Id}, cacheId {this.AppCacheId}");
-
-                // Reflect changes in the persistent store
-                this.HttpContext.Session.Remove(this.AppCacheId);
-                this.HttpContext.Session.CommitAsync().Wait();
-            }
-            finally
-            {
-                SessionLock.ExitWriteLock();
-            }
-
-            // Nulls the currently deserialized instance
-            this.LoadAppTokenCacheFromSession();
-        }
-
-        /// <summary>
-        /// Triggered right before MSAL needs to access the cache. Reload the cache from the persistence store in case it changed since the last access.
-        /// </summary>
-        /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
-        private void AppTokenCacheBeforeAccessNotification(TokenCacheNotificationArgs args)
-        {
-            this.LoadAppTokenCacheFromSession();
-        }
-
-        /// <summary>
         /// Triggered right after MSAL accessed the cache.
         /// </summary>
         /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
@@ -194,7 +152,20 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             // if the access operation resulted in a cache update
             if (args.HasStateChanged)
             {
-                this.PersistAppTokenCache();
+                SessionLock.EnterWriteLock();
+                try
+                {
+                    Debug.WriteLine($"INFO: Serializing session {this.HttpContext.Session.Id}, cacheId {this.AppCacheId}");
+
+                    // Reflect changes in the persistent store
+                    byte[] blob = args.TokenCache.SerializeMsalV3();
+                    this.HttpContext.Session.Set(this.AppCacheId, blob);
+                    this.HttpContext.Session.CommitAsync().Wait();
+                }
+                finally
+                {
+                    SessionLock.ExitWriteLock();
+                }
             }
         }
     }
