@@ -51,6 +51,15 @@ Go to the `"2-WebApp-graph-user\2-2-TokenCache"` folder
 #### In the appsettings.json file, configure a Sql server database for token caching, if you have not already done so:
 
 1. In the `TokenCacheDbConnStr` key, provide the Sql server connection string to the database you wish to use for token caching.
+   > Note:
+   > If you want to test this sample locally with Visual Studio, you might want to use localdb, which is installed with Visual Studio.
+   > In that case, use the following connection string:
+   >
+   > ```XML
+   >  "ConnectionStrings": {
+   >   "TokenCacheDbConnStr": "Data Source=(LocalDb)\\MSSQLLocalDB;Database=MY_TOKEN_CACHE_DATABASE;Trusted_Connection=True;"
+   > },
+   > ```
 1. If you do not have an existing database and tables needed for token caching, this sample can use  [EF Core- code first](https://docs.microsoft.com/en-us/ef/core/get-started/aspnetcore/new-db?tabs=visual-studio) to create a database and tables for you. to do that, follow the steps below.
     1. In the file `Microsoft.Identity.Web\Client\TokenCacheProviders\Sql\MSALAppSqlTokenCacheProviderExtension.cs`, uncomment the code under the **// Uncomment the following lines to create the database.**. This comment exists once in the **AddSqlAppTokenCache** and **AddSqlPerUserTokenCache**  methods.
     1. Run the solution again, when a user signs-in the very first time, the Entity Framework will create the database and tables  `AppTokenCache` and `UserTokenCache` for app and user token caching respectively.
