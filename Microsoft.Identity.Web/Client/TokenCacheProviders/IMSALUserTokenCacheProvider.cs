@@ -42,6 +42,6 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <summary>
         /// Clears the token cache for this user
         /// </summary>
-        void Clear();
+        void Clear(string accountId);
     }
 }
