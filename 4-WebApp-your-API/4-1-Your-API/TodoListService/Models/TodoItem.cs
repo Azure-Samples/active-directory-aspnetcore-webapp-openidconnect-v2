@@ -1,7 +1,7 @@
 ﻿/*
  The MIT License (MIT)
 
-Copyright (c) 2018 Microsoft Corporation
+Copyright (c) 2015 Microsoft Corporation
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,20 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-
-namespace TodoListService
+namespace TodoListService.Models
 {
-    public class Program
+    public class TodoItem
     {
-        public static void Main(string[] args)
-        {
-            CreateWebHostBuilder(args).Build().Run();
-        }
-
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+        public string Owner { get; set; }
+        public string Title { get; set; }
     }
 }
