@@ -38,7 +38,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <value>
         /// The AbsoluteExpiration value.
         /// </value>
-        public DateTimeOffset AbsoluteExpiration
+        public TimeSpan SlidingExpiration
         {
             get;
             set;
@@ -46,7 +46,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
 
         public MSALMemoryTokenCacheOptions()
         {
-            this.AbsoluteExpiration = DateTimeOffset.Now.AddHours(12);
+            this.SlidingExpiration = TimeSpan.FromHours(12);
         }
     }
 }

@@ -39,7 +39,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <returns></returns>
         public static IServiceCollection AddInMemoryTokenCaches(this IServiceCollection services, MSALMemoryTokenCacheOptions cacheOptions = null)
         {
-            var memoryCacheoptions = (cacheOptions == null) ? new MSALMemoryTokenCacheOptions { AbsoluteExpiration = DateTimeOffset.Now.AddDays(14) }
+            var memoryCacheoptions = (cacheOptions == null) ? new MSALMemoryTokenCacheOptions { SlidingExpiration = TimeSpan.FromDays(14) }
             : cacheOptions;
 
             AddInMemoryAppTokenCache(services, memoryCacheoptions);

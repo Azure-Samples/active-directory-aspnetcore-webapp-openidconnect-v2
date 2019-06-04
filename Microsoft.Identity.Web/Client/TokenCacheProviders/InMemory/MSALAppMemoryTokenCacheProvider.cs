@@ -128,7 +128,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             if (args.HasStateChanged)
             {
                 // Reflect changes in the persistence store
-                this.memoryCache.Set(this.AppCacheId, args.TokenCache.SerializeMsalV3(), CacheOptions.AbsoluteExpiration);
+                this.memoryCache.Set(this.AppCacheId, args.TokenCache.SerializeMsalV3(), CacheOptions.SlidingExpiration);
             }
         }
     }
