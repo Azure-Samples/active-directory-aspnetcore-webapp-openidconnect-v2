@@ -85,19 +85,6 @@ Navigate to the `"5-WebApp-AuthZ"` folder
 
 ### Step 2: Configure your application to receive the **roles** claims
 
-1. In your application settings page on the Application Registration Portal (preview), click on "Manifest" to open the inline manifest editor.
-2. Edit the manifest by locating the "groupMembershipClaims" setting, and setting its value to "SecurityGroup".
-3. Save the manifest.
-
-```JSON
-{
-  ...
-  "errorUrl": null,
-  "groupMembershipClaims": "SecurityGroup",
-  ...
-}
-```
-
 1. To receive the `roles` claim with the name of the app roles this user is assigned to, make sure that the user accounts you plan to sign-in to this app is assigned to the app roles of this app.
 
 #### Step 3: Define your Application Roles
