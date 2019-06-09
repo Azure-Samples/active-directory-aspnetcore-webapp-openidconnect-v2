@@ -1,10 +1,10 @@
 {
   "Sample": {
-    "Title": "A WPF application that calls a Web API running on ASP.NET Core 2.0 protected by Azure AD using OAuth 2.0 access tokens. ",
+    "Title": "How to secure a Web API built using ASP.NET Core using Microsoft identity platform (formerly Azure Active Directory for developers)",
     "Level": 200,
-    "Client": ".NET Desktop (WPF)",
+    "Client": "ASP.NET Core Web App",
     "Service": "ASP.NET Core Web API",
-    "RepositoryUrl": "active-directory-dotnet-native-aspnetcore-v2",
+    "RepositoryUrl": "active-directory-aspnetcore-webapp-openidconnect-v2",
     "Endpoint": "AAD v2.0"
   },
 
@@ -14,38 +14,25 @@
   "AADApps": [
     {
       "Id": "service",
-      "Name": "TodoListService (active-directory-dotnet-native-aspnetcore-v2)",
+      "Name": "TodoListService (active-directory-aspnetcore-webapp-openidconnect-v2)",
       "Kind": "WebApi",
-      "HomePage": "https://localhost:44351/",
-      "PasswordCredentials": "Auto",
-      "RequiredResourcesAccess": [
-        {
-          "Resource": "Microsoft Graph",
-          "DelegatedPermissions": [ "User.Read" ]
-        }
-      ],
-      "ManualSteps": [
-        {
-          "Comment": "Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'."
-        },
-        {
-          "Comment": "[Optional] If you are a tenant admin, you can navigate to the API Permisions page and select 'Grant admin consent for (your tenant)'"
-        }
-      ]
+      "Audience": "AzureADMyOrg",
+      "HomePage": "https://localhost:44351/"
+     
     },
     {
       "Id": "client",
-      "Name": "TodoListClient (active-directory-dotnet-native-aspnetcore-v2)",
-      "Kind": "Desktop",
+      "Name": "TodoListClient (active-directory-aspnetcore-webapp-openidconnect-v2)",
+      "Kind": "WebApp",
+      "Audience": "AzureADMyOrg",
+      "HomePage": "https://localhost:44321/",
+      "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc",
+      "LogoutUrl": "https://localhost:44321/signout-oidc",
+      "PasswordCredentials": "Auto",
       "RequiredResourcesAccess": [
         {
           "Resource": "service",
           "DelegatedPermissions": [ "user_impersonation" ]
-        }
-      ],
-      "ManualSteps": [
-        {
-          "Comment": "Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'."
         }
       ]
     }
@@ -74,33 +61,37 @@
         {
           "key": "ClientId",
           "value": "service.AppId"
-        },
-        {
-          "key": "ClientSecret",
-          "value": "service.AppKey"
         }
       ]
     },
 
     {
       "App": "client",
-      "SettingKind": "XML",
-      "SettingFile": "\\..\\TodoListClient\\App.Config",
+      "SettingKind": "Text",
+      "SettingFile": "\\..\\Client\\appsettings.json",
       "Mappings": [
-        //{
-        //  "key": "ida:Tenant",
-        //  "value": "$tenantName"
-        //},
         {
-          "key": "ida:ClientId",
+          "key": "Domain",
+          "value": "$tenantName"
+        },
+        {
+          "key": "TenantId",
+          "value": "$tenantId"
+        },
+        {
+          "key": "ClientId",
           "value": ".AppId"
         },
         {
-          "key": "todo:TodoListScope",
+          "key": "ClientSecret",
+          "value": ".AppKey"
+        },
+        {
+          "key": "TodoListScope",
           "value": "service.Scope"
         },
         {
-          "key": "todo:TodoListBaseAddress",
+          "key": "TodoListBaseAddress",
           "value": "service.HomePage"
         }
       ]

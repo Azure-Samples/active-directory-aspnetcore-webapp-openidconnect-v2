@@ -21,11 +21,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-#define ENABLE_OBO
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web.Client;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,14 +36,12 @@ namespace TodoListService.Controllers
     [Route("api/[controller]")]
     public class TodoListController : Controller
     {
-        public TodoListController(ITokenAcquisition tokenAcquisition)
-        {
-            _tokenAcquisition = tokenAcquisition;
-        }
-
-        private readonly ITokenAcquisition _tokenAcquisition;
-
+        // In-memory TodoList
         private static readonly ConcurrentBag<TodoItem> TodoStore = new ConcurrentBag<TodoItem>();
+
+        public TodoListController()
+        {
+        }
 
         // GET: api/values
         [HttpGet]
@@ -57,10 +53,10 @@ namespace TodoListService.Controllers
 
         // POST api/values
         [HttpPost]
-        public async void Post([FromBody]TodoItem todo)
+        public void Post([FromBody]TodoItem todo)
         {
             string owner = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            string ownerName;
+            TodoStore.Add(new TodoItem() { Owner = owner, Title = todo.Title });
         }
     }
 }

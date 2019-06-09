@@ -16,7 +16,7 @@ namespace Microsoft.Identity.Web
     public static class WebApiStartupHelpers
     {
         /// <summary>
-        /// Protects the Web API with Microsoft Identity Platform v2.0 (AAD v2.0)
+        /// Protects the Web API with Microsoft Identity Platform (AAD v2.0)
         /// This supposes that the configuration files have a section named "AzureAD"
         /// </summary>
         /// <param name="services">Service collection to which to add authentication</param>
@@ -42,7 +42,7 @@ namespace Microsoft.Identity.Web
                 options.TokenValidationParameters.ValidAudiences = new string[] { options.Audience, $"api://{options.Audience}" };
 
                 // Instead of using the default validation (validating against a single tenant, as we do in line of business apps),
-                // we inject our own multitenant validation logic (which even accepts both V1 and V2 tokens)
+                // we inject our own multi-tenant validation logic (which even accepts both V1 and V2 tokens)
                 options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).ValidateAadIssuer;
 
                 // When an access token for our own Web API is validated, we add it to MSAL.NET's cache so that it can
