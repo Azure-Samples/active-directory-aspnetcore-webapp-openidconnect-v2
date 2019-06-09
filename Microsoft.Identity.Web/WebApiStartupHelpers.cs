@@ -6,6 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web.Client;
 using Microsoft.Identity.Web.Resource;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Microsoft.Identity.Web
@@ -59,22 +62,38 @@ namespace Microsoft.Identity.Web
         /// </summary>
         /// <param name="services">Service collection to which to add authentication</param>
         /// <param name="configuration">Configuration</param>
+        /// <param name="scopes">Optional parameters. If not specified, the token used to call the protected API
+        /// will be kept with the user's claims until the API calls a downstream API. Otherwise the account for the 
+        /// user is immediately added to the token cache</param>
         /// <returns></returns>
-        public static IServiceCollection AddProtectedApiCallsWebApis(this IServiceCollection services, IConfiguration configuration, IEnumerable<string> scopes)
+        public static IServiceCollection AddProtectedApiCallsWebApis(this IServiceCollection services, IConfiguration configuration, IEnumerable<string> scopes=null)
         {
             services.AddTokenAcquisition();
             services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
             {
+                // If you don't pre-provide scopes when adding calling AddProtectedApiCallsWebApis, the On behalf of
+                // flow will be delayed (lazy construction of MSAL's application
+
                 options.Events.OnTokenValidated = async context =>
                 {
-                    var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
-                    context.Success();
+                    if (scopes != null && scopes.Any())
+                    {
+                        var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
+                        context.Success();
+                        tokenAcquisition.AddAccountToCacheFromJwt(context, scopes);
+                    }
+                    else
+                    {
+                        context.Success();
 
+                        // Todo : rather use options.SaveToken?
+                        (context.Principal.Identity as ClaimsIdentity).AddClaim(new Claim("jwt", (context.SecurityToken as JwtSecurityToken).RawData));
+                    }
                     // Adds the token to the cache, and also handles the incremental consent and claim challenges
-                    tokenAcquisition.AddAccountToCacheFromJwt(context, scopes);
                     await Task.FromResult(0);
                 };
             });
+
             return services;
         }
     }

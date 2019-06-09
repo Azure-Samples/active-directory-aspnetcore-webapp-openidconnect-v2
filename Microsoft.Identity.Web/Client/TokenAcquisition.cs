@@ -165,7 +165,20 @@ namespace Microsoft.Identity.Web.Client
 
             // Use MSAL to get the right token to call the API
             var application = BuildConfidentialClientApplication(context, context.User);
-            return await GetAccessTokenOnBehalfOfUser(application, context.User, scopes, tenant);
+
+            // Case of a lazy OBO
+            Claim jwtClaim = context.User.FindFirst("jwt");
+            if (jwtClaim != null)
+            {
+                (context.User.Identity as ClaimsIdentity).RemoveClaim(jwtClaim);
+                var result = await application.AcquireTokenOnBehalfOf(scopes.Except(scopesRequestedByMsalNet), new UserAssertion(jwtClaim.Value))
+                                        .ExecuteAsync();
+                return result.AccessToken;
+            }
+            else
+            {
+                return await GetAccessTokenOnBehalfOfUser(application, context.User, scopes, tenant);
+            }
         }
 
         /// <summary>
