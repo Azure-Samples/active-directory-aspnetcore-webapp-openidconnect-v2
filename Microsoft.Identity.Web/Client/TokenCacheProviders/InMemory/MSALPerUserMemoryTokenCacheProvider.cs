@@ -56,7 +56,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             this.memoryCache = cache;
             this.httpContextAccessor = httpContextAccessor;
 
-            if (option != null)
+            if (option == null)
             {
                 this.CacheOptions = new MSALMemoryTokenCacheOptions();
             }
