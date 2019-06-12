@@ -180,9 +180,9 @@ public void ConfigureAuth(IAppBuilder app)
 
 
 // In code..(Controllers & elsewhere)
-[Authorize(Roles = “AlicesGroup")]
+[Authorize(Roles = “Group-object-id")]
 // or
-User.IsInRole("AlicesGroup");
+User.IsInRole("Group-object-id");
 
 ```
 
