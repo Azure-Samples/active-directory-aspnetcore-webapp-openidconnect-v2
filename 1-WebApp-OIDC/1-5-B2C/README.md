@@ -112,7 +112,7 @@ services.AddAuthentication(options =>
     options.DefaultChallengeScheme = "B2C_1_sign_up_in";
 }).AddOpenIdConnect("B2C_1_sign_up_in", options =>
 {
-    options.MetadataAddress = "https://{yourAzureB2C}/{yourDomainName}/v2.0/.well-known/openid-configuration?p=B2C_1_sign_up_in";
+    options.MetadataAddress = "https://{your-AzureB2C-instance}/{your-AzureB2C-domain-name}/v2.0/.well-known/openid-configuration?p={your-signIn-signUp-policy-name}";
     options.ClientId = "{applicationId found on Azure Portal}";
     options.ResponseType = OpenIdConnectResponseType.IdToken;
     options.CallbackPath = "/signin/B2C_1_sign_up_in";
