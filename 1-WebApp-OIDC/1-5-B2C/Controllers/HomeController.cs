@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using WebApp_OpenIDConnect_DotNet.Models;
@@ -7,11 +8,13 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
     public class HomeController : Controller
     {
-        public HomeController()
+        public IActionResult Index()
         {
+            return View();
         }
 
-        public IActionResult Index()
+        [Authorize]
+        public IActionResult Claims()
         {
             return View();
         }

@@ -1,14 +1,22 @@
 @using System.Security.Principal
 @if (User.Identity.IsAuthenticated)
 {
-    <ul class="nav navbar-nav navbar-right">
-        <li class="navbar-text">Hello @User.Identity.Name!</li>
-        <li><a asp-area="AzureAD" asp-controller="Account" asp-action="SignOut">Sign out</a></li>
-    </ul>
+	<ul class="nav navbar-nav navbar-right">
+		<li class="navbar-text">Hello @User.Identity.Name</li>
+		<li class="navbar-btn">
+			<form method="post" asp-controller="Auth" asp-action="SignOut">
+				<button type="submit" class="btn btn-primary">Sign Out</button>
+			</form>
+		</li>
+	</ul>
 }
 else
 {
-    <ul class="nav navbar-nav navbar-right">
-        <li><a asp-area="AzureAD" asp-controller="Account" asp-action="SignIn">Sign in</a></li>
-    </ul>
+	<ul class="nav navbar-nav navbar-right">
+		<li class="navbar-btn">
+			<form method="get" asp-controller="Auth" asp-action="SignIn">
+				<button type="submit" class="btn btn-primary">Sign In/Up</button>
+			</form>
+		</li>
+	</ul>
 }
