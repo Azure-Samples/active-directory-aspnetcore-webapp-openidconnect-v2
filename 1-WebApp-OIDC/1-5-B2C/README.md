@@ -8,7 +8,7 @@ endpoint: AAD v2.0
 ---
 # An ASP.NET Core Web app signing-in users with the Microsoft identity platform in Azure AD B2C
 
-![Build badge](https://identitydivision.visualstudio.com/_apis/public/build/definitions/a7934fdd-dcde-4492-a406-7fad6ac00e17/514/badge)
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 ## Scenario
 
@@ -32,29 +32,49 @@ git clone https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-op
 
 > Given that the name of the sample is very long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
-### [OPTIONAL] Step 2: Get your own Azure AD B2C tenant
+### Step 2: Get your own Azure AD B2C tenant
 
-You can also modify the sample to use your own Azure AD B2C tenant.  First, you'll need to create an Azure AD B2C tenant by following [these instructions](https://azure.microsoft.com/documentation/articles/active-directory-b2c-get-started).
+If you don't an Azure AD B2C tenant yet, you'll need to create an Azure AD B2C tenant by following [these instructions](https://azure.microsoft.com/documentation/articles/active-directory-b2c-get-started).
 
-> *IMPORTANT*: if you choose to perform one of the optional steps, you have to perform ALL of them for the sample to work as expected.
-
-### [OPTIONAL] Step 3: Create your own user flow(policies)
+### Step 3: Create your own user flow(policy)
 
 This sample uses a unified sign-up/sign-in user flow(policy). Create this policy by following [the instructions here](https://azure.microsoft.com/documentation/articles/active-directory-b2c-reference-policies). You may choose to include as many or as few identity providers as you wish, but make sure **DisplayName** is checked.
 
-If you already have existing policies in your Azure AD B2C tenant, feel free to re-use those.  No need to create new ones just for this sample.
+If you already have an existing unified sign-up/sign-in user flow(policy) in your Azure AD B2C tenant, feel free to re-use it. No need to create a new one just for this sample.
 
-### [OPTIONAL] Step 4: Create your own Web app
+Copy this policy name, so you can use it in step 5.
+
+### Step 4: Create your own Web app
 
 Now you need to [register your web app in your B2C tenant](https://docs.microsoft.com/azure/active-directory-b2c/active-directory-b2c-app-registration#register-a-web-application), so that it has its own Application ID.
 
-Your native application registration should include the following information:
+Your web application registration should include the following information:
 
 - Enable the **Web App/Web API** setting for your application.
-- Set the **Reply URL** to `https://localhost:5000/signin-oidc`.
-- Once your app is created, open the app's **Keys** blade and click on **Generate Key** and **Save**, copy this key so that you can used it in the next step.
-- Once your app is created, open the app's **API access** blade and **Add** the API you created in the previous step.
+- Set the **Reply URL** to `https://localhost:44321//signin/B2C_1_sign_up_in` and `https://localhost:44321//signout/B2C_1_sign_up_in`.
 - Copy the Application ID generated for your application, so you can use it in the next step.
+
+### Step 5: Configure the sample with your app coordinates
+
+1. Open the solution in Visual Studio.
+1. Open the `appsettings.json` file.
+1. Find the assignment for `Instance` and replace the value with `<your-tenant-name>.b2clogin.com`
+1. Find the assignment for `Domain` and replace the value with your Azure AD B2C domain name.
+1. Find the assignment for `ClientID` and replace the value with the Application ID from Step 4.
+1. Find the assignment for `SignUpSignInPolicyId` and replace with the names of the policy you created in Step 3.
+
+```json
+{
+  "AzureAdB2C": {
+    "Instance": "https://<your-tenant-name>.b2clogin.com",
+    "ClientId": "<web-app-application-id>",
+    "Domain": "<your-b2c-domain>",
+    "CallbackPath": "/signin/B2C_1_sign_up_in",
+    "SignedOutCallbackPath": "/signout/B2C_1_sign_up_in",
+    "SignUpSignInPolicyId": "<your-sign-up-in-policy>"
+  }
+}
+```
 
 ### Step 5: Run the sample
 
@@ -66,7 +86,7 @@ Your native application registration should include the following information:
 
 ### known issue on iOS 12
 
-ASP.NET core applications create session cookies that represent the identity of the caller. Some Safari users using iOS 12 had issues which are described in [ASP.NET Core #4467](https://github.com/aspnet/AspNetCore/issues/4647) and the Web kit bugs database [Bug 188165 - iOS 12 Safari breaks ASP.NET Core 2.1 OIDC authentication](https://bugs.webkit.org/show_bug.cgi?id=188165). 
+ASP.NET core applications create session cookies that represent the identity of the caller. Some Safari users using iOS 12 had issues which are described in [ASP.NET Core #4467](https://github.com/aspnet/AspNetCore/issues/4647) and the Web kit bugs database [Bug 188165 - iOS 12 Safari breaks ASP.NET Core 2.1 OIDC authentication](https://bugs.webkit.org/show_bug.cgi?id=188165).
 
 If your web site needs to be accessed from users using iOS 12, you probably want to disable the SameSite protection, but also ensure that state changes are protected with CSRF anti-forgery mechanism. See the how to fix section of [Microsoft Security Advisory: iOS12 breaks social, WSFed and OIDC logins #4647](https://github.com/aspnet/AspNetCore/issues/4647)
 
@@ -74,9 +94,9 @@ If your web site needs to be accessed from users using iOS 12, you probably want
 
 ## About The code
 
-This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Azure AD B2C tenant. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Azure AD tenant where the app is registered. These values are  read from the `appsettings.json` file. The middleware takes care of:
+This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Azure AD B2C tenant. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Azure AD B2C tenant where the app is registered. These values are  read from the `appsettings.json` file. The middleware takes care of:
 
-- Downloading the Azure AD metadata, finding the signing keys, and finding the issuer name for the tenant.
+- Requesting OpenID Connect sign-in using the policy from the `appsettings.json` file.
 - Processing OpenID Connect sign-in responses by validating the signature and issuer in an incoming JWT, extracting the user's claims, and putting the claims in `ClaimsPrincipal.Current`.
 - Integrating with the session cookie ASP.NET Core middleware to establish a session for the user.
 
@@ -94,7 +114,6 @@ services.AddAuthentication(options =>
 {
     options.MetadataAddress = "https://{yourAzureB2C}/{yourDomainName}/v2.0/.well-known/openid-configuration?p=B2C_1_sign_up_in";
     options.ClientId = "{applicationId found on Azure Portal}";
-    options.ClientSecret = "{secret key created on Azure Portal}";
     options.ResponseType = OpenIdConnectResponseType.IdToken;
     options.CallbackPath = "/signin/B2C_1_sign_up_in";
     options.SignedOutCallbackPath = "/signout/B2C_1_sign_up_in";
@@ -132,7 +151,7 @@ public async Task SignOut()
 
 Important things to notice:
 
-- On the **SignIn** method, we set the `RedirectUri` to the homepage, otherwise, Azure would redirect to the Uri that originated the challenge (in our case `/auth/signin`) and we would enter in an infinite loop.
+- On the **SignIn** method, we set the `RedirectUri` to the homepage, otherwise, Azure would redirect to the Uri that originated the challenge (in our case `/auth/signin`) and we would enter in a loop.
 - Returning a `Challenge` with the scheme **B2C_1_sign_up_in**, will trigger the `OpenIdConnect` that we configured on `Startup.cs`.
 - On the **SignOut** method, we set the `HttpPost` attribute and on `_LoginPartial.cshtml` we wrapped the button in a post form. The reason for that is because Chrome for example, prefetches pages to speed up browsing. And prefetching the sign out page would cause the user to sign out without reason, so using a form gets us around that.
 - We are signing out the user from the scheme, `CookieAuthenticationDefaults.AuthenticationScheme`, since this is the scheme that we are using on the `Authentication` middleware, but we also want to sign out the user from any currently active authentication session in the **Azure AD** and to do that, we get the scheme from the claim `tfp` and sign it out as well.
