@@ -30,17 +30,17 @@ From your shell or command line:
 git clone https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2.git
 ```
 
-> Given that the name of the sample is very long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
+> Given that the name of the sample is very long, and so are the names of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
 ### Step 2: Get your own Azure AD B2C tenant
 
-If you don't an Azure AD B2C tenant yet, you'll need to create an Azure AD B2C tenant by following [these instructions](https://azure.microsoft.com/documentation/articles/active-directory-b2c-get-started).
+If you don't have an Azure AD B2C tenant yet, you'll need to create an Azure AD B2C tenant by following [these instructions](https://azure.microsoft.com/documentation/articles/active-directory-b2c-get-started).
 
-### Step 3: Create your own user flow(policy)
+### Step 3: Create your own user flow (policy)
 
-This sample uses a unified sign-up/sign-in user flow(policy). Create this policy by following [the instructions here](https://azure.microsoft.com/documentation/articles/active-directory-b2c-reference-policies). You may choose to include as many or as few identity providers as you wish, but make sure **DisplayName** is checked.
+This sample uses a unified sign-up/sign-in user flow (policy). Create this policy by following [these instructions on creating an AAD B2C tenant](https://azure.microsoft.com/documentation/articles/active-directory-b2c-reference-policies). You may choose to include as many or as few identity providers as you wish, but make sure **DisplayName** is checked.
 
-If you already have an existing unified sign-up/sign-in user flow(policy) in your Azure AD B2C tenant, feel free to re-use it. No need to create a new one just for this sample.
+If you already have an existing unified sign-up/sign-in user flow (policy) in your Azure AD B2C tenant, feel free to re-use it. No need to create a new one just for this sample.
 
 Copy this policy name, so you can use it in step 5.
 
@@ -58,7 +58,7 @@ Your web application registration should include the following information:
 
 1. Open the solution in Visual Studio.
 1. Open the `appsettings.json` file.
-1. Find the assignment for `Instance` and replace the value with `<your-tenant-name>.b2clogin.com`
+1. Find the assignment for `Instance` and replace the value with your tenant name. For example, `https://fabrikam.b2clogin.com`
 1. Find the assignment for `Domain` and replace the value with your Azure AD B2C domain name.
 1. Find the assignment for `ClientID` and replace the value with the Application ID from Step 4.
 1. Find the assignment for `SignUpSignInPolicyId` and replace with the names of the policy you created in Step 3.
