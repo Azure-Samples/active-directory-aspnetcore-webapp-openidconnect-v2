@@ -45,7 +45,7 @@ namespace Microsoft.Identity.Web
 
                 // Instead of using the default validation (validating against a single tenant, as we do in line of business apps),
                 // we inject our own multitenant validation logic (which even accepts both V1 and V2 tokens)
-                options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).ValidateAadIssuer;
+                options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).Validate;
 
                 // If you provide a token decryption certificate, it will be used to decrypt the token
                 if (tokenDecryptionCertificate != null)
