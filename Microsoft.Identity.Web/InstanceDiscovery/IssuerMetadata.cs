@@ -30,7 +30,7 @@ namespace Microsoft.Identity.Web.InstanceDiscovery
     /// <summary>
     /// Model class to hold information parsed from the Azure AD issuer endpoint
     /// </summary>
-    public class IssuerMetadata
+    internal class IssuerMetadata
     {
         [JsonProperty(PropertyName = "tenant_discovery_endpoint")]
         public string TenantDiscoveryEndpoint { get; set; }

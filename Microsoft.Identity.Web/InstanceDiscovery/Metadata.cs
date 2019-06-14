@@ -30,7 +30,7 @@ namespace Microsoft.Identity.Web.InstanceDiscovery
     /// <summary>
     /// Model child class to hold alias information parsed from the Azure AD issuer endpoint.
     /// </summary>
-    public class Metadata
+    internal class Metadata
     {
         [JsonProperty(PropertyName = "preferred_network")]
         public string PreferredNetwork { get; set; }

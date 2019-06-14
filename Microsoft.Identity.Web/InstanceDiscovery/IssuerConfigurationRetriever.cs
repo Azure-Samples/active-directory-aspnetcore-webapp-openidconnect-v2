@@ -33,7 +33,7 @@ namespace Microsoft.Identity.Web.InstanceDiscovery
     /// <summary>
     /// An implementation of IConfigurationRetriever geared towards Azure AD issuers metadata />
     /// </summary>
-    public class IssuerConfigurationRetriever : IConfigurationRetriever<IssuerMetadata>
+    internal class IssuerConfigurationRetriever : IConfigurationRetriever<IssuerMetadata>
     {
         /// <summary>Retrieves a populated configuration given an address and an <see cref="T:Microsoft.IdentityModel.Protocols.IDocumentRetriever"/>.</summary>
         /// <param name="address">Address of the discovery document.</param>
