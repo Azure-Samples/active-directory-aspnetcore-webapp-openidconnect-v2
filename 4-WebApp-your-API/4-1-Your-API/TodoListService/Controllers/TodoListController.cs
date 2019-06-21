@@ -37,7 +37,7 @@ namespace TodoListService.Controllers
     public class TodoListController : Controller
     {
         // In-memory TodoList
-        private static readonly ConcurrentBag<TodoItem> TodoStore = new ConcurrentBag<TodoItem>();
+        private static readonly ConcurrentBag<Todo> TodoStore = new ConcurrentBag<Todo>();
 
         public TodoListController()
         {
@@ -45,7 +45,7 @@ namespace TodoListService.Controllers
 
         // GET: api/values
         [HttpGet]
-        public IEnumerable<TodoItem> Get()
+        public IEnumerable<Todo> Get()
         {
             string owner = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return TodoStore.Where(t => t.Owner == owner).ToList();
@@ -53,10 +53,10 @@ namespace TodoListService.Controllers
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody]TodoItem todo)
+        public void Post([FromBody]Todo todo)
         {
             string owner = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            TodoStore.Add(new TodoItem() { Owner = owner, Title = todo.Title });
+            TodoStore.Add(new Todo() { Owner = owner, Title = todo.Title });
         }
     }
 }
