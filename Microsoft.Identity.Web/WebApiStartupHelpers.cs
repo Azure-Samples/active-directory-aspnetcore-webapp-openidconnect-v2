@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web.Client;
 using Microsoft.Identity.Web.Resource;
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -27,12 +28,13 @@ namespace Microsoft.Identity.Web
             services.AddAuthentication(AzureADDefaults.JwtBearerAuthenticationScheme)
                     .AddAzureADBearer(options => configuration.Bind("AzureAd", options));
 
+            // Add session if you are planning to use session based token cache , .AddSessionTokenCaches()
             services.AddSession();
 
-            // Added
+            // Change the authentication configuration  to accommodate the Azure AD v2.0 endpoint.
             services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
             {
-                // Reinitialize the options as this has changed to JwtBearerOptions to pick configuration values for attributes unique to JwtBearerOptions 
+                // Reinitialize the options as this has changed to JwtBearerOptions to pick configuration values for attributes unique to JwtBearerOptions
                 configuration.Bind("AzureAd", options);
 
                 // This is an Azure AD v2.0 Web API
@@ -49,6 +51,20 @@ namespace Microsoft.Identity.Web
                 // be used from the controllers.
                 options.Events = new JwtBearerEvents();
 
+#pragma warning disable 1998
+                options.Events.OnTokenValidated = async context =>
+                   {
+                       // This check is required to ensure that the Web API only accepts tokens from tenants where it has been consented and provisioned.
+                       if (!context.Principal.Claims.Any(x => x.Type == ClaimConstants.Scope)
+                          && !context.Principal.Claims.Any(y => y.Type == ClaimConstants.Roles))
+                       {
+                           throw new UnauthorizedAccessException("Neither scope or roles claim was found in the bearer token.");
+                       }
+
+                       return;
+                   };
+#pragma warning restore 1998
+
                 // If you want to debug, or just understand the JwtBearer events, uncomment the following line of code
                 // options.Events = JwtBearerMiddlewareDiagnostics.Subscribe(options.Events);
             });
@@ -63,10 +79,10 @@ namespace Microsoft.Identity.Web
         /// <param name="services">Service collection to which to add authentication</param>
         /// <param name="configuration">Configuration</param>
         /// <param name="scopes">Optional parameters. If not specified, the token used to call the protected API
-        /// will be kept with the user's claims until the API calls a downstream API. Otherwise the account for the 
+        /// will be kept with the user's claims until the API calls a downstream API. Otherwise the account for the
         /// user is immediately added to the token cache</param>
         /// <returns></returns>
-        public static IServiceCollection AddProtectedApiCallsWebApis(this IServiceCollection services, IConfiguration configuration, IEnumerable<string> scopes=null)
+        public static IServiceCollection AddProtectedApiCallsWebApis(this IServiceCollection services, IConfiguration configuration, IEnumerable<string> scopes = null)
         {
             services.AddTokenAcquisition();
             services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>

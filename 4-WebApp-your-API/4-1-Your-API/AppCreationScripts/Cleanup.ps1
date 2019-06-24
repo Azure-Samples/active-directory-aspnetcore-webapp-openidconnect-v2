@@ -49,25 +49,25 @@ This function removes the Azure AD applications for the sample. These applicatio
     # Removes the applications
     Write-Host "Cleaning-up applications from tenant '$tenantName'"
 
-    Write-Host "Removing 'service' (TodoListService (active-directory-aspnetcore-webapp-openidconnect-v2)) if needed"
-    Get-AzureADApplication -Filter "DisplayName eq 'TodoListService (active-directory-aspnetcore-webapp-openidconnect-v2)'"  | ForEach-Object {Remove-AzureADApplication -ObjectId $_.ObjectId }
-    $apps = Get-AzureADApplication -Filter "DisplayName eq 'TodoListService (active-directory-aspnetcore-webapp-openidconnect-v2)'"
+    Write-Host "Removing 'service' (TodoListService-aspnetcore-webapi) if needed"
+    Get-AzureADApplication -Filter "DisplayName eq 'TodoListService-aspnetcore-webapi'"  | ForEach-Object {Remove-AzureADApplication -ObjectId $_.ObjectId }
+    $apps = Get-AzureADApplication -Filter "DisplayName eq 'TodoListService-aspnetcore-webapi'"
     if ($apps)
     {
         Remove-AzureADApplication -ObjectId $apps.ObjectId
     }
-    Get-AzureRmADServicePrincipal -SearchString "TodoListService (active-directory-aspnetcore-webapp-openidconnect-v2)" | ForEach-Object {Remove-AzureRmADServicePrincipal -ObjectId $_.Id -Confirm:$false}
-    Write-Host "Removed TodoListService (active-directory-aspnetcore-webapp-openidconnect-v2)."
+    # Get-AzureRmADServicePrincipal -SearchString "TodoListService-aspnetcore-webapi" | ForEach-Object {Remove-AzureRmADServicePrincipal -ObjectId $_.Id -Confirm:$false}
+    Write-Host "Removed TodoListService-aspnetcore-webapi."
 
-    Write-Host "Removing 'client' (TodoListClient (active-directory-aspnetcore-webapp-openidconnect-v2)) if needed"
-    Get-AzureADApplication -Filter "DisplayName eq 'TodoListClient (active-directory-aspnetcore-webapp-openidconnect-v2)'"  | ForEach-Object {Remove-AzureADApplication -ObjectId $_.ObjectId }
-    $apps = Get-AzureADApplication -Filter "DisplayName eq 'TodoListClient (active-directory-aspnetcore-webapp-openidconnect-v2)'"
+    Write-Host "Removing 'client' (TodoListClient-aspnetcore-webapi) if needed"
+    Get-AzureADApplication -Filter "DisplayName eq 'TodoListClient-aspnetcore-webapi'"  | ForEach-Object {Remove-AzureADApplication -ObjectId $_.ObjectId }
+    $apps = Get-AzureADApplication -Filter "DisplayName eq 'TodoListClient-aspnetcore-webapi'"
     if ($apps)
     {
         Remove-AzureADApplication -ObjectId $apps.ObjectId
     }
-    Get-AzureRmADServicePrincipal -SearchString "TodoListClient (active-directory-aspnetcore-webapp-openidconnect-v2)" | ForEach-Object {Remove-AzureRmADServicePrincipal -ObjectId $_.Id -Confirm:$false}
-    Write-Host "Removed TodoListClient (active-directory-aspnetcore-webapp-openidconnect-v2)."
+    # Get-AzureRmADServicePrincipal -SearchString "TodoListClient-aspnetcore-webapi" | ForEach-Object {Remove-AzureRmADServicePrincipal -ObjectId $_.Id -Confirm:$false}
+    Write-Host "Removed TodoListClient-aspnetcore-webapi."
 
 }
 

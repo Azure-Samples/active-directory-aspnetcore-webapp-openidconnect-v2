@@ -145,8 +145,6 @@ Function ConfigureApplications
    so that they are consistent with the Applications parameters
 #> 
 
-    $commonendpoint = "common"
-
     # $tenantId is the Active Directory Tenant. This is a GUID which represents the "Directory ID" of the AzureAD tenant
     # into which you want to create the apps. Look it up in the Azure portal in the "Properties" of the Azure AD.
 
@@ -180,8 +178,8 @@ Function ConfigureApplications
     $user = Get-AzureADUser -ObjectId $creds.Account.Id
 
    # Create the service AAD application
-   Write-Host "Creating the AAD application (TodoListService (active-directory-aspnetcore-webapp-openidconnect-v2))"
-   $serviceAadApplication = New-AzureADApplication -DisplayName "TodoListService (active-directory-aspnetcore-webapp-openidconnect-v2)" `
+   Write-Host "Creating the AAD application (TodoListService-aspnetcore-webapi)"
+   $serviceAadApplication = New-AzureADApplication -DisplayName "TodoListService-aspnetcore-webapi" `
                                                    -HomePage "https://localhost:44351/" `
                                                    -PublicClient $False
    $serviceIdentifierUri = 'api://'+$serviceAadApplication.AppId
@@ -194,29 +192,29 @@ Function ConfigureApplications
    $owner = Get-AzureADApplicationOwner -ObjectId $serviceAadApplication.ObjectId
    if ($owner -eq $null)
    { 
-        Add-AzureADApplicationOwner -ObjectId $serviceAadApplication.ObjectId -RefObjectId $user.ObjectId
-        Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($serviceServicePrincipal.DisplayName)'"
+    Add-AzureADApplicationOwner -ObjectId $serviceAadApplication.ObjectId -RefObjectId $user.ObjectId
+    Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($serviceServicePrincipal.DisplayName)'"
    }
 
-   Write-Host "Done creating the service application (TodoListService (active-directory-aspnetcore-webapp-openidconnect-v2))"
+   Write-Host "Done creating the service application (TodoListService-aspnetcore-webapi)"
 
    # URL of the AAD application in the Azure portal
    # Future? $servicePortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$serviceAadApplication.AppId+"/objectId/"+$serviceAadApplication.ObjectId+"/isMSAApp/"
    $servicePortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$serviceAadApplication.AppId+"/objectId/"+$serviceAadApplication.ObjectId+"/isMSAApp/"
-   Add-Content -Value "<tr><td>service</td><td>$currentAppId</td><td><a href='$servicePortalUrl'>TodoListService (active-directory-aspnetcore-webapp-openidconnect-v2)</a></td></tr>" -Path createdApps.html
+   Add-Content -Value "<tr><td>service</td><td>$currentAppId</td><td><a href='$servicePortalUrl'>TodoListService-aspnetcore-webapi</a></td></tr>" -Path createdApps.html
 
    # Create the client AAD application
-   Write-Host "Creating the AAD application (TodoListClient (active-directory-aspnetcore-webapp-openidconnect-v2))"
+   Write-Host "Creating the AAD application (TodoListClient-aspnetcore-webapi)"
    # Get a 2 years application key for the client Application
    $pw = ComputePassword
    $fromDate = [DateTime]::Now;
    $key = CreateAppKey -fromDate $fromDate -durationInYears 2 -pw $pw
    $clientAppKey = $pw
-   $clientAadApplication = New-AzureADApplication -DisplayName "TodoListClient (active-directory-aspnetcore-webapp-openidconnect-v2)" `
+   $clientAadApplication = New-AzureADApplication -DisplayName "TodoListClient-aspnetcore-webapi" `
                                                   -HomePage "https://localhost:44321/" `
                                                   -LogoutUrl "https://localhost:44321/signout-oidc" `
                                                   -ReplyUrls "https://localhost:44321/", "https://localhost:44321/signin-oidc" `
-                                                  -IdentifierUris "https://$tenantName/TodoListClient(active-directory-aspnetcore-webapp-openidconnect-v2)" `
+                                                  -IdentifierUris "https://$tenantName/TodoListClient-aspnetcore-webapi" `
                                                   -PasswordCredentials $key `
                                                   -Oauth2AllowImplicitFlow $true `
                                                   -PublicClient $False
@@ -228,22 +226,22 @@ Function ConfigureApplications
    $owner = Get-AzureADApplicationOwner -ObjectId $clientAadApplication.ObjectId
    if ($owner -eq $null)
    { 
-        Add-AzureADApplicationOwner -ObjectId $clientAadApplication.ObjectId -RefObjectId $user.ObjectId
-        Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($clientServicePrincipal.DisplayName)'"
+    Add-AzureADApplicationOwner -ObjectId $clientAadApplication.ObjectId -RefObjectId $user.ObjectId
+    Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($clientServicePrincipal.DisplayName)'"
    }
 
-   Write-Host "Done creating the client application (TodoListClient (active-directory-aspnetcore-webapp-openidconnect-v2))"
+   Write-Host "Done creating the client application (TodoListClient-aspnetcore-webapi)"
 
    # URL of the AAD application in the Azure portal
    # Future? $clientPortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$clientAadApplication.AppId+"/objectId/"+$clientAadApplication.ObjectId+"/isMSAApp/"
    $clientPortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$clientAadApplication.AppId+"/objectId/"+$clientAadApplication.ObjectId+"/isMSAApp/"
-   Add-Content -Value "<tr><td>client</td><td>$currentAppId</td><td><a href='$clientPortalUrl'>TodoListClient (active-directory-aspnetcore-webapp-openidconnect-v2)</a></td></tr>" -Path createdApps.html
+   Add-Content -Value "<tr><td>client</td><td>$currentAppId</td><td><a href='$clientPortalUrl'>TodoListClient-aspnetcore-webapi</a></td></tr>" -Path createdApps.html
 
    $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.RequiredResourceAccess]
 
    # Add Required Resources Access (from 'client' to 'service')
    Write-Host "Getting access from 'client' to 'service'"
-   $requiredPermissions = GetRequiredPermissions -applicationDisplayName "TodoListService (active-directory-aspnetcore-webapp-openidconnect-v2)" `
+   $requiredPermissions = GetRequiredPermissions -applicationDisplayName "TodoListService-aspnetcore-webapi" `
                                                 -requiredDelegatedPermissions "user_impersonation" `
 
    $requiredResourcesAccess.Add($requiredPermissions)
@@ -263,7 +261,7 @@ Function ConfigureApplications
    Write-Host "Updating the sample code ($configFile)"
    $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $clientAadApplication.AppId;"ClientSecret" = $clientAppKey;"TodoListScope" = ("api://"+$serviceAadApplication.AppId+"/user_impersonation");"TodoListBaseAddress" = $serviceAadApplication.HomePage };
    UpdateTextFile -configFilePath $configFile -dictionary $dictionary
-  
+
    Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  
 }
 

@@ -1,51 +1,32 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Graph;
-using Microsoft.Identity.Web.Client;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using TodoListClient.Services;
 using TodoListService.Models;
-using TodoListClient.Utils;
 
 namespace TodoListClient.Controllers
 {
     public class TodoListController : Controller
     {
-        ITokenAcquisition _tokenAcquisition;
-        IList<Todo> Model = new List<Todo>();
+        private ITodoListService _todoListService;
+        private IList<Todo> Model = new List<Todo>();
 
-        public TodoListController(ITokenAcquisition tokenAcquisition)
+        public TodoListController(ITodoListService todoListService)
         {
-            _tokenAcquisition = tokenAcquisition;
-
-
+            _todoListService = todoListService;
         }
 
         // GET: TodoList
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            if (HttpContext.Session.Get<IList<Todo>>("ToDoList") == null)
-            {
-                Model.Add(new Todo() { Id = 1, Owner = "kkrishna@microsoft.com", Title = "do something" });
-                Model.Add(new Todo() { Id = 2, Owner = "jmprieur@microsoft.com", Title = "do something else" });
-
-                HttpContext.Session.Set<IList<Todo>>("ToDoList", Model);
-            }
-
-            Model = HttpContext.Session.Get<IList<Todo>>("ToDoList");
-
-            return View(Model);
+            return View(await _todoListService.GetAsync());
         }
 
         // GET: TodoList/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            Model = HttpContext.Session.Get<IList<Todo>>("ToDoList");
-
-            return View(Model.FirstOrDefault(x => x.Id == id));
+            return View(await _todoListService.GetAsync(id));
         }
 
         // GET: TodoList/Create
@@ -58,31 +39,16 @@ namespace TodoListClient.Controllers
         // POST: TodoList/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind("Title,Owner")] Todo todo)
+        public async Task<ActionResult> Create([Bind("Title,Owner")] Todo todo)
         {
-            try
-            {
-                Model = HttpContext.Session.Get<IList<Todo>>("ToDoList");
-
-                int id = Model.OrderByDescending(x => x.Id).FirstOrDefault().Id + 1;
-
-                Model.Add(new Todo() { Id = id, Owner = HttpContext.User.Identity.Name, Title = todo.Title });
-                HttpContext.Session.Set<IList<Todo>>("ToDoList", Model);
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            await _todoListService.AddAsync(todo);
+            return RedirectToAction("Index");
         }
 
         // GET: TodoList/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            Model = HttpContext.Session.Get<IList<Todo>>("ToDoList");
-
-            Todo todo = Model.FirstOrDefault(x => x.Id == id);
+            Todo todo = await this._todoListService.GetAsync(id);
 
             if (todo == null)
             {
@@ -95,40 +61,16 @@ namespace TodoListClient.Controllers
         // POST: TodoList/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, [Bind("Id,Title,Owner")] Todo todo)
+        public async Task<ActionResult> Edit(int id, [Bind("Id,Title,Owner")] Todo todo)
         {
-            try
-            {
-                if (id != todo.Id)
-                {
-                    return NotFound();
-                }
-
-                Model = HttpContext.Session.Get<IList<Todo>>("ToDoList");
-
-                if (Model.FirstOrDefault(x => x.Id == id) == null)
-                {
-                    return NotFound();
-                }
-
-                Model.Remove(Model.FirstOrDefault(x => x.Id == id));
-                Model.Add(todo);
-
-                HttpContext.Session.Set<IList<Todo>>("ToDoList", Model);
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            await _todoListService.EditAsync(todo);
+            return RedirectToAction("Index");
         }
 
         // GET: TodoList/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            Model = HttpContext.Session.Get<IList<Todo>>("ToDoList");
-
-            Todo todo = Model.FirstOrDefault(x => x.Id == id);
+            Todo todo = await this._todoListService.GetAsync(id);
 
             if (todo == null)
             {
@@ -141,31 +83,10 @@ namespace TodoListClient.Controllers
         // POST: TodoList/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, [Bind("Id,Title,Owner")] Todo todo)
+        public async Task<ActionResult> Delete(int id, [Bind("Id,Title,Owner")] Todo todo)
         {
-            try
-            {
-                if (id != todo.Id)
-                {
-                    return NotFound();
-                }
-
-                Model = HttpContext.Session.Get<IList<Todo>>("ToDoList");
-
-                if (Model.FirstOrDefault(x => x.Id == id) == null)
-                {
-                    return NotFound();
-                }
-
-                Model.Remove(Model.FirstOrDefault(x => x.Id == id));
-                HttpContext.Session.Set<IList<Todo>>("ToDoList", Model);
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            await _todoListService.DeleteAsync(id);
+            return RedirectToAction("Index");
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿/************************************************************************************************
-The MIT License (MIT)
+﻿/*
+ The MIT License (MIT)
 
-Copyright (c) 2015 Microsoft Corporation
+Copyright (c) 2018 Microsoft Corporation
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,22 +20,26 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-***********************************************************************************************/
+ */
 
-namespace Microsoft.Identity.Web
+ using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using TodoListService.Models;
+
+namespace TodoListClient.Services
 {
-    /// <summary>
-    /// Constants for claim types.
-    /// </summary>
-    public static class ClaimConstants
+    public interface ITodoListService
     {
-        public const string Name = "name";
-        public const string ObjectId = "http://schemas.microsoft.com/identity/claims/objectidentifier";
-        public const string Oid = "oid";
-        public const string PreferredUserName = "preferred_username";
-        public const string TenantId = "http://schemas.microsoft.com/identity/claims/tenantid";
-        public const string Tid = "tid";
-        public const string Scope = "http://schemas.microsoft.com/identity/claims/scope";
-        public const string Roles = "roles";
+        Task<IEnumerable<Todo>> GetAsync();
+
+        Task<Todo> GetAsync(int id);
+
+        Task DeleteAsync(int id);
+
+        Task<Todo> AddAsync(Todo todo);
+
+        Task<Todo> EditAsync(Todo todo);
     }
 }

@@ -272,7 +272,7 @@ namespace Microsoft.Identity.Web.Client
                 account = accounts.FirstOrDefault(a => a.Username == user.GetLoginHint());
             }
 
-            if (account!=null)
+            if (account != null)
             {
                 this.UserTokenCacheProvider?.Clear(account.HomeAccountId.Identifier);
 
@@ -342,26 +342,41 @@ namespace Microsoft.Identity.Web.Client
             // Get the account
             IAccount account = await application.GetAccountAsync(accountIdentifier);
 
-            // Special case for guest users as the Guest iod / tenant id are not surfaced.
+            // Special case for guest users as the Guest id / tenant id are not surfaced.
             if (account == null)
             {
                 var accounts = await application.GetAccountsAsync();
                 account = accounts.FirstOrDefault(a => a.Username == loginHint);
             }
 
-            AuthenticationResult result;
-            if (string.IsNullOrWhiteSpace(tenant))
+            AuthenticationResult result = null;
+
+            try
             {
-                result = await application.AcquireTokenSilent(scopes.Except(scopesRequestedByMsalNet), account)
-                                           .ExecuteAsync();
+                if (string.IsNullOrWhiteSpace(tenant))
+                {
+                    result = await application.AcquireTokenSilent(scopes.Except(scopesRequestedByMsalNet), account)
+                                               .ExecuteAsync();
+                }
+                else
+                {
+                    string authority = application.Authority.Replace(new Uri(application.Authority).PathAndQuery, $"/{tenant}/");
+                    result = await application.AcquireTokenSilent(scopes.Except(scopesRequestedByMsalNet), account)
+                                              .WithAuthority(authority)
+                                              .ExecuteAsync();
+                }
             }
-            else
+            catch (MsalUiRequiredException ex)
             {
-                string authority = application.Authority.Replace(new Uri(application.Authority).PathAndQuery, $"/{tenant}/");
-                result = await application.AcquireTokenSilent(scopes.Except(scopesRequestedByMsalNet), account)
-                                          .WithAuthority(authority)
-                                          .ExecuteAsync();
+                // A MsalUiRequiredException happened on AcquireTokenSilent.
+                // This indicates you need to call AcquireTokenInteractive to acquire a token
+                System.Diagnostics.Debug.WriteLine($"MsalUiRequiredException: {ex.Message}");
+
+                result = await application.AcquireTokenForClient(scopes)
+                            .ExecuteAsync();
             }
+
+
             return result.AccessToken;
         }
 

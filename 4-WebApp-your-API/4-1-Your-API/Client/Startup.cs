@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.Client.TokenCacheProviders;
 using System;
+using TodoListClient.Services;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 
 namespace WebApp_OpenIDConnect_DotNet
@@ -36,7 +37,6 @@ namespace WebApp_OpenIDConnect_DotNet
             });
 
             services.AddOptions();
-            services.AddSession();
 
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
@@ -44,7 +44,8 @@ namespace WebApp_OpenIDConnect_DotNet
                     .AddMsal(new string[] { Configuration["TodoList:TodoListScope"] })
                     .AddInMemoryTokenCaches();
 
-            // Add APIs
+            // Add APIs            
+            services.AddTodoListService(Configuration);
 
             services.AddMvc(options =>
             {
@@ -75,7 +76,6 @@ namespace WebApp_OpenIDConnect_DotNet
 
             app.UseCookiePolicy();
 
-            app.UseSession();
             app.UseAuthentication();
 
             app.UseMvc(routes =>

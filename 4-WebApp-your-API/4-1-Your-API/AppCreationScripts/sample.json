@@ -1,6 +1,6 @@
 {
   "Sample": {
-    "Title": "How to secure a Web API built using ASP.NET Core using Microsoft identity platform (formerly Azure Active Directory for developers)",
+    "Title": "How to secure a Web API built with ASP.NET Core using the Microsoft identity platform (formerly Azure Active Directory for developers)",
     "Level": 200,
     "Client": "ASP.NET Core Web App",
     "Service": "ASP.NET Core Web API",
@@ -14,7 +14,7 @@
   "AADApps": [
     {
       "Id": "service",
-      "Name": "TodoListService (active-directory-aspnetcore-webapp-openidconnect-v2)",
+      "Name": "TodoListService-aspnetcore-webapi",
       "Kind": "WebApi",
       "Audience": "AzureADMyOrg",
       "HomePage": "https://localhost:44351/"
@@ -22,7 +22,7 @@
     },
     {
       "Id": "client",
-      "Name": "TodoListClient (active-directory-aspnetcore-webapp-openidconnect-v2)",
+      "Name": "TodoListClient-aspnetcore-webapi",
       "Kind": "WebApp",
       "Audience": "AzureADMyOrg",
       "HomePage": "https://localhost:44321/",
