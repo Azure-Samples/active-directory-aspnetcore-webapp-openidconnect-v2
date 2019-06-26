@@ -12,7 +12,7 @@ endpoint: AAD v2.0
 
 ## Scenario
 
-This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users in **Azure AD B2C**. It assumes you have some familiarity with **Azure AD B2C**. If you'd like to learn all that B2C has to offer, start with our documentation at aka.ms/aadb2c.
+This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users in **Azure AD B2C**. It assumes you have some familiarity with **Azure AD B2C**. If you'd like to learn all that B2C has to offer, start with our documentation at https://aka.ms/aadb2c.
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
 
@@ -32,15 +32,21 @@ git clone https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-op
 
 > Given that the name of the sample is very long, and so are the names of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
+Navigate to the `"1-5-B2C"` folder
+
+ ```Sh
+  cd "1-5-B2C"
+  ```
+
 ### Step 2: Get your own Azure AD B2C tenant
 
-If you don't have an Azure AD B2C tenant yet, you'll need to create an Azure AD B2C tenant by following [these instructions](https://azure.microsoft.com/documentation/articles/active-directory-b2c-get-started).
+If you don't have an Azure AD B2C tenant yet, you'll need to create an Azure AD B2C tenant by following the [Tutorial: Create an Azure Active Directory B2C tenant](https://azure.microsoft.com/documentation/articles/active-directory-b2c-get-started).
 
 ### Step 3: Create your own user flow (policy)
 
-This sample uses a unified sign-up/sign-in user flow (policy). Create this policy by following [these instructions on creating an AAD B2C tenant](https://azure.microsoft.com/documentation/articles/active-directory-b2c-reference-policies). You may choose to include as many or as few identity providers as you wish, but make sure **DisplayName** is checked.
+This sample uses a unified sign-up/sign-in user flow (policy). Create this policy by following [these instructions on creating an AAD B2C tenant](https://azure.microsoft.com/documentation/articles/active-directory-b2c-reference-policies). You may choose to include as many or as few identity providers as you wish, but make sure **DisplayName** is checked in `User attributes` and `Application claims`.
 
-If you already have an existing unified sign-up/sign-in user flow (policy) in your Azure AD B2C tenant, feel free to re-use it. No need to create a new one just for this sample.
+If you already have an existing unified sign-up/sign-in user flow (policy) in your Azure AD B2C tenant, feel free to re-use it. The is no need to create a new one just for this sample.
 
 Copy this policy name, so you can use it in step 5.
 
@@ -51,7 +57,7 @@ Now you need to [register your web app in your B2C tenant](https://docs.microsof
 Your web application registration should include the following information:
 
 - Enable the **Web App/Web API** setting for your application.
-- Set the **Reply URL** to `https://localhost:44321//signin/B2C_1_sign_up_in` and `https://localhost:44321//signout/B2C_1_sign_up_in`.
+- Set the **Reply URL** to `https://localhost:44321/signin/B2C_1_sign_up_in` and `https://localhost:44321/signout/B2C_1_sign_up_in`.
 - Copy the Application ID generated for your application, so you can use it in the next step.
 
 ### Step 5: Configure the sample with your app coordinates
@@ -59,9 +65,9 @@ Your web application registration should include the following information:
 1. Open the solution in Visual Studio.
 1. Open the `appsettings.json` file.
 1. Find the assignment for `Instance` and replace the value with your tenant name. For example, `https://fabrikam.b2clogin.com`
-1. Find the assignment for `Domain` and replace the value with your Azure AD B2C domain name.
+1. Find the assignment for `Domain` and replace the value with your Azure AD B2C domain name. For example, `https://fabrikam.onmicrosoft.com`
 1. Find the assignment for `ClientID` and replace the value with the Application ID from Step 4.
-1. Find the assignment for `SignUpSignInPolicyId` and replace with the names of the policy you created in Step 3.
+1. Find the assignment for `SignUpSignInPolicyId` and replace with the name of the `Sign up and sign in` policy you created in Step 3.
 
 ```json
 {
@@ -131,7 +137,7 @@ Important things to notice:
 - `/signin/B2C_1_sign_up_in` and `/signout/B2C_1_sign_up_in` are the reply urls registered on the app registration. These urls need to match with the callback paths configured on the middleware.
 - We are setting `TokenValidationParameters.NameClaimType` to `name`, because that is the name of the claim being returned that holds the field **DisplayName**.
 
-On `AuthController.cs`, we have the methods for **SignIn** and **SignOut**:
+On `AuthController.cs`, we have the methods for **Sign-In** and **Sign-Out** users:
 
 ```csharp
 public IActionResult SignIn()
@@ -157,7 +163,9 @@ Important things to notice:
 - We are signing out the user from the scheme, `CookieAuthenticationDefaults.AuthenticationScheme`, since this is the scheme that we are using on the `Authentication` middleware, but we also want to sign out the user from any currently active authentication session in the **Azure AD** and to do that, we get the scheme from the claim `tfp` and sign it out as well.
 
 ## Next steps
+
 Learn how to:
+
 - Change your app to sign-in users from [any organization](../1-2-AnyOrg/README-1-1-to-1-2.md) or [any Microsoft accounts](../1-3-AnyOrgOrPersonal/README-1-1-to-1-3.md)
 - Enable users from [National clouds](../1-4-Sovereign) to sign-in to your application
 - enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user)
@@ -165,6 +173,7 @@ Learn how to:
 ## Learn more
 
 To understand more about token validation, see
+
 - [Validating tokens](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki/ValidatingTokens)
 To understand more about app registration, see:
 

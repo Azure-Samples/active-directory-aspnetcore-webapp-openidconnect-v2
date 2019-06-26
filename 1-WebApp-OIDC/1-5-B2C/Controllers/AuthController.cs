@@ -43,8 +43,8 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
         public IActionResult SignIn()
         {
-            /* 
-             This Challenge will trigger the OpenIdConnect middleware configured on Startup.cs. 
+            /*
+             This Challenge will trigger the OpenIdConnect middleware configured on Startup.cs.
              Then we redirect to the homepage, otherwise we would be redirected this action result again and enter in a loop
             */
             return Challenge(new AuthenticationProperties { RedirectUri = "/" }, B2COptions.SignUpSignInPolicyId);
@@ -54,6 +54,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
          We are using POST to sign-out because Chrome for example, prefetches pages to speed up browsing.
          And prefetching the sign out page would cause the user to sign out without reason, so using a form gets us around that.
          */
+
         [HttpPost]
         public async Task SignOut()
         {
