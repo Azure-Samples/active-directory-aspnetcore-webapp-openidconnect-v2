@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ***********************************************************************************************/
 
+using Microsoft.AspNetCore.Authentication.AzureADB2C.UI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -50,6 +51,10 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+            //Configuring appsettings section AzureADB2C, into options
+            services.AddOptions();
+            services.Configure<AzureADB2COptions>(Configuration.GetSection("AzureADB2C"));
 
             // Configuration to sign-in users with Azure AD B2C
             services.AddAzureAdB2CAuthentication(Configuration);
