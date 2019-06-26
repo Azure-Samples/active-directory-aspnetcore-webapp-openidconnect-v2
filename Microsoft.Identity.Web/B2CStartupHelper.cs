@@ -27,14 +27,18 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Microsoft.Identity.Web
 {
-    public static class StartupB2CHelpers
+    public static class B2CStartupHelper
     {
+        /// <summary>
+        /// Add authentication with Azure Ad B2C.
+        /// This expects the configuration files will have a section named "AzureAdB2C"
+        /// </summary>
+        /// <param name="services">Service collection to which to add this authentication scheme</param>
+        /// <param name="configuration">The Configuration object</param>
+        /// <returns></returns>
         public static IServiceCollection AddAzureAdB2CAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             var b2cOptions = configuration.GetSection("AzureAdB2C").Get<AzureADB2COptions>();
