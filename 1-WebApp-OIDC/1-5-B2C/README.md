@@ -100,81 +100,45 @@ If your web site needs to be accessed from users using iOS 12, you probably want
 
 ## About The code
 
-This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Azure AD B2C tenant. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Azure AD B2C tenant where the app is registered. These values are  read from the `appsettings.json` file. The middleware takes care of:
+The `AccountController.cs` used in this sample is part of the built-in .NET Core authentication controllers found in the NuGet package `Microsoft.AspNetCore.Authentication.AzureADB2C.UI`, and you can find its implementation [here](https://github.com/aspnet/AspNetCore/blob/master/src/Azure/AzureAD/Authentication.AzureADB2C.UI/src/Areas/AzureADB2C/Controllers/AccountController.cs). If you want to customize the **Sign-in**, **Sign-up** or **Sign-out** actions, you are encouraged to create your own controller.
+
+This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Azure AD B2C tenant. The middleware is initialized in the `Startup.cs` file by passing the default authentication scheme and `AzureADB2COptions.cs` options. The options are read from the `appsettings.json` file. The middleware takes care of:
 
 - Requesting OpenID Connect sign-in using the policy from the `appsettings.json` file.
 - Processing OpenID Connect sign-in responses by validating the signature and issuer in an incoming JWT, extracting the user's claims, and putting the claims in `ClaimsPrincipal.Current`.
 - Integrating with the session cookie ASP.NET Core middleware to establish a session for the user.
 
-You can trigger the middleware to send an OpenID Connect sign-in request by decorating a class or method with the `[Authorize]` attribute or by issuing a challenge (see the [AccountController.cs](https://github.com/aspnet/AspNetCore/blob/master/src/Azure/AzureAD/Authentication.AzureAD.UI/src/Areas/AzureAD/Controllers/AccountController.cs) file which is part of ASP.NET Core).
+You can trigger the middleware to send an OpenID Connect sign-in request by decorating a class or method with the `[Authorize]` attribute or by issuing a challenge (see the [AccountController.cs](https://github.com/aspnet/AspNetCore/blob/master/src/Azure/AzureAD/Authentication.AzureADB2C.UI/src/Areas/AzureADB2C/Controllers/AccountController.cs) file which is part of ASP.NET Core).
 
 Here is the middleware example:
 
 ```csharp
-services.AddAuthentication(options =>
-{
-    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = "B2C_1_sign_up_in";
-}).AddOpenIdConnect("B2C_1_sign_up_in", options =>
-{
-    options.MetadataAddress = "https://{your-AzureB2C-instance}/{your-AzureB2C-domain-name}/v2.0/.well-known/openid-configuration?p={your-signIn-signUp-policy-name}";
-    options.ClientId = "{applicationId found on Azure Portal}";
-    options.ResponseType = OpenIdConnectResponseType.IdToken;
-    options.CallbackPath = "/signin/B2C_1_sign_up_in";
-    options.SignedOutCallbackPath = "/signout/B2C_1_sign_up_in";
-    options.SignedOutRedirectUri = "/";
-    options.TokenValidationParameters.NameClaimType = "name";
-    options.Scope.Add(OpenIdConnectScope.OpenIdProfile);
-    options.Scope.Add(OpenIdConnectScope.OfflineAccess);
-}).AddCookie();
+services.AddAuthentication(AzureADB2CDefaults.AuthenticationScheme)
+            .AddAzureADB2C(options => Configuration.Bind("AzureAdB2C", options));
 ```
 
 Important things to notice:
 
-- `B2C_1_sign_up_in` is the name of the user flow(policy) created, using the built-in Azure B2C [sign-in/sign-up user flow](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-reference-policies) recommended to be used when handling users sign-in or sign-up.
-- We are setting the `DefaultChallengeScheme` to `B2C_1_sign_up_in` so that by default, this is the scheme used on an authentication challenge.
-- `/signin/B2C_1_sign_up_in` and `/signout/B2C_1_sign_up_in` are the reply urls registered on the app registration. These urls need to match with the callback paths configured on the middleware.
-- We are setting `TokenValidationParameters.NameClaimType` to `name`, because that is the name of the claim being returned that holds the field **DisplayName**.
-
-On `AuthController.cs`, we have the methods for **Sign-In** and **Sign-Out** users:
-
-```csharp
-public IActionResult SignIn()
-{
-    return Challenge(new AuthenticationProperties { RedirectUri = "/" }, "B2C_1_sign_up_in");
-}
-
-[HttpPost]
-public async Task SignOut()
-{
-    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-    var scheme = User.Claims.First(x => x.Type == "tfp").Value;
-    await HttpContext.SignOutAsync(scheme);
-}
-
-```
-
-Important things to notice:
-
-- On the **SignIn** method, we set the `RedirectUri` to the homepage, otherwise, Azure would redirect to the Uri that originated the challenge (in our case `/auth/signin`) and we would enter in a loop.
-- Returning a `Challenge` with the scheme **B2C_1_sign_up_in**, will trigger the `OpenIdConnect` that we configured on `Startup.cs`.
-- On the **SignOut** method, we set the `HttpPost` attribute and on `_LoginPartial.cshtml` we wrapped the button in a post form. The reason for that is because Chrome for example, prefetches pages to speed up browsing. And prefetching the sign out page would cause the user to sign out without reason, so using a form gets us around that.
-- We are signing out the user from the scheme, `CookieAuthenticationDefaults.AuthenticationScheme`, since this is the scheme that we are using on the `Authentication` middleware, but we also want to sign out the user from any currently active authentication session in the **Azure AD** and to do that, we get the scheme from the claim `tfp` and sign it out as well.
+- The method `AddAzureADB2C` will configure the authentication based on the `AzureADB2COptions.cs` options. Feel free to bind more properties on ``AzureAdB2C`` section on ``appsettings.json`` if you need to set more options.
+- The urls you set for `CallbackPath` and `SignedOutCallbackPath` should be registered on the **Reply Urls** of your application, in [Azure Portal](https://portal.azure.com).
 
 ## Next steps
 
 Learn how to:
 
-- Change your app to sign-in users from [any organization](../1-2-AnyOrg/README-1-1-to-1-2.md) or [any Microsoft accounts](../1-3-AnyOrgOrPersonal/README-1-1-to-1-3.md)
-- Enable users from [National clouds](../1-4-Sovereign) to sign-in to your application
-- enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user)
+- Enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user)
 
 ## Learn more
 
-To understand more about token validation, see
+To understand more about Azure AD B2C see:
+
+- [Azure AD B2C documentation](https://docs.microsoft.com/en-us/azure/active-directory-b2c/)
+- [Azure AD B2C sign-in/sign-up user flow](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-reference-policies)
+
+To understand more about token validation, see:
 
 - [Validating tokens](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki/ValidatingTokens)
+
 To understand more about app registration, see:
 
 - [Quickstart: Register an application with the Microsoft identity platform (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
