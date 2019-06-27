@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ***********************************************************************************************/
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureADB2C.UI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -52,14 +53,15 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            //Configuring appsettings section AzureADB2C, into options
-            services.AddOptions();
-            services.Configure<AzureADB2COptions>(Configuration.GetSection("AzureADB2C"));
-
             // Configuration to sign-in users with Azure AD B2C
-            services.AddAzureAdB2CAuthentication(Configuration);
+            services.AddAuthentication(AzureADB2CDefaults.AuthenticationScheme)
+                .AddAzureADB2C(options => Configuration.Bind("AzureAdB2C", options));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            //Configuring appsettings section AzureADB2C, into IOptions
+            services.AddOptions();
+            services.Configure<AzureADB2COptions>(Configuration.GetSection("AzureADB2C"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -4,7 +4,7 @@
 	<ul class="nav navbar-nav navbar-right">
 		<li class="navbar-text">Hello @User.Identity.Name</li>
 		<li class="navbar-btn">
-			<form method="post" asp-controller="Auth" asp-action="SignOut">
+			<form method="get" asp-area="AzureADB2C" asp-controller="Account" asp-action="SignOut">
 				<button type="submit" class="btn btn-primary">Sign Out</button>
 			</form>
 		</li>
@@ -12,11 +12,11 @@
 }
 else
 {
-	<ul class="nav navbar-nav navbar-right">
-		<li class="navbar-btn">
-			<form method="get" asp-controller="Auth" asp-action="SignIn">
-				<button type="submit" class="btn btn-primary">Sign In/Up</button>
-			</form>
-		</li>
-	</ul>
+<ul class="nav navbar-nav navbar-right">
+	<li class="navbar-btn">
+		<form method="get" asp-area="AzureADB2C" asp-controller="Account" asp-action="SignIn">
+			<button type="submit" class="btn btn-primary">Sign In/Up</button>
+		</form>
+	</li>
+</ul>
 }
