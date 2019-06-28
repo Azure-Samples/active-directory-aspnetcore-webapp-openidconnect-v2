@@ -94,11 +94,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             // if the access operation resulted in a cache update
             if (args.HasStateChanged)
             {
-                string cacheKey = args.Account?.HomeAccountId?.Identifier;
-                if (string.IsNullOrEmpty(cacheKey))
-                {
-                    cacheKey = httpContextAccessor.HttpContext.User.GetMsalAccountId();
-                }
+                string cacheKey = httpContextAccessor.HttpContext.User.GetMsalAccountId();
 
                 if (string.IsNullOrWhiteSpace(cacheKey))
                     return;
@@ -116,17 +112,13 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
         private void UserTokenCacheBeforeAccessNotification(TokenCacheNotificationArgs args)
         {
-            string cacheKey = args.Account?.HomeAccountId?.Identifier;
-            if (string.IsNullOrEmpty(cacheKey))
-            {
-                cacheKey = httpContextAccessor.HttpContext.User.GetMsalAccountId();
-            }
+            string cacheKey = httpContextAccessor.HttpContext.User.GetMsalAccountId();
 
             if (string.IsNullOrWhiteSpace(cacheKey))
                 return;
 
             byte[] tokenCacheBytes = (byte[])this.memoryCache.Get(cacheKey);
-            args.TokenCache.DeserializeMsalV3(tokenCacheBytes, shouldClearExistingCache:true);
+            args.TokenCache.DeserializeMsalV3(tokenCacheBytes, shouldClearExistingCache: true);
         }
 
         /// <summary>
