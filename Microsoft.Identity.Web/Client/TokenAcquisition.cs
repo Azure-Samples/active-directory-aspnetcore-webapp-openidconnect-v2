@@ -125,8 +125,17 @@ namespace Microsoft.Identity.Web.Client
             try
             {
                 // As AcquireTokenByAuthorizationCodeAsync is asynchronous we want to tell ASP.NET core that we are handing the code
-                // even if it's not done yet, so that it does not concurrently call the Token endpoint.
+                // even if it's not done yet, so that it does not concurrently call the Token endpoint. (otherwise there will be a
+                // race condition ending-up in an error from Azure AD telling "code already redeemed")
                 context.HandleCodeRedemption();
+
+                // The cache will need the claims from the ID token. In the case of guest scenarios
+                // If they are not yet in the HttpContext.User's claims, adding them.
+                if (!context.HttpContext.User.Claims.Any())
+                {
+                    (context.HttpContext.User.Identity as ClaimsIdentity).AddClaims(context.Principal.Claims);
+                }
+
 
                 var application = GetOrBuildConfidentialClientApplication(context.HttpContext, context.Principal);
 
@@ -272,7 +281,7 @@ namespace Microsoft.Identity.Web.Client
                 account = accounts.FirstOrDefault(a => a.Username == user.GetLoginHint());
             }
 
-            if (account!=null)
+            if (account != null)
             {
                 this.UserTokenCacheProvider?.Clear(account.HomeAccountId.Identifier);
 
