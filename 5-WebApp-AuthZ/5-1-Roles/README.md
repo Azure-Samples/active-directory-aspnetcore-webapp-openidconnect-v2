@@ -18,7 +18,7 @@ This sample shows how a .NET Core 2.2 MVC Web app that uses [OpenID Connect](htt
 
 This application implements RBAC using Azure AD's Application Roles & Role Claims feature. Another approach is to use Azure AD Groups and Group Claims, as shown in [WebApp-GroupClaims](../../../5-WebApp-AuthZ/5-2-Groups). Azure AD Groups and Application Roles are by no means mutually exclusive; they can be used in tandem to provide even finer grained access control.
 
-![Build badge](https://identitydivision.visualstudio.com/_apis/public/build/definitions/a7934fdd-dcde-4492-a406-7fad6ac00e17/514/badge)
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 Using RBAC with Application Roles and Role Claims, developers can securely enforce authorization policies with minimal effort on their part.
 
@@ -84,19 +84,6 @@ Navigate to the `"5-WebApp-AuthZ"` folder
   ```
 
 ### Step 2: Configure your application to receive the **roles** claims
-
-1. In your application settings page on the Application Registration Portal (preview), click on "Manifest" to open the inline manifest editor.
-2. Edit the manifest by locating the "groupMembershipClaims" setting, and setting its value to "SecurityGroup".
-3. Save the manifest.
-
-```JSON
-{
-  ...
-  "errorUrl": null,
-  "groupMembershipClaims": "SecurityGroup",
-  ...
-}
-```
 
 1. To receive the `roles` claim with the name of the app roles this user is assigned to, make sure that the user accounts you plan to sign-in to this app is assigned to the app roles of this app.
 
