@@ -107,11 +107,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             // if the access operation resulted in a cache update
             if (args.HasStateChanged)
             {
-                string cacheKey = args.Account?.HomeAccountId?.Identifier;
-                if (string.IsNullOrEmpty(cacheKey))
-                {
-                    cacheKey = httpContextAccessor.HttpContext.User.GetMsalAccountId();
-                }
+                string cacheKey = httpContextAccessor.HttpContext.User.GetMsalAccountId();
 
                 if (string.IsNullOrWhiteSpace(cacheKey))
                     return;
@@ -140,11 +136,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         private void UserTokenCacheBeforeAccessNotification(TokenCacheNotificationArgs args)
         {
             this.HttpContext.Session.LoadAsync().Wait();
-            string cacheKey = args.Account?.HomeAccountId?.Identifier;
-            if (string.IsNullOrEmpty(cacheKey))
-            {
-                cacheKey = httpContextAccessor.HttpContext.User.GetMsalAccountId();
-            }
+            string cacheKey = httpContextAccessor.HttpContext.User.GetMsalAccountId();
             if (string.IsNullOrWhiteSpace(cacheKey))
                 return;
 

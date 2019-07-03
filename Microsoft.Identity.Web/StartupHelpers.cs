@@ -76,6 +76,9 @@ namespace Microsoft.Identity.Web
                 // and [Access Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens)
                 options.TokenValidationParameters.NameClaimType = "preferred_username";
 
+                // Force the account selection (to avoid automatic sign-in with the account signed-in with Windows)
+                //options.Prompt = "select_account";
+
                 // Handling the sign-out
                 options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
                 {
