@@ -67,7 +67,7 @@ namespace Microsoft.Identity.Web
                 // If you want to restrict the users that can sign-in to several organizations
                 // Set the tenant value in the appsettings.json file to 'organizations', and add the
                 // issuers you want to accept to options.TokenValidationParameters.ValidIssuers collection
-                options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).ValidateAadIssuer;
+                options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).Validate;
 
                 // Set the nameClaimType to be preferred_username.
                 // This change is needed because certain token claims from Azure AD V1 endpoint
@@ -75,6 +75,9 @@ namespace Microsoft.Identity.Web
                 // For more details see [ID Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens)
                 // and [Access Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens)
                 options.TokenValidationParameters.NameClaimType = "preferred_username";
+
+                // Force the account selection (to avoid automatic sign-in with the account signed-in with Windows)
+                //options.Prompt = "select_account";
 
                 // Handling the sign-out
                 options.Events.OnRedirectToIdentityProviderForSignOut = async context =>

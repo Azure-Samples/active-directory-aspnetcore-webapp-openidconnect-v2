@@ -121,11 +121,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
         private void UserTokenCacheAfterAccessNotification(TokenCacheNotificationArgs args)
         {
-            string accountId = args.Account?.HomeAccountId?.Identifier;
-            if (string.IsNullOrEmpty(accountId))
-            {
-                accountId = httpContextAccesssor.HttpContext.User.GetMsalAccountId();
-            }
+            string accountId = httpContextAccesssor.HttpContext.User.GetMsalAccountId();
 
             // if state changed, i.e. new token obtained
             if (args.HasStateChanged && !string.IsNullOrWhiteSpace(accountId))
@@ -160,11 +156,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// </summary>
         private void ReadCacheForSignedInUser(TokenCacheNotificationArgs args)
         {
-            string accountId = args.Account?.HomeAccountId?.Identifier;
-            if (string.IsNullOrEmpty(accountId))
-            {
-                accountId = httpContextAccesssor.HttpContext.User.GetMsalAccountId();
-            }
+            string accountId = httpContextAccesssor.HttpContext.User.GetMsalAccountId();
             if (this.InMemoryCache == null) // first time access
             {
                 this.InMemoryCache = GetLatestUserRecordQuery(accountId).FirstOrDefault();

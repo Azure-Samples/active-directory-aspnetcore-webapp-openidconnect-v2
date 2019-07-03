@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.539
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web", "Microsoft.Identity.Web.csproj", "{BD795319-75B8-4251-AE92-8DD5A807C28E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Identity.Web.Test", "..\Microsoft.Identity.Web.Test\Microsoft.Identity.Web.Test.csproj", "{9F00FB40-D67A-4E39-8167-C47922DA96A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{BD795319-75B8-4251-AE92-8DD5A807C28E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD795319-75B8-4251-AE92-8DD5A807C28E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD795319-75B8-4251-AE92-8DD5A807C28E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F00FB40-D67A-4E39-8167-C47922DA96A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F00FB40-D67A-4E39-8167-C47922DA96A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F00FB40-D67A-4E39-8167-C47922DA96A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F00FB40-D67A-4E39-8167-C47922DA96A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
