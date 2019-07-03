@@ -25,8 +25,6 @@ SOFTWARE.
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web.Client;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using TodoListService.Models;
@@ -38,7 +36,7 @@ namespace TodoListService.Controllers
     public class TodoListController : Controller
     {
         // In-memory TodoList
-        private static readonly Dictionary<int,Todo> TodoStore = new Dictionary<int, Todo>();
+        private static readonly Dictionary<int, Todo> TodoStore = new Dictionary<int, Todo>();
 
         private readonly IHttpContextAccessor _contextAccessor;
 
@@ -59,7 +57,7 @@ namespace TodoListService.Controllers
         public IEnumerable<Todo> Get()
         {
             string owner = User.Identity.Name;
-            return TodoStore.Values.Where(x => x.Owner == owner);            
+            return TodoStore.Values.Where(x => x.Owner == owner);
         }
 
         // GET: api/values
@@ -81,7 +79,7 @@ namespace TodoListService.Controllers
         {
             int id = TodoStore.Values.OrderByDescending(x => x.Id).FirstOrDefault().Id + 1;
             Todo todonew = new Todo() { Id = id, Owner = HttpContext.User.Identity.Name, Title = todo.Title };
-            TodoStore.Add(id,todonew);
+            TodoStore.Add(id, todonew);
 
             return Ok(todo);
         }
@@ -101,7 +99,7 @@ namespace TodoListService.Controllers
             }
 
             TodoStore.Remove(id);
-            TodoStore.Add(id,todo);
+            TodoStore.Add(id, todo);
 
             return Ok(todo);
         }

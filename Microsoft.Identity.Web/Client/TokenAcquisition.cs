@@ -125,7 +125,8 @@ namespace Microsoft.Identity.Web.Client
             try
             {
                 // As AcquireTokenByAuthorizationCodeAsync is asynchronous we want to tell ASP.NET core that we are handing the code
-                // even if it's not done yet, so that it does not concurrently call the Token endpoint.
+                // even if it's not done yet, so that it does not concurrently call the Token endpoint. (otherwise there will be a
+                // race condition ending-up in an error from Azure AD telling "code already redeemed")
                 context.HandleCodeRedemption();
 
                 // The cache will need the claims from the ID token. In the case of guest scenarios
@@ -135,7 +136,7 @@ namespace Microsoft.Identity.Web.Client
                     (context.HttpContext.User.Identity as ClaimsIdentity).AddClaims(context.Principal.Claims);
                 }
 
-                var application = BuildConfidentialClientApplication(context.HttpContext, context.Principal);
+                var application = GetOrBuildConfidentialClientApplication(context.HttpContext, context.Principal);
 
                 // Do not share the access token with ASP.NET Core otherwise ASP.NET will cache it and will not send the OAuth 2.0 request in
                 // case a further call to AcquireTokenByAuthorizationCodeAsync in the future for incremental consent (getting a code requesting more scopes)
@@ -171,7 +172,7 @@ namespace Microsoft.Identity.Web.Client
                 throw new ArgumentNullException(nameof(scopes));
 
             // Use MSAL to get the right token to call the API
-            var application = BuildConfidentialClientApplication(context, context.User);
+            var application = GetOrBuildConfidentialClientApplication(context, context.User);
 
             // Case of a lazy OBO
             Claim jwtClaim = context.User.FindFirst("jwt");
@@ -269,7 +270,7 @@ namespace Microsoft.Identity.Web.Client
         public async Task RemoveAccount(RedirectContext context)
         {
             ClaimsPrincipal user = context.HttpContext.User;
-            IConfidentialClientApplication app = BuildConfidentialClientApplication(context.HttpContext, user);
+            IConfidentialClientApplication app = GetOrBuildConfidentialClientApplication(context.HttpContext, user);
             IAccount account = await app.GetAccountAsync(context.HttpContext.User.GetMsalAccountId());
 
             // Workaround for the guest account
@@ -285,6 +286,23 @@ namespace Microsoft.Identity.Web.Client
 
                 await app.RemoveAsync(account);
             }
+        }
+
+        private IConfidentialClientApplication application;
+
+        /// <summary>
+        /// Creates an MSAL Confidential client application if needed
+        /// </summary>
+        /// <param name="httpContext"></param>
+        /// <param name="claimsPrincipal"></param>
+        /// <returns></returns>
+        private IConfidentialClientApplication GetOrBuildConfidentialClientApplication(HttpContext httpContext, ClaimsPrincipal claimsPrincipal)
+        {
+            if (application == null)
+            {
+                application = BuildConfidentialClientApplication(httpContext, claimsPrincipal);
+            }
+            return application;
         }
 
         /// <summary>
@@ -385,7 +403,8 @@ namespace Microsoft.Identity.Web.Client
                 IEnumerable<string> requestedScopes;
                 if (jwtToken != null)
                 {
-                    userAssertion = new UserAssertion(jwtToken.RawData, "urn:ietf:params:oauth:grant-type:jwt-bearer");
+                    string rawData = (jwtToken.InnerToken != null) ? jwtToken.InnerToken.RawData : jwtToken.RawData;
+                    userAssertion = new UserAssertion(rawData, "urn:ietf:params:oauth:grant-type:jwt-bearer");
                     requestedScopes = scopes ?? jwtToken.Audiences.Select(a => $"{a}/.default");
                 }
                 else
@@ -394,7 +413,7 @@ namespace Microsoft.Identity.Web.Client
                     // TODO: Understand if we could support other kind of client assertions (SAML);
                 }
 
-                var application = BuildConfidentialClientApplication(httpContext, principal);
+                var application = GetOrBuildConfidentialClientApplication(httpContext, principal);
 
                 // .Result to make sure that the cache is filled-in before the controller tries to get access tokens
                 var result = application.AcquireTokenOnBehalfOf(requestedScopes.Except(scopesRequestedByMsalNet), userAssertion)
@@ -408,9 +427,8 @@ namespace Microsoft.Identity.Web.Client
             }
         }
 
-
         /// <summary>
-        /// Used in Web APIs (which therefore cannot have an interaction with the user). 
+        /// Used in Web APIs (which therefore cannot have an interaction with the user).
         /// Replies to the client through the HttpReponse by sending a 403 (forbidden) and populating wwwAuthenticateHeaders so that
         /// the client can trigger an iteraction with the user so that the user consents to more scopes
         /// </summary>
@@ -457,7 +475,7 @@ namespace Microsoft.Identity.Web.Client
         {
             // Normally app developers should not make decisions based on the internal AAD code
             // however until the STS sends sub-error codes for this error, this is the only
-            // way to distinguish the case. 
+            // way to distinguish the case.
             // This is subject to change in the future
             return (msalSeviceException.Message.Contains("AADSTS50013"));
         }

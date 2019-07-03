@@ -55,9 +55,8 @@ This function removes the Azure AD applications for the sample. These applicatio
     if ($app)
     {
         Remove-AzureADApplication -ObjectId $app.ObjectId
-        Write-Host "Removed."
+        Write-Host "Removed WebApp-RolesClaims."
     }
-
-}
+    }
 
 Cleanup -Credential $Credential -tenantId $TenantId

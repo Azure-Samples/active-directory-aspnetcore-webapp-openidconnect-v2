@@ -145,6 +145,8 @@ Function ConfigureApplications
    so that they are consistent with the Applications parameters
 #> 
 
+    $commonendpoint = "common"
+
     # $tenantId is the Active Directory Tenant. This is a GUID which represents the "Directory ID" of the AzureAD tenant
     # into which you want to create the apps. Look it up in the Azure portal in the "Properties" of the Azure AD.
 
@@ -191,7 +193,6 @@ Function ConfigureApplications
                                                   -IdentifierUris "https://$tenantName/WebApp-RolesClaims" `
                                                   -PasswordCredentials $key `
                                                   -Oauth2AllowImplicitFlow $true `
-                                                  -GroupMembershipClaims "SecurityGroup" `
                                                   -PublicClient $False
 
    $currentAppId = $webAppAadApplication.AppId
@@ -203,7 +204,7 @@ Function ConfigureApplications
    { 
         Add-AzureADApplicationOwner -ObjectId $webAppAadApplication.ObjectId -RefObjectId $user.ObjectId
         Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($webAppServicePrincipal.DisplayName)'"
-
+        
         # assign the current user to the app as well
         New-AzureADUserAppRoleAssignment -ObjectId $user.ObjectId -PrincipalId $user.ObjectId -ResourceId $webAppServicePrincipal.ObjectId -Id ([Guid]::Empty) 
    }
@@ -234,8 +235,14 @@ Function ConfigureApplications
    $dictionary = @{ "ClientId" = $webAppAadApplication.AppId;"TenantId" = $tenantId;"Domain" = $tenantName;"ClientSecret" = $webAppAppKey };
    UpdateTextFile -configFilePath $configFile -dictionary $dictionary
    Write-Host ""
-   Write-Host -ForegroundColor Green "Run the ..\CreateUsersAndRoles.ps1 command to automatically create a number of users, app roles and assign users to these roles or refer to the 'Define your application roles' section in README on how to configure your newly created app further for this sample."
+   Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+   Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
+   Write-Host "- For 'webApp'"
+   Write-Host "  - Navigate to '$webAppPortalUrl'"
+   Write-Host "  - Run the ..\CreateUsersAndRoles.ps1 command to automatically create a number of users, app roles and assign users to these roles or refer to the 'Define your application roles' section in README on how to configure your newly created app further for this sample." -ForegroundColor Red 
 
+   Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+     
    Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  
 }
 

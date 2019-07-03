@@ -56,7 +56,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             this.memoryCache = cache;
             this.httpContextAccessor = httpContextAccessor;
 
-            if (option != null)
+            if (option == null)
             {
                 this.CacheOptions = new MSALMemoryTokenCacheOptions();
             }
@@ -101,7 +101,6 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
 
                 // Ideally, methods that load and persist should be thread safe.MemoryCache.Get() is thread safe.
                 this.memoryCache.Set(cacheKey, args.TokenCache.SerializeMsalV3(), this.CacheOptions.SlidingExpiration);
-
             }
         }
 
@@ -112,7 +111,6 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
         private void UserTokenCacheBeforeAccessNotification(TokenCacheNotificationArgs args)
         {
-
             string cacheKey = httpContextAccessor.HttpContext.User.GetMsalAccountId();
 
             if (string.IsNullOrWhiteSpace(cacheKey))

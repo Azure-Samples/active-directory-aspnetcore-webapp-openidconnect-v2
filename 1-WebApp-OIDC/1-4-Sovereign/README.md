@@ -8,6 +8,8 @@ endpoint: AAD v2.0
 ---
 # Build an ASP.NET Core Web app signing-in users in sovereign clouds with the Microsoft identity platform
 
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
+
 ## Scenario
 
 This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users. Users can only sign in with their 'work and school' accounts in their organization **belonging to national or sovereign clouds**. This sample use  US Government cloud scenario. It leverages the ASP.NET Core OpenID Connect middleware.

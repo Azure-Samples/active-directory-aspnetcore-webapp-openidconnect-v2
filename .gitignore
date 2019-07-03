@@ -90,3 +90,9 @@
 /4-WebApp-your-API/packages
 /4-WebApp-your-API/TodoListService/bin/Debug/netcoreapp2.2
 /4-WebApp-your-API/TodoListService/obj
+/2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph/obj/Release/netcoreapp2.2
+/4-WebApp-your-API/Client/bin/Release/netcoreapp2.2
+/4-WebApp-your-API/TodoListService/bin/Release/netcoreapp2.2
+/5-WebApp-AuthZ/5-1-Roles/bin/Release/netcoreapp2.2
+/5-WebApp-AuthZ/5-2-Groups/bin/Release/netcoreapp2.2
+/Microsoft.Identity.Web.Test/obj
