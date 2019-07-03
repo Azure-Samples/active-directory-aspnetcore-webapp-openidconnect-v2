@@ -19,10 +19,10 @@ namespace Microsoft.Identity.Web
     {
         /// <summary>
         /// Protects the Web API with Microsoft Identity Platform v2.0 (AAD v2.0)
-        /// This supposes that the configuration files have a section named "AzureAD"
+        /// This expects the configuration files will have a section named "AzureAD"
         /// </summary>
-        /// <param name="services">Service collection to which to add authentication</param>
-        /// <param name="configuration">Configuration</param>
+        /// <param name="services">Service collection to which to add this authentication scheme</param>
+        /// <param name="configuration">The Configuration object</param>
         /// <returns></returns>
         public static IServiceCollection AddProtectWebApiWithMicrosoftIdentityPlatformV2(this IServiceCollection services, IConfiguration configuration, X509Certificate2 tokenDecryptionCertificate = null)
         {
