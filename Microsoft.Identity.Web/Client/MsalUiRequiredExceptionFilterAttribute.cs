@@ -61,7 +61,7 @@ namespace Microsoft.Identity.Web.Client
         /// Build Authentication properties needed for an incremental consent.
         /// </summary>
         /// <param name="scopes">Scopes to request</param>
-        /// <param name="ex">ui is present</param>
+        /// <param name="ex">MsalUiRequiredException instance</param>
         /// <param name="context">current http context in the pipeline</param>
         /// <returns>AuthenticationProperties</returns>
         private AuthenticationProperties BuildAuthenticationPropertiesForIncrementalConsent(

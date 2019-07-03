@@ -98,7 +98,7 @@ namespace Microsoft.Identity.Web.Client
         /// From the configuration of the Authentication of the ASP.NET Core Web API:
         /// <code>OpenIdConnectOptions options;</code>
         ///
-        /// Subscribe to the authorization code recieved event:
+        /// Subscribe to the authorization code received event:
         /// <code>
         ///  options.Events = new OpenIdConnectEvents();
         ///  options.Events.OnAuthorizationCodeReceived = OnAuthorizationCodeReceived;
@@ -127,6 +127,13 @@ namespace Microsoft.Identity.Web.Client
                 // As AcquireTokenByAuthorizationCodeAsync is asynchronous we want to tell ASP.NET core that we are handing the code
                 // even if it's not done yet, so that it does not concurrently call the Token endpoint.
                 context.HandleCodeRedemption();
+
+                // The cache will need the claims from the ID token. In the case of guest scenarios
+                // If they are not yet in the HttpContext.User's claims, adding them.
+                if (!context.HttpContext.User.Claims.Any())
+                {
+                    (context.HttpContext.User.Identity as ClaimsIdentity).AddClaims(context.Principal.Claims);
+                }
 
                 var application = BuildConfidentialClientApplication(context.HttpContext, context.Principal);
 
@@ -351,31 +358,18 @@ namespace Microsoft.Identity.Web.Client
 
             AuthenticationResult result = null;
 
-            try
+            if (string.IsNullOrWhiteSpace(tenant))
             {
-                if (string.IsNullOrWhiteSpace(tenant))
-                {
-                    result = await application.AcquireTokenSilent(scopes.Except(scopesRequestedByMsalNet), account)
-                                               .ExecuteAsync();
-                }
-                else
-                {
-                    string authority = application.Authority.Replace(new Uri(application.Authority).PathAndQuery, $"/{tenant}/");
-                    result = await application.AcquireTokenSilent(scopes.Except(scopesRequestedByMsalNet), account)
-                                              .WithAuthority(authority)
-                                              .ExecuteAsync();
-                }
+                result = await application.AcquireTokenSilent(scopes.Except(scopesRequestedByMsalNet), account)
+                                           .ExecuteAsync();
             }
-            catch (MsalUiRequiredException ex)
+            else
             {
-                // A MsalUiRequiredException happened on AcquireTokenSilent.
-                // This indicates you need to call AcquireTokenInteractive to acquire a token
-                System.Diagnostics.Debug.WriteLine($"MsalUiRequiredException: {ex.Message}");
-
-                result = await application.AcquireTokenForClient(scopes)
-                            .ExecuteAsync();
+                string authority = application.Authority.Replace(new Uri(application.Authority).PathAndQuery, $"/{tenant}/");
+                result = await application.AcquireTokenSilent(scopes.Except(scopesRequestedByMsalNet), account)
+                                          .WithAuthority(authority)
+                                          .ExecuteAsync();
             }
-
 
             return result.AccessToken;
         }

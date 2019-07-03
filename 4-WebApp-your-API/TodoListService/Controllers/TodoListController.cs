@@ -25,6 +25,7 @@ SOFTWARE.
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web.Client;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
