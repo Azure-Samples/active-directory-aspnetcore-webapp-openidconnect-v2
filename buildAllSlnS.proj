@@ -1,0 +1,8 @@
+<Project DefaultTargets="Build">
+  <ItemGroup>
+    <Solution Include="**\*.sln" />
+  </ItemGroup>
+  <Target Name="Build">
+    <MSBuild Projects="@(Solution)" Targets="Build" Properties="Configuration=Release" />
+  </Target>
+</Project>
