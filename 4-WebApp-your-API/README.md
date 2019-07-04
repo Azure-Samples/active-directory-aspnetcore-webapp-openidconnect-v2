@@ -246,9 +246,9 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
      by this line:
 
      ```CSharp
-            services.AddAzureAdV2Authentication(Configuration)
-                    .AddMsal(new string[] { Configuration["TodoList:TodoListScope"] })
-                    .AddInMemoryTokenCaches();
+     services.AddAzureAdV2Authentication(Configuration)
+          .AddMsal(new string[] { Configuration["TodoList:TodoListScope"] })
+          .AddInMemoryTokenCaches();
      ```
 
      This enables your application to use the Microsoft identity platform (formerly Azure AD v2.0) endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
@@ -260,9 +260,9 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
   - Then add the following code to inject the ToDoList service implementation in the client
 
    ```CSharp
-            // Add APIs
-            services.AddTodoListService(Configuration);
-    ```
+     // Add APIs
+     services.AddTodoListService(Configuration);
+   ```
 
     1. Open the `appsettings.json` file and copy the keys from the sample's corresponding file under the `AzureAd` and `TodoList` sections.
 
@@ -277,9 +277,9 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
 1. Update the `configureServices` method in `startup.cs` to add the MSAL library and a token cache.
 
     ```CSharp
-            services.AddAzureAdV2Authentication(Configuration)
-                    .AddMsal(new string[] { Configuration["TodoList:TodoListScope"] })
-                    .AddInMemoryTokenCaches();
+     services.AddAzureAdV2Authentication(Configuration)
+          .AddMsal(new string[] { Configuration["TodoList:TodoListScope"] })
+          .AddInMemoryTokenCaches();
     ```
 
 ### Creating the Web API project (TodoListService)
@@ -324,8 +324,9 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
 
   ```Csharp
   services.AddProtectWebApiWithMicrosoftIdentityPlatformV2(Configuration)
-          .AddProtectedApiCallsWebApis(Configuration, new string[] { Configuration["TodoList:TodoListScope"] })
-          .AddInMemoryTokenCaches();
+          .AddProtectedApiCallsWebApis(Configuration, 
+          new string[] { Configuration["TodoList:TodoListScope"] })
+          AddInMemoryTokenCaches();
   ```
 
   `AddProtectWebApiWithMicrosoftIdentityPlatformV2` does the following:

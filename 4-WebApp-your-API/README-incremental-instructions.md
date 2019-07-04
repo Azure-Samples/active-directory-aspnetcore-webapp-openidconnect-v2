@@ -206,11 +206,11 @@ Add a reference to the `Microsoft.Identity.Web` library if not already present. 
 1. Add a section name **TodoList** in the appsettings.json file and add the keys `TodoListScope`, `TodoListBaseAddress`.
 1. Update the `configureServices` method in `startup.cs` to add the MSAL library and a token cache.
 
-    ```CSharp
-            services.AddAzureAdV2Authentication(Configuration)
-                    .AddMsal(new string[] { Configuration["TodoList:TodoListScope"] })
-                    .AddInMemoryTokenCaches();
-    ```
+```CSharp
+    services.AddAzureAdV2Authentication(Configuration)
+            .AddMsal(new string[] { Configuration["TodoList:TodoListScope"] })
+            .AddInMemoryTokenCaches();
+ ```
 
 ### Creating the Web API project (TodoListService)
 
@@ -250,8 +250,9 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
 
   ```Csharp
   services.AddProtectWebApiWithMicrosoftIdentityPlatformV2(Configuration)
-          .AddProtectedApiCallsWebApis(Configuration, new string[] { Configuration["TodoList:TodoListScope"] })
-          .AddInMemoryTokenCaches();
+          .AddProtectedApiCallsWebApis(Configuration, 
+          new string[] { Configuration["TodoList:TodoListScope"] })
+          AddInMemoryTokenCaches();
   ```
 
   `AddProtectWebApiWithMicrosoftIdentityPlatformV2` does the following:
@@ -260,7 +261,6 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
   - sets the audiences to validate
   - register an issuer validator that accepts issuers to be in the Microsoft identity platform clouds.
 
-
 The implementations of these classes are in the Microsoft.Identity.Web library (and folder), and they are designed to be reusable in your applications (Web apps and Web apis). You are encouraged to browse the code in the library to understand the changes in detail.
 
   - Then add the following code to inject the ToDoList service implementation in the client
@@ -268,7 +268,7 @@ The implementations of these classes are in the Microsoft.Identity.Web library (
    ```CSharp
         // Add APIs
         services.AddTodoListService(Configuration);
-    ```
+  ```
 
 - At the beginning of the `Configure` method, insert `app.UseSession()`. This code ensures that the session exists for the session-based token cache to work properly. You can skip this if you do not plan to use the session based token cache.
 
