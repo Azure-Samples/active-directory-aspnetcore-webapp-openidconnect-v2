@@ -19,7 +19,7 @@ namespace Microsoft.Identity.Web.Client
         /// From the configuration of the Authentication of the ASP.NET Core Web API: 
         /// <code>OpenIdConnectOptions options;</code>
         /// 
-        /// Subscribe to the authorization code recieved event:
+        /// Subscribe to the authorization code received event:
         /// <code>
         ///  options.Events = new OpenIdConnectEvents();
         ///  options.Events.OnAuthorizationCodeReceived = OnAuthorizationCodeReceived;

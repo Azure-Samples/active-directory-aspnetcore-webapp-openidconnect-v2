@@ -101,7 +101,6 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
 
                 // Ideally, methods that load and persist should be thread safe.MemoryCache.Get() is thread safe.
                 this.memoryCache.Set(cacheKey, args.TokenCache.SerializeMsalV3(), this.CacheOptions.SlidingExpiration);
-
             }
         }
 

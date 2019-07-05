@@ -87,7 +87,7 @@ namespace Microsoft.Identity.Web
         /// <summary>
         /// Gets the domain-hint associated with an identity
         /// </summary>
-        /// <param name="claimsPrincipal">Identity for which to compte the domain-hint</param>
+        /// <param name="claimsPrincipal">Identity for which to compute the domain-hint</param>
         /// <returns>domain-hint for the identity, or <c>null</c> if it cannot be found</returns>
         public static string GetDomainHint(this ClaimsPrincipal claimsPrincipal)
         {
