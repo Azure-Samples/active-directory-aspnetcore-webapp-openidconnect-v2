@@ -10,7 +10,7 @@ endpoint: AAD v2.0
 
 # How to secure a Web API built with ASP.NET Core using the Microsoft identity platform (formerly Azure Active Directory for developers)
 
-![Build badge](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 > The sample in this folder is part of a multi-chapter tutorial. The first phase is available at [An ASP.NET Core Web app signing-in users with the Microsoft identity platform in your organization](../1-WebApp-OIDC/1-1-MyOrg).
 >
