@@ -1,11 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.Identity.Web.Client
 {
@@ -13,7 +13,7 @@ namespace Microsoft.Identity.Web.Client
     /// Filter used on a controller action to trigger an incremental consent.
     /// </summary>
     /// <example>
-    /// The following controller action will trigger 
+    /// The following controller action will trigger
     /// <code>
     /// [MsalUiRequiredExceptionFilter(Scopes = new[] {"Mail.Send"})]
     /// public async Task<IActionResult> SendEmail()
@@ -24,7 +24,7 @@ namespace Microsoft.Identity.Web.Client
     public class MsalUiRequiredExceptionFilterAttribute : ExceptionFilterAttribute
     {
         public string[] Scopes { get; set; }
-        
+
         public override void OnException(ExceptionContext context)
         {
             MsalUiRequiredException msalUiRequiredException = context.Exception as MsalUiRequiredException;
@@ -33,7 +33,7 @@ namespace Microsoft.Identity.Web.Client
                 msalUiRequiredException = context.Exception?.InnerException as MsalUiRequiredException;
             }
 
-            if (msalUiRequiredException!=null)
+            if (msalUiRequiredException != null)
             {
                 if (CanBeSolvedByReSignInUser(msalUiRequiredException))
                 {
@@ -42,10 +42,10 @@ namespace Microsoft.Identity.Web.Client
                     context.Result = new ChallengeResult(properties);
                 }
             }
-            
+
             base.OnException(context);
         }
-        
+
         private bool CanBeSolvedByReSignInUser(MsalUiRequiredException ex)
         {
             // ex.ErrorCode != MsalUiRequiredException.UserNullError indicates a cache problem.
@@ -61,7 +61,7 @@ namespace Microsoft.Identity.Web.Client
         /// Build Authentication properties needed for an incremental consent.
         /// </summary>
         /// <param name="scopes">Scopes to request</param>
-        /// <param name="ex">ui is present</param>
+        /// <param name="ex">MsalUiRequiredException instance</param>
         /// <param name="context">current http context in the pipeline</param>
         /// <returns>AuthenticationProperties</returns>
         private AuthenticationProperties BuildAuthenticationPropertiesForIncrementalConsent(

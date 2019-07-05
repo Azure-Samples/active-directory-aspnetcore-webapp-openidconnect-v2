@@ -35,5 +35,7 @@ namespace Microsoft.Identity.Web
         public const string PreferredUserName = "preferred_username";
         public const string TenantId = "http://schemas.microsoft.com/identity/claims/tenantid";
         public const string Tid = "tid";
+        public const string Scope = "http://schemas.microsoft.com/identity/claims/scope";
+        public const string Roles = "roles";
     }
 }

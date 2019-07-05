@@ -1,0 +1,1 @@
+msbuild buildAllSlns.proj

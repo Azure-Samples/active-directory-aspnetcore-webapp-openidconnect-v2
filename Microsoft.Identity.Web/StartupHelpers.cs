@@ -31,7 +31,6 @@ using Microsoft.Identity.Web.Client;
 using Microsoft.Identity.Web.Resource;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Microsoft.Identity.Web

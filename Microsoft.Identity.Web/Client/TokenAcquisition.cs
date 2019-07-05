@@ -98,7 +98,7 @@ namespace Microsoft.Identity.Web.Client
         /// From the configuration of the Authentication of the ASP.NET Core Web API:
         /// <code>OpenIdConnectOptions options;</code>
         ///
-        /// Subscribe to the authorization code recieved event:
+        /// Subscribe to the authorization code received event:
         /// <code>
         ///  options.Events = new OpenIdConnectEvents();
         ///  options.Events.OnAuthorizationCodeReceived = OnAuthorizationCodeReceived;
@@ -135,7 +135,6 @@ namespace Microsoft.Identity.Web.Client
                 {
                     (context.HttpContext.User.Identity as ClaimsIdentity).AddClaims(context.Principal.Claims);
                 }
-
 
                 var application = GetOrBuildConfidentialClientApplication(context.HttpContext, context.Principal);
 
@@ -289,7 +288,7 @@ namespace Microsoft.Identity.Web.Client
             }
         }
 
-        IConfidentialClientApplication application;
+        private IConfidentialClientApplication application;
 
         /// <summary>
         /// Creates an MSAL Confidential client application if needed
@@ -368,14 +367,15 @@ namespace Microsoft.Identity.Web.Client
             // Get the account
             IAccount account = await application.GetAccountAsync(accountIdentifier);
 
-            // Special case for guest users as the Guest iod / tenant id are not surfaced.
+            // Special case for guest users as the Guest id / tenant id are not surfaced.
             if (account == null)
             {
                 var accounts = await application.GetAccountsAsync();
                 account = accounts.FirstOrDefault(a => a.Username == loginHint);
             }
 
-            AuthenticationResult result;
+            AuthenticationResult result = null;
+
             if (string.IsNullOrWhiteSpace(tenant))
             {
                 result = await application.AcquireTokenSilent(scopes.Except(scopesRequestedByMsalNet), account)
@@ -388,6 +388,7 @@ namespace Microsoft.Identity.Web.Client
                                           .WithAuthority(authority)
                                           .ExecuteAsync();
             }
+
             return result.AccessToken;
         }
 
@@ -426,9 +427,8 @@ namespace Microsoft.Identity.Web.Client
             }
         }
 
-
         /// <summary>
-        /// Used in Web APIs (which therefore cannot have an interaction with the user). 
+        /// Used in Web APIs (which therefore cannot have an interaction with the user).
         /// Replies to the client through the HttpReponse by sending a 403 (forbidden) and populating wwwAuthenticateHeaders so that
         /// the client can trigger an iteraction with the user so that the user consents to more scopes
         /// </summary>
@@ -475,7 +475,7 @@ namespace Microsoft.Identity.Web.Client
         {
             // Normally app developers should not make decisions based on the internal AAD code
             // however until the STS sends sub-error codes for this error, this is the only
-            // way to distinguish the case. 
+            // way to distinguish the case.
             // This is subject to change in the future
             return (msalSeviceException.Message.Contains("AADSTS50013"));
         }
