@@ -158,7 +158,7 @@ The content of `appRoles` should be the following (the `id` can be any unique Gu
 
 1. You will be prompted to consent during the sign-in process.
 
-![First time Consent](ReadmeFiles/Sign-in-Consent)
+![First time Consent](ReadmeFiles/Sign-in-Consent.png)
 
 1. On the home page, the app lists the various claims it obtained from your [ID token](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens). You'd notice a claim named `roles`. There will be one `roles` claim for each app role the signed-in use is assigned to.
 
