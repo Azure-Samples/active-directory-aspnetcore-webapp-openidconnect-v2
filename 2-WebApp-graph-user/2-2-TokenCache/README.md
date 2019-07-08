@@ -102,7 +102,7 @@ public void ConfigureServices(IServiceCollection services)
 The aforementioned four lines of code are explained below.
 
 1. The first two lines enable MSAL.NET to hook-up to the OpenID Connect events to redeem the authorization code obtained by the ASP.NET Core middleware. After obtaining a token for Microsoft Graph, it saves it into the token cache, for use by the Controllers.
-1. The last two lines hook up the Sql server database based token caching solution to MSAL.NET. The Sql based token cache requires a **Connection string** named `TokenCacheDbConnStr` available in the **ConnectionStrings** collections of the **appsettings.js** configuration file. 
+1. The last two lines hook up the Sql server database based token caching solution to MSAL.NET. The Sql based token cache requires a **Connection string** named `TokenCacheDbConnStr` available in the **ConnectionStrings** collections of the **appsettings.json** configuration file. 
 
 The files `MSALAppSqlTokenCacheProvider.cs` and `MSALPerUserSqlTokenCacheProvider` of the `Microsoft.Identity.Web` project contains the app and per-user token cache implementations that use Sql server as the token cache.
 
