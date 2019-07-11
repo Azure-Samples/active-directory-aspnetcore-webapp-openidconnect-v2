@@ -27,7 +27,7 @@ This sample first leverages the ASP.NET Core OpenID Connect middleware to sign i
 
 ![Sign in with the Microsoft identity platform for developers (formerly Azure AD v2.0)](ReadmeFiles/sign-in.png)
 
-> This is the fifth chapter of a set of tutorials. Once you understand how to receive the group memberships in a user's claims, you can try the sample [Add authorization using app roles & roles claims to an ASP.NET Core Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ-Roles) to learn about how to use the App roles in an app using the Microsoft Identity Platform to authenticate users. 
+> This is the fifth chapter of a set of tutorials. Once you understand how to receive the group memberships in a user's claims, you can try the sample [Add authorization using app roles & roles claims to an ASP.NET Core Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-1-Roles) to learn about how to use the App roles in an app using the Microsoft Identity Platform to authenticate users. 
 
 > Pre-requisites:
 >
