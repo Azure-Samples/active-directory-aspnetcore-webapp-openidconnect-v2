@@ -17,19 +17,19 @@ IF SUFFICIENT INFORMATION IS NOT PROVIDED VIA THE FOLLOWING TEMPLATE THE ISSUE M
 Please add an 'x' for the scenario(s) where you found an issue
 
 1. [ ] Web app that signs in users
-   1. [ ] with a work and school account in your organization: [1-WebApp-OIDC/1-1-MyOrg](../1-WebApp-OIDC/1-1-MyOrg)
-   1. [ ] with any work and school account: [/1-WebApp-OIDC/1-2-AnyOrg](../1-WebApp-OIDC/1-2-AnyOrg)
-   1. [ ] with any work or school account or Microsoft personal account: [1-WebApp-OIDC/1-3-AnyOrgOrPersonal](../1-WebApp-OIDC/1-3-AnyOrgOrPersonal)
-   1. [ ] with users in National or sovereign clouds [1-WebApp-OIDC/1-4-Sovereign](../1-WebApp-OIDC/1-4-Sovereign)
-   1. [ ] with B2C users 
+   1. [ ] with a work and school account in your organization: [1-WebApp-OIDC/1-1-MyOrg](../blob/master/1-WebApp-OIDC/1-1-MyOrg)
+   1. [ ] with any work and school account: [/1-WebApp-OIDC/1-2-AnyOrg](../blob/master/1-WebApp-OIDC/1-2-AnyOrg)
+   1. [ ] with any work or school account or Microsoft personal account: [1-WebApp-OIDC/1-3-AnyOrgOrPersonal](../blob/master/1-WebApp-OIDC/1-3-AnyOrgOrPersonal)
+   1. [ ] with users in National or sovereign clouds [1-WebApp-OIDC/1-4-Sovereign](../blob/master/1-WebApp-OIDC/1-4-Sovereign)
+   1. [ ] with B2C users [1-WebApp-OIDC/1-5-B2C](../blob/master/1-WebApp-OIDC/1-5-B2C)
 1. Web app that calls Microsoft Graph
-   1. [ ] Calling graph with the Microsoft Graph SDK: [2-WebApp-graph-user/2-1-Call-MSGraph](../2-WebApp-graph-user/2-1-Call-MSGraph)
-   1. [ ] With specific token caches: [2-WebApp-graph-user/2-2-TokenCache](../2-WebApp-graph-user/2-2-TokenCache)
-   1. [ ] Calling Microsoft Graph in national clouds: [2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph](../2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph)
-1. [ ] Web app calling several APIs [3-WebApp-multi-APIs](../3-WebApp-multi-APIs)
+   1. [ ] Calling graph with the Microsoft Graph SDK: [2-WebApp-graph-user/2-1-Call-MSGraph](../blob/master/2-WebApp-graph-user/2-1-Call-MSGraph)
+   1. [ ] With specific token caches: [2-WebApp-graph-user/2-2-TokenCache](../blob/master/2-WebApp-graph-user/2-2-TokenCache)
+   1. [ ] Calling Microsoft Graph in national clouds: [2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph](../blob/master/2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph)
+1. [ ] Web app calling several APIs [3-WebApp-multi-APIs](../blob/master/3-WebApp-multi-APIs)
 1. [ ] Web app calling your own Web API
 1. Web app restricting users
-   1. [ ] by Roles: [5-WebApp-AuthZ/5-1-Roles](../5-WebApp-AuthZ/5-1-Roles)
+   1. [ ] by Roles: [5-WebApp-AuthZ/5-1-Roles](../blob/master/5-WebApp-AuthZ/5-1-Roles)
    1. [ ] by Groups: [5-WebApp-AuthZ/5-2-Groups](../blob/master/5-WebApp-AuthZ/5-2-Groups)
 1. [ ] Deployment to Azure
 1. [ ] Other (please describe)
