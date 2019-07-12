@@ -78,17 +78,6 @@ namespace Microsoft.Identity.Web
                 // Force the account selection (to avoid automatic sign-in with the account signed-in with Windows)
                 //options.Prompt = "select_account";
 
-                // Handling the sign-out
-                options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
-                {
-                    var user = context.HttpContext.User;
-
-                    // Avoid displaying the select account dialog
-                    context.ProtocolMessage.LoginHint = user.GetLoginHint();
-                    context.ProtocolMessage.DomainHint = user.GetDomainHint();
-                    await Task.FromResult(0);
-                };
-
                 // Avoids having users being presented the select account dialog when they are already signed-in
                 // for instance when going through incremental consent
                 options.Events.OnRedirectToIdentityProvider = context =>
