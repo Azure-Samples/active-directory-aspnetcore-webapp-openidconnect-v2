@@ -30,7 +30,7 @@ Please add an 'x' for the scenario(s) where you found an issue
 1. [ ] Web app calling your own Web API
 1. Web app restricting users
    1. [ ] by Roles: [5-WebApp-AuthZ/5-1-Roles](../5-WebApp-AuthZ/5-1-Roles)
-   1. [ ] by Groups: [5-WebApp-AuthZ/5-2-Groups](../../../5-WebApp-AuthZ/5-2-Groups)
+   1. [ ] by Groups: [5-WebApp-AuthZ/5-2-Groups](5-WebApp-AuthZ/5-2-Groups)
 1. [ ] Deployment to Azure
 1. [ ] Other (please describe)
 
