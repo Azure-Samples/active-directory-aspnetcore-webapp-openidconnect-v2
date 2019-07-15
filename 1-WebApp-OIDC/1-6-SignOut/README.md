@@ -59,12 +59,9 @@ The ASP.NET Core OpenIdConnect middleware enables your app to intercept the call
 public static IServiceCollection AddAzureAdV2Authentication(this IServiceCollection services,
                                                             IConfiguration configuration)
 {
-    ...
     services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
     {
-        ...
         options.Authority = options.Authority + "/v2.0/";
-        ...
         
         options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
         {
