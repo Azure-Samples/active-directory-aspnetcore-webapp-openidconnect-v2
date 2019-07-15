@@ -69,7 +69,7 @@ Your web application registration should include the following information:
 1. Find the assignment for `ClientID` and replace the value with the Application ID from Step 4.
 1. Find the assignment for `SignUpSignInPolicyId` and replace with the name of the `Sign up and sign in` policy you created in Step 3.
 
-```json
+```JSon
 {
   "AzureAdB2C": {
     "Instance": "https://<your-tenant-name>.b2clogin.com",
