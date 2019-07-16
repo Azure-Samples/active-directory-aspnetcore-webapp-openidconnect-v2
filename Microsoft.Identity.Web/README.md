@@ -7,7 +7,7 @@ This library contains a set of reusable classes useful in Web Applications and W
 The library contains helper classes to:
 
 - **Bootstrap the web resource from the Startup.cs file** in your web application by just calling a few methods
-  - `AddAzureAdV2Authentication` to add authentication with the Microsoft Identity platform (AAD v2.0), including managing the authority validation, and the sign-out.
+  - `AddAzureAdV2Authentication` to add authentication with the Microsoft Identity platform (AAD v2.0), including managing the authority validation.
   
     ```CSharp
     services.AddAzureAdV2Authentication();
