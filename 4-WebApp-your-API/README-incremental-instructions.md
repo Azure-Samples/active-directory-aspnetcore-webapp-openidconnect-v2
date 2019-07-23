@@ -249,10 +249,8 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
   with
 
   ```Csharp
-  services.AddProtectWebApiWithMicrosoftIdentityPlatformV2(Configuration)
-          .AddProtectedApiCallsWebApis(Configuration, 
-          new string[] { Configuration["TodoList:TodoListScope"] })
-          AddInMemoryTokenCaches();
+    services.AddProtectWebApiWithMicrosoftIdentityPlatformV2(Configuration)
+         .AddInMemoryTokenCaches();
   ```
 
   `AddProtectWebApiWithMicrosoftIdentityPlatformV2` does the following:
