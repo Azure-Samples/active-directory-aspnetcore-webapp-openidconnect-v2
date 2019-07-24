@@ -282,7 +282,7 @@ namespace Microsoft.Identity.Web.Client
 
             if (account != null)
             {
-                this.UserTokenCacheProvider?.Clear(account.HomeAccountId.Identifier);
+                this.UserTokenCacheProvider?.Clear(user.GetMsalAccountId());
 
                 await app.RemoveAsync(account);
             }

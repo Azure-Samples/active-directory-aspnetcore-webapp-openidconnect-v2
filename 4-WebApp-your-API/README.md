@@ -212,7 +212,7 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
 
 ### Creating the client web app (TodoListClient)
 
-#### Option 2: Create the sample from the command line
+#### Step 1: Create the sample from the command line
 
 1. Run the following command to create a sample from the command line using the `SingleOrg` template:
 
@@ -223,6 +223,8 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
     ```
 
     > Note: Replace *`Enter_the_Application_Id_here`* with the *Application Id* from the application Id you just registered in the Application Registration Portal and *`<yourTenantId>`* with the *Directory (tenant) ID* where you created your application.
+
+#### Step 2: Modified the generated code
 
 1. Open the generated project (.csproj) in Visual Studio, and save the solution.
 1. Add the `Microsoft.Identity.Web.csproj` project which is located at the root of this sample repo, to your solution (**Add Existing Project ...**). It's used to simplify signing-in and, in the next tutorial phases, to get a token.
@@ -264,7 +266,7 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
      services.AddTodoListService(Configuration);
    ```
 
-    1. Open the `appsettings.json` file and copy the keys from the sample's corresponding file under the `AzureAd` and `TodoList` sections.
+  1. Open the `appsettings.json` file and copy the keys from the sample's corresponding file under the `AzureAd` and `TodoList` sections.
 
 #### Add a model (TodoListItem) and add the controller and views
 
@@ -286,7 +288,7 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
 
 The code for the TodoListService was created in the following way:
 
-#### Create the web api using the ASP.NET Core templates
+#### Step 1: Create the web api using the ASP.NET Core templates
 
 ```Text
 md TodoListService
@@ -300,7 +302,7 @@ dotnet new webapi -au=SingleOrg
 
 In the TodoListService project, add a folder named `Models` and then create a new  file named `TodoItem.cs`. Copy the contents of the TodoListService\Models\TodoItem.cs in this file.
 
-### Modify the startup.cs file to validate bearer access tokens received by the Web API
+### Modify the Startup.cs file to validate bearer access tokens received by the Web API
 
 1. Add the `Microsoft.Identity.Web.csproj` project which is located at the root of this sample repo, to your solution (**Add Existing Project ...**).
 1. Add a reference from your newly generated project to `Microsoft.Identity.Web` (right click on the **Dependencies** node under your new project, and choose **Add Reference ...**, and then in the projects tab find the `Microsoft.Identity.Web` project)
@@ -323,10 +325,8 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
   with
 
   ```Csharp
-  services.AddProtectWebApiWithMicrosoftIdentityPlatformV2(Configuration)
-          .AddProtectedApiCallsWebApis(Configuration, 
-          new string[] { Configuration["TodoList:TodoListScope"] })
-          AddInMemoryTokenCaches();
+    services.AddProtectWebApiWithMicrosoftIdentityPlatformV2(Configuration)
+         .AddInMemoryTokenCaches();
   ```
 
   `AddProtectWebApiWithMicrosoftIdentityPlatformV2` does the following:
@@ -335,7 +335,7 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
   - sets the audiences to validate
   - register an issuer validator that accepts issuers to be in the Microsoft identity platform clouds.
 
-The implementations of these classes are in the Microsoft.Identity.Web library (and folder), and they are designed to be reusable in your applications (Web apps and Web apis). You are encouraged to browse the code in the library to understand the changes in detail.
+The implementations of these classes are in the `Microsoft.Identity.Web` library (and folder), and they are designed to be reusable in your applications (Web apps and Web apis). You are encouraged to browse the code in the library to understand the changes in detail.
 
 - At the beginning of the `Configure` method, insert `app.UseSession()`. This code ensures that the session exists for the session-based token cache to work properly. You can skip this if you do not plan to use the session based token cache.
 
