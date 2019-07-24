@@ -99,7 +99,7 @@ public static IServiceCollection AddMsal(this IServiceCollection services, IEnum
 
 The **Logout Url** that you have registered for your application enables you to implement single sign-out. Indeed, the Microsoft identity platform logout endpoint will call the **Logout Url** registered with your application. This call happens whether or not the sign-out was initiated from your web app, or from another web app or the browser. For more information, see [Single sign-out](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc#single-sign-out) in the conceptual documentation.
 
-In our tutorial, you registered `https://localhost:44321/signout-oidc` as the **Logout Url** but you haven't created the `signout-oidc` endpoint. This endpoint is actually implemented by ASP.NET Core so there is no need to create it, however, if you want to intercept you should use `OnRemoteSignOut` event:
+In our tutorial, you registered `https://localhost:44321/signout-oidc` as the **Logout Url** but you haven't created the `signout-oidc` endpoint. This endpoint is actually implemented by ASP.NET Core so there is no need to create it, however, if you want to intercept it you should use `OnRemoteSignOut` event:
 
 ```CSharp
 options.Events.OnRemoteSignOut = async context =>
