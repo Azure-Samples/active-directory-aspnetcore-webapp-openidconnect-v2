@@ -8,6 +8,6 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureADB2C.UI" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.2.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.2.1" />
   </ItemGroup>
 </Project>
