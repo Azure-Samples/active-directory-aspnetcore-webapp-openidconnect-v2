@@ -23,7 +23,6 @@ SOFTWARE.
 */
 
 using System;
-using Microsoft.EntityFrameworkCore;
 
 namespace Microsoft.Identity.Web.Client.TokenCacheProviders
 {
