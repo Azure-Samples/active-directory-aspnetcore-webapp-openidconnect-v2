@@ -2,6 +2,10 @@
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "http://localhost/WebApp-OpenIDConnect-DotNet",
+      "sslPort": 0
+    },
     "iisExpress": {
       "applicationUrl": "http://localhost:3110/",
       "sslPort": 44321
@@ -21,7 +25,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:3110/"
+      "applicationUrl": "https://localhost:3110/"
     }
   }
 }

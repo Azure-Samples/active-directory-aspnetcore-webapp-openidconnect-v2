@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.Client.TokenCacheProviders;
+using WebApp_OpenIDConnect_DotNet.Database;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
 
@@ -31,13 +33,16 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+            
+            //register database context
+            services.AddDbContext<DataContext>(o => o.UseSqlite("Data Source=tokencache.sqlite"));
 
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
             services.AddAzureAdV2Authentication(Configuration)
                 .AddMsal(new string[] { Constants.ScopeUserRead })
-                    .AddSqlAppTokenCache(new MSALSqlTokenCacheOptions(Configuration.GetConnectionString("TokenCacheDbConnStr")))
-                    .AddSqlPerUserTokenCache(new MSALSqlTokenCacheOptions(Configuration.GetConnectionString("TokenCacheDbConnStr")));
+                    .AddSqlAppTokenCache(new MSALSqlTokenCacheOptions(typeof(DataContext)))
+                    .AddSqlPerUserTokenCache(new MSALSqlTokenCacheOptions(typeof(DataContext)));
 
             // Add Graph
             services.AddGraphService(Configuration);
