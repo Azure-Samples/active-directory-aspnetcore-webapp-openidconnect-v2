@@ -42,7 +42,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <summary>
         /// The EF's DBContext object to be used to read and write from the Sql server database.
         /// </summary>
-        private TokenCacheDbContext TokenCacheDb;
+        private ITokenCacheDbContext TokenCacheDb;
 
         /// <summary>
         /// This keeps the latest copy of the token in memory to save calls to DB, if possible.
@@ -60,7 +60,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="protectionProvider">The data protection provider. Requires the caller to have used serviceCollection.AddDataProtection();</param>
         /// <param name="tokenCacheDbContext">The DbContext to the database where tokens will be cached.</param>
         /// <param name="httpContext">The current HttpContext that has a user signed-in</param>
-        public MSALPerUserSqlTokenCacheProvider(TokenCacheDbContext tokenCacheDbContext, IDataProtectionProvider protectionProvider, IHttpContextAccessor httpContext)
+        public MSALPerUserSqlTokenCacheProvider(ITokenCacheDbContext tokenCacheDbContext, IDataProtectionProvider protectionProvider, IHttpContextAccessor httpContext)
             : this(tokenCacheDbContext, protectionProvider, httpContext?.HttpContext?.User)
         {
             this.httpContextAccesssor = httpContext;
@@ -71,7 +71,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="protectionProvider">The protection provider.</param>
         /// <param name="user">The current user .</param>
         /// <exception cref="ArgumentNullException">protectionProvider - The app token cache needs an {nameof(IDataProtectionProvider)}</exception>
-        public MSALPerUserSqlTokenCacheProvider(TokenCacheDbContext tokenCacheDbContext, IDataProtectionProvider protectionProvider, ClaimsPrincipal user)
+        public MSALPerUserSqlTokenCacheProvider(ITokenCacheDbContext tokenCacheDbContext, IDataProtectionProvider protectionProvider, ClaimsPrincipal user)
         {
             if (protectionProvider == null)
             {

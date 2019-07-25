@@ -43,7 +43,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <summary>
         /// The EF's DBContext object to be used to read and write from the Sql server database.
         /// </summary>
-        private TokenCacheDbContext TokenCacheDb;
+        private ITokenCacheDbContext TokenCacheDb;
 
         /// <summary>
         /// This keeps the latest copy of the token in memory to save calls to DB, if possible.
@@ -64,7 +64,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="tokenCacheDbContext">The TokenCacheDbContext DbContext to read and write from Sql server.</param>
         /// <param name="azureAdOptionsAccessor"></param>
         /// <param name="protectionProvider">The data protection provider. Requires the caller to have used serviceCollection.AddDataProtection();</param>
-        public MSALAppSqlTokenCacheProvider(TokenCacheDbContext tokenCacheDbContext, IOptionsMonitor<AzureADOptions> azureAdOptionsAccessor, IDataProtectionProvider protectionProvider)
+        public MSALAppSqlTokenCacheProvider(ITokenCacheDbContext tokenCacheDbContext, IOptionsMonitor<AzureADOptions> azureAdOptionsAccessor, IDataProtectionProvider protectionProvider)
         {
             if (protectionProvider == null)
             {

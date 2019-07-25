@@ -22,6 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System;
+using Microsoft.EntityFrameworkCore;
+
 namespace Microsoft.Identity.Web.Client.TokenCacheProviders
 {
     /// <summary>
@@ -30,12 +33,9 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
     public class MSALSqlTokenCacheOptions
     {
         /// <summary>
-        /// Gets or sets the SQL connection string to the token cache database.
+        /// Get the SQL DB context type to the token cache database.
         /// </summary>
-        public string SqlConnectionString
-        {
-            get;
-        }
+        public Type ContextType { get; }
 
         /// <summary>
         /// Gets or sets the clientId of the application for whom this token cache instance is being created. (Optional)
@@ -47,18 +47,18 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         }
 
         /// <summary>Initializes a new instance of the <see cref="MSALSqlTokenCacheOptions"/> class.</summary>
-        /// <param name="sqlConnectionString">the SQL connection string to the token cache database.</param>
-        public MSALSqlTokenCacheOptions(string sqlConnectionString) :
-            this(sqlConnectionString, string.Empty)
+        /// <param name="sqlContextType">the SQL context type to the token cache database.</param>
+        public MSALSqlTokenCacheOptions(Type sqlContextType) :
+            this(sqlContextType, string.Empty)
         {
         }
 
         /// <summary>Initializes a new instance of the <see cref="MSALSqlTokenCacheOptions"/> class.</summary>
-        /// <param name="sqlConnectionString">The SQL connection string.</param>
+        /// <param name="sqlContext">the SQL context type to the token cache database.</param>
         /// <param name="clientId">The the clientId of the application for whom this token cache instance is being created. (Optional for User cache).</param>
-        public MSALSqlTokenCacheOptions(string sqlConnectionString, string clientId)
+        public MSALSqlTokenCacheOptions(Type sqlContextType, string clientId)
         {
-            this.SqlConnectionString = sqlConnectionString;
+            this.ContextType = sqlContextType;
             this.ClientId = clientId;
         }
     }

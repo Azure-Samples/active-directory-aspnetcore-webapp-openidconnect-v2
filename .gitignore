@@ -96,3 +96,5 @@
 /4-WebApp-your-API/TodoListService/obj
 /4-WebApp-your-API/TodoListService/bin
 /4-WebApp-your-API/Client/obj
+/Microsoft.Identity.Web.Test/bin/Debug/netcoreapp2.2
+/Microsoft.Identity.Web.Test/obj

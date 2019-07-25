@@ -28,6 +28,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Remotion.Linq.Clauses;
 
 namespace Microsoft.Identity.Web.Client.TokenCacheProviders
 {
@@ -37,7 +38,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="configuration">The configuration instance from where this method pulls the connection string to the Sql database.</param>
         /// <param name="sqlTokenCacheOptions">The MSALSqlTokenCacheOptions is used by the caller to specify the Sql connection string</param>
         /// <returns></returns>
-        public static IServiceCollection AddSqlTokenCaches(this IServiceCollection services, MSALSqlTokenCacheOptions sqlTokenCacheOptions)
+        public static IServiceCollection AddSqlTokenCaches<TContext>(this IServiceCollection services, MSALSqlTokenCacheOptions sqlTokenCacheOptions)
         {
             AddSqlAppTokenCache(services, sqlTokenCacheOptions);
             AddSqlPerUserTokenCache(services, sqlTokenCacheOptions);
@@ -48,26 +49,27 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="services">The services collection to add to.</param>
         /// <param name="sqlTokenCacheOptions">The MSALSqlTokenCacheOptions is used by the caller to specify the Sql connection string</param>
         /// <returns></returns>
-        public static IServiceCollection AddSqlAppTokenCache(this IServiceCollection services, MSALSqlTokenCacheOptions sqlTokenCacheOptions)
+        public static IServiceCollection AddSqlAppTokenCache(this IServiceCollection services, MSALSqlTokenCacheOptions sqlTokenCacheOptions) 
         {
             // Uncomment the following lines to create the database. In production scenarios, the database
             // will most probably be already present.
-/*
-            var tokenCacheDbContextBuilder = new DbContextOptionsBuilder<TokenCacheDbContext>();
-            tokenCacheDbContextBuilder.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString);
+            /*
+                        var tokenCacheDbContextBuilder = new DbContextOptionsBuilder<TokenCacheDbContext>();
+                        tokenCacheDbContextBuilder.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString);
 
-            var tokenCacheDbContextForCreation = new TokenCacheDbContext(tokenCacheDbContextBuilder.Options);
-            tokenCacheDbContextForCreation.Database.EnsureCreated();
-*/
+                        var tokenCacheDbContextForCreation = new TokenCacheDbContext(tokenCacheDbContextBuilder.Options);
+                        tokenCacheDbContextForCreation.Database.EnsureCreated();
+            */
             services.AddDataProtection();
 
-            services.AddDbContext<TokenCacheDbContext>(options =>
-                options.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString));
+
+            //services.AddDbContext<TokenCacheDbContext>(options =>
+            //    options.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString));
 
             services.AddScoped<IMSALAppTokenCacheProvider>(factory =>
             {
                 var dpprovider = factory.GetRequiredService<IDataProtectionProvider>();
-                var tokenCacheDbContext = factory.GetRequiredService<TokenCacheDbContext>();
+                var tokenCacheDbContext = (ITokenCacheDbContext)factory.GetRequiredService(sqlTokenCacheOptions.ContextType);
                 var optionsMonitor = factory.GetRequiredService<IOptionsMonitor<AzureADOptions>>();
 
                 return new MSALAppSqlTokenCacheProvider(tokenCacheDbContext, optionsMonitor, dpprovider);
@@ -92,15 +94,15 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
 
             services.AddDataProtection();
 
-            services.AddDbContext<TokenCacheDbContext>(options =>
-                options.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString));
+            //services.AddDbContext<TokenCacheDbContext>(options =>
+            //    options.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString));
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddScoped<IMSALUserTokenCacheProvider>(factory =>
             {
                 var dpprovider = factory.GetRequiredService<IDataProtectionProvider>();
-                var tokenCacheDbContext = factory.GetRequiredService<TokenCacheDbContext>();
+                var tokenCacheDbContext = (ITokenCacheDbContext)factory.GetRequiredService(sqlTokenCacheOptions.ContextType);
                 var httpcontext = factory.GetRequiredService<IHttpContextAccessor>();
 
                 return new MSALPerUserSqlTokenCacheProvider(tokenCacheDbContext, dpprovider, httpcontext);
