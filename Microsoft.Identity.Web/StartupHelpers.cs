@@ -38,7 +38,7 @@ namespace Microsoft.Identity.Web
     public static class StartupHelpers
     {
         /// <summary>
-        /// Add authentication with Microsoft identity platform (v2.0).
+        /// Add authentication with Microsoft identity platform.
         /// This expects the configuration files will have a section named "AzureAD"
         /// </summary>
         /// <param name="services">Service collection to which to add this authentication scheme</param>

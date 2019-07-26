@@ -43,7 +43,7 @@ namespace Microsoft.Identity.Web
     public static class WebApiStartupHelpers
     {
         /// <summary>
-        /// Protects the Web API with Microsoft identity platform v2.0 
+        /// Protects the Web API with Microsoft identity platform 
         /// This expects the configuration files will have a section named "AzureAD"
         /// </summary>
         /// <param name="services">Service collection to which to add this authentication scheme</param>
