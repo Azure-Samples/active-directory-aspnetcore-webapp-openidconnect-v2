@@ -5,7 +5,7 @@ author: jmprieur
 level: 200
 client: ASP.NET Core .Web App
 service: Microsoft Graph, Azure Storage, ASP.NET Core Web API
-endpoint: AAD v2.0
+endpoint: Microsoft identity platform
 ---
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
@@ -124,6 +124,6 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## Other samples and documentation
 
-- the documentation for the Microsoft identity platform for developers is available from [https://aka.ms/aadv2](https://aka.ms/aadv2)
-- Other samples for the Microsoft identity platform for developers are available from [https://aka.ms/aaddevsamplesv2](https://aka.ms/aaddevsamplesv2)
+- the documentation for the Microsoft identity platform is available from [https://aka.ms/aadv2](https://aka.ms/aadv2)
+- Other samples for the Microsoft identity platform are available from [https://aka.ms/aaddevsamplesv2](https://aka.ms/aaddevsamplesv2)
 - The conceptual documentation for MSAL.NET is available from [https://aka.ms/msalnet](https://aka.ms/msalnet)
