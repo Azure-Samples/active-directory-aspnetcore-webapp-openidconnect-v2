@@ -65,7 +65,7 @@ Your web application registration should include the following information:
 1. Open the solution in Visual Studio.
 1. Open the `appsettings.json` file.
 1. Find the assignment for `Instance` and replace the value with your tenant name. For example, `https://fabrikam.b2clogin.com`
-1. Find the assignment for `Domain` and replace the value with your Azure AD B2C domain name. For example, `https://fabrikam.onmicrosoft.com`
+1. Find the assignment for `Domain` and replace the value with your Azure AD B2C domain name. For example, `fabrikam.onmicrosoft.com`
 1. Find the assignment for `ClientID` and replace the value with the Application ID from Step 4.
 1. Find the assignment for `SignUpSignInPolicyId` and replace with the name of the `Sign up and sign in` policy you created in Step 3.
 
