@@ -43,7 +43,7 @@ namespace Microsoft.Identity.Web
     public static class WebApiStartupHelpers
     {
         /// <summary>
-        /// Protects the Web API with Microsoft Identity Platform v2.0 (AAD v2.0)
+        /// Protects the Web API with Microsoft identity platform v2.0 
         /// This expects the configuration files will have a section named "AzureAD"
         /// </summary>
         /// <param name="services">Service collection to which to add this authentication scheme</param>
@@ -57,13 +57,13 @@ namespace Microsoft.Identity.Web
             // Add session if you are planning to use session based token cache , .AddSessionTokenCaches()
             services.AddSession();
 
-            // Change the authentication configuration  to accommodate the Azure AD v2.0 endpoint.
+            // Change the authentication configuration  to accommodate the Microsoft identity platform endpoint.
             services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
             {
                 // Reinitialize the options as this has changed to JwtBearerOptions to pick configuration values for attributes unique to JwtBearerOptions
                 configuration.Bind("AzureAd", options);
 
-                // This is an Azure AD v2.0 Web API
+                // This is an Microsoft identity platform Web API
                 options.Authority += "/v2.0";
 
                 // The valid audiences are both the Client ID (options.Audience) and api://{ClientID}
@@ -105,7 +105,7 @@ namespace Microsoft.Identity.Web
         }
 
         /// <summary>
-        /// Protects the Web API with Microsoft Identity Platform v2.0 (AAD v2.0)
+        /// Protects the Web API with Microsoft identity platform 
         /// This supposes that the configuration files have a section named "AzureAD"
         /// </summary>
         /// <param name="services">Service collection to which to add authentication</param>

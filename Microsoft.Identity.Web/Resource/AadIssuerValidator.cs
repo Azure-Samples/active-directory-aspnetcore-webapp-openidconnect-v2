@@ -125,7 +125,7 @@ namespace Microsoft.Identity.Web.Resource
 
             string tenantId = GetTenantIdFromToken(securityToken);
             if (string.IsNullOrWhiteSpace(tenantId))
-                throw new SecurityTokenInvalidIssuerException("Neither `tid` nor `tenantId` claim is present in the token obtained from Microsoft Identity Platform.");
+                throw new SecurityTokenInvalidIssuerException("Neither `tid` nor `tenantId` claim is present in the token obtained from Microsoft identity platform.");
 
             if (validationParameters.ValidIssuers != null)
                 foreach (var validIssuerTemplate in validationParameters.ValidIssuers)
