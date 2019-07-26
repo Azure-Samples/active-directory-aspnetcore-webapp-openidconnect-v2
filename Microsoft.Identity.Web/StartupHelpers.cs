@@ -38,7 +38,7 @@ namespace Microsoft.Identity.Web
     public static class StartupHelpers
     {
         /// <summary>
-        /// Add authentication with Microsoft identity platform v2.0 (AAD v2.0).
+        /// Add authentication with Microsoft identity platform (v2.0).
         /// This expects the configuration files will have a section named "AzureAD"
         /// </summary>
         /// <param name="services">Service collection to which to add this authentication scheme</param>
@@ -70,7 +70,7 @@ namespace Microsoft.Identity.Web
 
                 // Set the nameClaimType to be preferred_username.
                 // This change is needed because certain token claims from Azure AD V1 endpoint
-                // (on which the original .NET core template is based) are different than Azure AD V2 endpoint.
+                // (on which the original .NET core template is based) are different than Microsoft identity platform V2 endpoint.
                 // For more details see [ID Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens)
                 // and [Access Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens)
                 options.TokenValidationParameters.NameClaimType = "preferred_username";
