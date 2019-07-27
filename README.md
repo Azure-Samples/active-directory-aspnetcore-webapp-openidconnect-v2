@@ -9,6 +9,9 @@ products:
 - azure
 - azure-active-directory
 - dotnet
+- azure-storage
+- aspnet
+- office-ms-graph
 urlFragment: enable-webapp-signin
 ---
 
