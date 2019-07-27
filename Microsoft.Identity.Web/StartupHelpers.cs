@@ -70,7 +70,7 @@ namespace Microsoft.Identity.Web
 
                 // Set the nameClaimType to be preferred_username.
                 // This change is needed because certain token claims from Azure AD V1 endpoint
-                // (on which the original .NET core template is based) are different than Microsoft identity platform V2 endpoint.
+                // (on which the original .NET core template is based) are different than Microsoft identity platform endpoint.
                 // For more details see [ID Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens)
                 // and [Access Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens)
                 options.TokenValidationParameters.NameClaimType = "preferred_username";

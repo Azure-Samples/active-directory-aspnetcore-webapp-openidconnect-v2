@@ -4,7 +4,7 @@ platforms: dotnet
 author: TiagoBrenck
 level: 100
 client: ASP.NET Core Web App
-endpoint: AAD v2.0
+endpoint: Microsoft identity platform
 ---
 # An ASP.NET Core Web app signing-in users with the Microsoft identity platform in Azure AD B2C
 
