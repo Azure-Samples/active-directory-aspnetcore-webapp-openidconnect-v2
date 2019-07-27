@@ -1,15 +1,20 @@
 ---
-services: active-directory
-platforms: dotnet
-author: jmprieur
-level: 200
-client: ASP.NET Core .Web App
-service: Microsoft Graph, Azure Storage, ASP.NET Core Web API
-endpoint: Microsoft identity platform
+languages:
+- csharp
+- powershell
+- html
+page_type: sample
+description: "Learn how to add sign-in users to your web app, and how to call web APIs, either from Microsoft or your own."
+products:
+- azure
+- azure-active-directory
+- dotnet
+urlFragment: enable-webapp-signin
 ---
-[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 # Tutorial - Enable your Web Apps to sign-in users and call APIs with the Microsoft identity platform for developers
+
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 ## About this tutorial
 
@@ -21,7 +26,7 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
 
 > Note
 >
-> We recommend that you right click on the picture above and open it in a new tab, or a new windows. You'll see a clickable image:
+> We recommend that you right click on the picture above and open it in a new tab, or a new window. You'll see a clickable image:
 >
 > - clicking on a metro/railway station will get you directly to the README.md for the corresponding part of the tutorial (some are still in progress)
 > - clicking on some of the connectors between stations will get you to an incremental README.md showing how to get from one part of the tutorial to the next (that's for instance the case for the Sign-in ... stations)
