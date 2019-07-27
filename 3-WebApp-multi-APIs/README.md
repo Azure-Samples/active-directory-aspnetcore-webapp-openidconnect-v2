@@ -5,7 +5,7 @@ author: jmprieur
 level: 200
 client: ASP.NET Core 2.x Web App
 service: Microsoft Graph
-endpoint: AAD v2.0
+endpoint: Microsoft identity platform
 ---
 # ASP.NET Core 2.2 Web API calling ARM and Azure Storage
 
@@ -66,7 +66,7 @@ If you have not already,  clone this sample from your shell or command line:
 
 1. Build the solution and run it.
 
-2. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Azure AD v2 endpoint. Sign in with your personal account or with a work or school account.
+2. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in with your personal account or with a work or school account.
 
 3. Go to the Contacts page, you should now see all kind of information about yourself (a call was made to the Microsoft Graph *me* endpoint)
 

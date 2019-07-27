@@ -5,7 +5,7 @@ author: kalyankrishna1
 level: 300
 client: ASP.NET Core 2.x Web App
 service: Microsoft Graph
-endpoint: AAD v2.0
+endpoint: Microsoft identity platform
 ---
 
 # Add authorization using **app roles** & **roles** claims to an ASP.NET Core web app thats signs-in users with the Microsoft identity platform
@@ -43,7 +43,7 @@ These application roles are defined in the [Azure portal](https://portal.azure.c
 
 NOTE: Role claims will not be present for guest users in a tenant if the `/common` endpoint is used as the authority.
 
-![Sign in with the Microsoft identity platform for developers (formerly Azure AD v2.0)](ReadmeFiles/sign-in.png)
+![Sign in with the Microsoft identity platform](ReadmeFiles/sign-in.png)
 
 > This is the sixth chapter of a set of tutorials. In the chapter before this one, you learned how to receive the group memberships in a user's claims. In this one you will learn about how to use the App roles in an app using the Microsoft Identity Platform to authenticate users.
 
@@ -154,7 +154,7 @@ The content of `appRoles` should be the following (the `id` can be any unique Gu
 
 1. Clean the solution, rebuild the solution, and run it.
 
-1. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform (formerly Azure AD v2.0) endpoint. Sign in with a work or school account.
+1. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in with a work or school account.
 
 1. You will be prompted to consent during the sign-in process.
 
