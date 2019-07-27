@@ -5,7 +5,7 @@ author: kalyankrishna1
 level: 200
 client: ASP.NET Core 2.x Web App
 service: Microsoft Graph
-endpoint: AAD v2.0
+endpoint: Microsoft identity platform
 ---
 
 # Call the Microsoft Graph API from an An ASP.NET Core 2.x Web App, using Sql Server for caching tokens
@@ -18,7 +18,7 @@ Starting from a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in us
 
 It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). The complexities of the library's integration with the ASP.NET Core dependency Injection patterns is encapsultated into the `Microsoft.Identity.Web` library project, which is a part of this tutorial.
 
-![Sign in with the Microsoft identity platform for developers (formerly Azure AD v2.0)](ReadmeFiles/sign-in.png)
+![Sign in with the Microsoft identity platform](ReadmeFiles/sign-in.png)
 
 ## How to run this sample
 
@@ -75,7 +75,7 @@ Go to the `"2-WebApp-graph-user\2-2-TokenCache"` folder
 
 1. Clean the solution, rebuild the solution, and run it. 
 
-2. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform (fomerly Azure AD v2.0) endpoint. Sign in with your personal account or with a work or school account.
+2. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in with your personal account or with a work or school account.
 
 3. Go to the **Profile** page, you should now see all kind of information about yourself as well as your picture (a call was made to the Microsoft Graph */me* endpoint)
 

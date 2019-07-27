@@ -5,7 +5,7 @@ author: negoe
 level: 200
 client: ASP.NET Core 2.x Web App
 service: Microsoft Graph
-endpoint: AAD v2.0
+endpoint: Microsoft identity platform
 ---
 
 # Using the Microsoft identity platform to call the Microsoft Graph API from an An ASP.NET Core 2.x Web App, on behalf of a user signing-in using their work and school account in Microsoft National Cloud
@@ -16,7 +16,7 @@ endpoint: AAD v2.0
 
 Starting from a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users, this phase of the tutorial shows how to call  Microsoft Graph /me endpoint on behalf of the signed-in user in US Government cloud. It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). Their complexities were encapsulated into the `Microsoft.Identity.Web` reusable library project part of this tutorial. Once again the notion of ASP.NET services injected by dependency injection is heavily used.
 
-![Sign in with the Microsoft identity platform for developers (formerly Azure AD v2.0)](ReadmeFiles/sign-in.png)
+![Sign in with the Microsoft identity platform](ReadmeFiles/sign-in.png)
 
 ## How to run this sample
 
@@ -73,7 +73,7 @@ In case you want to deploy your app in other sovereign or national clouds, go to
 
 1. Build the solution and run it.
 
-2. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform (formerly Azure AD v2.0) endpoint. Sign in with your personal account or with a work or school account.
+2. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in with your personal account or with a work or school account.
 
 3. Go to the **Profile** page, you should now see all kind of information about yourself as well as your picture (a call was made to the Microsoft Graph */me* endpoint)
 

@@ -4,7 +4,7 @@ platforms: dotnet
 author: jmprieur
 level: 100
 client: ASP.NET Core Web App
-endpoint: AAD v2.0
+endpoint: Microsoft identity platform
 ---
 
 
@@ -86,7 +86,7 @@ As a first step you'll need to:
 
 ### Step 2: Download/ Clone this sample code or build the application using a template
 
-This sample was created from the dotnet core 2.2 [dotnet new mvc](https://docs.microsoft.com/dotnet/core/tools/dotnet-new?tabs=netcore2x) template with `SingleOrg` authentication, and then tweaked to let it support tokens for the Azure AD V2 endpoint. You can clone/download this repository or create the sample from the command line:
+This sample was created from the dotnet core 2.2 [dotnet new mvc](https://docs.microsoft.com/dotnet/core/tools/dotnet-new?tabs=netcore2x) template with `SingleOrg` authentication, and then tweaked to let it support tokens for the Microsoft identity platform endpoint. You can clone/download this repository or create the sample from the command line:
 
 #### Option 1: Download/ clone this sample
 
@@ -139,7 +139,7 @@ cd "1-WebApp-OIDC\1-2-AnyOrg"
       services.AddAzureAdV2Authentication(Configuration);
      ```
 
-     This enables your application to use the Microsoft identity platform (formerly Azure AD v2.0) endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
+     This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
 
     1. Change the `Properties\launchSettings.json` file to ensure that you start your web app from <https://localhost:44321> as registered. For this:
     - update the `sslPort` of the `iisSettings` section to be `44321`
@@ -149,7 +149,7 @@ cd "1-WebApp-OIDC\1-2-AnyOrg"
 
 1. Build the solution and run it.
 
-2. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. The app immediately attempts to authenticate you via the Azure AD v2 endpoint. Sign in with your personal account or with work or school account.
+2. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in with your personal account or with work or school account.
 
 
 ## Toubleshooting

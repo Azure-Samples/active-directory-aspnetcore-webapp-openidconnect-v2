@@ -5,7 +5,7 @@ author: kalyankrishna1
 level: 200
 client: ASP.NET Core Web App
 service: ASP.NET Core Web API
-endpoint: AAD v2.0
+endpoint: Microsoft identity platform
 ---
 
 # How to secure a Web API built with ASP.NET Core using the Microsoft identity platform (formerly Azure Active Directory for developers)
@@ -253,7 +253,7 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
           .AddInMemoryTokenCaches();
      ```
 
-     This enables your application to use the Microsoft identity platform (formerly Azure AD v2.0) endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
+     This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
 
     1. Change the `Properties\launchSettings.json` file to ensure that you start your web app from <https://localhost:44321> as registered. For this:
     - update the `sslPort` of the `iisSettings` section to be `44321`
@@ -331,7 +331,7 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
 
   `AddProtectWebApiWithMicrosoftIdentityPlatformV2` does the following:
   - add the **Jwt**BearerAuthenticationScheme (Note the replacement of **BearerAuthenticationScheme** by **Jwt**BearerAuthenticationScheme)
-  - set the authority to be the Microsoft identity platform v2.0 identity
+  - set the authority to be the Microsoft identity platform identity
   - sets the audiences to validate
   - register an issuer validator that accepts issuers to be in the Microsoft identity platform clouds.
 
@@ -434,7 +434,7 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 For more information, visit the following links:
 
-- Articles about the new Microsoft Identity Platform are at [http://aka.ms/aaddevv2](http://aka.ms/aaddevv2), with a focus on:
+- Articles about the Microsoft identity platform are at [http://aka.ms/aaddevv2](http://aka.ms/aaddevv2), with a focus on:
   - [Azure AD OAuth Bearer protocol](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-protocols)
   - [The OAuth 2.0 protocol in Azure AD](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
   - [Access token](https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens)

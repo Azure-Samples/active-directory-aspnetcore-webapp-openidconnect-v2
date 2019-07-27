@@ -5,7 +5,7 @@ author: kalyankrishna1
 level: 400
 client: ASP.NET Core 2.x Web App
 service: Microsoft Graph
-endpoint: AAD v2.0
+endpoint: Microsoft identity platform
 ---
 
 # Add authorization using groups & group claims to an ASP.NET Core Web app that signs-in users with the Microsoft identity platform
@@ -25,7 +25,7 @@ Authorization in Azure AD can also be done with Application Roles, as shown in [
 
 This sample first leverages the ASP.NET Core OpenID Connect middleware to sign in the user. On the home page it displays the various `claims` that the user's [ID Token](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens) contained. The ID token is used by the asp.net security middleware to build the [ClaimsPrincipal](https://docs.microsoft.com/en-us/dotnet/api/system.security.claims.claimsprincipal), accessible via **HttpContext.User**.
 
-![Sign in with the Microsoft identity platform for developers (formerly Azure AD v2.0)](ReadmeFiles/sign-in.png)
+![Sign in with the Microsoft identity platform](ReadmeFiles/sign-in.png)
 
 > This is the fifth chapter of a set of tutorials. Once you understand how to receive the group memberships in a user's claims, you can try the sample [Add authorization using app roles & roles claims to an ASP.NET Core Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-1-Roles) to learn about how to use the App roles in an app using the Microsoft Identity Platform to authenticate users. 
 
@@ -83,7 +83,7 @@ Navigate to the `"5-WebApp-AuthZ"` folder
 
 1. Clean the solution, rebuild the solution, and run it.
 
-2. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform (formerly Azure AD v2.0) endpoint. Sign in with a work or school account.
+2. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in with a work or school account.
 
 1. On the home page, the app lists the various claims it obtained from your ID token. You'd notice one more claims named `groups`. If **Overage** occurred, then you'd see a different claim by the name `_claim_names`. The **Overage** scenario is discussed in detail below. 
 1. On the top menu, click on the signed-in user's name **user@domain.com**, you should now see all kind of information about yourself including your picture. Beneath that, a list of all the security groups that the signed-in user is assigned to are listed as well. All of this was obtained by making calls to Microsoft Graph. This list is useful, if an **Overage** occurs with this signed-in user. The **overage** scenario is discussed later in this article. 
