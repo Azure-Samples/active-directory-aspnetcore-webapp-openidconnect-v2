@@ -5,7 +5,16 @@ author: jmprieur
 level: 200
 client: ASP.NET Core 2.x Web App
 service: Microsoft Graph
-endpoint: AAD v2.0
+endpoint: Microsoft identity platform
+page_type: sample
+languages:
+  - csharp  
+products:
+  - azure
+  - azure-active-directory 
+  - aspnet-core
+  - office-ms-graph
+description: "A sample that shows how to build a .NET Core 2.1 MVC Web app that uses OpenID Connect to sign in users."
 ---
 # Integrating Azure AD V2 into an ASP.NET Core web app and calling the Microsoft Graph API on behalf of the user
 
