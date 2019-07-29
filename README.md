@@ -38,7 +38,7 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
 
 1. The first phase is to [add sign-in to your Web App](1-WebApp-OIDC) leveraging the Microsoft identity platform for developers (fomerly Azure AD v2.0). You'll learn how to use  the ASP.NET Core OpenID Connect (OIDC) middleware itself leveraging [Microsoft Identity Model extensions for .NET](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki) to protect your Web App.
 
-   ![Web apps signs-in users](./ReadmeFiles/Web-app-signs-in-users.svg)
+   ![Web apps signs-in users](ReadmeFiles/Web-app-signs-in-users.svg)
 
    Depending on your business needs, you have the flexibility to decide which audience to sign-in to your application:
    1. If you are a Line of Business (LOB) developer, you'll want to [sign-in users in your organization](./1-WebApp-OIDC/1-1-MyOrg) with their work or school accounts.
@@ -50,7 +50,7 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
 
 2. Your Web App might maintain its own resources (in that case you have all you need so far), but it could also be that it calls Microsoft APIs.
 
-   ![Web apps calls Microsoft Graph](./ReadmeFiles/Web-app-calls-Microsoft-Graph.svg)
+   ![Web apps calls Microsoft Graph](ReadmeFiles/Web-app-calls-Microsoft-Graph.svg)
 
    Learn how to update your Web App to [call Microsoft Graph](2-WebApp-graph-user):
 
@@ -61,7 +61,7 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
 
 3. Your Web App might also want to call other Web APIs than Microsoft Graph.
 
-   ![Web apps calls Microsoft APIs](./ReadmeFiles/web-app-calls-microsoft-apis.svg)
+   ![Web apps calls Microsoft APIs](ReadmeFiles/web-app-calls-microsoft-apis.svg)
 
    Learn how to [call several Microsoft APIS](./3-WebApp-multi-APIs), feature conditional access and claims challenge:
 
@@ -70,7 +70,7 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
 
 4. Then you might yourself have written a Web API, and want to call it from your Web App.
 
-   ![Web apps calls Microsoft APIs](./ReadmeFiles/web-app-calls-your-api.svg)
+   ![Web apps calls Microsoft APIs](ReadmeFiles/web-app-calls-your-api.svg)
 
 5. Once you know how to sign-in users and call Web APIs from your Web App, you might want to restrict part of the application depending on the user having a role in the application or belonging to a group. So far you've learnt how to add and process authentication. Now learn how to [add authorization to your Web application](./5-WebApp-AuthZ):
 
