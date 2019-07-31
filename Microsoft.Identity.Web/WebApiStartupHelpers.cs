@@ -42,8 +42,19 @@ namespace Microsoft.Identity.Web
 {
     public static class WebApiStartupHelpers
     {
+        /// <summary>Secures the Web Api with microsoft identity platform .</summary>
+        /// This expects the configuration files will have a section named "AzureAD"
+        /// </summary>
+        /// <param name="services">Service collection to which to add this authentication scheme</param>
+        /// <param name="configuration">The Configuration object</param>
+        /// <returns></returns>
+        public static IServiceCollection AddMicrosoftIdentityPlatformSecurity(this IServiceCollection services, IConfiguration configuration, X509Certificate2 tokenDecryptionCertificate = null)
+        {
+            return AddProtectWebApiWithMicrosoftIdentityPlatformV2(services, configuration, tokenDecryptionCertificate);
+        }
+
         /// <summary>
-        /// Protects the Web API with Microsoft identity platform 
+        /// Protects the Web API with Microsoft identity platform
         /// This expects the configuration files will have a section named "AzureAD"
         /// </summary>
         /// <param name="services">Service collection to which to add this authentication scheme</param>
@@ -53,9 +64,6 @@ namespace Microsoft.Identity.Web
         {
             services.AddAuthentication(AzureADDefaults.JwtBearerAuthenticationScheme)
                     .AddAzureADBearer(options => configuration.Bind("AzureAd", options));
-
-            // Add session if you are planning to use session based token cache , .AddSessionTokenCaches()
-            services.AddSession();
 
             // Change the authentication configuration  to accommodate the Microsoft identity platform endpoint.
             services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
@@ -105,7 +113,7 @@ namespace Microsoft.Identity.Web
         }
 
         /// <summary>
-        /// Protects the Web API with Microsoft identity platform 
+        /// Protects the Web API with Microsoft identity platform
         /// This supposes that the configuration files have a section named "AzureAD"
         /// </summary>
         /// <param name="services">Service collection to which to add authentication</param>

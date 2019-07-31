@@ -44,6 +44,18 @@ namespace Microsoft.Identity.Web
         /// <param name="services">Service collection to which to add this authentication scheme</param>
         /// <param name="configuration">The Configuration object</param>
         /// <returns></returns>
+        public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this IServiceCollection services, IConfiguration configuration)
+        {
+            return AddAzureAdV2Authentication(services, configuration);
+        }
+
+        /// <summary>
+        /// Add authentication with Microsoft identity platform.
+        /// This expects the configuration files will have a section named "AzureAD"
+        /// </summary>
+        /// <param name="services">Service collection to which to add this authentication scheme</param>
+        /// <param name="configuration">The Configuration object</param>
+        /// <returns></returns>
         public static IServiceCollection AddAzureAdV2Authentication(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
