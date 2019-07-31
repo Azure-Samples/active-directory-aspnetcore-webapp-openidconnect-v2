@@ -6,6 +6,16 @@ level: 200
 client: ASP.NET Core .Web App
 service: Microsoft Graph, Azure Storage, ASP.NET Core Web API
 endpoint: Microsoft identity platform
+page_type: sample
+languages:
+  - csharp  
+products:
+  - azure
+  - azure-active-directory  
+  - dotnet
+  - office-ms-graph
+  - aspnet-core
+  - azure-storage
 ---
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
@@ -13,7 +23,7 @@ endpoint: Microsoft identity platform
 
 ## Scope of this phase
 
-In this phase of the tutorial, you will learn, how to add sign-in users to your Web App, leveraging the Microsoft identity platform for developers (fomerly Azure AD v2.0). You'll learn how to use  the ASP.NET Core OpenID Connect (OIDC) middleware itself leveraging [Microsoft Identity Model extensions for .NET](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki) to protect your Web App.
+In this phase of the tutorial, you will learn, how to add sign-in users to your Web App, leveraging the Microsoft identity platform. You'll learn how to use  the ASP.NET Core OpenID Connect (OIDC) middleware itself leveraging [Microsoft Identity Model extensions for .NET](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki) to protect your Web App.
 
    <img src="../ReadmeFiles/sign-in-audiences.png" width="50%"/>
 
