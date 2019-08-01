@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Microsoft.Identity.Web.Client
@@ -25,6 +27,13 @@ namespace Microsoft.Identity.Web.Client
     {
         public string[] Scopes { get; set; }
 
+        /// <summary>
+        /// Key section on the configuration file that holds the scope value
+        /// </summary>
+        public string ScopeKeySection { get; set; }
+
+        private static IConfiguration configuration;
+
         public override void OnException(ExceptionContext context)
         {
             MsalUiRequiredException msalUiRequiredException = context.Exception as MsalUiRequiredException;
@@ -37,6 +46,20 @@ namespace Microsoft.Identity.Web.Client
             {
                 if (CanBeSolvedByReSignInUser(msalUiRequiredException))
                 {
+                    if (configuration == null && !string.IsNullOrWhiteSpace(ScopeKeySection))
+                    {
+                        var builder = new ConfigurationBuilder()
+                                            .SetBasePath(Directory.GetCurrentDirectory())
+                                            .AddJsonFile("appsettings.json");
+
+                        configuration = builder.Build();
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(ScopeKeySection) && Scopes == null)
+                    {
+                        Scopes = new string[] { configuration.GetValue<string>(ScopeKeySection) };
+                    }
+
                     var properties =
                         BuildAuthenticationPropertiesForIncrementalConsent(Scopes, msalUiRequiredException, context.HttpContext);
                     context.Result = new ChallengeResult(properties);
