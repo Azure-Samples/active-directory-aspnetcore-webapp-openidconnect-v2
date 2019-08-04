@@ -111,8 +111,10 @@ If your web site needs to be accessed from users using iOS 12, you probably want
 #### Where is MSAL?
 This sample does NOT use MSAL - it uses the built-in ASP.NET Core middlerware. MSAL is used for fetching access  for accessing protected APIs (not shown here), as well as ID tokens. For logging-in purposes, it is sufficient to obtain an ID Token, and the middlerware is capable of doing this on its own.
 
+#### Where is the Account controller?
 The `AccountController.cs` used in this sample is part of the built-in .NET Core authentication controllers found in the NuGet package `Microsoft.AspNetCore.Authentication.AzureADB2C.UI`, and you can find its implementation [here](https://github.com/aspnet/AspNetCore/blob/master/src/Azure/AzureAD/Authentication.AzureADB2C.UI/src/Areas/AzureADB2C/Controllers/AccountController.cs). If you want to customize the **Sign-in**, **Sign-up** or **Sign-out** actions, you are encouraged to create your own controller.
 
+#### B2C middlerware
 This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Azure AD B2C tenant. The middleware is initialized in the `Startup.cs` file by passing the default authentication scheme and `AzureADB2COptions.cs` options. The options are read from the `appsettings.json` file. The middleware takes care of:
 
 - Requesting OpenID Connect sign-in using the policy from the `appsettings.json` file.
@@ -145,6 +147,10 @@ To understand more about Azure AD B2C see:
 
 - [Azure AD B2C documentation](https://docs.microsoft.com/en-us/azure/active-directory-b2c/)
 - [Azure AD B2C sign-in/sign-up user flow](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-reference-policies)
+
+To understand more about ASP.NET Core and Azure identity integration
+
+- [ASP.NET Core Azure AD samples](https://github.com/aspnet/AspNetCore/tree/master/src/Azure/AzureAD/samples)
 
 To understand more about token validation, see:
 
