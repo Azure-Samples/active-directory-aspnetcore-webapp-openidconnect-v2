@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.Client.TokenCacheProviders;
+using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using TodoListClient.Services;
 
 namespace WebApp_OpenIDConnect_DotNet

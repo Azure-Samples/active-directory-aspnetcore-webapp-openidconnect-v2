@@ -1,26 +1,5 @@
-﻿/************************************************************************************************
-The MIT License (MIT)
-
-Copyright (c) 2015 Microsoft Corporation
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-***********************************************************************************************/
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.DataProtection;
@@ -32,39 +11,39 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace Microsoft.Identity.Web.Client.TokenCacheProviders
+namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
 {
     /// <summary>
     /// An implementation of token cache for Confidential clients backed by Sql server and Entity Framework
     /// </summary>
     /// <seealso cref="https://aka.ms/msal-net-token-cache-serialization"/>
-    public class MSALAppSqlTokenCacheProvider : IMSALAppTokenCacheProvider
+    public class MsalAppSqlTokenCacheProvider : IMsalAppTokenCacheProvider
     {
         /// <summary>
         /// The EF's DBContext object to be used to read and write from the Sql server database.
         /// </summary>
-        private TokenCacheDbContext TokenCacheDb;
+        private readonly TokenCacheDbContext _tokenCacheDb;
 
         /// <summary>
         /// This keeps the latest copy of the token in memory to save calls to DB, if possible.
         /// </summary>
-        private AppTokenCache InMemoryCache;
+        private AppTokenCache _inMemoryCache;
 
         /// <summary>
         /// The data protector
         /// </summary>
-        private IDataProtector DataProtector;
+        private readonly IDataProtector _dataProtector;
 
         /// <summary>
         /// Once a app obtains a token, this is populated and used for caching queries et al. Contains the App's AppId/ClientID as obtained from the Azure AD portal
         /// </summary>
-        internal string ActiveClientId;
+        internal string _activeClientId;
 
-        /// <summary>Initializes a new instance of the <see cref="EFMSALAppTokenCache"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="MsalAppSqlTokenCacheProvider"/> class.</summary>
         /// <param name="tokenCacheDbContext">The TokenCacheDbContext DbContext to read and write from Sql server.</param>
         /// <param name="azureAdOptionsAccessor"></param>
         /// <param name="protectionProvider">The data protection provider. Requires the caller to have used serviceCollection.AddDataProtection();</param>
-        public MSALAppSqlTokenCacheProvider(TokenCacheDbContext tokenCacheDbContext, IOptionsMonitor<AzureADOptions> azureAdOptionsAccessor, IDataProtectionProvider protectionProvider)
+        public MsalAppSqlTokenCacheProvider(TokenCacheDbContext tokenCacheDbContext, IOptionsMonitor<AzureADOptions> azureAdOptionsAccessor, IDataProtectionProvider protectionProvider)
         {
             if (protectionProvider == null)
             {
@@ -76,9 +55,9 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
                 throw new ArgumentNullException(nameof(protectionProvider), $"The app token cache needs {nameof(AzureADOptions)}, populated with both Sql connection string and clientId to initialize.");
             }
 
-            this.DataProtector = protectionProvider.CreateProtector("MSAL");
-            this.TokenCacheDb = tokenCacheDbContext;
-            this.ActiveClientId = azureAdOptionsAccessor.CurrentValue.ClientId;
+            _dataProtector = protectionProvider.CreateProtector("MSAL");
+            _tokenCacheDb = tokenCacheDbContext;
+            _activeClientId = azureAdOptionsAccessor.CurrentValue.ClientId;
         }
 
         /// <summary>Initializes this instance of TokenCacheProvider with essentials to initialize themselves.</summary>
@@ -86,9 +65,9 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="httpcontext">The Httpcontext whose Session will be used for caching.This is required by some providers.</param>
         public void Initialize(ITokenCache tokenCache, HttpContext httpcontext)
         {
-            tokenCache.SetBeforeAccess(this.AppTokenCacheBeforeAccessNotification);
-            tokenCache.SetAfterAccess(this.AppTokenCacheAfterAccessNotification);
-            tokenCache.SetBeforeWrite(this.AppTokenCacheBeforeWriteNotification);
+            tokenCache.SetBeforeAccess(AppTokenCacheBeforeAccessNotification);
+            tokenCache.SetAfterAccess(AppTokenCacheAfterAccessNotification);
+            tokenCache.SetBeforeWrite(AppTokenCacheBeforeWriteNotification);
         }
 
         /// <summary>
@@ -110,29 +89,29 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         private void AppTokenCacheAfterAccessNotification(TokenCacheNotificationArgs args)
         {
             // if state changed, i.e. new token obtained
-            if (args.HasStateChanged && !string.IsNullOrWhiteSpace(this.ActiveClientId))
+            if (args.HasStateChanged && !string.IsNullOrWhiteSpace(_activeClientId))
             {
-                if (this.InMemoryCache == null)
+                if (_inMemoryCache == null)
                 {
-                    this.InMemoryCache = new AppTokenCache
+                    _inMemoryCache = new AppTokenCache
                     {
-                        ClientID = this.ActiveClientId
+                        ClientID = _activeClientId
                     };
                 }
 
-                this.InMemoryCache.CacheBits = this.DataProtector.Protect(args.TokenCache.SerializeMsalV3());
-                this.InMemoryCache.LastWrite = DateTime.Now;
+                _inMemoryCache.CacheBits = _dataProtector.Protect(args.TokenCache.SerializeMsalV3());
+                _inMemoryCache.LastWrite = DateTime.Now;
 
                 try
                 {
                     // Update the DB and the lastwrite
-                    this.TokenCacheDb.Entry(InMemoryCache).State = InMemoryCache.AppTokenCacheId == 0 ? EntityState.Added : EntityState.Modified;
-                    this.TokenCacheDb.SaveChanges();
+                    _tokenCacheDb.Entry(_inMemoryCache).State = _inMemoryCache.AppTokenCacheId == 0 ? EntityState.Added : EntityState.Modified;
+                    _tokenCacheDb.SaveChanges();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     // Record already updated on a different thread, so just read the updated record
-                    this.ReadCacheForSignedInApp(args);
+                    ReadCacheForSignedInApp(args);
                 }
             }
         }
@@ -142,9 +121,9 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// </summary>
         public void Clear()
         {
-            var cacheEntries = this.TokenCacheDb.AppTokenCache.Where(c => c.ClientID == this.ActiveClientId);
-            this.TokenCacheDb.AppTokenCache.RemoveRange(cacheEntries);
-            this.TokenCacheDb.SaveChanges();
+            var cacheEntries = _tokenCacheDb.AppTokenCache.Where(c => c.ClientID == _activeClientId);
+            _tokenCacheDb.AppTokenCache.RemoveRange(cacheEntries);
+            _tokenCacheDb.SaveChanges();
         }
 
         /// <summary>
@@ -154,7 +133,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
         private void AppTokenCacheBeforeAccessNotification(TokenCacheNotificationArgs args)
         {
-            this.ReadCacheForSignedInApp(args);
+            ReadCacheForSignedInApp(args);
         }
 
         /// <summary>
@@ -162,9 +141,9 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         /// </summary>
         private void ReadCacheForSignedInApp(TokenCacheNotificationArgs args)
         {
-            if (this.InMemoryCache == null) // first time access
+            if (_inMemoryCache == null) // first time access
             {
-                this.InMemoryCache = GetLatestAppRecordQuery().FirstOrDefault();
+                _inMemoryCache = GetLatestAppRecordQuery().FirstOrDefault();
             }
             else
             {
@@ -172,44 +151,20 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
                 var lastwriteInDb = GetLatestAppRecordQuery().Select(n => n.LastWrite).FirstOrDefault();
 
                 // if the persisted copy is newer than the in-memory copy
-                if (lastwriteInDb > this.InMemoryCache.LastWrite)
+                if (lastwriteInDb > _inMemoryCache.LastWrite)
                 {
                     // read from from storage, update in-memory copy
-                    this.InMemoryCache = GetLatestAppRecordQuery().FirstOrDefault();
+                    _inMemoryCache = GetLatestAppRecordQuery().FirstOrDefault();
                 }
             }
 
             // Send data to the TokenCache instance
-            args.TokenCache.DeserializeMsalV3((this.InMemoryCache == null) ? null : this.DataProtector.Unprotect(this.InMemoryCache.CacheBits), shouldClearExistingCache: true);
+            args.TokenCache.DeserializeMsalV3((_inMemoryCache == null) ? null : _dataProtector.Unprotect(_inMemoryCache.CacheBits), shouldClearExistingCache: true);
         }
 
         private IOrderedQueryable<AppTokenCache> GetLatestAppRecordQuery()
         {
-            return this.TokenCacheDb.AppTokenCache.Where(c => c.ClientID == this.ActiveClientId).OrderByDescending(d => d.LastWrite);
+            return _tokenCacheDb.AppTokenCache.Where(c => c.ClientID == _activeClientId).OrderByDescending(d => d.LastWrite);
         }
-    }
-
-    /// <summary>
-    /// Represents an app's token cache entry in database
-    /// </summary>
-    public class AppTokenCache
-    {
-        [Key]
-        public int AppTokenCacheId { get; set; }
-
-        /// <summary>
-        /// The Appid or ClientId of the app
-        /// </summary>
-        public string ClientID { get; set; }
-
-        public byte[] CacheBits { get; set; }
-
-        public DateTime LastWrite { get; set; }
-
-        /// <summary>
-        /// Provided here as a precaution against concurrent updates by multiple threads.
-        /// </summary>
-        [Timestamp]
-        public byte[] RowVersion { get; set; }
     }
 }

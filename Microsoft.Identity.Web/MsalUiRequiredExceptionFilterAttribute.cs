@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +10,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Microsoft.Identity.Web.Client
+namespace Microsoft.Identity.Web
 {
     /// <summary>
     /// Filter used on a controller action to trigger an incremental consent.
@@ -16,15 +19,22 @@ namespace Microsoft.Identity.Web.Client
     /// The following controller action will trigger
     /// <code>
     /// [MsalUiRequiredExceptionFilter(Scopes = new[] {"Mail.Send"})]
-    /// public async Task<IActionResult> SendEmail()
+    /// public async Task&lt;IActionResult&gt; SendEmail()
     /// {
     /// }
     /// </code>
     /// </example>
     public class MsalUiRequiredExceptionFilterAttribute : ExceptionFilterAttribute
     {
+        /// <summary>
+        /// Scopes to request
+        /// </summary>
         public string[] Scopes { get; set; }
 
+        /// <summary>
+        /// Handles the MsaUiRequiredExeception
+		/// </summary>
+        /// <param name="context">Context provided by ASP.NET Core</param>
         public override void OnException(ExceptionContext context)
         {
             MsalUiRequiredException msalUiRequiredException = context.Exception as MsalUiRequiredException;

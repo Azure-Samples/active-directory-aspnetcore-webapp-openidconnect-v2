@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web.Client;
+using Microsoft.Identity.Web;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System;
@@ -39,7 +39,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         public async Task<IActionResult> Profile()
         {
             var accessToken =
-                await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new[] {Constants.ScopeUserRead});
+                await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(HttpContext, new[] {Constants.ScopeUserRead});
 
             var me = await graphApiOperations.GetUserInformation(accessToken);
             var photo = await graphApiOperations.GetPhotoAsBase64Async(accessToken);
@@ -56,13 +56,13 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         public async Task<IActionResult> Tenants()
         {
             var accessToken =
-                await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new[] { $"{ArmApiOperationService.ArmResource}user_impersonation" });
+                await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(HttpContext, new[] { $"{ArmApiOperationService.ArmResource}user_impersonation" });
 
             var tenantIds = await armOperations.EnumerateTenantsIdsAccessibleByUser(accessToken);
-/*
-            var tenantsIdsAndNames =  await graphApiOperations.EnumerateTenantsIdAndNameAccessibleByUser(tenantIds,
-                async tenantId => { return await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new string[] { "Directory.Read.All" }, tenantId); });
-*/
+            /*
+                        var tenantsIdsAndNames =  await graphApiOperations.EnumerateTenantsIdAndNameAccessibleByUser(tenantIds,
+                            async tenantId => { return await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(HttpContext, new string[] { "Directory.Read.All" }, tenantId); });
+            */
             ViewData["tenants"] = tenantIds;
 
             return View();
@@ -77,7 +77,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             var scopes = new string[] { "https://storage.azure.com/user_impersonation" };
 
             var accessToken =
-                await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, scopes);
+                await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(HttpContext, scopes);
 
             // create a blob on behalf of the user
             TokenCredential tokenCredential = new TokenCredential(accessToken);

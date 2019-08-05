@@ -1,33 +1,11 @@
-/************************************************************************************************
-The MIT License (MIT)
-
-Copyright (c) 2015 Microsoft Corporation
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-***********************************************************************************************/
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Identity.Web.Client;
 using Microsoft.Identity.Web.Resource;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -40,16 +18,26 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Identity.Web
 {
-    public static class WebApiStartupHelpers
+    /// <summary>
+    /// Extensions for IServiceCollection for startup initialization of Web APIs.
+    /// </summary>
+    public static class WebApiServiceCollectionExtensions
     {
         /// <summary>
-        /// Protects the Web API with Microsoft identity platform 
+        /// Protects the Web API with Microsoft identity platform (formerly Azure AD v2.0)
         /// This expects the configuration files will have a section named "AzureAD"
         /// </summary>
         /// <param name="services">Service collection to which to add this authentication scheme</param>
         /// <param name="configuration">The Configuration object</param>
+        /// <param name="subscribeToJwtBearerMiddlewareDiagnosticsEvents">
+        /// Set to true if you want to debug, or just understand the JwtBearer events.
+        /// </param>
         /// <returns></returns>
-        public static IServiceCollection AddProtectWebApiWithMicrosoftIdentityPlatformV2(this IServiceCollection services, IConfiguration configuration, X509Certificate2 tokenDecryptionCertificate = null)
+        public static IServiceCollection AddProtectWebApiWithMicrosoftIdentityPlatformV2(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            X509Certificate2 tokenDecryptionCertificate = null,
+            bool subscribeToJwtBearerMiddlewareDiagnosticsEvents = false)
         {
             services.AddAuthentication(AzureADDefaults.JwtBearerAuthenticationScheme)
                     .AddAzureADBearer(options => configuration.Bind("AzureAd", options));
@@ -57,7 +45,7 @@ namespace Microsoft.Identity.Web
             // Add session if you are planning to use session based token cache , .AddSessionTokenCaches()
             services.AddSession();
 
-            // Change the authentication configuration  to accommodate the Microsoft identity platform endpoint.
+            // Change the authentication configuration to accommodate the Microsoft identity platform endpoint (v2.0).
             services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
             {
                 // Reinitialize the options as this has changed to JwtBearerOptions to pick configuration values for attributes unique to JwtBearerOptions
@@ -67,10 +55,13 @@ namespace Microsoft.Identity.Web
                 options.Authority += "/v2.0";
 
                 // The valid audiences are both the Client ID (options.Audience) and api://{ClientID}
-                options.TokenValidationParameters.ValidAudiences = new string[] { options.Audience, $"api://{options.Audience}" };
+                options.TokenValidationParameters.ValidAudiences = new string[]
+                {
+                    options.Audience, $"api://{options.Audience}"
+                };
 
                 // Instead of using the default validation (validating against a single tenant, as we do in line of business apps),
-                // we inject our own multi-tenant validation logic (which even accepts both V1 and V2 tokens)
+                // we inject our own multi-tenant validation logic (which even accepts both v1.0 and v2.0 tokens)
                 options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).Validate;
 
                 // If you provide a token decryption certificate, it will be used to decrypt the token
@@ -97,15 +88,17 @@ namespace Microsoft.Identity.Web
                    };
 #pragma warning restore 1998
 
-                // If you want to debug, or just understand the JwtBearer events, uncomment the following line of code
-                // options.Events = JwtBearerMiddlewareDiagnostics.Subscribe(options.Events);
+                if (subscribeToJwtBearerMiddlewareDiagnosticsEvents)
+                {
+                    options.Events = JwtBearerMiddlewareDiagnostics.Subscribe(options.Events);
+                }
             });
 
             return services;
         }
 
         /// <summary>
-        /// Protects the Web API with Microsoft identity platform 
+        /// Protects the Web API with Microsoft identity platform (formerly Azure AD v2.0) 
         /// This supposes that the configuration files have a section named "AzureAD"
         /// </summary>
         /// <param name="services">Service collection to which to add authentication</param>
@@ -114,7 +107,10 @@ namespace Microsoft.Identity.Web
         /// will be kept with the user's claims until the API calls a downstream API. Otherwise the account for the
         /// user is immediately added to the token cache</param>
         /// <returns></returns>
-        public static IServiceCollection AddProtectedApiCallsWebApis(this IServiceCollection services, IConfiguration configuration, IEnumerable<string> scopes = null)
+        public static IServiceCollection AddProtectedApiCallsWebApis(
+            this IServiceCollection services,
+            IConfiguration configuration, 
+            IEnumerable<string> scopes = null)
         {
             services.AddTokenAcquisition();
             services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
@@ -127,7 +123,7 @@ namespace Microsoft.Identity.Web
                     {
                         var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
                         context.Success();
-                        tokenAcquisition.AddAccountToCacheFromJwt(context, scopes);
+                        await tokenAcquisition.AddAccountToCacheFromJwtAsync(context, scopes);
                     }
                     else
                     {

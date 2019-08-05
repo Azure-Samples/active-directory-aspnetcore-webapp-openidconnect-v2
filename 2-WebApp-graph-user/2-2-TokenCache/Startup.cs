@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.Client.TokenCacheProviders;
+using Microsoft.Identity.Web.TokenCacheProviders.Sql;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
 
@@ -36,8 +36,8 @@ namespace WebApp_OpenIDConnect_DotNet
             // and chosen token cache implementation
             services.AddAzureAdV2Authentication(Configuration)
                 .AddMsal(new string[] { Constants.ScopeUserRead })
-                    .AddSqlAppTokenCache(new MSALSqlTokenCacheOptions(Configuration.GetConnectionString("TokenCacheDbConnStr")))
-                    .AddSqlPerUserTokenCache(new MSALSqlTokenCacheOptions(Configuration.GetConnectionString("TokenCacheDbConnStr")));
+                    .AddSqlAppTokenCache(new MsalSqlTokenCacheOptions(Configuration.GetConnectionString("TokenCacheDbConnStr")))
+                    .AddSqlPerUserTokenCache(new MsalSqlTokenCacheOptions(Configuration.GetConnectionString("TokenCacheDbConnStr")));
 
             // Add Graph
             services.AddGraphService(Configuration);

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Graph;
-using Microsoft.Identity.Web.Client;
+using Microsoft.Identity.Web;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph;
@@ -22,7 +22,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         [MsalUiRequiredExceptionFilter(Scopes = new[] { Constants.ScopeUserRead, Constants.ScopeDirectoryReadAll })]
         public async Task<IActionResult> Index()
         {
-            string accessToken = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new[] { Constants.ScopeUserRead, Constants.ScopeDirectoryReadAll });
+            string accessToken = await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(HttpContext, new[] { Constants.ScopeUserRead, Constants.ScopeDirectoryReadAll });
 
             User me = await graphService.GetMeAsync(accessToken);
             var photo = await graphService.GetMyPhotoAsync(accessToken);

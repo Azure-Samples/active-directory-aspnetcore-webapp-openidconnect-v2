@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Graph=Microsoft.Graph;
-using Microsoft.Identity.Web.Client;
+using Microsoft.Identity.Web;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Models;
 using WebApp_OpenIDConnect_DotNet.Services;
@@ -59,7 +59,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         {
             return GraphServiceClientFactory.GetAuthenticatedGraphClient(async () =>
             {
-                string result = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(
+                string result = await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(
                        HttpContext, scopes);
                 return result;
             }, webOptions.GraphApiUrl);
