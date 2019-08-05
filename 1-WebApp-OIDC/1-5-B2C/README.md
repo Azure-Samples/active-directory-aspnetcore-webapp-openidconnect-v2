@@ -38,6 +38,14 @@ Navigate to the `"1-5-B2C"` folder
   cd "1-5-B2C"
   ```
 
+## Option 1 - Run the pre-configured sample
+
+1. Build the solution and run it.
+1. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. Click on **SignIn/Up** button.
+1. Click on Sign-In
+
+## Option 2 - Configure the sample with your own B2C app
+
 ### Step 2: Get your own Azure AD B2C tenant
 
 If you don't have an Azure AD B2C tenant yet, you'll need to create an Azure AD B2C tenant by following the [Tutorial: Create an Azure Active Directory B2C tenant](https://azure.microsoft.com/documentation/articles/active-directory-b2c-get-started).
@@ -57,7 +65,7 @@ Now you need to [register your web app in your B2C tenant](https://docs.microsof
 Your web application registration should include the following information:
 
 - Enable the **Web App/Web API** setting for your application.
-- Set the **Reply URL** to `https://localhost:44321/signin/B2C_1_sign_up_in` and `https://localhost:44321/signout/B2C_1_sign_up_in`.
+- Set the **Reply URL** to `https://localhost:44136/signin/B2C_1_sign_up_in` and `https://localhost:44136/signout/B2C_1_sign_up_in`.
 - Copy the Application ID generated for your application, so you can use it in the next step.
 
 ### Step 5: Configure the sample with your app coordinates
@@ -82,7 +90,7 @@ Your web application registration should include the following information:
 }
 ```
 
-### Step 5: Run the sample
+### Step 6: Run the sample
 
 1. Build the solution and run it.
 1. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. Click on **SignIn/Up** button.
@@ -99,6 +107,9 @@ If your web site needs to be accessed from users using iOS 12, you probably want
 > Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
 
 ## About The code
+
+#### Where is MSAL?
+This sample does NOT use MSAL as it only signs-in users (it does not call a Web API). It uses the built-in ASP.NET Core middleware. MSAL is used for fetching access  for accessing protected APIs (not shown here), as well as ID tokens. For logging-in purposes, it is sufficient to obtain an ID Token, and the middleware is capable of doing this on its own.
 
 The `AccountController.cs` used in this sample is part of the built-in .NET Core authentication controllers found in the NuGet package `Microsoft.AspNetCore.Authentication.AzureADB2C.UI`, and you can find its implementation [here](https://github.com/aspnet/AspNetCore/blob/master/src/Azure/AzureAD/Authentication.AzureADB2C.UI/src/Areas/AzureADB2C/Controllers/AccountController.cs). If you want to customize the **Sign-in**, **Sign-up** or **Sign-out** actions, you are encouraged to create your own controller.
 
