@@ -19,19 +19,9 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Microsoft.Identity.Web.Resource.OpenIdConnectMiddlewareDiagnostics">
-    <Position X="0.5" Y="11.75" Width="3.25" />
+    <Position X="5.75" Y="14.5" Width="5.5" />
     <Members>
       <Method Name="DisplayProtocolMessage" Hidden="true" />
-      <Method Name="OnAuthenticationFailedAsync" Hidden="true" />
-      <Method Name="OnAuthorizationCodeReceivedAsync" Hidden="true" />
-      <Method Name="OnMessageReceivedAsync" Hidden="true" />
-      <Method Name="OnRedirectToIdentityProviderAsync" Hidden="true" />
-      <Method Name="OnRedirectToIdentityProviderForSignOutAsync" Hidden="true" />
-      <Method Name="OnRemoteSignOutAsync" Hidden="true" />
-      <Method Name="OnSignedOutCallbackRedirectAsync" Hidden="true" />
-      <Method Name="OnTokenResponseReceivedAsync" Hidden="true" />
-      <Method Name="OnTokenValidatedAsync" Hidden="true" />
-      <Method Name="OnUserInformationReceivedAsync" Hidden="true" />
       <Field Name="s_onAuthenticationFailed" Hidden="true" />
       <Field Name="s_onAuthorizationCodeReceived" Hidden="true" />
       <Field Name="s_onMessageReceived" Hidden="true" />
@@ -99,6 +89,19 @@
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Resource\ScopesRequiredHttpContextExtensions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Microsoft.Identity.Web.Resource.JwtBearerMiddlewareDiagnostics">
+    <Position X="0.5" Y="14.5" Width="4.75" />
+    <Members>
+      <Field Name="s_onAuthenticationFailed" Hidden="true" />
+      <Field Name="s_onChallenge" Hidden="true" />
+      <Field Name="s_onMessageReceived" Hidden="true" />
+      <Field Name="s_onTokenValidated" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgABAAgAAAAAAAABAgACAAABAAAAIABAAAA=</HashCode>
+      <FileName>Resource\JwtBearerMiddlewareDiagnostics.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Interface Name="Microsoft.Identity.Web.ITokenAcquisition">
