@@ -4,20 +4,20 @@
 
 This library contains a set of reusable classes useful in ASP.NET Core:
 
-- [Web applications](#web-apps) that sign-in users, and, optionally, call web APIs
+- [Web applications](#web-apps) that sign in users, and, optionally, call web APIs
 - [Protected web APIs](#web-apis), which, optionally call downstream web APIs
 
-to enable them to work with the Microsoft identity platform (formerly named Azure AD v2.0 endpoint). In the library web apps and protected web APIs are collectively referred to as web resources.
+to enable them to work with the Microsoft identity platform (formerly named Azure AD v2.0 endpoint). In the library, web apps and protected web APIs are collectively referred to as web resources.
 
 ## Web apps
 
-As of today, ASP.NET Core web apps templates (`dot net new mvc -auth`) create web apps that sign-in users with the Azure AD v1.0 endpoint (allowing to sign-in users with their organizational accounts, also named Work or school accounts). This library brings `ServiceCollection` extension methods to be used in the ASP.NET Core web app **Startup.cs** file to enable the web app to sign-in users with the Microsoft identity platform (formerly Azure AD v2.0 endpoint), and, optionally enable the web app to call APIs on behalf of the signed-in user.
+As of today, ASP.NET Core web apps templates (`dot net new mvc -auth`) create web apps that sign in users with the Azure AD v1.0 endpoint (allowing to sign in users with their organizational accounts, also named *Work or school accounts*). This library brings `ServiceCollection` extension methods to be used in the ASP.NET Core web app **Startup.cs** file to enable the web app to sign in users with the Microsoft identity platform (formerly Azure AD v2.0 endpoint), and, optionally enable the web app to call APIs on behalf of the signed-in user.
 
-![image](https://user-images.githubusercontent.com/13203188/62526924-0a563780-b7ef-11e9-8ce0-db284db3f02c.png)
+![WebAppServiceCollectionExtensions](https://user-images.githubusercontent.com/13203188/62526924-0a563780-b7ef-11e9-8ce0-db284db3f02c.png)
 
-### Web apps that sign-in users - Startup.cs
+### Web apps that sign in users - Startup.cs
 
-To enable sign-in users with the Microsoft identity platform, all you need to do is, in your web application Startup.cs file, to replace the call to:
+To enable users to sign in with the Microsoft identity platform, you need to replace, in your web application Startup.cs file, the following code:
 
 ```CSharp
 using Microsoft.Identity.Web;
@@ -54,16 +54,16 @@ public class Startup
 }
 ```
 
-This adds authentication with the Microsoft Identity platform (formerly Azure AD v2.0), including validating the token in all scenarios (single tenant application, multi tenant applications, in Azure public cloud as well as national clouds)
+This method adds authentication with the Microsoft Identity platform (formerly Azure AD v2.0). This includes validating the token in all scenarios (single tenant application, multi tenant applications) in Azure public cloud as well as national clouds.
 
 See also:
 
 - the [ASP.NET Core Web app incremental tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-1-MyOrg) in chapter 1.1 (sign-in user in an organization)
 - The [Web App that signs-in users](https://docs.microsoft.com/en-us/azure/active-directory/develop/scenario-web-app-sign-user-overview) scenario landing page in the Microsoft identity platform documentation and the following pages.
 
-### Web apps that sign-in users and call web apis on behalf of the signed-in user - startup.cs
+### Web apps that sign in users and call web apis on behalf of the signed-in user - startup.cs
 
-If, moreover you want your Web app to call web APIS, you'll need to add a line with `.AddMsal()`, and choose a token cache implementation, for instance `.AddInMemoryTokenCaches()`
+If moreover you want your Web app to call web APIS, you'll need to add a line with `.AddMsal()`, and choose a token cache implementation, for instance `.AddInMemoryTokenCaches()`
 
 ```CSharp
 using Microsoft.Identity.Web;
@@ -86,9 +86,9 @@ public class Startup
 
 ### Web app controller
 
-For your web app to call web APIs on behalf of the signed-in user, you will need to add a parameter of type `ITokenAcquisition` to the constructor of your controller (the `ITokenAcquisition` service will be injected by dependency injection by ASP.NET Core)
+For your web app to call web APIs on behalf of the signed-in user, you'll need to add a parameter of type `ITokenAcquisition` to the constructor of your controller (the `ITokenAcquisition` service will be injected by dependency injection by ASP.NET Core)
 
-![image](https://user-images.githubusercontent.com/13203188/62526943-14783600-b7ef-11e9-9913-ca79bf7a5cee.png)
+![ITokenAcquisition](https://user-images.githubusercontent.com/13203188/62526943-14783600-b7ef-11e9-9913-ca79bf7a5cee.png)
 
 ```CSharp
 using Microsoft.Identity.Web;
@@ -105,7 +105,7 @@ public class HomeController : Controller
   ...
 ```
 
-Then in your controller actions, you will need to call: `ITokenAcquisition.GetAccessTokenOnBehalfOfUserAsync` passing the HttpContext of the controller, and the scopes for which to request a token. The other methods of ITokenAcquisition are used from the `AddMsal()` method and similar methods for web APIs (see below).
+Then in your controller actions, you'll need to call: `ITokenAcquisition.GetAccessTokenOnBehalfOfUserAsync` passing the HttpContext of the controller, and the scopes for which to request a token. The other methods of ITokenAcquisition are used from the `AddMsal()` method and similar methods for web APIs (see below).
 
 ```CSharp
 [Authorize]
@@ -124,9 +124,9 @@ public class HomeController : Controller
   }
 ```
 
-The controller action is decorated by an attribute `MsalUiRequiredExceptionFilterAttribute` which enables to process the `MsalUiRequiredException` can could be thrown by the service implementing `ITokenAcquisition.GetAccessTokenOnBehalfOfUserAsync` so that the web app interacts with the user, and ask them to consent to the scopes, or re-sign-in if needed.
+The controller action is decorated by an attribute `MsalUiRequiredExceptionFilterAttribute` which enables to process the `MsalUiRequiredException` that could be thrown by the service implementing `ITokenAcquisition.GetAccessTokenOnBehalfOfUserAsync` so that the web app interacts with the user, and ask them to consent to the scopes, or re-sign-in if needed.
 
-![image](https://user-images.githubusercontent.com/13203188/62526956-18a45380-b7ef-11e9-99f3-c75085d61ce5.png)
+<img alt="MsalUiRequiredExceptionFilterAttribute" src="https://user-images.githubusercontent.com/13203188/62526956-18a45380-b7ef-11e9-99f3-c75085d61ce5.png" width="50%"/>
 
 ### Samples and documentation
 
@@ -144,7 +144,7 @@ The library also enables web APIs to work with the Microsoft identity platform, 
 
 ### Protected web APIS - Startup.cs
 
-To enable the web API to accept tokens for the Microsoft identity platform, all you need to do is, in your web API Startup.cs file, to replace the call to:
+To enable the web API to accept tokens emitted by  the Microsoft identity platform, you need to replace, in your web API Startup.cs file, the call to:
 
 ```CSharp
 using Microsoft.Identity.Web;
@@ -181,7 +181,7 @@ public class Startup
 }
 ```
 
-This enables your web API to be protected using the the Microsoft Identity platform (formerly Azure AD v2.0), including validating the token in all scenarios (single tenant application, multi tenant applications, in Azure public cloud as well as national clouds)
+This method enables your web API to be protected using the Microsoft Identity platform (formerly Azure AD v2.0). It takes care of validating the token in all scenarios (single tenant application, multi tenant applications), in Azure public cloud as well as national clouds.
 
 See also:
 
@@ -190,7 +190,7 @@ See also:
 
 ### Protected web APIs that call downstream APIs on behalf of a user - Startup.cs
 
-If, moreover you want your web API to call downstream web APIS, you'll need to add lines with `.AddProtectedApiCallsWebApis()`, and choose a token cache implementation, for instance `.AddInMemoryTokenCaches()`
+If moreover you want your web API to call downstream web APIS, you'll need to add lines with `.AddProtectedApiCallsWebApis()`, and choose a token cache implementation, for instance `.AddInMemoryTokenCaches()`
 
 ```CSharp
 using Microsoft.Identity.Web;
@@ -210,20 +210,20 @@ public class Startup
 }
 ```
 
-If you are certain that your web API will need some specific scopes, you can optionally pass them as arguments to `AddProtectedApiCallsWebApis`.
+If you're certain that your web API will need some specific scopes, you can optionally pass them as arguments to `AddProtectedApiCallsWebApis`.
 
 ### Web API controller
 
-For your web API to call downstream APIs, you will need to:
+For your web API to call downstream APIs, you'll need to:
 
 - add (like in web apps), a parameter of type `ITokenAcquisition` to the constructor of your controller (the `ITokenAcquisition` service will be injected by dependency injection by ASP.NET Core)
-- verify, in your controller actions, that the token contains the scopes expected by the action. For this you'll call the `VerifyUserHasAnyAcceptedScope` extension method on the `HttpContext`
+- verify, in your controller actions, that the token contains the scopes expected by the action. For this, you'll call the `VerifyUserHasAnyAcceptedScope` extension method on the `HttpContext`
 
-  ![image](https://user-images.githubusercontent.com/13203188/62527104-60c37600-b7ef-11e9-8dcb-66bb982fe147.png)
+  <img alt="ScopesRequiredHttpContextExtensions" src="https://user-images.githubusercontent.com/13203188/62527104-60c37600-b7ef-11e9-8dcb-66bb982fe147.png" width="80%"/>
 
 - in your controller actions, to call: `ITokenAcquisition.GetAccessTokenOnBehalfOfUserAsync` passing the HttpContext of the controller, and the scopes for which to request a token.
 
-The following code snippet shows these:
+The following code snippet shows how to combine these steps:
 
 ```CSharp
 [Authorize]
@@ -252,42 +252,55 @@ public class HomeController : Controller
 
 #### Handle conditional access
 
-It can happen that when your web api tries to get a token for the downstream API, the token acquisition service throws a `MsalUiRequiredException` meaning that the user on the client calling the web API needs to perform more actions such as multi-factor authentication. Given that the web API is not capable of doing interaction itself, this exception needs to be passed to the client. To propagate back this exception to the client, you can catch the exception and call the `ITokenAcquisition.ReplyForbiddenWithWwwAuthenticateHeader` method.
+It can happen that when your web api tries to get a token for the downstream API, the token acquisition service throws a `MsalUiRequiredException` meaning that the user on the client calling the web API needs to perform more actions such as multi-factor authentication. Given that the web API isn't capable of doing interaction itself, this exception needs to be passed to the client. To propagate back this exception to the client, you can catch the exception and call the `ITokenAcquisition.ReplyForbiddenWithWwwAuthenticateHeader` method.
 
 ## Token cache serialization
 
-For web apps calling web apis, as well as web api calling downstream APIs, the code snippets above show the use of the In Memory token cache serialization. The library proposes alternate token cache serialization methods:
+For web apps that calls web apis, and web APIs that call downstream APIs, the code snippets above show the use of the In Memory token cache serialization. The library proposes alternate token cache serialization methods:
 
 | Extension Method | Microsoft.Identity.Web sub Namespace | Description  |
 | ---------------- | --------- | ------------ |  
-| `AddInMemoryTokenCaches` | `TokenCacheProviders.InMemory` | In memory token cache serialization. This is great in samples, and in production applications where you don't mind if the token cache is lost when the web app is restarted. `AddInMemoryTokenCaches` takes an optional parameter of type `MsalMemoryTokenCacheOptions` that enables you to specify the duration after which the cache entry will expire unless it's used.
-| `AddSqlTokenCaches` | `TokenCacheProviders.Sql` | The token cache maintained in a SQL database. This is ideal for production applications which need to keep their token caches. AddSqlTokenCaches takes a parameter of type `MsalSqlTokenCacheOptions` that let you specify the SQL connection string  
-| `AddSessionTokenCaches` | `TokenCacheProviders.Session` | The token cache is bound to the user session. This option is not ideal if the ID token is too big because it contains too many claims as the cookie would be too big.
+| `AddInMemoryTokenCaches` | `TokenCacheProviders.InMemory` | In memory token cache serialization. This implementation is great in samples. It's also good in production applications provided you don't mind if the token cache is lost when the web app is restarted. `AddInMemoryTokenCaches` takes an optional parameter of type `MsalMemoryTokenCacheOptions` that enables you to specify the duration after which the cache entry will expire unless it's used.
+| `AddSqlTokenCaches` | `TokenCacheProviders.Sql` | The token cache maintained in a SQL database. This implementation is ideal for production applications that need to keep their token caches. AddSqlTokenCaches takes a parameter of type `MsalSqlTokenCacheOptions` that let you specify the SQL connection string  
+| `AddSessionTokenCaches` | `TokenCacheProviders.Session` | The token cache is bound to the user session. This option isn't ideal if the ID token is too large because it contains too many claims as the cookie would be too large.
 
-## Other utilities
+## Other utility classes
 
-The library also contains additional classes which you might find useful.
-
-### Troubleshooting your web app or web API
-
-To troubleshoot your web app you can set the `subscribeToOpenIdConnectMiddlewareDiagnosticsEvents` optional boolean to `true` when you call `AddAzureAdV2Authentication`.
-
-
+The library also contains additional classes that you might find useful.
 
 ### ClaimsPrincipalExtensions
 
-In web apps that sign-in users, ASP.NET Core transforms the claims in the IDToken to a `ClaimsPrincipal` instance, held by the `HttpContext.User` property. In the same way, in protected Web APIs, the claims from the Jwt bearer token used to call the API are available in `HttpContext.User`.
+In web apps that sign in users, ASP.NET Core transforms the claims in the IDToken to a `ClaimsPrincipal` instance, held by the `HttpContext.User` property. In the same way, in protected Web APIs, the claims from the Jwt bearer token used to call the API are available in `HttpContext.User`.
 
-The library proposes extension methods to retrieve some of the relevant information about the user in the `ClaimsPrinciapExtensions` class:
+The library proposes extension methods to retrieve some of the relevant information about the user in the `ClaimsPrincipalExtensions` class.
+
+<img alt="ClaimsPrincipalExtensions" src="https://user-images.githubusercontent.com/13203188/62538243-2bc31d80-b807-11e9-8689-085c5dc78f7e.png" width="60%"/>
+
+If you want to implement your own token cache serialization, you might want to use this class, for instance to get the key of the token cache to serialize (typically `GetMsalAccountId()`)
 
 ### ClaimsPrincipalFactory
 
+In the other direction `ClaimsPrincipalFactory` instantiates a `ClaimsPrincipal` from an account objectId and tenantId. These methods can be useful when the web app or the web API subscribes to another service on behalf of the user, and then is called back by a notification where the users are identified by only their tenant ID and object ID. This is, for instance the case of [Microsoft Graph Web Hooks](https://docs.microsoft.com/en-us/graph/api/resources/webhooks) [notifications](https://docs.microsoft.com/en-us/graph/webhooks#notification-example). 
 
+<img alt="ClaimsPrincipalFactory" src="https://user-images.githubusercontent.com/13203188/62538251-2fef3b00-b807-11e9-912f-2674972e9f48.png" width="70%"/>
 
-- Protect Web resources (in the `Resources` folder)
-  - `AadIssuerValidator` is used to validate the issuer in multi-tenant applications, taking into account the aliases for authorities exising in Azure AD. This class works both for Azure AD (v1.0) and Microsoft identity platform (v2.0) web resources. You should not need to use it directly, as it's used by `AddAzureAdV2Authentication`
-  - `OpenIdConnectMiddlewareDiagnostics` helps you understand what happens in the Open Id Connect Middleware. This is a diagnostics class that can help you troubleshooting your Web apps.
-  - `ClaimsPrincipalExtensions` provides a set of extension methods on `ClaimsPrincipal` helping getting information from the signed-in user. It's used in the other classes of the libraries.
+### AccountExtensions
+
+Finally, you can create a `ClaimsPrincipal` from an instance of MSAL.NET `IAccount`, using the   `ToClaimsPrincipal` method in `AccountExtensions`.
+
+<img alt="AccountExtensions" src="https://user-images.githubusercontent.com/13203188/62538259-341b5880-b807-11e9-9328-a094f79a0874.png" width="60%"/>
+
+### Troubleshooting your web app or web API
+
+In order to troubleshoot your web app you can set the `subscribeToOpenIdConnectMiddlewareDiagnosticsEvents` optional boolean to `true` when you call `AddAzureAdV2Authentication`. This will display on the output window the progression of the OpenID connect message through OpenID Connect middleware (from the reception of the message from Azure Active directory to the availability of the user identity in `HttpContext.User`)  
+
+<img alt="OpenIdConnectMiddlewareDiagnostics" src="https://user-images.githubusercontent.com/13203188/62538366-75ac0380-b807-11e9-9ce0-d0eec9381b78.png" width="75%"/>
+
+In order to troubleshoot your web API you can set the `subscribeToJwtBearerMiddlewareDiagnosticsEvents` optional boolean to `true` when you call `AddProtectWebApiWithMicrosoftIdentityPlatformV2`. Enabling these diagnostics will display on the output window the progression of the OAuth 2.0 message through the JWTBearer middleware (from the reception of the message from Azure Active directory to the availability of the user identity in `HttpContext.User`)  
+
+<img alt="JwtBearerMiddlewareDiagnostics" src="https://user-images.githubusercontent.com/13203188/62538382-7d6ba800-b807-11e9-9540-560e7129197b.png" width="65%"/>
+
+In both cases, you can set a breakpoint in the methods of the  `OpenIdConnectMiddlewareDiagnostics` and `JwtBearerMiddlewareDiagnostics` classes respectively to observe values under the debugger.
 
 ## Learn more how the library works
 
