@@ -352,11 +352,6 @@ namespace Microsoft.Identity.Web
             IEnumerable<string> scopes,
             string tenant)
         {
-            if (tenant == null)
-            {
-                throw new ArgumentNullException(nameof(tenant));
-            }
-
             string accountIdentifier = claimsPrincipal.GetMsalAccountId();
             string loginHint = claimsPrincipal.GetLoginHint();
             return await GetAccessTokenOnBehalfOfUserAsync(application, accountIdentifier, scopes, loginHint, tenant).ConfigureAwait(false);

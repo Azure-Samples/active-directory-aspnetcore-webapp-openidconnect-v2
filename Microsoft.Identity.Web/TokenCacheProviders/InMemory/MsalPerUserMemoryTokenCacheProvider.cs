@@ -30,11 +30,12 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.InMemory
 
         /// <summary>Initializes a new instance of the <see cref="MsalPerUserMemoryTokenCacheProvider"/> class.</summary>
         /// <param name="cache">The memory cache instance</param>
-        public MsalPerUserMemoryTokenCacheProvider(IMemoryCache cache,
+        public MsalPerUserMemoryTokenCacheProvider(IMemoryCache memoryCache,
             MsalMemoryTokenCacheOptions option,
             IHttpContextAccessor httpContextAccessor)
         {
             this.httpContextAccessor = httpContextAccessor;
+            this._memoryCache = memoryCache;
 
             if (option == null)
             {
