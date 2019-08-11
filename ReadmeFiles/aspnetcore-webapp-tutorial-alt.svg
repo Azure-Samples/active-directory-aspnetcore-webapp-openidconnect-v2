@@ -573,7 +573,7 @@
 			</g>
 		</a>
 		<a
-				xlink:href="https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/5-WebApp-AuthZ/5-2-Groups">
+				xlink:href="https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/5-WebApp-AuthZ/5-1-Roles">
 			<g id="group313-171" transform="translate(363.454,-159.134) rotate(-45)" v:mID="313" v:groupContext="group"
 					v:layerMember="0">
 				<v:userDefs>
