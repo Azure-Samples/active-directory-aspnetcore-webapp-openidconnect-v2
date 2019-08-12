@@ -90,7 +90,10 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             //var tokenCacheDbContext = new TokenCacheDbContext(tokenCacheDbContextBuilder.Options);
             //tokenCacheDbContext.Database.EnsureCreated();
 
-            services.AddDataProtection();
+            // To share protected payloads among apps, configure SetApplicationName in each app with the same value. 
+            // https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/overview?view=aspnetcore-2.2#setapplicationname
+            services.AddDataProtection()
+                .SetApplicationName("WebApp_Tutorial");
 
             services.AddDbContext<TokenCacheDbContext>(options =>
                 options.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString));
