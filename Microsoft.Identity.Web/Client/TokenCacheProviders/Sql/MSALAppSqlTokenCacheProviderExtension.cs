@@ -52,13 +52,13 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         {
             // Uncomment the following lines to create the database. In production scenarios, the database
             // will most probably be already present.
-/*
+            /*
             var tokenCacheDbContextBuilder = new DbContextOptionsBuilder<TokenCacheDbContext>();
             tokenCacheDbContextBuilder.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString);
 
             var tokenCacheDbContextForCreation = new TokenCacheDbContext(tokenCacheDbContextBuilder.Options);
             tokenCacheDbContextForCreation.Database.EnsureCreated();
-*/
+            */
             services.AddDataProtection();
 
             services.AddDbContext<TokenCacheDbContext>(options =>
@@ -84,11 +84,13 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
         {
             // Uncomment the following lines to create the database. In production scenarios, the database
             // will most probably be already present.
-            //var tokenCacheDbContextBuilder = new DbContextOptionsBuilder<TokenCacheDbContext>();
-            //tokenCacheDbContextBuilder.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString);
+            /*
+            var tokenCacheDbContextBuilder = new DbContextOptionsBuilder<TokenCacheDbContext>();
+            tokenCacheDbContextBuilder.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString);
 
-            //var tokenCacheDbContext = new TokenCacheDbContext(tokenCacheDbContextBuilder.Options);
-            //tokenCacheDbContext.Database.EnsureCreated();
+            var tokenCacheDbContextForCreation = new TokenCacheDbContext(tokenCacheDbContextBuilder.Options);
+            tokenCacheDbContextForCreation.Database.EnsureCreated();
+            */
 
             // To share protected payloads among apps, configure SetApplicationName in each app with the same value. 
             // https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/overview?view=aspnetcore-2.2#setapplicationname
