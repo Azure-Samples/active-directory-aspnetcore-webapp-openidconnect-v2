@@ -217,7 +217,7 @@ When you click on the page that fetches the signed-in user's roles and group ass
 
 ## Next steps
 
-- Learn how to use app roles. [Add authorization using security groups & groups claims to a Web app thats signs-in users with the Microsoft identity platform](../../../../5-WebApp-AuthZ/5-1-Groups).
+- Learn how to use app groups. [Add authorization using security groups & groups claims to a Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-2-Groups).
 
 ## Learn more
 
