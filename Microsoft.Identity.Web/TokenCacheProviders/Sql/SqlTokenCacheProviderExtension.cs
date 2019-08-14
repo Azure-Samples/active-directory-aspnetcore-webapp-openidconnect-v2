@@ -11,11 +11,11 @@ using Microsoft.Extensions.Options;
 namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
 {
     /// <summary>
-    /// Extension class to add a SQL based token cache serializer to MSAL.NET
+    /// Extension class to add a SQL Server based token cache serializer to MSAL.NET
     /// </summary>
-    public static class MsalAppSqlTokenCacheProviderExtension
+    public static class SqlTokenCacheProviderExtension
     {
-        /// <summary>Adds the app and per user SQL token caches.</summary>
+        /// <summary>Adds the app and per user SQL Server token caches.</summary>
         /// <param name="configuration">The configuration instance from where this method pulls the connection string to the Sql database.</param>
         /// <param name="sqlTokenCacheOptions">The MSALSqlTokenCacheOptions is used by the caller to specify the Sql connection string</param>
         /// <returns></returns>
@@ -36,15 +36,6 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
             this IServiceCollection services,
             MsalSqlTokenCacheOptions sqlTokenCacheOptions)
         {
-            // Uncomment the following lines to create the database. In production scenarios, the database
-            // will most probably be already present.
-/*
-            var tokenCacheDbContextBuilder = new DbContextOptionsBuilder<TokenCacheDbContext>();
-            tokenCacheDbContextBuilder.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString);
-
-            var tokenCacheDbContextForCreation = new TokenCacheDbContext(tokenCacheDbContextBuilder.Options);
-            tokenCacheDbContextForCreation.Database.EnsureCreated();
-*/
             services.AddDataProtection();
 
             services.AddDbContext<TokenCacheDbContext>(options =>
@@ -70,14 +61,6 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
             this IServiceCollection services,
             MsalSqlTokenCacheOptions sqlTokenCacheOptions)
         {
-            // Uncomment the following lines to create the database. In production scenarios, the database
-            // will most probably be already present.
-            //var tokenCacheDbContextBuilder = new DbContextOptionsBuilder<TokenCacheDbContext>();
-            //tokenCacheDbContextBuilder.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString);
-
-            //var tokenCacheDbContext = new TokenCacheDbContext(tokenCacheDbContextBuilder.Options);
-            //tokenCacheDbContext.Database.EnsureCreated();
-
             services.AddDataProtection();
 
             services.AddDbContext<TokenCacheDbContext>(options =>
@@ -95,6 +78,18 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
             });
 
             return services;
+        }
+
+        /// <summary>A one time method that can be used to create the tables required for token caching in a Sql server database</summary>
+        /// <param name="sqlTokenCacheOptions">The SQL token cache options containing the connection string to the Sql Server database.</param>
+        /// <remarks>In production scenarios, the database  will most probably be already present.</remarks>
+        public static void CreateTokenCachingTablesInSqlDatabase(MsalSqlTokenCacheOptions sqlTokenCacheOptions)
+        {
+            var tokenCacheDbContextBuilder = new DbContextOptionsBuilder<TokenCacheDbContext>();
+            tokenCacheDbContextBuilder.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString);
+
+            var tokenCacheDbContextForCreation = new TokenCacheDbContext(tokenCacheDbContextBuilder.Options);
+            tokenCacheDbContextForCreation.Database.EnsureCreated();
         }
     }
 }

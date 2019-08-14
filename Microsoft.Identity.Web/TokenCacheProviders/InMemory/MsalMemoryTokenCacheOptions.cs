@@ -12,11 +12,11 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.InMemory
     {
         /// <summary>
         /// Gets or sets the value of the duration after which the cache entry will expire unless it's used
-        /// This is the duration till the tokens are kept in memory cache. 
-        /// In production, a higher value , upto 90 days is recommended.
+        /// This is the duration till the tokens are kept in memory cache.
+        /// In production, a higher value , up-to 90 days is recommended.
         /// </summary>
         /// <value>
-        /// The AbsoluteExpiration value.
+        /// The SlidingExpiration value.
         /// </value>
         public TimeSpan SlidingExpiration
         {
@@ -24,9 +24,11 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.InMemory
             set;
         }
 
+        /// <summary>Initializes a new instance of the <see cref="MsalMemoryTokenCacheOptions"/> class.
+        /// By default, the sliding expiration is set for 14 days.</summary>
         public MsalMemoryTokenCacheOptions()
         {
-            this.SlidingExpiration = TimeSpan.FromHours(12);
+            this.SlidingExpiration = TimeSpan.FromDays(14);
         }
     }
 }

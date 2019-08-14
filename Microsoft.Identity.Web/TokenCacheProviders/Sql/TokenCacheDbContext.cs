@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
 {
     /// <summary>
-    /// The DBContext that is used by the TokenCache providers to read and write to a Sql database.
+    /// The DBContext that is used by the TokenCache providers to read and write to a Sql server database.
     /// </summary>
     public class TokenCacheDbContext : DbContext
     {

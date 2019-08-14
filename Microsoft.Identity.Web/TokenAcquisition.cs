@@ -1,13 +1,5 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
@@ -18,6 +10,14 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Web.TokenCacheProviders;
 using Microsoft.Net.Http.Headers;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Net;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Microsoft.Identity.Web
 {
@@ -31,6 +31,8 @@ namespace Microsoft.Identity.Web
 
         private readonly IMsalAppTokenCacheProvider _appTokenCacheProvider;
         private readonly IMsalUserTokenCacheProvider _userTokenCacheProvider;
+
+        private IConfidentialClientApplication application;
 
         /// <summary>
         /// Constructor of the TokenAcquisition service. This requires the Azure AD Options to
@@ -69,10 +71,12 @@ namespace Microsoft.Identity.Web
         };
 
         /// <summary>
-        /// In a Web App, adds, to the MSAL.NET cache, the account of the user authenticating to the Web App, when the authorization code is received (after the user
-        /// signed-in and consented)
-        /// An On-behalf-of token contained in the <see cref="AuthorizationCodeReceivedContext"/> is added to the cache, so that it can then be used to acquire another token on-behalf-of the
-        /// same user in order to call to downstream APIs.
+        /// This handler is executed after authorization code is received (once the user signs-in and consents) during the 
+        /// <a href='https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow'>Authorization code flow grant flow</a> in a web app. 
+        /// It uses the code to request an access token from the Microsoft Identity platform and caches the tokens and an entry about the signed-in user's account in the MSAL's token cache.
+        /// The access token (and refresh token) provided in the <see cref="AuthorizationCodeReceivedContext"/>, once added to the cache, are then used to acquire more tokens using the 
+        /// <a href='https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow'>on-behalf-of flow</a> for the signed-in user's account, 
+        /// in order to call to downstream APIs.
         /// </summary>
         /// <param name="context">The context used when an 'AuthorizationCode' is received over the OpenIdConnect protocol.</param>
         /// <param name="scopes">scopes to request access to</param>
@@ -111,18 +115,18 @@ namespace Microsoft.Identity.Web
                 // race condition ending-up in an error from Azure AD telling "code already redeemed")
                 context.HandleCodeRedemption();
 
-                // The cache will need the claims from the ID token. In the case of guest scenarios
-                // If they are not yet in the HttpContext.User's claims, adding them.
+                // The cache will need the claims from the ID token. 
+                // If they are not yet in the HttpContext.User's claims, so adding them here.
                 if (!context.HttpContext.User.Claims.Any())
                 {
                     (context.HttpContext.User.Identity as ClaimsIdentity).AddClaims(context.Principal.Claims);
                 }
 
-                var application = GetOrBuildConfidentialClientApplication(context.HttpContext, context.Principal);
+                var application = GetOrBuildConfidentialClientApplication(context.HttpContext);
 
                 // Do not share the access token with ASP.NET Core otherwise ASP.NET will cache it and will not send the OAuth 2.0 request in
-                // case a further call to AcquireTokenByAuthorizationCodeAsync in the future for incremental consent (getting a code requesting more scopes)
-                // Share the ID Token
+                // case a further call to AcquireTokenByAuthorizationCodeAsync in the future is required for incremental consent (getting a code requesting more scopes)
+                // Share the ID Token though
                 var result = await application
                     .AcquireTokenByAuthorizationCode(scopes.Except(_scopesRequestedByMsalNet), context.ProtocolMessage.Code)
                     .ExecuteAsync()
@@ -139,15 +143,15 @@ namespace Microsoft.Identity.Web
         }
 
         /// <summary>
-        /// Typically used from an ASP.NET Core Web App or Web API controller, this method gets an access token
-        /// for a downstream API on behalf of the user account which claims are provided in the <see cref="HttpContext.User"/>
-        /// member of the <paramref name="context"/> parameter
+        /// Typically used from a Web App or WebAPI controller, this method retrieves an access token
+        /// for a downstream API using the <a href='https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow'>on-behalf-of flow</a> 
+        /// for the user account that is ascertained from claims are provided in the <see cref="HttpContext.User"/> instance of the <paramref name="context"/> parameter
         /// </summary>
         /// <param name="context">HttpContext associated with the Controller or auth operation</param>
         /// <param name="scopes">Scopes to request for the downstream API to call</param>
-        /// <param name="tenant">Enables to override the tenant/account for the same identity. This is useful in the
-        /// cases where a given account is guest in other tenants, and you want to acquire tokens for a specific tenant</param>
-        /// <returns>An access token to call on behalf of the user, the downstream API characterized by its scopes</returns>
+        /// <param name="tenant">Enables overriding of the tenant/account for the same identity. This is useful in the
+        /// cases where a given account is guest in other tenants, and you want to acquire tokens for a specific tenant, like where the user is a guest in</param>
+        /// <returns>An access token to call the downstream API and populated with this downstream Api's scopes</returns>
         public async Task<string> GetAccessTokenOnBehalfOfUserAsync(
             HttpContext context,
             IEnumerable<string> scopes,
@@ -160,7 +164,7 @@ namespace Microsoft.Identity.Web
                 throw new ArgumentNullException(nameof(scopes));
 
             // Use MSAL to get the right token to call the API
-            var application = GetOrBuildConfidentialClientApplication(context, context.User);
+            var application = GetOrBuildConfidentialClientApplication(context);
 
             // Case of a lazy OBO
             Claim jwtClaim = context.User.FindFirst("jwt");
@@ -265,7 +269,7 @@ namespace Microsoft.Identity.Web
         public async Task RemoveAccountAsync(RedirectContext context)
         {
             ClaimsPrincipal user = context.HttpContext.User;
-            IConfidentialClientApplication app = GetOrBuildConfidentialClientApplication(context.HttpContext, user);
+            IConfidentialClientApplication app = GetOrBuildConfidentialClientApplication(context.HttpContext);
             IAccount account = await app.GetAccountAsync(context.HttpContext.User.GetMsalAccountId()).ConfigureAwait(false);
 
             // Workaround for the guest account
@@ -282,7 +286,7 @@ namespace Microsoft.Identity.Web
             }
         }
 
-        private IConfidentialClientApplication application;
+
 
         /// <summary>
         /// Creates an MSAL Confidential client application if needed
@@ -290,11 +294,11 @@ namespace Microsoft.Identity.Web
         /// <param name="httpContext"></param>
         /// <param name="claimsPrincipal"></param>
         /// <returns></returns>
-        private IConfidentialClientApplication GetOrBuildConfidentialClientApplication(HttpContext httpContext, ClaimsPrincipal claimsPrincipal)
+        private IConfidentialClientApplication GetOrBuildConfidentialClientApplication(HttpContext httpContext)
         {
             if (application == null)
             {
-                application = BuildConfidentialClientApplication(httpContext, claimsPrincipal);
+                application = BuildConfidentialClientApplication(httpContext);
             }
             return application;
         }
@@ -306,8 +310,7 @@ namespace Microsoft.Identity.Web
         /// <param name="claimsPrincipal"></param>
         /// <returns></returns>
         private IConfidentialClientApplication BuildConfidentialClientApplication(
-            HttpContext httpContext,
-            ClaimsPrincipal claimsPrincipal)
+            HttpContext httpContext)
         {
             var request = httpContext.Request;
             string currentUri = UriHelper.BuildAbsolute(
@@ -327,12 +330,12 @@ namespace Microsoft.Identity.Web
             // Initialize token cache providers
             if (_appTokenCacheProvider != null)
             {
-                _appTokenCacheProvider.Initialize(app.AppTokenCache, httpContext);
+                _appTokenCacheProvider.Initialize(app.AppTokenCache);
             }
 
             if (_userTokenCacheProvider != null)
             {
-                _userTokenCacheProvider.Initialize(app.UserTokenCache, httpContext, claimsPrincipal);
+                _userTokenCacheProvider.Initialize(app.UserTokenCache);
             }
 
             return app;
@@ -382,12 +385,12 @@ namespace Microsoft.Identity.Web
             // Get the account
             IAccount account = await application.GetAccountAsync(accountIdentifier).ConfigureAwait(false);
 
-            // Special case for guest users as the Guest iod / tenant id are not surfaced.
+            // Special case for guest users as the Guest oid / tenant id are not surfaced.
             if (account == null)
             {
-              if (loginHint == null)
-                 throw new ArgumentNullException(nameof(loginHint));
-              var accounts = await application.GetAccountsAsync().ConfigureAwait(false);
+                if (loginHint == null)
+                    throw new ArgumentNullException(nameof(loginHint));
+                var accounts = await application.GetAccountsAsync().ConfigureAwait(false);
                 account = accounts.FirstOrDefault(a => a.Username == loginHint);
             }
 
@@ -423,7 +426,7 @@ namespace Microsoft.Identity.Web
                 IEnumerable<string> requestedScopes;
                 if (jwtToken != null)
                 {
-                    // In excrypted tokens, the decrypted token is in the InnerToken
+                    // In encrypted tokens, the decrypted token is in the InnerToken
                     string rawData = (jwtToken.InnerToken != null) ? jwtToken.InnerToken.RawData : jwtToken.RawData;
                     userAssertion = new UserAssertion(rawData, "urn:ietf:params:oauth:grant-type:jwt-bearer");
                     requestedScopes = scopes ?? jwtToken.Audiences.Select(a => $"{a}/.default");
@@ -434,7 +437,7 @@ namespace Microsoft.Identity.Web
                     // TODO: Understand if we could support other kind of client assertions (SAML);
                 }
 
-                var application = GetOrBuildConfidentialClientApplication(httpContext, principal);
+                var application = GetOrBuildConfidentialClientApplication(httpContext);
 
                 // .Result to make sure that the cache is filled-in before the controller tries to get access tokens
                 var result = await application
@@ -450,13 +453,14 @@ namespace Microsoft.Identity.Web
         }
 
         /// <summary>
-        /// Used in Web APIs (which therefore cannot have an interaction with the user).
-        /// Replies to the client through the HttpReponse by sending a 403 (forbidden) and populating wwwAuthenticateHeaders so that
-        /// the client can trigger an iteraction with the user so that the user consents to more scopes
+        /// Used by Web APIs, which cannot interact with the user, when they run into a situation where user consent is required for additional scopes. 
+        /// This method appends in the HttpResponse being sent back to the client, a 403 (forbidden) status code and populates the 'WWW-Authenticate' header with additional information. 
+        /// The client, when it receives the 403 code with this header, can use the additional information provided in the header to trigger an interaction with the user where the user 
+        /// can then consent to additional scopes.
         /// </summary>
-        /// <param name="httpContext">HttpContext</param>
-        /// <param name="scopes">Scopes to consent to</param>
-        /// <param name="msalServiceException"><see cref="MsalUiRequiredException"/> triggering the challenge</param>
+        /// <param name="httpContext">The HttpContext instance whose HttpResponse will be modified.</param>
+        /// <param name="scopes">The additional scopes that the user needs to consent to</param>
+        /// <param name="msalServiceException"><see cref="MsalUiRequiredException"/> The MsalUiRequiredException that is examined to see if there is case for this response.</param>
 
         public void ReplyForbiddenWithWwwAuthenticateHeader(HttpContext httpContext, IEnumerable<string> scopes, MsalUiRequiredException msalServiceException)
         {

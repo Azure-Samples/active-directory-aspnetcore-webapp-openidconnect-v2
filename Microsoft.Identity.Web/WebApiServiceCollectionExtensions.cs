@@ -25,7 +25,7 @@ namespace Microsoft.Identity.Web
     {
         /// <summary>
         /// Protects the Web API with Microsoft identity platform (formerly Azure AD v2.0)
-        /// This expects the configuration files will have a section named "AzureAD"
+        /// This method expects the configuration file will have a section named "AzureAd" with the necessary settings to initialize authentication options.
         /// </summary>
         /// <param name="services">Service collection to which to add this authentication scheme</param>
         /// <param name="configuration">The Configuration object</param>
@@ -43,7 +43,7 @@ namespace Microsoft.Identity.Web
                     .AddAzureADBearer(options => configuration.Bind("AzureAd", options));
 
             // Add session if you are planning to use session based token cache , .AddSessionTokenCaches()
-            services.AddSession();
+            // services.AddSession(); // Commented as we cannot force session on someone who wants to use an alternative token cache provider.
 
             // Change the authentication configuration to accommodate the Microsoft identity platform endpoint (v2.0).
             services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
@@ -79,7 +79,8 @@ namespace Microsoft.Identity.Web
                    {
                        // This check is required to ensure that the Web API only accepts tokens from tenants where it has been consented and provisioned.
                        if (!context.Principal.Claims.Any(x => x.Type == ClaimConstants.Scope)
-                          && !context.Principal.Claims.Any(y => y.Type == ClaimConstants.Roles))
+                        && !context.Principal.Claims.Any(y => y.Type == ClaimConstants.Scp)
+                        && !context.Principal.Claims.Any(y => y.Type == ClaimConstants.Roles))
                        {
                            throw new UnauthorizedAccessException("Neither scope or roles claim was found in the bearer token.");
                        }
@@ -98,7 +99,7 @@ namespace Microsoft.Identity.Web
         }
 
         /// <summary>
-        /// Protects the Web API with Microsoft identity platform (formerly Azure AD v2.0) 
+        /// Protects the Web API with Microsoft identity platform (formerly Azure AD v2.0)
         /// This supposes that the configuration files have a section named "AzureAD"
         /// </summary>
         /// <param name="services">Service collection to which to add authentication</param>
@@ -109,7 +110,7 @@ namespace Microsoft.Identity.Web
         /// <returns></returns>
         public static IServiceCollection AddProtectedApiCallsWebApis(
             this IServiceCollection services,
-            IConfiguration configuration, 
+            IConfiguration configuration,
             IEnumerable<string> scopes = null)
         {
             services.AddTokenAcquisition();

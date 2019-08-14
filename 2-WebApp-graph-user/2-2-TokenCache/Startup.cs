@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.Sql;
+using System.IdentityModel.Tokens.Jwt;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
 
@@ -31,6 +32,18 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+            // This is required to be instantiated before the OpenIdConnectOptions starts getting configured.
+            // By default, the claims mapping will map claim names in the old format to accommodate older SAML applications.
+            // 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role' instead of 'roles'
+            // This flag ensures that the ClaimsIdentity claims collection will be built from the claims in the token
+            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+
+            // Uncomment the following to initialize the sql server database with tables required to cache tokens.
+            // NOTE : This is a one time use method. We advise using it in development environments to create the tables required to enable token caching.
+            // For production deployments, preferably, generate the schema from the tables generated in dev environments and use it to create the necessary tables in production.
+            // Comment/remove the following line once the database and tables has been created.
+            // SqlTokenCacheProviderExtension.CreateTokenCachingTablesInSqlDatabase(new MsalSqlTokenCacheOptions(Configuration.GetConnectionString("TokenCacheDbConnStr")));
 
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation

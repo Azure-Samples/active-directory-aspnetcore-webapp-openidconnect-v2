@@ -1,19 +1,30 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-
 using Microsoft.AspNetCore.Http;
 using Microsoft.Identity.Client;
 using System;
 using System.Diagnostics;
-using System.Security.Claims;
 using System.Threading;
 
 namespace Microsoft.Identity.Web.TokenCacheProviders.Session
 {
     /// <summary>
-    /// This is a MSAL's TokenCache implementation for one user. It uses Http session as a back end store
+    /// This is a MSAL's TokenCache implementation for one user. It uses Http session as a persistence store
     /// </summary>
+    /// For this session cache to work effectively the aspnetcore session has to be configured properly.
+    /// The latest guidance is provided at https://docs.microsoft.com/en-us/aspnet/core/fundamentals/app-state
+    ///
+    /// // In the method - public void ConfigureServices(IServiceCollection services) in startup.cs, add the following
+    /// services.AddSession(option =>
+    /// {
+    ///	    option.Cookie.IsEssential = true;
+    /// });
+    ///
+    /// In the method - public void Configure(IApplicationBuilder app, IHostingEnvironment env) in startup.cs, add the following
+    ///
+    /// app.UseSession(); // Before UseMvc()
+    ///
     public class MsalPerUserSessionTokenCacheProvider : IMsalUserTokenCacheProvider
     {
         private static readonly ReaderWriterLockSlim s_sessionLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
@@ -23,7 +34,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
         /// </summary>
         internal HttpContext HttpContext { get { return httpContextAccessor.HttpContext; } }
 
-        IHttpContextAccessor httpContextAccessor;
+        private IHttpContextAccessor httpContextAccessor;
 
         /// <summary>Initializes a new instance of the <see cref="MsalPerUserSessionTokenCacheProvider"/> class.</summary>
         public MsalPerUserSessionTokenCacheProvider(IHttpContextAccessor httpContextAccessor)
@@ -33,10 +44,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
 
         /// <summary>Initializes the cache instance</summary>
         /// <param name="tokenCache">The <see cref="ITokenCache"/> passed through the constructor</param>
-        /// <param name="httpcontext">The current <see cref="HttpContext" /></param>
-        /// <param name="user">The signed in user's ClaimPrincipal, could be null.
-        /// If the calling app has it available, then it should pass it themselves.</param>
-        public void Initialize(ITokenCache tokenCache, HttpContext httpcontext, ClaimsPrincipal user)
+        public void Initialize(ITokenCache tokenCache)
         {
             if (tokenCache == null)
             {

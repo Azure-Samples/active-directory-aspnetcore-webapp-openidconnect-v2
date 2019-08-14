@@ -7,12 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using System;
 using System.Linq;
-using System.Security.Claims;
 
 namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
 {
     /// <summary>
-    /// This is a MSAL's TokenCache implementation for one user. It uses Sql server as a backend store and uses the Entity Framework to read and write to that database.
+    /// This is a MSAL's TokenCache implementation for one user. It uses Sql server as the persistence store and uses the Entity Framework to read and write to that database.
     /// </summary>
     /// <seealso cref="https://aka.ms/msal-net-token-cache-serialization"/>
     public class MsalPerUserSqlTokenCacheProvider : IMsalUserTokenCacheProvider
@@ -67,9 +66,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
 
         /// <summary>Initializes this instance of TokenCacheProvider with essentials to initialize themselves.</summary>
         /// <param name="tokenCache">The token cache instance of MSAL application</param>
-        /// <param name="httpcontext">The Httpcontext whose Session will be used for caching.This is required by some providers.</param>
-        /// <param name="user">The signed-in user for whom the cache needs to be established. Not needed by all providers.</param>
-        public void Initialize(ITokenCache tokenCache, HttpContext httpcontext, ClaimsPrincipal user)
+        public void Initialize(ITokenCache tokenCache)
         {
             tokenCache.SetBeforeAccess(UserTokenCacheBeforeAccessNotification);
             tokenCache.SetAfterAccess(UserTokenCacheAfterAccessNotification);

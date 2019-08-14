@@ -1,4 +1,4 @@
-# Registering the Azure Active Directory applications and updating the configuration files for this sample using PowerShell scripts
+# Registering the sample apps with Microsoft Identity Platform and updating the configuration files using PowerShell scripts
 
 ## Overview
 
@@ -9,7 +9,7 @@
    ```PowerShell
    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
    ```
-1. Run the script to create your Azure AD application and configure the code of the sample application accordinly. (Other ways of running the scripts are described below)
+1. Run the script to create your Azure AD application and configure the code of the sample application accordingly. (Other ways of running the scripts are described below)
    ```PowerShell
    .\AppCreationScripts\Configure.ps1
    ```

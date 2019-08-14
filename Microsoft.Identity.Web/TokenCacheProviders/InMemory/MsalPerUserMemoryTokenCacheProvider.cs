@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
-using System.Security.Claims;
 
 namespace Microsoft.Identity.Web.TokenCacheProviders.InMemory
 {
@@ -29,11 +28,14 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.InMemory
         private IHttpContextAccessor httpContextAccessor;
 
         /// <summary>Initializes a new instance of the <see cref="MsalPerUserMemoryTokenCacheProvider"/> class.</summary>
-        /// <param name="cache">The memory cache instance</param>
+        /// <param name="cache">The IMemoryCache cache instance.</param>
+        /// <param name="option">The MsalMemoryTokenCacheOptions options provided via config.</param>
+        /// <param name="azureAdOptionsAccessor">The azure ad options accessor.</param>
         public MsalPerUserMemoryTokenCacheProvider(IMemoryCache memoryCache,
             MsalMemoryTokenCacheOptions option,
             IHttpContextAccessor httpContextAccessor)
         {
+            // TODO: Check if httpContextAccessor && httpContextAccessor.HttpContext is not null first ?
             this.httpContextAccessor = httpContextAccessor;
             this._memoryCache = memoryCache;
 
@@ -48,10 +50,8 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.InMemory
         }
 
         /// <summary>Initializes this instance of TokenCacheProvider with essentials to initialize themselves.</summary>
-        /// <param name="tokenCache">The token cache instance of MSAL application</param>
-        /// <param name="httpcontext">The Httpcontext whose Session will be used for caching.This is required by some providers.</param>
-        /// <param name="user">The signed-in user for whom the cache needs to be established. Not needed by all providers.</param>
-        public void Initialize(ITokenCache tokenCache, HttpContext httpcontext, ClaimsPrincipal user)
+        /// <param name="tokenCache">The token cache instance of the MSAL application instance</param>
+        public void Initialize(ITokenCache tokenCache)
         {
             tokenCache.SetBeforeAccess(this.UserTokenCacheBeforeAccessNotification);
             tokenCache.SetAfterAccess(this.UserTokenCacheAfterAccessNotification);
@@ -80,7 +80,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.InMemory
                 if (string.IsNullOrWhiteSpace(cacheKey))
                     return;
 
-                // Ideally, methods that load and persist should be thread safe.MemoryCache.Get() is thread safe.
+                // Ideally, methods that load and persist should be thread safe. MemoryCache.Get() is thread safe.
                 _memoryCache.Set(cacheKey, args.TokenCache.SerializeMsalV3(), _cacheOptions.SlidingExpiration);
             }
         }
@@ -107,6 +107,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.InMemory
         /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
         private void UserTokenCacheBeforeWriteNotification(TokenCacheNotificationArgs args)
         {
+            // Since we are using a MemoryCache, whose methods are threads safe, we need not to do anything in this handler.
         }
     }
 }

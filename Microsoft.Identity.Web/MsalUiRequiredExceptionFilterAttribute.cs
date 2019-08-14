@@ -33,7 +33,7 @@ namespace Microsoft.Identity.Web
 
         /// <summary>
         /// Handles the MsaUiRequiredExeception
-		/// </summary>
+        /// </summary>
         /// <param name="context">Context provided by ASP.NET Core</param>
         public override void OnException(ExceptionContext context)
         {

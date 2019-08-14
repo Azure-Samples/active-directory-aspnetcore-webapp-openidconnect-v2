@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -10,7 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web.Resource;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Microsoft.Identity.Web
 {
@@ -21,7 +20,7 @@ namespace Microsoft.Identity.Web
     {
         /// <summary>
         /// Add authentication with Microsoft identity platform.
-        /// This expects the configuration files will have a section named "AzureAD"
+        /// This method expects the configuration file will have a section named "AzureAd" with the necessary settings to initialize authentication options.
         /// </summary>
         /// <param name="services">Service collection to which to add this authentication scheme</param>
         /// <param name="configuration">The Configuration object</param>

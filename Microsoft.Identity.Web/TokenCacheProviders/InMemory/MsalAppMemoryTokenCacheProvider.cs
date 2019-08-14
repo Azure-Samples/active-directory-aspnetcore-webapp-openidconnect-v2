@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
+using System;
 
 namespace Microsoft.Identity.Web.TokenCacheProviders.InMemory
 {
@@ -31,21 +31,20 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.InMemory
         private readonly MsalMemoryTokenCacheOptions _cacheOptions;
 
         /// <summary>
-        /// The App's whose cache we are maintaining.
+        /// The client id of the app whose cache we are maintaining.
         /// </summary>
         private readonly string _appId;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cache"></param>
-        /// <param name="option"></param>
-        /// <param name="azureAdOptionsAccessor"></param>
+        /// <summary>Initializes a new instance of the <see cref="MsalAppMemoryTokenCacheProvider"/> class.</summary>
+        /// <param name="cache">The IMemoryCache cache instance.</param>
+        /// <param name="option">The MsalMemoryTokenCacheOptions options provided via config.</param>
+        /// <param name="azureAdOptionsAccessor">The azure ad options accessor.</param>
+        /// <exception cref="ArgumentNullException">AzureADOptions - The app token cache needs the '{nameof(AzureADOptions)}' section in configuration, populated with clientId to initialize..</exception>
         public MsalAppMemoryTokenCacheProvider(IMemoryCache cache,
             MsalMemoryTokenCacheOptions option,
             IOptionsMonitor<AzureADOptions> azureAdOptionsAccessor)
         {
-            if (option != null)
+            if (option == null)
             {
                 _cacheOptions = new MsalMemoryTokenCacheOptions();
             }
@@ -56,7 +55,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.InMemory
 
             if (azureAdOptionsAccessor.CurrentValue == null && string.IsNullOrWhiteSpace(azureAdOptionsAccessor.CurrentValue.ClientId))
             {
-                throw new ArgumentNullException(nameof(AzureADOptions), $"The app token cache needs {nameof(AzureADOptions)}, populated with clientId to initialize.");
+                throw new ArgumentNullException(nameof(AzureADOptions), $"The app token cache needs the '{nameof(AzureADOptions)}' section in configuration, populated with clientId to initialize.");
             }
 
             _appId = azureAdOptionsAccessor.CurrentValue.ClientId;
@@ -65,8 +64,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.InMemory
 
         /// <summary>Initializes this instance of TokenCacheProvider with essentials to initialize themselves.</summary>
         /// <param name="tokenCache">The token cache instance of MSAL application</param>
-        /// <param name="httpcontext">The Httpcontext whose Session will be used for caching.This is required by some providers.</param>
-        public void Initialize(ITokenCache tokenCache, HttpContext httpcontext)
+        public void Initialize(ITokenCache tokenCache)
         {
             _appCacheId = _appId + "_AppTokenCache";
 
@@ -76,16 +74,16 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.InMemory
         }
 
         /// <summary>
-        /// if you want to ensure that no concurrent write take place, use this notification to place a lock on the entry
+        /// If you want to ensure that no concurrent write take place, use this notification to place a lock on the entry
         /// </summary>
         /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
         private void AppTokenCacheBeforeWriteNotification(TokenCacheNotificationArgs args)
         {
-            // Since we are using a MemoryCache ,whose methods are threads safe, we need not to do anything in this handler.
+            // Since we are using a MemoryCache, whose methods are threads safe, we need not to do anything in this handler.
         }
 
         /// <summary>
-        /// Clears the token cache for this app
+        /// Clears the token cache for this app.
         /// </summary>
         public void Clear()
         {
@@ -101,8 +99,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.InMemory
             // Load the token cache from memory
             byte[] tokenCacheBytes = (byte[])_memoryCache.Get(_appCacheId);
 
-            // In web apps and web APIs, it's cruxial to clear the existing content of the cache
-            // You want to have one token cache per account
+            // In web apps and web APIs, it's crucial to clear the existing content of the cache
             args.TokenCache.DeserializeMsalV3(tokenCacheBytes, shouldClearExistingCache: true);
         }
 

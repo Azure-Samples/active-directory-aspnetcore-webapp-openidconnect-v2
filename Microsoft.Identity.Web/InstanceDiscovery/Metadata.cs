@@ -19,7 +19,7 @@ namespace Microsoft.Identity.Web.InstanceDiscovery
 
         /// <summary>
         /// Prefered alias to cache tokens emitted by one of the aliases (to avoid
-		/// SSO islands)
+        /// SSO islands)
         /// </summary>
         [JsonProperty(PropertyName = "preferred_cache")]
         public string PreferredCache { get; set; }

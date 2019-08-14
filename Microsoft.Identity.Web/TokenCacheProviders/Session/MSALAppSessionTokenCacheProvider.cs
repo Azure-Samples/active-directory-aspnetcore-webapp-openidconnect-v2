@@ -15,6 +15,19 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
     /// <summary>
     /// An implementation of token cache for Confidential clients backed by Http session.
     /// </summary>
+    /// For this session cache to work effectively the aspnetcore session has to be configured properly.
+    /// The latest guidance is provided at https://docs.microsoft.com/en-us/aspnet/core/fundamentals/app-state
+    ///
+    /// // In the method - public void ConfigureServices(IServiceCollection services) in startup.cs, add the following
+    /// services.AddSession(option =>
+    /// {
+    ///	    option.Cookie.IsEssential = true;
+    /// });
+    ///
+    /// In the method - public void Configure(IApplicationBuilder app, IHostingEnvironment env) in startup.cs, add the following
+    ///
+    /// app.UseSession(); // Before UseMvc()
+    ///
     /// <seealso cref="https://aka.ms/msal-net-token-cache-serialization"/>
     public class MsalAppSessionTokenCacheProvider : IMsalAppTokenCacheProvider
     {
@@ -47,7 +60,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
 
         /// <summary>Initializes a new instance of the <see cref="MSALAppSessionTokenCacheProvider"/> class.</summary>
         /// <param name="azureAdOptionsAccessor">The azure ad options accessor.</param>
-        /// <exception cref="ArgumentNullException">AzureADOptions - The app token cache needs {nameof(AzureADOptions)}</exception>
+        /// <exception cref="ArgumentNullException">AzureADOptions - The app token cache needs the '{nameof(AzureADOptions)}' section in configuration, populated with clientId to initialize.</exception>
         public MsalAppSessionTokenCacheProvider(
             IOptionsMonitor<AzureADOptions> azureAdOptionsAccessor,
             IHttpContextAccessor httpContextAccessor)
@@ -55,7 +68,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
             this.httpContextAccessor = httpContextAccessor;
             if (azureAdOptionsAccessor.CurrentValue == null && string.IsNullOrWhiteSpace(azureAdOptionsAccessor.CurrentValue.ClientId))
             {
-                throw new ArgumentNullException(nameof(AzureADOptions), $"The app token cache needs {nameof(AzureADOptions)}, populated with clientId to initialize.");
+                throw new ArgumentNullException(nameof(AzureADOptions), $"The app token cache needs the '{nameof(AzureADOptions)}' section in configuration, populated with clientId to initialize.");
             }
 
             _appId = azureAdOptionsAccessor.CurrentValue.ClientId;
@@ -63,8 +76,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
 
         /// <summary>Initializes this instance of TokenCacheProvider with essentials to initialize themselves.</summary>
         /// <param name="tokenCache">The token cache instance of MSAL application</param>
-        /// <param name="httpcontext">The Httpcontext whose Session will be used for caching.This is required by some providers.</param>
-        public void Initialize(ITokenCache tokenCache, HttpContext httpcontext)
+        public void Initialize(ITokenCache tokenCache)
         {
             _appCacheId = _appId + "_AppTokenCache";
 

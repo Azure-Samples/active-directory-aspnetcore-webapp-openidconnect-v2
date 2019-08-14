@@ -12,7 +12,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
     public class UserTokenCache
     {
         /// <summary>
-        /// key of the token cache in the database
+        /// The key of the token cache in the database
         /// </summary>
         [Key]
         public int UserTokenCacheId { get; set; }
