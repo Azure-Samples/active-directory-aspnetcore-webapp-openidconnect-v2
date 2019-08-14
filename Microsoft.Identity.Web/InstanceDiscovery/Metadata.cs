@@ -12,13 +12,13 @@ namespace Microsoft.Identity.Web.InstanceDiscovery
     internal class Metadata
     {
         /// <summary>
-        /// Prefered alias
+        /// Preferred alias
         /// </summary>
         [JsonProperty(PropertyName = "preferred_network")]
         public string PreferredNetwork { get; set; }
 
         /// <summary>
-        /// Prefered alias to cache tokens emitted by one of the aliases (to avoid
+        /// Preferred alias to cache tokens emitted by one of the aliases (to avoid
         /// SSO islands)
         /// </summary>
         [JsonProperty(PropertyName = "preferred_cache")]
