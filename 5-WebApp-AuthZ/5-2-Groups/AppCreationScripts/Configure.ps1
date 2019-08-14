@@ -192,8 +192,8 @@ Function ConfigureApplications
                                                   -ReplyUrls "https://localhost:44321/", "https://localhost:44321/signin-oidc", "https://localhost:44321/Account/EndSession" `
                                                   -IdentifierUris "https://$tenantName/WebApp-GroupClaims" `
                                                   -PasswordCredentials $key `
-                                                  -Oauth2AllowImplicitFlow $true `
                                                   -GroupMembershipClaims "SecurityGroup" `
+                                                  -Oauth2AllowImplicitFlow $true `
                                                   -PublicClient $False
 
    $currentAppId = $webAppAadApplication.AppId
@@ -219,7 +219,7 @@ Function ConfigureApplications
    # Add Required Resources Access (from 'webApp' to 'Microsoft Graph')
    Write-Host "Getting access from 'webApp' to 'Microsoft Graph'"
    $requiredPermissions = GetRequiredPermissions -applicationDisplayName "Microsoft Graph" `
-                                                -requiredDelegatedPermissions "Directory.Read.All" `
+                                                -requiredDelegatedPermissions "User.Read|Directory.Read.All" `
 
    $requiredResourcesAccess.Add($requiredPermissions)
 

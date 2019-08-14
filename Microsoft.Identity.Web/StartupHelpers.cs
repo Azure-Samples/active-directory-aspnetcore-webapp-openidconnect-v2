@@ -44,9 +44,45 @@ namespace Microsoft.Identity.Web
         /// <param name="services">Service collection to which to add this authentication scheme</param>
         /// <param name="configuration">The Configuration object</param>
         /// <returns></returns>
-        public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this IServiceCollection services, IConfiguration configuration, OpenIdConnectOptions openIdConnectOptions, string configBinderKey = "AzureAd")
         {
-            return AddAzureAdV2Authentication(services, configuration);
+            services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
+                .AddAzureAD(options => configuration.Bind(configBinderKey, options));
+
+            openIdConnectOptions.Authority = openIdConnectOptions.Authority + "/v2.0/";
+            openIdConnectOptions.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(openIdConnectOptions.Authority).Validate;
+            openIdConnectOptions.TokenValidationParameters.NameClaimType = "preferred_username";
+
+            openIdConnectOptions.Events.OnRedirectToIdentityProvider = context =>
+            {
+                var login = context.Properties.GetParameter<string>(OpenIdConnectParameterNames.LoginHint);
+                if (!string.IsNullOrWhiteSpace(login))
+                {
+                    context.ProtocolMessage.LoginHint = login;
+                    context.ProtocolMessage.DomainHint = context.Properties.GetParameter<string>(OpenIdConnectParameterNames.DomainHint);
+
+                    // delete the login_hint and domainHint from the Properties when we are done otherwise
+                    // it will take up extra space in the cookie.
+                    context.Properties.Parameters.Remove(OpenIdConnectParameterNames.LoginHint);
+                    context.Properties.Parameters.Remove(OpenIdConnectParameterNames.DomainHint);
+                }
+
+                // Additional claims
+                if (context.Properties.Items.ContainsKey(OidcConstants.AdditionalClaims))
+                {
+                    context.ProtocolMessage.SetParameter(OidcConstants.AdditionalClaims,
+                                                         context.Properties.Items[OidcConstants.AdditionalClaims]);
+                }
+
+                return Task.FromResult(0);
+            };
+
+            services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
+            {
+                options = openIdConnectOptions;
+            });
+
+            return services;
         }
 
         /// <summary>

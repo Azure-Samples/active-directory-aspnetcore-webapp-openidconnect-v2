@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -44,8 +45,11 @@ namespace WebApp_OpenIDConnect_DotNet
             // This flag ensures that the ClaimsIdentity claims collection will be built from the claims in the token
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
+            Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
+
             // Sign-in users with the Microsoft identity platform
-            services.AddAzureAdV2Authentication(Configuration)
+            OpenIdConnectOptions openIdConnectOptions = new OpenIdConnectOptions();
+            services.AddMicrosoftIdentityPlatformAuthentication(Configuration, openIdConnectOptions)
                     .AddMsal(new string[] { "User.Read", "Directory.Read.All" })
                     .AddSessionTokenCaches();
 
