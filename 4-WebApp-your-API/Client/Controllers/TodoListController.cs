@@ -19,11 +19,8 @@ namespace TodoListClient.Controllers
 
         // GET: TodoList
         [MsalUiRequiredExceptionFilter(ScopeKeySection = "TodoList:TodoListScope")]
-        //[ServiceFilter(typeof(MsalUiRequiredExceptionFilter))]
         public async Task<ActionResult> Index()
         {
-            // Uncomment for testing
-            // throw new MsalUiRequiredException(MsalError.UserNullError, "abcde", new MsalUiRequiredException(MsalError.UserNullError, "testing"));
             return View(await _todoListService.GetAsync());
         }
 

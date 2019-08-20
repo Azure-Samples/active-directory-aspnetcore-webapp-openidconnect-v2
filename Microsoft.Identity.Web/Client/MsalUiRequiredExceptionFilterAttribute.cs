@@ -46,7 +46,7 @@ namespace Microsoft.Identity.Web.Client
                 if (CanBeSolvedByReSignInUser(msalUiRequiredException))
                 {
                     // the users cannot provide both scopes and ScopeKeySection at the same time
-                    if (!string.IsNullOrWhiteSpace(ScopeKeySection) && Scopes.Length > 0)
+                    if (!string.IsNullOrWhiteSpace(ScopeKeySection) && Scopes != null && Scopes.Length > 0)
                     {
                         throw new InvalidOperationException($"Either provide the '{nameof(ScopeKeySection)}' or the '{nameof(Scopes)}' to the 'MsalUiRequiredExceptionFilterAttribute'.");
                     }
