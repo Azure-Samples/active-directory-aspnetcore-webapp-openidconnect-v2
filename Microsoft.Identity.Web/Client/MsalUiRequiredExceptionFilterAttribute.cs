@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace Microsoft.Identity.Web.Client
@@ -32,8 +33,6 @@ namespace Microsoft.Identity.Web.Client
         /// </summary>
         public string ScopeKeySection { get; set; }
 
-        private static IConfiguration configuration;
-
         public override void OnException(ExceptionContext context)
         {
             MsalUiRequiredException msalUiRequiredException = context.Exception as MsalUiRequiredException;
@@ -46,22 +45,27 @@ namespace Microsoft.Identity.Web.Client
             {
                 if (CanBeSolvedByReSignInUser(msalUiRequiredException))
                 {
-                    if (configuration == null && !string.IsNullOrWhiteSpace(ScopeKeySection))
+                    // the users cannot provide both scopes and ScopeKeySection at the same time
+                    if (!string.IsNullOrWhiteSpace(ScopeKeySection) && Scopes.Length > 0)
                     {
-                        var builder = new ConfigurationBuilder()
-                                            .SetBasePath(Directory.GetCurrentDirectory())
-                                            .AddJsonFile("appsettings.json");
-
-                        configuration = builder.Build();
+                        throw new InvalidOperationException($"Either provide the '{nameof(ScopeKeySection)}' or the '{nameof(Scopes)}' to the 'MsalUiRequiredExceptionFilterAttribute'.");
                     }
 
-                    if (!string.IsNullOrWhiteSpace(ScopeKeySection) && Scopes == null)
+                    // If the user wishes us to pick the Scopes from a particular config setting.
+                    if (!string.IsNullOrWhiteSpace(ScopeKeySection))
                     {
+                        // Load the injected IConfiguration
+                        IConfiguration configuration = context.HttpContext.RequestServices.GetRequiredService<IConfiguration>();
+
+                        if (configuration == null)
+                        {
+                            throw new InvalidOperationException($"The {nameof(ScopeKeySection)} is provided but the IConfiguration instance is not present in the services collection");
+                        }
+
                         Scopes = new string[] { configuration.GetValue<string>(ScopeKeySection) };
                     }
 
-                    var properties =
-                        BuildAuthenticationPropertiesForIncrementalConsent(Scopes, msalUiRequiredException, context.HttpContext);
+                    var properties = BuildAuthenticationPropertiesForIncrementalConsent(Scopes, msalUiRequiredException, context.HttpContext);
                     context.Result = new ChallengeResult(properties);
                 }
             }

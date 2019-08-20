@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using Microsoft.Identity.Web.Client;
 using System.Threading.Tasks;
 using TodoListClient.Services;
@@ -18,8 +19,11 @@ namespace TodoListClient.Controllers
 
         // GET: TodoList
         [MsalUiRequiredExceptionFilter(ScopeKeySection = "TodoList:TodoListScope")]
+        //[ServiceFilter(typeof(MsalUiRequiredExceptionFilter))]
         public async Task<ActionResult> Index()
         {
+            // Uncomment for testing
+            // throw new MsalUiRequiredException(MsalError.UserNullError, "abcde", new MsalUiRequiredException(MsalError.UserNullError, "testing"));
             return View(await _todoListService.GetAsync());
         }
 
