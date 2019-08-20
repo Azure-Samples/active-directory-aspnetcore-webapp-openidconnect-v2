@@ -1,0 +1,154 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\Ferron\\source\\repos\\active-directory-aspnetcore-webapp-openidconnect-v2\\Microsoft.Identity.Web.Test\\Microsoft.Identity.Web.Test.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\Ferron\\source\\repos\\active-directory-aspnetcore-webapp-openidconnect-v2\\Microsoft.Identity.Web.Test\\Microsoft.Identity.Web.Test.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Ferron\\source\\repos\\active-directory-aspnetcore-webapp-openidconnect-v2\\Microsoft.Identity.Web.Test\\Microsoft.Identity.Web.Test.csproj",
+        "projectName": "Microsoft.Identity.Web.Test",
+        "projectPath": "C:\\Users\\Ferron\\source\\repos\\active-directory-aspnetcore-webapp-openidconnect-v2\\Microsoft.Identity.Web.Test\\Microsoft.Identity.Web.Test.csproj",
+        "packagesPath": "C:\\Users\\Ferron\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Ferron\\source\\repos\\active-directory-aspnetcore-webapp-openidconnect-v2\\Microsoft.Identity.Web.Test\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Ferron\\source\\repos\\active-directory-aspnetcore-webapp-openidconnect-v2\\Microsoft.Identity.Web\\NuGet.Config",
+          "C:\\Users\\Ferron\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.2"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://powershell.myget.org/F/powershell-core/api/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.2": {
+            "projectReferences": {
+              "C:\\Users\\Ferron\\source\\repos\\active-directory-aspnetcore-webapp-openidconnect-v2\\Microsoft.Identity.Web\\Microsoft.Identity.Web.csproj": {
+                "projectPath": "C:\\Users\\Ferron\\source\\repos\\active-directory-aspnetcore-webapp-openidconnect-v2\\Microsoft.Identity.Web\\Microsoft.Identity.Web.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.2": {
+          "dependencies": {
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[16.0.1, )"
+            },
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            },
+            "xunit": {
+              "target": "Package",
+              "version": "[2.4.0, )"
+            },
+            "xunit.runner.visualstudio": {
+              "target": "Package",
+              "version": "[2.4.0, )"
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    },
+    "C:\\Users\\Ferron\\source\\repos\\active-directory-aspnetcore-webapp-openidconnect-v2\\Microsoft.Identity.Web\\Microsoft.Identity.Web.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Ferron\\source\\repos\\active-directory-aspnetcore-webapp-openidconnect-v2\\Microsoft.Identity.Web\\Microsoft.Identity.Web.csproj",
+        "projectName": "Microsoft.Identity.Web",
+        "projectPath": "C:\\Users\\Ferron\\source\\repos\\active-directory-aspnetcore-webapp-openidconnect-v2\\Microsoft.Identity.Web\\Microsoft.Identity.Web.csproj",
+        "packagesPath": "C:\\Users\\Ferron\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Ferron\\source\\repos\\active-directory-aspnetcore-webapp-openidconnect-v2\\Microsoft.Identity.Web\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Ferron\\source\\repos\\active-directory-aspnetcore-webapp-openidconnect-v2\\Microsoft.Identity.Web\\NuGet.Config",
+          "C:\\Users\\Ferron\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.2"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://powershell.myget.org/F/powershell-core/api/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.2": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.2": {
+          "dependencies": {
+            "Microsoft.AspNetCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            },
+            "Microsoft.AspNetCore.Authentication.AzureAD.UI": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.AzureADB2C.UI": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[2.2.5, )"
+            },
+            "Microsoft.Identity.Client": {
+              "target": "Package",
+              "version": "[4.2.1, )"
+            },
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    }
+  }
+}

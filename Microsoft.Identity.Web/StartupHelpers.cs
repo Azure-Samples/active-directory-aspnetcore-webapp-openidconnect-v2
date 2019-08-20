@@ -49,6 +49,9 @@ namespace Microsoft.Identity.Web
             services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
                 .AddAzureAD(options => configuration.Bind("AzureAd", options));
 
+            //for the use of IOptions in token cache serializers
+            services.Configure<AzureADOptions>(configuration.GetSection("AzureAd"));
+
             services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
             {
                 // Per the code below, this application signs in users in any Work and School
