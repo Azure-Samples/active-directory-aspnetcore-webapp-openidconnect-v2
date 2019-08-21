@@ -60,7 +60,7 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             MSALMemoryTokenCacheOptions option,
             IOptionsMonitor<AzureADOptions> azureAdOptionsAccessor)
         {
-            if (option != null)
+            if (option == null)
             {
                 this.CacheOptions = new MSALMemoryTokenCacheOptions();
             }
