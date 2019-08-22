@@ -33,11 +33,11 @@ This project has one WebApp / Web API projects. To deploy them to Azure Web Site
 1. On the Settings tab, make sure `Enable Organizational Authentication` is NOT selected.  Click **Save**. Click on **Publish** on the main screen.
 1. Visual Studio will publish the project and automatically open a browser to the URL of the project.  If you see the default web page of the project, the publication was successful.
 
-## Key Vault
+## Key Vault and Managed Service Identity (MSI)
 
 Secure key management is essential to protect data in the cloud. Use [Azure Key Vault](https://azure.microsoft.com/en-ca/services/key-vault/) to encrypt keys and small secrets like passwords that use keys stored in hardware security modules (HSMs).
 
-You can follow [this quickstart guide](https://docs.microsoft.com/en-us/azure/key-vault/quick-create-net) for getting an Azure web application to read information from [Azure Key Vault](https://azure.microsoft.com/en-ca/services/key-vault/) by using managed identities for Azure resources.
+You can follow [this sample](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet) as a guide on how to use Azure KeyVault from App Service with Managed Service Identity (MSI).
 
 ## Community Help and Support
 
