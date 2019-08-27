@@ -38,8 +38,9 @@ namespace Microsoft.Identity.Web
         {
             string userObjectId = claimsPrincipal.FindFirstValue(ClaimConstants.Oid);
             if (string.IsNullOrEmpty(userObjectId))
+            {
                 userObjectId = claimsPrincipal.FindFirstValue(ClaimConstants.ObjectId);
-
+            }
             return userObjectId;
         }
 
@@ -52,8 +53,9 @@ namespace Microsoft.Identity.Web
         {
             string tenantId = claimsPrincipal.FindFirstValue(ClaimConstants.Tid);
             if (string.IsNullOrEmpty(tenantId))
+            {
                 tenantId = claimsPrincipal.FindFirstValue(ClaimConstants.TenantId);
-
+            }
             return tenantId;
         }
 

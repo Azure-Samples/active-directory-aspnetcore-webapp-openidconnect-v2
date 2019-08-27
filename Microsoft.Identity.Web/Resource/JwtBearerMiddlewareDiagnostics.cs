@@ -16,17 +16,17 @@ namespace Microsoft.Identity.Web.Resource
         /// <summary>
         /// Invoked if exceptions are thrown during request processing. The exceptions will be re-thrown after this event unless suppressed.
         /// </summary>
-        static Func<AuthenticationFailedContext, Task> s_onAuthenticationFailed;
+        private static Func<AuthenticationFailedContext, Task> s_onAuthenticationFailed;
 
         /// <summary>
         /// Invoked when a protocol message is first received.
         /// </summary>
-        static Func<MessageReceivedContext, Task> s_onMessageReceived;
+        private static Func<MessageReceivedContext, Task> s_onMessageReceived;
 
         /// <summary>
         /// Invoked after the security token has passed validation and a ClaimsIdentity has been generated.
         /// </summary>
-        static Func<TokenValidatedContext, Task> s_onTokenValidated;
+        private static Func<TokenValidatedContext, Task> s_onTokenValidated;
 
         /// <summary>
         /// Invoked before a challenge is sent back to the caller.
@@ -60,7 +60,7 @@ namespace Microsoft.Identity.Web.Resource
             return events;
         }
 
-        static async Task OnMessageReceivedAsync(MessageReceivedContext context)
+        private static async Task OnMessageReceivedAsync(MessageReceivedContext context)
         {
             Debug.WriteLine($"1. Begin {nameof(OnMessageReceivedAsync)}");
             // Place a breakpoint here and examine the bearer token (context.Request.Headers.HeaderAuthorization / context.Request.Headers["Authorization"])
@@ -69,7 +69,7 @@ namespace Microsoft.Identity.Web.Resource
             Debug.WriteLine($"1. End - {nameof(OnMessageReceivedAsync)}");
         }
 
-        static async Task OnAuthenticationFailedAsync(AuthenticationFailedContext context)
+        private static async Task OnAuthenticationFailedAsync(AuthenticationFailedContext context)
         {
             Debug.WriteLine($"99. Begin {nameof(OnAuthenticationFailedAsync)}");
             // Place a breakpoint here and examine context.Exception
@@ -77,14 +77,14 @@ namespace Microsoft.Identity.Web.Resource
             Debug.WriteLine($"99. End - {nameof(OnAuthenticationFailedAsync)}");
         }
 
-        static async Task OnTokenValidatedAsync(TokenValidatedContext context)
+        private static async Task OnTokenValidatedAsync(TokenValidatedContext context)
         {
             Debug.WriteLine($"2. Begin {nameof(OnTokenValidatedAsync)}");
             await s_onTokenValidated(context).ConfigureAwait(false);
             Debug.WriteLine($"2. End - {nameof(OnTokenValidatedAsync)}");
         }
 
-        static async Task OnChallengeAsync(JwtBearerChallengeContext context)
+        private static async Task OnChallengeAsync(JwtBearerChallengeContext context)
         {
             Debug.WriteLine($"55. Begin {nameof(OnChallengeAsync)}");
             await s_onChallenge(context).ConfigureAwait(false);

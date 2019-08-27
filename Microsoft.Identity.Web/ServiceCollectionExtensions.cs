@@ -36,14 +36,8 @@ namespace Microsoft.Identity.Web
         public static IServiceCollection AddTokenAcquisition(this IServiceCollection services)
         {
             // Token acquisition service
-            services.AddScoped<ITokenAcquisition>(factory =>
-            {
-                var config = factory.GetRequiredService<IConfiguration>();
-                var apptokencacheprovider = factory.GetService<IMsalAppTokenCacheProvider>();
-                var usertokencacheprovider = factory.GetService<IMsalUserTokenCacheProvider>();
-
-                return new TokenAcquisition(config, apptokencacheprovider, usertokencacheprovider);
-            });
+            services.AddHttpContextAccessor();
+            services.AddScoped<ITokenAcquisition>();
             return services;
         }
     }

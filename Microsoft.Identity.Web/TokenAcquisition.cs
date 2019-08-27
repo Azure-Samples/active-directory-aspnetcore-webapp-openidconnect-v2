@@ -33,22 +33,29 @@ namespace Microsoft.Identity.Web
         private readonly IMsalUserTokenCacheProvider _userTokenCacheProvider;
 
         private IConfidentialClientApplication application;
+        private IHttpContextAccessor httpContextAccessor;
+        private HttpContext HttpContext { get { return httpContextAccessor.HttpContext; } }
 
         /// <summary>
         /// Constructor of the TokenAcquisition service. This requires the Azure AD Options to
         /// configure the confidential client application and a token cache provider.
         /// This constructor is called by ASP.NET Core dependency injection
         /// </summary>
+        /// <param name="configuration"></param>
         /// <param name="appTokenCacheProvider">The App token cache provider</param>
         /// <param name="userTokenCacheProvider">The User token cache provider</param>
-        /// <param name="configuration"></param>
         public TokenAcquisition(
             IConfiguration configuration,
             IMsalAppTokenCacheProvider appTokenCacheProvider,
-            IMsalUserTokenCacheProvider userTokenCacheProvider)
+            IMsalUserTokenCacheProvider userTokenCacheProvider,
+            IHttpContextAccessor httpContextAccessor)
         {
             if (configuration == null)
+            {
                 throw new ArgumentNullException(nameof(configuration));
+            }
+
+            this.httpContextAccessor = httpContextAccessor;
 
             _azureAdOptions = new AzureADOptions();
             configuration.Bind("AzureAD", _azureAdOptions);
@@ -103,10 +110,14 @@ namespace Microsoft.Identity.Web
         public async Task AddAccountToCacheFromAuthorizationCodeAsync(AuthorizationCodeReceivedContext context, IEnumerable<string> scopes)
         {
             if (context == null)
+            {
                 throw new ArgumentNullException(nameof(context));
+            }
 
             if (scopes == null)
+            {
                 throw new ArgumentNullException(nameof(scopes));
+            }
 
             try
             {
@@ -122,7 +133,7 @@ namespace Microsoft.Identity.Web
                     (context.HttpContext.User.Identity as ClaimsIdentity).AddClaims(context.Principal.Claims);
                 }
 
-                var application = GetOrBuildConfidentialClientApplication(context.HttpContext);
+                var application = GetOrBuildConfidentialClientApplication();
 
                 // Do not share the access token with ASP.NET Core otherwise ASP.NET will cache it and will not send the OAuth 2.0 request in
                 // case a further call to AcquireTokenByAuthorizationCodeAsync in the future is required for incremental consent (getting a code requesting more scopes)
@@ -147,30 +158,27 @@ namespace Microsoft.Identity.Web
         /// for a downstream API using the <a href='https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow'>on-behalf-of flow</a> 
         /// for the user account that is ascertained from claims are provided in the <see cref="HttpContext.User"/> instance of the <paramref name="context"/> parameter
         /// </summary>
-        /// <param name="context">HttpContext associated with the Controller or auth operation</param>
         /// <param name="scopes">Scopes to request for the downstream API to call</param>
         /// <param name="tenant">Enables overriding of the tenant/account for the same identity. This is useful in the
         /// cases where a given account is guest in other tenants, and you want to acquire tokens for a specific tenant, like where the user is a guest in</param>
         /// <returns>An access token to call the downstream API and populated with this downstream Api's scopes</returns>
         public async Task<string> GetAccessTokenOnBehalfOfUserAsync(
-            HttpContext context,
             IEnumerable<string> scopes,
             string tenant = null)
         {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
-
             if (scopes == null)
+            {
                 throw new ArgumentNullException(nameof(scopes));
+            }
 
             // Use MSAL to get the right token to call the API
-            var application = GetOrBuildConfidentialClientApplication(context);
+            var application = GetOrBuildConfidentialClientApplication();
 
             // Case of a lazy OBO
-            Claim jwtClaim = context.User.FindFirst("jwt");
+            Claim jwtClaim = HttpContext.User.FindFirst("jwt");
             if (jwtClaim != null)
             {
-                (context.User.Identity as ClaimsIdentity).RemoveClaim(jwtClaim);
+                (HttpContext.User.Identity as ClaimsIdentity).RemoveClaim(jwtClaim);
                 var result = await application
                     .AcquireTokenOnBehalfOf(scopes.Except(_scopesRequestedByMsalNet), new UserAssertion(jwtClaim.Value))
                     .ExecuteAsync()
@@ -179,7 +187,7 @@ namespace Microsoft.Identity.Web
             }
             else
             {
-                return await GetAccessTokenOnBehalfOfUserAsync(application, context.User, scopes, tenant);
+                return await GetAccessTokenOnBehalfOfUserAsync(application, HttpContext.User, scopes, tenant);
             }
         }
 
@@ -210,13 +218,14 @@ namespace Microsoft.Identity.Web
             IEnumerable<string> scopes)
         {
             if (tokenValidatedContext == null)
+            {
                 throw new ArgumentNullException(nameof(tokenValidatedContext));
+            }
 
             return AddAccountToCacheFromJwtAsync(
                 scopes,
                 tokenValidatedContext.SecurityToken as JwtSecurityToken,
-                tokenValidatedContext.Principal,
-                tokenValidatedContext.HttpContext);
+                tokenValidatedContext.Principal);
         }
 
         /// <summary>
@@ -251,13 +260,14 @@ namespace Microsoft.Identity.Web
             IEnumerable<string> scopes = null)
         {
             if (tokenValidatedContext == null)
+            {
                 throw new ArgumentNullException(nameof(tokenValidatedContext));
+            }
 
             return AddAccountToCacheFromJwtAsync(
                 scopes,
                 tokenValidatedContext.SecurityToken,
-                tokenValidatedContext.Principal,
-                tokenValidatedContext.HttpContext);
+                tokenValidatedContext.Principal);
         }
 
         /// <summary>
@@ -269,7 +279,7 @@ namespace Microsoft.Identity.Web
         public async Task RemoveAccountAsync(RedirectContext context)
         {
             ClaimsPrincipal user = context.HttpContext.User;
-            IConfidentialClientApplication app = GetOrBuildConfidentialClientApplication(context.HttpContext);
+            IConfidentialClientApplication app = GetOrBuildConfidentialClientApplication();
             IAccount account = await app.GetAccountAsync(context.HttpContext.User.GetMsalAccountId()).ConfigureAwait(false);
 
             // Workaround for the guest account
@@ -291,14 +301,13 @@ namespace Microsoft.Identity.Web
         /// <summary>
         /// Creates an MSAL Confidential client application if needed
         /// </summary>
-        /// <param name="httpContext"></param>
         /// <param name="claimsPrincipal"></param>
         /// <returns></returns>
-        private IConfidentialClientApplication GetOrBuildConfidentialClientApplication(HttpContext httpContext)
+        private IConfidentialClientApplication GetOrBuildConfidentialClientApplication()
         {
             if (application == null)
             {
-                application = BuildConfidentialClientApplication(httpContext);
+                application = BuildConfidentialClientApplication();
             }
             return application;
         }
@@ -306,13 +315,11 @@ namespace Microsoft.Identity.Web
         /// <summary>
         /// Creates an MSAL Confidential client application
         /// </summary>
-        /// <param name="httpContext"></param>
         /// <param name="claimsPrincipal"></param>
         /// <returns></returns>
-        private IConfidentialClientApplication BuildConfidentialClientApplication(
-            HttpContext httpContext)
+        private IConfidentialClientApplication BuildConfidentialClientApplication()
         {
-            var request = httpContext.Request;
+            var request = HttpContext.Request;
             string currentUri = UriHelper.BuildAbsolute(
                 request.Scheme,
                 request.Host,
@@ -328,15 +335,8 @@ namespace Microsoft.Identity.Web
                 .Build();
 
             // Initialize token cache providers
-            if (_appTokenCacheProvider != null)
-            {
-                _appTokenCacheProvider.Initialize(app.AppTokenCache);
-            }
-
-            if (_userTokenCacheProvider != null)
-            {
-                _userTokenCacheProvider.Initialize(app.UserTokenCache);
-            }
+            _appTokenCacheProvider?.Initialize(app.AppTokenCache);
+            _userTokenCacheProvider?.Initialize(app.UserTokenCache);
 
             return app;
         }
@@ -377,10 +377,14 @@ namespace Microsoft.Identity.Web
             string tenant)
         {
             if (accountIdentifier == null)
+            {
                 throw new ArgumentNullException(nameof(accountIdentifier));
+            }
 
             if (scopes == null)
+            {
                 throw new ArgumentNullException(nameof(scopes));
+            }
 
             // Get the account
             IAccount account = await application.GetAccountAsync(accountIdentifier).ConfigureAwait(false);
@@ -418,7 +422,7 @@ namespace Microsoft.Identity.Web
         /// <summary>
         /// Adds an account to the token cache from a JWT token and other parameters related to the token cache implementation
         /// </summary>
-        private async Task AddAccountToCacheFromJwtAsync(IEnumerable<string> scopes, JwtSecurityToken jwtToken, ClaimsPrincipal principal, HttpContext httpContext)
+        private async Task AddAccountToCacheFromJwtAsync(IEnumerable<string> scopes, JwtSecurityToken jwtToken, ClaimsPrincipal principal)
         {
             try
             {
@@ -437,7 +441,7 @@ namespace Microsoft.Identity.Web
                     // TODO: Understand if we could support other kind of client assertions (SAML);
                 }
 
-                var application = GetOrBuildConfidentialClientApplication(httpContext);
+                var application = GetOrBuildConfidentialClientApplication();
 
                 // .Result to make sure that the cache is filled-in before the controller tries to get access tokens
                 var result = await application
@@ -458,11 +462,10 @@ namespace Microsoft.Identity.Web
         /// The client, when it receives the 403 code with this header, can use the additional information provided in the header to trigger an interaction with the user where the user 
         /// can then consent to additional scopes.
         /// </summary>
-        /// <param name="httpContext">The HttpContext instance whose HttpResponse will be modified.</param>
         /// <param name="scopes">The additional scopes that the user needs to consent to</param>
         /// <param name="msalServiceException"><see cref="MsalUiRequiredException"/> The MsalUiRequiredException that is examined to see if there is case for this response.</param>
 
-        public void ReplyForbiddenWithWwwAuthenticateHeader(HttpContext httpContext, IEnumerable<string> scopes, MsalUiRequiredException msalServiceException)
+        public void ReplyForbiddenWithWwwAuthenticateHeader(IEnumerable<string> scopes, MsalUiRequiredException msalServiceException)
         {
             // A user interaction is required, but we are in a Web API, and therefore, we need to report back to the client through an wwww-Authenticate header https://tools.ietf.org/html/rfc6750#section-3.1
             string proposedAction = "consent";
@@ -487,7 +490,7 @@ namespace Microsoft.Identity.Web
             StringValues v = new StringValues($"{scheme} {parameterString}");
 
             //  StringValues v = new StringValues(new string[] { $"Bearer clientId=\"{jwtToken.Audiences.First()}\", claims=\"{ex.Claims}\", scopes=\" {string.Join(",", scopes)}\"" });
-            var httpResponse = httpContext.Response;
+            var httpResponse = HttpContext.Response;
             var headers = httpResponse.Headers;
             httpResponse.StatusCode = (int)HttpStatusCode.Forbidden;
             if (headers.ContainsKey(HeaderNames.WWWAuthenticate))

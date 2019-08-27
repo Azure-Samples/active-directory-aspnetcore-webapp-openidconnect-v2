@@ -105,7 +105,7 @@ public class HomeController : Controller
   ...
 ```
 
-Then in your controller actions, you'll need to call: `ITokenAcquisition.GetAccessTokenOnBehalfOfUserAsync` passing the HttpContext of the controller, and the scopes for which to request a token. The other methods of ITokenAcquisition are used from the `AddMsal()` method and similar methods for web APIs (see below).
+Then in your controller actions, you'll need to call: `ITokenAcquisition.GetAccessTokenOnBehalfOfUserAsync` passing the scopes for which to request a token. The other methods of ITokenAcquisition are used from the `AddMsal()` method and similar methods for web APIs (see below).
 
 ```CSharp
 [Authorize]
@@ -117,8 +117,7 @@ public class HomeController : Controller
   public async Task<IActionResult> Action()
   {
    string[] scopes = new []{"user.read"};
-   string token = await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(
-                       HttpContext, scopes);
+   string token = await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(scopes);
    ...
    // call the downstream API with the bearer token in the Authorize header
   }
@@ -221,7 +220,7 @@ For your web API to call downstream APIs, you'll need to:
 
   <img alt="ScopesRequiredHttpContextExtensions" src="https://user-images.githubusercontent.com/13203188/62527104-60c37600-b7ef-11e9-8dcb-66bb982fe147.png" width="80%"/>
 
-- in your controller actions, to call: `ITokenAcquisition.GetAccessTokenOnBehalfOfUserAsync` passing the HttpContext of the controller, and the scopes for which to request a token.
+- in your controller actions, to call: `ITokenAcquisition.GetAccessTokenOnBehalfOfUserAsync` passing the scopes for which to request a token.
 
 The following code snippet shows how to combine these steps:
 
@@ -239,7 +238,7 @@ public class HomeController : Controller
    string[] scopes = new []{"user.read"};
    try
    {
-      string accessToken = await _tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, scopes);
+      string accessToken = await _tokenAcquisition.GetAccessTokenOnBehalfOfUser(scopes);
       // call the downstream API with the bearer token in the Authorize header
     }
     catch (MsalUiRequiredException ex)

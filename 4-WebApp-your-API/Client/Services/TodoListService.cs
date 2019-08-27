@@ -138,7 +138,7 @@ namespace TodoListClient.Services
 
         private async Task PrepareAuthenticatedClient()
         {
-            var accessToken = await this._tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(this._contextAccessor.HttpContext, new[] { this._TodoListScope });
+            var accessToken = await this._tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new[] { this._TodoListScope });
             Debug.WriteLine($"access token-{accessToken}");
             this._httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             this._httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
