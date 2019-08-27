@@ -87,8 +87,8 @@ namespace Microsoft.Identity.Web.Client.TokenCacheProviders
             //var tokenCacheDbContextBuilder = new DbContextOptionsBuilder<TokenCacheDbContext>();
             //tokenCacheDbContextBuilder.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString);
 
-            //var tokenCacheDbContext = new TokenCacheDbContext(tokenCacheDbContextBuilder.Options);
-            //tokenCacheDbContext.Database.EnsureCreated();
+            //var tokenCacheDbContextForCreation = new TokenCacheDbContext(tokenCacheDbContextBuilder.Options);
+            //tokenCacheDbContextForCreation.Database.EnsureCreated();
 
             services.AddDataProtection();
 
