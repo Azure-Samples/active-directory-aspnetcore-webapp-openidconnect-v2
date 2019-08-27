@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
 using Microsoft.Identity.Web.Client;
 using System.Threading.Tasks;
 using TodoListClient.Services;
