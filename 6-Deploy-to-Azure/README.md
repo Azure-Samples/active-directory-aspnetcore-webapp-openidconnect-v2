@@ -25,6 +25,16 @@ This project has one WebApp / Web API projects. To deploy them to Azure Web Site
 1. Click on **Application settings** in the left menu of the App service and add the copied Sql connection string in the **Connection strings** section as `DefaultConnection`.
 1. Choose `SQLAzure` in the **Type** dropdown. **Save** the setting.
 
+### Update the client application URLs
+
+1. Navigate back to to the [Azure portal](https://portal.azure.com).
+In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations**.
+1. In the resultant screen, select the `WebApp-OpenIDConnect-DotNet-code-v2` application.
+1. In the **Authentication** tab, update the Logout URL fields with the address of your service, for example [https://WebApp-OpenIDConnect-DotNet-code-v2-contoso.azurewebsites.net](https://WebApp-OpenIDConnect-DotNet-code-v2-contoso.azurewebsites.net)
+1. From the *Branding* menu, update the **Home page URL**, to the address of your service, for example [https://WebApp-OpenIDConnect-DotNet-code-v2-contoso.azurewebsites.net](https://WebApp-OpenIDConnect-DotNet-code-v2-contoso.azurewebsites.net). Save the configuration.
+1. Add the same URL in the list of values of the *Authentication -> Redirect URIs* menu. If you have multiple redirect urls, make sure that there a new entry using the App service's Uri for each redirect url.
+1. If your application calls a web api, make sure to apply the necessary changes on `appsettings.json` so it calls the published API URL instead of `localhost`.
+
 ### Publishing the sample
 
 1. From the **Overview** tab of the App Service, download the publish profile by clicking the **Get publish profile** link and save it.  Other deployment mechanisms, such as from source control, can also be used.
