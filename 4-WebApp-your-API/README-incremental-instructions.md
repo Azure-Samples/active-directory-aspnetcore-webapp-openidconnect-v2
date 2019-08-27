@@ -249,11 +249,11 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
   with
 
   ```Csharp
-    services.AddProtectWebApiWithMicrosoftIdentityPlatformV2(Configuration)
+    services.AddProtectedWebApiWithMicrosoftIdentityPlatformV2(Configuration)
          .AddInMemoryTokenCaches();
   ```
 
-  `AddProtectWebApiWithMicrosoftIdentityPlatformV2` does the following:
+  `AddProtectedWebApiWithMicrosoftIdentityPlatformV2` does the following:
   - add the **Jwt**BearerAuthenticationScheme (Note the replacement of **BearerAuthenticationScheme** by **Jwt**BearerAuthenticationScheme)
   - set the authority to be the Microsoft identity platform 
   - sets the audiences to validate

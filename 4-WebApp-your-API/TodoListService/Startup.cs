@@ -53,7 +53,7 @@ namespace TodoListService
             // This flag ensures that the ClaimsIdentity claims collection will be built from the claims in the token
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
-            services.AddProtectWebApiWithMicrosoftIdentityPlatformV2(Configuration)
+            services.AddProtectedWebApiWithMicrosoftIdentityPlatformV2(Configuration)
                     .AddInMemoryTokenCaches();
 
             services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>

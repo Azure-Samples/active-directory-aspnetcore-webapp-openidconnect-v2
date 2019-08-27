@@ -33,7 +33,7 @@ namespace Microsoft.Identity.Web
         /// Set to true if you want to debug, or just understand the JwtBearer events.
         /// </param>
         /// <returns></returns>
-        public static IServiceCollection AddProtectWebApiWithMicrosoftIdentityPlatformV2(
+        public static IServiceCollection AddProtectedWebApiWithMicrosoftIdentityPlatformV2(
             this IServiceCollection services,
             IConfiguration configuration,
             X509Certificate2 tokenDecryptionCertificate = null,
