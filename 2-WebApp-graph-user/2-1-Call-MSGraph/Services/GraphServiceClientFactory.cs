@@ -23,7 +23,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
             acquireAccessToken = acquireTokenCallback;
         }
 
-        private Func<Task<string>> acquireAccessToken;
+        private readonly Func<Task<string>> acquireAccessToken;
 
         public async Task AuthenticateRequestAsync(HttpRequestMessage request)
         {

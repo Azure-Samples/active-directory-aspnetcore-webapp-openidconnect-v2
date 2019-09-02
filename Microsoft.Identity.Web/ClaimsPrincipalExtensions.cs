@@ -11,6 +11,8 @@ namespace Microsoft.Identity.Web
     /// </summary>
     public static class ClaimsPrincipalExtensions
     {
+        // TODO: how to make this work with B2C, given that there is no tenant ID with B2C?
+
         /// <summary>
         /// Gets the Account identifier for an MSAL.NET account from a <see cref="ClaimsPrincipal"/>
         /// </summary>
@@ -33,6 +35,7 @@ namespace Microsoft.Identity.Web
         /// Gets the unique object ID associated with the <see cref="ClaimsPrincipal"/>
         /// </summary>
         /// <param name="claimsPrincipal">the <see cref="ClaimsPrincipal"/> from which to retrieve the unique object id</param>
+        /// <remarks>This method returns the object ID both in case the developer has enabled or not claims mapping</remarks>
         /// <returns>Unique object ID of the identity, or <c>null</c> if it cannot be found</returns>
         public static string GetObjectId(this ClaimsPrincipal claimsPrincipal)
         {
@@ -49,6 +52,7 @@ namespace Microsoft.Identity.Web
         /// </summary>
         /// <param name="claimsPrincipal">the <see cref="ClaimsPrincipal"/> from which to retrieve the tenant id</param>
         /// <returns>Tenant ID of the identity, or <c>null</c> if it cannot be found</returns>
+        /// <remarks>This method returns the object ID both in case the developer has enabled or not claims mapping</remarks>
         public static string GetTenantId(this ClaimsPrincipal claimsPrincipal)
         {
             string tenantId = claimsPrincipal.FindFirstValue(ClaimConstants.Tid);

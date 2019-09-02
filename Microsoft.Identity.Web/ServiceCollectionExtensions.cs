@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Identity.Web.TokenCacheProviders;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("TokenCache.Tests.Core")]
@@ -37,7 +35,7 @@ namespace Microsoft.Identity.Web
         {
             // Token acquisition service
             services.AddHttpContextAccessor();
-            services.AddScoped<ITokenAcquisition>();
+            services.AddScoped<ITokenAcquisition, TokenAcquisition>();
             return services;
         }
     }

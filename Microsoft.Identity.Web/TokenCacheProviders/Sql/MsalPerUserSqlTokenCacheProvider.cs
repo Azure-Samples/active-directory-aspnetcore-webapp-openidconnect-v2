@@ -31,7 +31,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
         /// </summary>
         private readonly IDataProtector _dataProtector;
 
-        private IHttpContextAccessor httpContextAccesssor;
+        private readonly IHttpContextAccessor httpContextAccesssor;
 
         /// <summary>Initializes a new instance of the <see cref="MsalPerUserSqlTokenCacheProvider"/> class.</summary>
         /// <param name="protectionProvider">The data protection provider. Requires the caller to have used serviceCollection.AddDataProtection();</param>

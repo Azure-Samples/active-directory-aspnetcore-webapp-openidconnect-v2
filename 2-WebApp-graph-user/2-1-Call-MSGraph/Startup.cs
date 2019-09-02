@@ -37,8 +37,8 @@ namespace WebApp_OpenIDConnect_DotNet
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
             services.AddAzureAdV2Authentication(Configuration)
-                    .AddMsal(new string[] { Constants.ScopeUserRead })
-                    .AddInMemoryTokenCaches();
+               .AddMsal(Configuration, new string[] { Constants.ScopeUserRead })
+               .AddInMemoryTokenCaches();
 
             // Add Graph
             services.AddGraphService(Configuration);

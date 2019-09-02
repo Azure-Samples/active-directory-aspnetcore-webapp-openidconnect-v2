@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Identity.Client;
 using Microsoft.Identity.Web.Resource;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -37,10 +38,12 @@ namespace Microsoft.Identity.Web
             this IServiceCollection services,
             IConfiguration configuration,
             X509Certificate2 tokenDecryptionCertificate = null,
+            string configSectionName = "AzureAD",
             bool subscribeToJwtBearerMiddlewareDiagnosticsEvents = false)
         {
+            services.Configure<AzureADOptions>(options => configuration.Bind(configSectionName, options));
             services.AddAuthentication(AzureADDefaults.JwtBearerAuthenticationScheme)
-                    .AddAzureADBearer(options => configuration.Bind("AzureAd", options));
+                    .AddAzureADBearer(options => configuration.Bind(configSectionName, options));
 
             // Add session if you are planning to use session based token cache , .AddSessionTokenCaches()
             // services.AddSession(); // Commented as we cannot force session on someone who wants to use an alternative token cache provider.
@@ -49,7 +52,7 @@ namespace Microsoft.Identity.Web
             services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
             {
                 // Reinitialize the options as this has changed to JwtBearerOptions to pick configuration values for attributes unique to JwtBearerOptions
-                configuration.Bind("AzureAd", options);
+                configuration.Bind(configSectionName, options);
 
                 // This is an Microsoft identity platform Web API
                 options.Authority += "/v2.0";
@@ -98,9 +101,11 @@ namespace Microsoft.Identity.Web
             return services;
         }
 
+        // TODO: pass an option with a section name to bind the options ? or a delegate?
+
         /// <summary>
         /// Protects the Web API with Microsoft identity platform (formerly Azure AD v2.0)
-        /// This supposes that the configuration files have a section named "AzureAD"
+        /// This supposes that the configuration files have a section named configSectionName (typically "AzureAD")
         /// </summary>
         /// <param name="services">Service collection to which to add authentication</param>
         /// <param name="configuration">Configuration</param>
@@ -111,9 +116,12 @@ namespace Microsoft.Identity.Web
         public static IServiceCollection AddProtectedApiCallsWebApis(
             this IServiceCollection services,
             IConfiguration configuration,
-            IEnumerable<string> scopes = null)
+            IEnumerable<string> scopes = null,
+            string configSectionName = "AzureAD")
         {
             services.AddTokenAcquisition();
+            services.AddHttpContextAccessor();
+            services.Configure<ConfidentialClientApplicationOptions>(options => configuration.Bind(configSectionName, options));
             services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
             {
                 // If you don't pre-provide scopes when adding calling AddProtectedApiCallsWebApis, the On behalf of
@@ -124,7 +132,7 @@ namespace Microsoft.Identity.Web
                     {
                         var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
                         context.Success();
-                        await tokenAcquisition.AddAccountToCacheFromJwtAsync(context, scopes);
+                        await tokenAcquisition.AddAccountToCacheFromJwtAsync(context, scopes).ConfigureAwait(false);
                     }
                     else
                     {
@@ -139,7 +147,7 @@ namespace Microsoft.Identity.Web
                         }
                     }
                     // Adds the token to the cache, and also handles the incremental consent and claim challenges
-                    await Task.FromResult(0);
+                    await Task.FromResult(0).ConfigureAwait(false);
                 };
             });
 

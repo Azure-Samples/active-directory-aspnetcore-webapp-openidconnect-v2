@@ -34,7 +34,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
         /// </summary>
         internal HttpContext HttpContext { get { return httpContextAccessor.HttpContext; } }
 
-        private IHttpContextAccessor httpContextAccessor;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>Initializes a new instance of the <see cref="MsalPerUserSessionTokenCacheProvider"/> class.</summary>
         public MsalPerUserSessionTokenCacheProvider(IHttpContextAccessor httpContextAccessor)

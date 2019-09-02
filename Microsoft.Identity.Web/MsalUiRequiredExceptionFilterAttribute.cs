@@ -12,6 +12,8 @@ using System.Linq;
 
 namespace Microsoft.Identity.Web
 {
+    // TODO: rename to EnsureScopesAttribute ? or MsalAuthorizeForScopesAttribute  or AuthorizeForScopesAttribute
+
     /// <summary>
     /// Filter used on a controller action to trigger an incremental consent.
     /// </summary>

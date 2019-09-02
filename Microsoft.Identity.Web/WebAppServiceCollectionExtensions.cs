@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.Identity.Client;
 using Microsoft.Identity.Web.Resource;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Collections.Generic;
@@ -31,10 +33,13 @@ namespace Microsoft.Identity.Web
         public static IServiceCollection AddAzureAdV2Authentication(
             this IServiceCollection services,
             IConfiguration configuration,
+            string configSectionName = "AzureAd",
             bool subscribeToOpenIdConnectMiddlewareDiagnosticsEvents = false)
         {
+
             services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
-                .AddAzureAD(options => configuration.Bind("AzureAd", options));
+                .AddAzureAD(options => configuration.Bind(configSectionName, options));
+            services.Configure<AzureADOptions>(options => configuration.Bind(configSectionName, options));
 
             services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
             {
@@ -101,14 +106,19 @@ namespace Microsoft.Identity.Web
             return services;
         }
 
+        // TODO: pass an option with a section name to bind the options ? or a delegate?
+
         /// <summary>
         /// Add MSAL support to the Web App or Web API
         /// </summary>
         /// <param name="services">Service collection to which to add authentication</param>
         /// <param name="initialScopes">Initial scopes to request at sign-in</param>
         /// <returns></returns>
-        public static IServiceCollection AddMsal(this IServiceCollection services, IEnumerable<string> initialScopes)
+        public static IServiceCollection AddMsal(this IServiceCollection services, IConfiguration configuration, IEnumerable<string> initialScopes, string configSectionName = "AzureAd")
         {
+            services.Configure<ConfidentialClientApplicationOptions>(options => configuration.Bind(configSectionName, options));
+
+            services.AddHttpContextAccessor();
             services.AddTokenAcquisition();
 
             services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>

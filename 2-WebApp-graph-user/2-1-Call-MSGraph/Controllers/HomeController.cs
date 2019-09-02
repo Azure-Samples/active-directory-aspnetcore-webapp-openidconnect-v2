@@ -43,9 +43,11 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             try
             {
                 // Get user photo
-                var photoStream = await graphClient.Me.Photo.Content.Request().GetAsync();
-                byte[] photoByte = ((MemoryStream)photoStream).ToArray();
-                ViewData["Photo"] = Convert.ToBase64String(photoByte);
+                using (var photoStream = await graphClient.Me.Photo.Content.Request().GetAsync())
+                {
+                    byte[] photoByte = ((MemoryStream)photoStream).ToArray();
+                    ViewData["Photo"] = Convert.ToBase64String(photoByte);
+                }
             }
             catch (System.Exception)
             {

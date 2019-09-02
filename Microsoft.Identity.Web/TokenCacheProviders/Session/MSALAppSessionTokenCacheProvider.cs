@@ -121,7 +121,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
         /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
         private async Task AppTokenCacheBeforeAccessNotificationAsync(TokenCacheNotificationArgs args)
         {
-            await HttpContext.Session.LoadAsync();
+            await HttpContext.Session.LoadAsync().ConfigureAwait(false);
 
             s_sessionLock.EnterReadLock();
             try
@@ -161,7 +161,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
                     // Reflect changes in the persistent store
                     byte[] blob = args.TokenCache.SerializeMsalV3();
                     HttpContext.Session.Set(_appCacheId, blob);
-                    await HttpContext.Session.CommitAsync();
+                    await HttpContext.Session.CommitAsync().ConfigureAwait(false);
                 }
                 finally
                 {

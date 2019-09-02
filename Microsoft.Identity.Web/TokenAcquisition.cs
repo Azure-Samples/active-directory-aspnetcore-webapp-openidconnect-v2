@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Web.TokenCacheProviders;
@@ -33,8 +32,8 @@ namespace Microsoft.Identity.Web
         private readonly IMsalUserTokenCacheProvider _userTokenCacheProvider;
 
         private IConfidentialClientApplication application;
-        private IHttpContextAccessor httpContextAccessor;
-        private HttpContext HttpContext { get { return httpContextAccessor.HttpContext; } }
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private HttpContext HttpContext { get { return _httpContextAccessor.HttpContext; } }
 
         /// <summary>
         /// Constructor of the TokenAcquisition service. This requires the Azure AD Options to
@@ -45,24 +44,15 @@ namespace Microsoft.Identity.Web
         /// <param name="appTokenCacheProvider">The App token cache provider</param>
         /// <param name="userTokenCacheProvider">The User token cache provider</param>
         public TokenAcquisition(
-            IConfiguration configuration,
             IMsalAppTokenCacheProvider appTokenCacheProvider,
             IMsalUserTokenCacheProvider userTokenCacheProvider,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IOptions<AzureADOptions> azureAdOptions,
+            IOptions<ConfidentialClientApplicationOptions> applicationOptions)
         {
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-
-            this.httpContextAccessor = httpContextAccessor;
-
-            _azureAdOptions = new AzureADOptions();
-            configuration.Bind("AzureAD", _azureAdOptions);
-
-            _applicationOptions = new ConfidentialClientApplicationOptions();
-            configuration.Bind("AzureAD", _applicationOptions);
-
+            _httpContextAccessor = httpContextAccessor;
+            _azureAdOptions = azureAdOptions.Value;
+            _applicationOptions = applicationOptions.Value;
             _appTokenCacheProvider = appTokenCacheProvider;
             _userTokenCacheProvider = userTokenCacheProvider;
         }
@@ -187,7 +177,7 @@ namespace Microsoft.Identity.Web
             }
             else
             {
-                return await GetAccessTokenOnBehalfOfUserAsync(application, HttpContext.User, scopes, tenant);
+                return await GetAccessTokenOnBehalfOfUserAsync(application, HttpContext.User, scopes, tenant).ConfigureAwait(false);
             }
         }
 
@@ -292,7 +282,7 @@ namespace Microsoft.Identity.Web
             if (account != null)
             {
                 await app.RemoveAsync(account).ConfigureAwait(false);
-                _userTokenCacheProvider?.Clear(user.GetMsalAccountId());
+                _userTokenCacheProvider?.ClearAsync().ConfigureAwait(false);
             }
         }
 
@@ -320,23 +310,25 @@ namespace Microsoft.Identity.Web
         private IConfidentialClientApplication BuildConfidentialClientApplication()
         {
             var request = HttpContext.Request;
+            var azureAdOptions = _azureAdOptions;
+            var applicationOptions = _applicationOptions;
             string currentUri = UriHelper.BuildAbsolute(
                 request.Scheme,
                 request.Host,
                 request.PathBase,
-                _azureAdOptions.CallbackPath ?? string.Empty);
+                azureAdOptions.CallbackPath ?? string.Empty);
 
-            string authority = $"{_azureAdOptions.Instance}{_azureAdOptions.TenantId}/";
+            string authority = $"{azureAdOptions.Instance}{azureAdOptions.TenantId}/";
 
             var app = ConfidentialClientApplicationBuilder
-                .CreateWithApplicationOptions(_applicationOptions)
+                .CreateWithApplicationOptions(applicationOptions)
                 .WithRedirectUri(currentUri)
                 .WithAuthority(authority)
                 .Build();
 
             // Initialize token cache providers
-            _appTokenCacheProvider?.Initialize(app.AppTokenCache);
-            _userTokenCacheProvider?.Initialize(app.UserTokenCache);
+            _appTokenCacheProvider?.InitializeAsync(app.AppTokenCache);
+            _userTokenCacheProvider?.InitializeAsync(app.UserTokenCache);
 
             return app;
         }

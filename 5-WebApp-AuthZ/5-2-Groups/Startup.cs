@@ -33,7 +33,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
             // Sign-in users with the Microsoft identity platform
             services.AddAzureAdV2Authentication(Configuration)
-                    .AddMsal(new string[] { "User.Read", "Directory.Read.All" })
+                    .AddMsal(Configuration, new string[] { "User.Read", "Directory.Read.All" })
                     .AddInMemoryTokenCaches();
 
             services.AddMSGraphService(Configuration);
