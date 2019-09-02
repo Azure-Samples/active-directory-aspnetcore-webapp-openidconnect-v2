@@ -33,7 +33,7 @@ namespace Microsoft.Identity.Web
 
         private IConfidentialClientApplication application;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private HttpContext HttpContext { get { return _httpContextAccessor.HttpContext; } }
+        private HttpContext CurrentHttpContext => _httpContextAccessor.HttpContext;
 
         /// <summary>
         /// Constructor of the TokenAcquisition service. This requires the Azure AD Options to
@@ -165,10 +165,10 @@ namespace Microsoft.Identity.Web
             var application = GetOrBuildConfidentialClientApplication();
 
             // Case of a lazy OBO
-            Claim jwtClaim = HttpContext.User.FindFirst("jwt");
+            Claim jwtClaim = CurrentHttpContext.User.FindFirst("jwt");
             if (jwtClaim != null)
             {
-                (HttpContext.User.Identity as ClaimsIdentity).RemoveClaim(jwtClaim);
+                (CurrentHttpContext.User.Identity as ClaimsIdentity).RemoveClaim(jwtClaim);
                 var result = await application
                     .AcquireTokenOnBehalfOf(scopes.Except(_scopesRequestedByMsalNet), new UserAssertion(jwtClaim.Value))
                     .ExecuteAsync()
@@ -177,7 +177,7 @@ namespace Microsoft.Identity.Web
             }
             else
             {
-                return await GetAccessTokenOnBehalfOfUserAsync(application, HttpContext.User, scopes, tenant).ConfigureAwait(false);
+                return await GetAccessTokenOnBehalfOfUserAsync(application, CurrentHttpContext.User, scopes, tenant).ConfigureAwait(false);
             }
         }
 
@@ -309,7 +309,7 @@ namespace Microsoft.Identity.Web
         /// <returns></returns>
         private IConfidentialClientApplication BuildConfidentialClientApplication()
         {
-            var request = HttpContext.Request;
+            var request = CurrentHttpContext.Request;
             var azureAdOptions = _azureAdOptions;
             var applicationOptions = _applicationOptions;
             string currentUri = UriHelper.BuildAbsolute(
@@ -482,7 +482,7 @@ namespace Microsoft.Identity.Web
             StringValues v = new StringValues($"{scheme} {parameterString}");
 
             //  StringValues v = new StringValues(new string[] { $"Bearer clientId=\"{jwtToken.Audiences.First()}\", claims=\"{ex.Claims}\", scopes=\" {string.Join(",", scopes)}\"" });
-            var httpResponse = HttpContext.Response;
+            var httpResponse = CurrentHttpContext.Response;
             var headers = httpResponse.Headers;
             httpResponse.StatusCode = (int)HttpStatusCode.Forbidden;
             if (headers.ContainsKey(HeaderNames.WWWAuthenticate))
