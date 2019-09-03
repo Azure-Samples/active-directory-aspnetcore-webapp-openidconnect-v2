@@ -33,5 +33,11 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
         /// Gets or sets the clientId of the application for whom this token cache instance is being created. (Optional)
         /// </summary>
         public string ClientId { get; set; }
+
+        /// <summary>
+        /// Application name for the Data protection. 
+        /// To share protected payloads among apps, configure SetApplicationName in each app with the same value. 
+        /// </summary>
+        public string ApplicationName { get; set; } = "WebApp_Tutorial";
     }
 }

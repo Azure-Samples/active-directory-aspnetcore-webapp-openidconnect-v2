@@ -77,7 +77,6 @@ namespace Microsoft.Identity.Web
                 // be used from the controllers.
                 options.Events = new JwtBearerEvents();
 
-#pragma warning disable 1998
                 options.Events.OnTokenValidated = async context =>
                    {
                        // This check is required to ensure that the Web API only accepts tokens from tenants where it has been consented and provisioned.
@@ -88,9 +87,8 @@ namespace Microsoft.Identity.Web
                            throw new UnauthorizedAccessException("Neither scope or roles claim was found in the bearer token.");
                        }
 
-                       return;
+                       await Task.FromResult(0);
                    };
-#pragma warning restore 1998
 
                 if (subscribeToJwtBearerMiddlewareDiagnosticsEvents)
                 {
