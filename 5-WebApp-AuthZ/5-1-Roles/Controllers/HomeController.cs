@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Graph = Microsoft.Graph;
-using Microsoft.Identity.Web.Client;
+using Microsoft.Identity.Web;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Models;
 using WebApp_OpenIDConnect_DotNet.Services;
@@ -32,7 +32,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View();
         }
 
-        [MsalUiRequiredExceptionFilter(Scopes = new[] { Constants.ScopeUserRead })]
+        [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]
         public async Task<IActionResult> Profile()
         {
             // Initialize the GraphServiceClient. 
@@ -60,8 +60,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         {
             return GraphServiceClientFactory.GetAuthenticatedGraphClient(async () =>
             {
-                string result = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(
-                       HttpContext, scopes);
+                string result = await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(scopes);
                 return result;
             }, webOptions.GraphApiUrl);
         }
@@ -73,7 +72,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        [MsalUiRequiredExceptionFilter(Scopes = new[] { GraphScopes.UserReadBasicAll })]
+        [AuthorizeForScopes(Scopes = new[] { GraphScopes.UserReadBasicAll })]
         [Authorize(Roles = AppRoles.UserReaders )]
         public async Task<IActionResult> Users()
         {

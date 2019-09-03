@@ -22,13 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.Client.TokenCacheProviders;
+using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace TodoListService
@@ -51,8 +53,11 @@ namespace TodoListService
             // This flag ensures that the ClaimsIdentity claims collection will be built from the claims in the token
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
-            services.AddProtectWebApiWithMicrosoftIdentityPlatformV2(Configuration)
-                    .AddInMemoryTokenCaches();
+            services.AddProtectedWebApi(Configuration);
+            services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
+            {
+                options.TokenValidationParameters.NameClaimType = "name";
+            });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
@@ -60,8 +65,6 @@ namespace TodoListService
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseSession();
-
             if (env.IsDevelopment())
             {
                 // Since IdentityModel version 5.2.1 (or since Microsoft.AspNetCore.Authentication.JwtBearer version 2.2.0),

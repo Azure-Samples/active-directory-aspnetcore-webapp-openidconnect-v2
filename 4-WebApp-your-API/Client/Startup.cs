@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.Client.TokenCacheProviders;
+using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using System.IdentityModel.Tokens.Jwt;
 using TodoListClient.Services;
 
@@ -44,8 +44,8 @@ namespace WebApp_OpenIDConnect_DotNet
 
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
-            services.AddAzureAdV2Authentication(Configuration)
-                    .AddMsal(new string[] { Configuration["TodoList:TodoListScope"] })
+            services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
+                    .AddMsal(Configuration, new string[] { Configuration["TodoList:TodoListScope"] })
                     .AddInMemoryTokenCaches();
 
             // Add APIs

@@ -60,8 +60,9 @@ Go to the `"2-WebApp-graph-user\2-2-TokenCache"` folder
    >   "TokenCacheDbConnStr": "Data Source=(LocalDb)\\MSSQLLocalDB;Database=MY_TOKEN_CACHE_DATABASE;Trusted_Connection=True;"
    > },
    > ```
+
 1. If you do not have an existing database and tables needed for token caching, this sample can use  [EF Core- code first](https://docs.microsoft.com/en-us/ef/core/get-started/aspnetcore/new-db?tabs=visual-studio) to create a database and tables for you. to do that, follow the steps below.
-    1. In the file `Microsoft.Identity.Web\Client\TokenCacheProviders\Sql\MSALAppSqlTokenCacheProviderExtension.cs`, uncomment the code under the **// Uncomment the following lines to create the database.**. This comment exists once in the **AddSqlAppTokenCache** and **AddSqlPerUserTokenCache**  methods.
+    1. In the file `Startup.cs`, uncomment the code under the **// Uncomment the following to initialize the sql server database with tables required to cache tokens.**. This comment exists once in the **ConfigureServices** methods.
     1. Run the solution again, when a user signs-in the very first time, the Entity Framework will create the database and tables  `AppTokenCache` and `UserTokenCache` for app and user token caching respectively.
 
 - In case you want to deploy your app in Sovereign or national clouds, ensure the `GraphApiUrl` option matches the one you want. By default this is Microsoft Graph in the Azure public cloud
@@ -102,9 +103,18 @@ public void ConfigureServices(IServiceCollection services)
 The aforementioned four lines of code are explained below.
 
 1. The first two lines enable MSAL.NET to hook-up to the OpenID Connect events to redeem the authorization code obtained by the ASP.NET Core middleware. After obtaining a token for Microsoft Graph, it saves it into the token cache, for use by the Controllers.
-1. The last two lines hook up the Sql server database based token caching solution to MSAL.NET. The Sql based token cache requires a **Connection string** named `TokenCacheDbConnStr` available in the **ConnectionStrings** collections of the **appsettings.json** configuration file. 
+1. The last two lines hook up the Sql server database based token caching solution to MSAL.NET. The Sql based token cache requires a **Connection string** named `TokenCacheDbConnStr` available in the **ConnectionStrings** collections of the **appsettings.json** configuration file.
 
 The files `MSALAppSqlTokenCacheProvider.cs` and `MSALPerUserSqlTokenCacheProvider` of the `Microsoft.Identity.Web` project contains the app and per-user token cache implementations that use Sql server as the token cache.
+
+### Sharing the same Token Cache database between apps
+
+Since we are using `IDataProtector` to protect the token being persisted on the database, in order to enable it to be used between different apps, `SetApplicationName()` must be configured with the same value for all apps. You can read [more details about IDataProtector here.](https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/overview?view=aspnetcore-2.2#setapplicationname)
+
+```csharp
+services.AddDataProtection()
+        .SetApplicationName("WebApp_Tutorial");
+```
 
 ## Next steps
 

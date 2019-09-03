@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -8,8 +7,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.Client.TokenCacheProviders;
-using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
 
 namespace WebApp_OpenIDConnect_DotNet
@@ -33,25 +31,10 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            // Add session to enable session token cache to work properly.
-            services.AddSession(option =>
-            {
-                option.Cookie.IsEssential = true;
-            });
-
-            // This is required to be instantiated before the OpenIdConnectOptions starts getting configured.
-            // By default, the claims mapping will map claim names in the old format to accommodate older SAML applications.
-            // 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role' instead of 'roles'
-            // This flag ensures that the ClaimsIdentity claims collection will be built from the claims in the token
-            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-
-            Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
-
             // Sign-in users with the Microsoft identity platform
-            OpenIdConnectOptions openIdConnectOptions = new OpenIdConnectOptions();
-            services.AddMicrosoftIdentityPlatformAuthentication(Configuration, openIdConnectOptions)
-                    .AddMsal(new string[] { "User.Read", "Directory.Read.All" })
-                    .AddSessionTokenCaches();
+            services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
+                    .AddMsal(Configuration, new string[] { "User.Read", "Directory.Read.All" })
+                    .AddInMemoryTokenCaches();
 
             services.AddMSGraphService(Configuration);
 
@@ -82,7 +65,6 @@ namespace WebApp_OpenIDConnect_DotNet
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-            app.UseSession();
 
             app.UseAuthentication();
 

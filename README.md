@@ -36,14 +36,14 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
 
 ### Details of the phases
 
-1. The first phase is to [add sign-in to your Web App](1-WebApp-OIDC) leveraging the Microsoft identity platform for developers (fomerly Azure AD v2.0). You'll learn how to use  the ASP.NET Core OpenID Connect (OIDC) middleware itself leveraging [Microsoft Identity Model extensions for .NET](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki) to protect your Web App.
+1. The first phase is to [add sign-in users to your Web App](1-WebApp-OIDC) leveraging the Microsoft identity platform for developers (formerly Azure AD v2.0). You'll learn how to use  the ASP.NET Core OpenID Connect (OIDC) middleware itself leveraging [Microsoft Identity Model extensions for .NET](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki) to protect your Web App.
 
    ![Web apps signs-in users](ReadmeFiles/Web-app-signs-in-users.svg)
 
    Depending on your business needs, you have the flexibility to decide which audience to sign-in to your application:
    1. If you are a Line of Business (LOB) developer, you'll want to [sign-in users in your organization](./1-WebApp-OIDC/1-1-MyOrg) with their work or school accounts.
    1. If you are an ISV, you'll want to [sign-in users in any organization](./1-WebApp-OIDC/1-2-AnyOrg), still  with their work or school accounts.
-   1. If you are an ISV targetting both organizations and individuals, you'll want to [sign-in users with their work and school accounts or Microsoft personal accounts](./1-WebApp-OIDC/1-3-AnyOrgOrPersonal).
+   1. If you are an ISV targeting both organizations and individuals, you'll want to [sign-in users with their work and school accounts or Microsoft personal accounts](./1-WebApp-OIDC/1-3-AnyOrgOrPersonal).
    1. LOB developer or ISV, if you target organizations (work or school accounts), you can also enable your application to sign-in users in [national and sovereign clouds](./1-WebApp-OIDC/1-4-Sovereign).
    1. If you are a business wanting to connect with your customers, or with small business partners, you might also want to [sign-in users with their social identities](./1-WebApp-OIDC/1-5-B2C) using Microsoft Azure AD B2C.
    1. Finally, you'll want to let users [sign-out](./1-WebApp-OIDC/1-6-SignOut) of our application, or globally of the browser.
@@ -57,27 +57,31 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
    1. Using the [authorization code flow](2-WebApp-graph-user/2-1-Call-MSGraph), initiated by ASP.NET Core, but completed by Microsoft Authentication Library for .NET (MSAL.NET)
    2. Learn how to [customize the token cache serialization](2-WebApp-graph-user/2-2-TokenCache)
 ) with different technologies depending on your needs (in memory cache, Session token cache, SQL Cache, Redis Cache)
-   3. Learn the [**coming soon**]  [best practices and practices to avoid](./2-WebApp-graph-user/2-3-Best-Practices) when calling an API.
+   3. Learn the [**Planned**]  [best practices and practices to avoid](./2-WebApp-graph-user/2-3-Best-Practices) when calling an API.
 
 3. Your Web App might also want to call other Web APIs than Microsoft Graph.
 
    ![Web apps calls Microsoft APIs](ReadmeFiles/web-app-calls-microsoft-apis.svg)
 
-   Learn how to [call several Microsoft APIS](./3-WebApp-multi-APIs), feature conditional access and claims challenge:
+   Learn how to [call several Microsoft APIS](./3-WebApp-multi-APIs). This also explains how to handle conditional access, incremental consent and claims challenge:
 
    1. the Azure Storage API. This is the opportunity to learn about incremental consent, and conditional access, and how to process them.
    2. the Azure ARM API. This is the opportunity to learn about admin consent.
+
+   > Note that this phase, contrary to the others, requires you to have an Azure Subscription
 
 4. Then you might yourself have written a Web API, and want to call it from your Web App.
 
    ![Web apps calls Microsoft APIs](ReadmeFiles/web-app-calls-your-api.svg)
 
-5. Once you know how to sign-in users and call Web APIs from your Web App, you might want to restrict part of the application depending on the user having a role in the application or belonging to a group. So far you've learnt how to add and process authentication. Now learn how to [add authorization to your Web application](./5-WebApp-AuthZ):
+   Learn how to update your Web App to [call your own web api](./4-WebApp-your-API)
 
-   1. [with application roles](./5-WebApp-AuthZ/5-1-Roles)
-   2. [with Azure AD groups](./5-WebApp-AuthZ/5-2-Groups)
+5. Once you know how to sign-in users and call Web APIs from your Web App, you might want to restrict part of the application depending on the user having a role in the application or belonging to a group. So far you've learnt how to add and process authentication. Now learn how to [add authorization to your Web application](./5-WebApp-AuthZ), restricting part of it to users
 
-6. [Planned] Chances are that you want to [deploy your complete app to Azure](./6-Deploy-to-Azure). Learn how to do that, applying best practices:
+   1. [based on their application roles](./5-WebApp-AuthZ/5-1-Roles)
+   2. [based on their belonging to Azure AD groups](./5-WebApp-AuthZ/5-2-Groups)
+
+6. Chances are that you want to [deploy your complete app to Azure](./6-Deploy-to-Azure). Learn how to do that, applying best practices:
 
    1. Changing the app registration to add more ReplyUris
    2. Using certificates instead of client secrets
@@ -96,7 +100,6 @@ This tutorial only covers the case the Web App calls a Web API on behalf of a us
 ### Pre-requisites
 
 - Install .NET Core for Windows by following the instructions at [dot.net/core](https://dot.net/core), which will include [Visual Studio 2017](https://aka.ms/vsdownload).
-- An Internet connection
 - An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://docs.microsoft.com/azure/active-directory/develop/quickstart-create-new-tenant)
 - A user account in your Azure AD tenant, or a Microsoft personal account
 
