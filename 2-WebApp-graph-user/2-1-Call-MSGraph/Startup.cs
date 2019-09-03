@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
 using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Services;
@@ -40,6 +41,32 @@ namespace WebApp_OpenIDConnect_DotNet
                .AddMsal(Configuration, new string[] { Constants.ScopeUserRead })
                .AddInMemoryTokenCaches();
 
+            /*
+               // or use a distributed Token Cache by adding 
+                           .AddDistributedTokenCaches();
+
+               // and then choose your implementation. 
+               // See https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed?view=aspnetcore-2.2#distributed-memory-cache
+
+               // For instance the distributed in memory cache (not cleaned when you stop the app)
+                services.AddDistributedMemoryCache()
+
+               // Or a Redis cache
+               services.AddStackExchangeRedisCache(options =>
+                    {
+                        options.Configuration = "localhost";
+                        options.InstanceName = "SampleInstance";
+                    });
+
+               // Or even a SQL Server token cache
+               services.AddDistributedSqlServerCache(options =>
+                {
+                    options.ConnectionString = 
+                        _config["DistCache_ConnectionString"];
+                    options.SchemaName = "dbo";
+                    options.TableName = "TestCache";
+                });
+            */
             // Add Graph
             services.AddGraphService(Configuration);
 
