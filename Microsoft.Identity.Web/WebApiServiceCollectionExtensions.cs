@@ -41,7 +41,7 @@ namespace Microsoft.Identity.Web
             string configSectionName = "AzureAD",
             bool subscribeToJwtBearerMiddlewareDiagnosticsEvents = false)
         {
-            services.Configure<AzureADOptions>(options => configuration.Bind(configSectionName, options));
+            //services.Configure<AzureADOptions>(options => configuration.Bind(configSectionName, options));
             services.AddAuthentication(AzureADDefaults.JwtBearerAuthenticationScheme)
                     .AddAzureADBearer(options => configuration.Bind(configSectionName, options));
 
