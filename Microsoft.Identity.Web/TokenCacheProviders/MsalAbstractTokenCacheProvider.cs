@@ -1,9 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
+using System.Threading.Tasks;
 
 namespace Microsoft.Identity.Web.TokenCacheProviders
 {
