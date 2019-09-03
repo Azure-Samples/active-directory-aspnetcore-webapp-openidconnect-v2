@@ -48,7 +48,7 @@ namespace WebApp_OpenIDConnect_DotNet
                // and then choose your implementation. 
                // See https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed?view=aspnetcore-2.2#distributed-memory-cache
 
-               // For instance the distributed in memory cache (not cleaned when you stop the app)
+               // For instance the distributed in memory cache (not cleared when you stop the app)
                 services.AddDistributedMemoryCache()
 
                // Or a Redis cache
