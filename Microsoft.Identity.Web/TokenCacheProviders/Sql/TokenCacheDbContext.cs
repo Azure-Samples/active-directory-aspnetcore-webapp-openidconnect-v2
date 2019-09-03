@@ -20,11 +20,6 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
         {
         }
 
-        public TokenCacheDbContext(IOptions<DbContextOptions<TokenCacheDbContext>> options)
-            : base(options.Value)
-        {
-        }
-
         /// <summary>
         /// The app token cache table
         /// </summary>

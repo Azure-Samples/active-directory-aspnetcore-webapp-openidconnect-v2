@@ -39,18 +39,21 @@ namespace WebApp_OpenIDConnect_DotNet
             // This flag ensures that the ClaimsIdentity claims collection will be built from the claims in the token
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
+            var msalSqlTokenCacheOptions = new MsalSqlTokenCacheOptions(Configuration.GetConnectionString("TokenCacheDbConnStr"));
+
             // Uncomment the following to initialize the sql server database with tables required to cache tokens.
             // NOTE : This is a one time use method. We advise using it in development environments to create the tables required to enable token caching.
             // For production deployments, preferably, generate the schema from the tables generated in dev environments and use it to create the necessary tables in production.
             // Comment/remove the following line once the database and tables has been created.
-            // SqlTokenCacheProviderExtension.CreateTokenCachingTablesInSqlDatabase(new MsalSqlTokenCacheOptions(Configuration.GetConnectionString("TokenCacheDbConnStr")));
+            // SqlTokenCacheProviderExtension.CreateTokenCachingTablesInSqlDatabase(msalSqlTokenCacheOptions);
 
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
             services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
                     .AddMsal(Configuration, new string[] { Constants.ScopeUserRead })
-                    .AddSqlAppTokenCache(new MsalSqlTokenCacheOptions(Configuration.GetConnectionString("TokenCacheDbConnStr")))
-                    .AddSqlPerUserTokenCache(new MsalSqlTokenCacheOptions(Configuration.GetConnectionString("TokenCacheDbConnStr")));
+                    .AddSqlAppTokenCache(msalSqlTokenCacheOptions)
+                    .AddSqlPerUserTokenCache(msalSqlTokenCacheOptions);
+
 
             // Add Graph
             services.AddGraphService(Configuration);

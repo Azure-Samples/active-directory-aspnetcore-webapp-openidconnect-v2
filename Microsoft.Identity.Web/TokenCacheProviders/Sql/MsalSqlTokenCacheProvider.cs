@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.SqlClient;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
 {
@@ -39,7 +38,20 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
         {
             if (_inMemoryCache == null) // first time access
             {
-                _inMemoryCache = GetLatestRecordQuery(cacheKey).FirstOrDefault();
+                try
+                {
+                    _inMemoryCache = GetLatestRecordQuery(cacheKey).FirstOrDefault();
+                }
+                catch (SqlException ex) when (ex.Message == "Invalid object name 'Records'")
+                {
+                    // Microsoft.Identity.Web changed from several tables (AppTokenCache, UserTokenCache) to one table (record)
+                    // If you care about the cache, you can migrate them, otherwise re-create the database
+                    throw new Exception("You need to migrate the AppTokenCache and UserTokenCache tables to Records, or run SqlTokenCacheProviderExtension.CreateTokenCachingTablesInSqlDatabase() to create the database", ex);
+                }
+                catch (SqlException ex) when (ex.Message.StartsWith("Cannot open database \"MY_TOKEN_CACHE_DATABASE\" requested by the login."))
+                {
+                    throw new Exception("You need to run SqlTokenCacheProviderExtension.CreateTokenCachingTablesInSqlDatabase() to create the database", ex);
+                }
             }
             else
             {
@@ -94,7 +106,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
 
         private IOrderedQueryable<TokenCacheDbRecord> GetLatestRecordQuery(string cacheKey)
         {
-            return _tokenCacheDb.Records.Where(c => c.CacheKey == cacheKey).OrderByDescending(d => d.LastWrite);
+                return _tokenCacheDb.Records.Where(c => c.CacheKey == cacheKey).OrderByDescending(d => d.LastWrite);
         }
     }
 }
