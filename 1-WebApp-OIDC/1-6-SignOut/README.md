@@ -56,7 +56,7 @@ from <https://github.com/aspnet/AspNetCore/blob/master/src/Azure/AzureAD/Authent
 The ASP.NET Core OpenIdConnect middleware enables your app to intercept the call to the Microsoft identity platform logout endpoint by providing an OpenIdConnect event named `OnRedirectToIdentityProviderForSignOut`.
 
 ```CSharp
-public static IServiceCollection AddAzureAdV2Authentication(this IServiceCollection services,
+public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this IServiceCollection services,
                                                             IConfiguration configuration)
 {
     services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>

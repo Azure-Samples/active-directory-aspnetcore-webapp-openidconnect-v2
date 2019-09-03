@@ -47,7 +47,7 @@ public class Startup
   public void ConfigureServices(IServiceCollection services)
   {
    ...
-   services.AddAzureAdV2Authentication(Configuration);
+   services.AddMicrosoftIdentityPlatformAuthentication(Configuration);
    ...
   }
   ...
@@ -75,7 +75,7 @@ public class Startup
   public void ConfigureServices(IServiceCollection services)
   {
    ...
-   services.AddAzureAdV2Authentication(Configuration)
+   services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
            .AddMsal(new string[] { scopesToRequest })
            .AddInMemoryTokenCaches();
    ...
@@ -173,7 +173,7 @@ public class Startup
   public void ConfigureServices(IServiceCollection services)
   {
    ...
-   services.AddProtectedWebApiWithMicrosoftIdentityPlatformV2(Configuration);
+   services.AddProtectedWebApi(Configuration);
    ...
   }
   ...
@@ -200,7 +200,7 @@ public class Startup
   public void ConfigureServices(IServiceCollection services)
   {
    ...
-   services.AddProtectedWebApiWithMicrosoftIdentityPlatformV2(Configuration)
+   services.AddProtectedWebApi(Configuration)
            .AddProtectedApiCallsWebApis()
            .AddInMemoryTokenCaches();
    ...
@@ -291,11 +291,11 @@ Finally, you can create a `ClaimsPrincipal` from an instance of MSAL.NET `IAccou
 
 ### Troubleshooting your web app or web API
 
-In order to troubleshoot your web app you can set the `subscribeToOpenIdConnectMiddlewareDiagnosticsEvents` optional boolean to `true` when you call `AddAzureAdV2Authentication`. This will display on the output window the progression of the OpenID connect message through OpenID Connect middleware (from the reception of the message from Azure Active directory to the availability of the user identity in `HttpContext.User`)  
+In order to troubleshoot your web app you can set the `subscribeToOpenIdConnectMiddlewareDiagnosticsEvents` optional boolean to `true` when you call `AddMicrosoftIdentityPlatformAuthentication`. This will display on the output window the progression of the OpenID connect message through OpenID Connect middleware (from the reception of the message from Azure Active directory to the availability of the user identity in `HttpContext.User`)  
 
 <img alt="OpenIdConnectMiddlewareDiagnostics" src="https://user-images.githubusercontent.com/13203188/62538366-75ac0380-b807-11e9-9ce0-d0eec9381b78.png" width="75%"/>
 
-In order to troubleshoot your web API you can set the `subscribeToJwtBearerMiddlewareDiagnosticsEvents` optional boolean to `true` when you call `AddProtectedWebApiWithMicrosoftIdentityPlatformV2`. Enabling these diagnostics will display on the output window the progression of the OAuth 2.0 message through the JWTBearer middleware (from the reception of the message from Azure Active directory to the availability of the user identity in `HttpContext.User`)  
+In order to troubleshoot your web API you can set the `subscribeToJwtBearerMiddlewareDiagnosticsEvents` optional boolean to `true` when you call `AddProtectedWebApi`. Enabling these diagnostics will display on the output window the progression of the OAuth 2.0 message through the JWTBearer middleware (from the reception of the message from Azure Active directory to the availability of the user identity in `HttpContext.User`)  
 
 <img alt="JwtBearerMiddlewareDiagnostics" src="https://user-images.githubusercontent.com/13203188/62538382-7d6ba800-b807-11e9-9540-560e7129197b.png" width="65%"/>
 

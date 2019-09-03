@@ -82,7 +82,7 @@ Starting from the [previous phase of the tutorial](../../1-WebApp-OIDC), the cod
 
 ### Update the `Startup.cs` file to enable TokenAcquisition by a MSAL.NET based service
 
-After the following lines in the ConfigureServices(IServiceCollection services) method, replace `services.AddAzureAdV2Authentication(Configuration);`, by the following lines:
+After the following lines in the ConfigureServices(IServiceCollection services) method, replace `services.AddMicrosoftIdentityPlatformAuthentication(Configuration);`, by the following lines:
 
 ```CSharp
  public void ConfigureServices(IServiceCollection services)
@@ -90,7 +90,7 @@ After the following lines in the ConfigureServices(IServiceCollection services) 
     . . .
     // Token acquisition service based on MSAL.NET 
     // and chosen token cache implementation
-    services.AddAzureAdV2Authentication(Configuration)
+    services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
             .AddMsal(Configuration, new string[] { Constants.ScopeUserRead })
             .AddInMemoryTokenCache();
 ```

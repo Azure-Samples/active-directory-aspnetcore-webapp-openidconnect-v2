@@ -31,7 +31,7 @@ namespace WebApp_OpenIDConnect_DotNet
             });
 
             // Sign-in users with the Microsoft identity platform
-            services.AddAzureAdV2Authentication(Configuration);
+            services.AddMicrosoftIdentityPlatformAuthentication(Configuration);
 
             services.AddMvc(options =>
             {

@@ -30,7 +30,7 @@ namespace Microsoft.Identity.Web
         /// Set to true if you want to debug, or just understand the OpenIdConnect events.
         /// </param>
         /// <returns></returns>
-        public static IServiceCollection AddAzureAdV2Authentication(
+        public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(
             this IServiceCollection services,
             IConfiguration configuration,
             string configSectionName = "AzureAd",
