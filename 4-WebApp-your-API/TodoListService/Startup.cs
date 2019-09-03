@@ -53,8 +53,9 @@ namespace TodoListService
             // This flag ensures that the ClaimsIdentity claims collection will be built from the claims in the token
             //JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
-            services.AddProtectedWebApi(Configuration)
-                .AddInMemoryTokenCaches();
+            services.AddHttpContextAccessor();
+
+            services.AddProtectedWebApi(Configuration);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
