@@ -10,7 +10,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.InMemory
     /// An implementation of token cache for both Confidential and Public clients backed by MemoryCache.
     /// </summary>
     /// <seealso cref="https://aka.ms/msal-net-token-cache-serialization"/>
-    public class MsalMemoryTokenCacheProvider : AbstractMsalTokenCacheProvider
+    public class MsalMemoryTokenCacheProvider : MsalAbstractTokenCacheProvider
     {
         /// <summary>
         /// .NET Core Memory cache

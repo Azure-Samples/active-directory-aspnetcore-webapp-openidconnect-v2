@@ -28,7 +28,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
     /// app.UseSession(); // Before UseMvc()
     ///
     /// <seealso cref="https://aka.ms/msal-net-token-cache-serialization"/>
-    public class MsalSessionTokenCacheProvider : AbstractMsalTokenCacheProvider, IMsalTokenCacheProvider
+    public class MsalSessionTokenCacheProvider : MsalAbstractTokenCacheProvider, IMsalTokenCacheProvider
     {
         private HttpContext CurrentHttpContext => _httpContextAccessor.HttpContext;
 

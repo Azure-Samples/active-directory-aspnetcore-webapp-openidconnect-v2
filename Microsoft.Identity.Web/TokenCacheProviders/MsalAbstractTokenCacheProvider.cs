@@ -7,7 +7,7 @@ using Microsoft.Identity.Client;
 
 namespace Microsoft.Identity.Web.TokenCacheProviders
 {
-    public abstract class AbstractMsalTokenCacheProvider : IMsalTokenCacheProvider
+    public abstract class MsalAbstractTokenCacheProvider : IMsalTokenCacheProvider
     {
         /// <summary>
         /// Azure AD options
@@ -29,7 +29,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
         /// </summary>
         /// <param name="azureAdOptions"></param>
         /// <param name="httpContextAccessor"></param>
-        protected AbstractMsalTokenCacheProvider(IOptions<AzureADOptions> azureAdOptions, IHttpContextAccessor httpContextAccessor)
+        protected MsalAbstractTokenCacheProvider(IOptions<AzureADOptions> azureAdOptions, IHttpContextAccessor httpContextAccessor)
         {
             _azureAdOptions = azureAdOptions;
             _httpContextAccessor = httpContextAccessor;

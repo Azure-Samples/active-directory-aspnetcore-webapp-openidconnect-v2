@@ -91,7 +91,7 @@ After the following lines in the ConfigureServices(IServiceCollection services) 
     // Token acquisition service based on MSAL.NET 
     // and chosen token cache implementation
     services.AddAzureAdV2Authentication(Configuration)
-            .AddMsal(new string[] { Constants.ScopeUserRead })
+            .AddMsal(Configuration, new string[] { Constants.ScopeUserRead })
             .AddInMemoryTokenCache();
 ```
 

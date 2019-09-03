@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
 {
-    public class MsalSqlTokenCacheProvider : AbstractMsalTokenCacheProvider
+    public class MsalSqlTokenCacheProvider : MsalAbstractTokenCacheProvider
     {
         public MsalSqlTokenCacheProvider(IHttpContextAccessor httpContextAccessor, TokenCacheDbContext tokenCacheDbContext, IOptions<AzureADOptions> azureAdOptionsAccessor, IDataProtectionProvider protectionProvider) :
             base(azureAdOptionsAccessor, httpContextAccessor)
