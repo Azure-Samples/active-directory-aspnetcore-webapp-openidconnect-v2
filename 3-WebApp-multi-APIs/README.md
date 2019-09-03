@@ -76,7 +76,7 @@ Starting from the [previous phase of the tutorial](../../2-WebApp-graph-user/2-1
 
 ### Update the `Startup.cs` file to enable TokenAcquisition by a MSAL.NET based service
 
-After the following lines in the ConfigureServices(IServiceCollection services) method, after `services.AddAzureAdV2Authentication(Configuration);`, add `services.AddHttpClient<IArmOperations, ArmApiOperationService>();`:
+After the following lines in the ConfigureServices(IServiceCollection services) method, after `services.AddMicrosoftIdentityPlatformAuthentication(Configuration);`, add `services.AddHttpClient<IArmOperations, ArmApiOperationService>();`:
 
 ```CSharp
  public void ConfigureServices(IServiceCollection services)
@@ -84,7 +84,7 @@ After the following lines in the ConfigureServices(IServiceCollection services) 
     . . .
     // Token acquisition service based on MSAL.NET 
     // and chosen token cache implementation
-    services.AddAzureAdV2Authentication(Configuration)
+    services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
             .AddMsal(new string[] { Constants.ScopeUserRead })
             .AddInMemoryTokenCache();
     services.AddHttpClient<IArmOperations, ArmApiOperationService>();
@@ -135,7 +135,7 @@ In the `Views\Home` folder add a view named `Tenants.cshtml`
 ```CSharp
   // Requires that the app has added the Azure Service Management / user_impersonation scope, and that
   // the admin tenant does not require admin consent for ARM.
-  [MsalUiRequiredExceptionFilter(Scopes = new[] { "https://management.azure.com/user_impersonation"})]
+  [AuthorizeForScopes(Scopes = new[] { "https://management.azure.com/user_impersonation"})]
   public async Task<IActionResult> Tenants()
   {
       var accessToken =
@@ -149,7 +149,7 @@ In the `Views\Home` folder add a view named `Tenants.cshtml`
   }
 
 
-  [MsalUiRequiredExceptionFilter(Scopes = new[] { "https://storage.azure.com/user_impersonation" })]
+  [AuthorizeForScopes(Scopes = new[] { "https://storage.azure.com/user_impersonation" })]
   public async Task<IActionResult> Blob()
   {
       var scopes = new string[] { "https://storage.azure.com/user_impersonation" };

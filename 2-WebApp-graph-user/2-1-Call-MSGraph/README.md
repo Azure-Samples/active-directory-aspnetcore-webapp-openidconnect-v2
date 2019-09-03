@@ -82,7 +82,7 @@ Starting from the [previous phase of the tutorial](../../1-WebApp-OIDC), the cod
 
 ### Update the `Startup.cs` file to enable TokenAcquisition by a MSAL.NET based service
 
-After the following lines in the ConfigureServices(IServiceCollection services) method, replace `services.AddAzureAdV2Authentication(Configuration);`, by the following lines:
+After the following lines in the ConfigureServices(IServiceCollection services) method, replace `services.AddMicrosoftIdentityPlatformAuthentication(Configuration);`, by the following lines:
 
 ```CSharp
  public void ConfigureServices(IServiceCollection services)
@@ -90,8 +90,8 @@ After the following lines in the ConfigureServices(IServiceCollection services) 
     . . .
     // Token acquisition service based on MSAL.NET 
     // and chosen token cache implementation
-    services.AddAzureAdV2Authentication(Configuration)
-            .AddMsal(new string[] { Constants.ScopeUserRead })
+    services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
+            .AddMsal(Configuration, new string[] { Constants.ScopeUserRead })
             .AddInMemoryTokenCache();
 ```
 
@@ -100,9 +100,14 @@ The two new lines of code:
 - enable MSAL.NET to hook-up to the OpenID Connect events and redeem the authorization code obtained by the ASP.NET Core middleware and after obtaining a token, saves it into the token cache, for use by the Controllers.
 - Decide which token cache implementation to use. In this part of the phase, we'll use a simple in memory token cache, but next steps will show you other implementations you can benefit from, including distributed token caches based on a SQL database, or a Redis cache.
 
+  > Note that you can replace the *in memory token cache* serialization by a *session token cache*  (stored in a session cookie). To do this replacement, change the following in **Startup.cs**:
+  > - replace `using Microsoft.Identity.Web.TokenCacheProviders.InMemory` by `using Microsoft.Identity.Web.TokenCacheProviders.Session`
+  > - Replace `.AddInMemoryTokenCaches()` by `.AddSessionTokenCaches()`
+  > add `app.UseSession();` in the `Configure(IApplicationBuilder app, IHostingEnvironment env)` method, for instance after `app.UseCookiePolicy();`
+
 ### Add additional files to call Microsoft Graph
 
-Add the `Services\Microsoft-Graph-Rest\*.cs` files. This is an implementation of a custom service which encapsultes the call to the Microsoft Graph /me endpoint. Given an access token for Microsoft Graph, it's capable of getting the user information and the photo of the user.
+Add the `Services\Microsoft-Graph-Rest\*.cs` files. This is an implementation of a custom service which encapsulates the call to the Microsoft Graph /me endpoint. Given an access token for Microsoft Graph, it's capable of getting the user information and the photo of the user.
 
 ```CSharp
 public interface IGraphApiOperations
@@ -138,10 +143,10 @@ In the `Controllers\HomeController.cs`file:
    private readonly IGraphApiOperations graphApiOperations;
    ```
 
-1. Add a `Profile()` action so that it calls the Microsoft Graph *me* endpoint. In case a token cannot be acquired, a challenge is attempted to re-sign-in the user, and have them consent to the requested scopes. This is expressed declaratively by the `MsalUiRequiredExceptionFilter`attribute. This attribute is part of the `Microsoft.Identity.Web` project and automatically manages incremental consent.
+1. Add a `Profile()` action so that it calls the Microsoft Graph *me* endpoint. In case a token cannot be acquired, a challenge is attempted to re-sign-in the user, and have them consent to the requested scopes. This is expressed declaratively by the `AuthorizeForScopes`attribute. This attribute is part of the `Microsoft.Identity.Web` project and automatically manages incremental consent.
 
    ```CSharp
-   [MsalUiRequiredExceptionFilter(Scopes = new[] {Constants.ScopeUserRead})]
+   [AuthorizeForScopes(Scopes = new[] {Constants.ScopeUserRead})]
    public async Task<IActionResult> Profile()
    {
     var accessToken =

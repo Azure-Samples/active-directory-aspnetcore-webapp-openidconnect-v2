@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web.Client;
+using Microsoft.Identity.Web;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Models;
 using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
@@ -27,11 +27,11 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View();
         }
 
-        [MsalUiRequiredExceptionFilter(Scopes = new[] {Constants.ScopeUserRead})]
+        [AuthorizeForScopes(Scopes = new[] {Constants.ScopeUserRead})]
         public async Task<IActionResult> Profile()
         {
             var accessToken =
-                await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new[] {Constants.ScopeUserRead});
+                await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new[] {Constants.ScopeUserRead});
 
             var me = await graphApiOperations.GetUserInformation(accessToken);
             var photo = await graphApiOperations.GetPhotoAsBase64Async(accessToken);
