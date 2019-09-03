@@ -113,7 +113,7 @@ public class HomeController : Controller
 {
   readonly ITokenAcquisition tokenAcquisition;
   ...
-  [MsalUiRequiredExceptionFilter(Scopes = new[] { "user.read" })]
+  [AuthorizeForScopes(Scopes = new[] { "user.read" })]
   public async Task<IActionResult> Action()
   {
    string[] scopes = new []{"user.read"};
@@ -123,9 +123,9 @@ public class HomeController : Controller
   }
 ```
 
-The controller action is decorated by an attribute `MsalUiRequiredExceptionFilterAttribute` which enables to process the `MsalUiRequiredException` that could be thrown by the service implementing `ITokenAcquisition.GetAccessTokenOnBehalfOfUserAsync` so that the web app interacts with the user, and ask them to consent to the scopes, or re-sign-in if needed.
+The controller action is decorated by an attribute `AuthorizeForScopesAttribute` which enables to process the `MsalUiRequiredException` that could be thrown by the service implementing `ITokenAcquisition.GetAccessTokenOnBehalfOfUserAsync` so that the web app interacts with the user, and ask them to consent to the scopes, or re-sign-in if needed.
 
-<img alt="MsalUiRequiredExceptionFilterAttribute" src="https://user-images.githubusercontent.com/13203188/62526956-18a45380-b7ef-11e9-99f3-c75085d61ce5.png" width="50%"/>
+<img alt="AuthorizeForScopesAttribute" src="https://user-images.githubusercontent.com/13203188/62526956-18a45380-b7ef-11e9-99f3-c75085d61ce5.png" width="50%"/>
 
 ### Samples and documentation
 

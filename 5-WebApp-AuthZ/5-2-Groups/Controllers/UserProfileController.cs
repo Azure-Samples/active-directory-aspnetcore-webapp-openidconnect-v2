@@ -19,7 +19,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             this.graphService = MSGraphService;
         }
 
-        [MsalUiRequiredExceptionFilter(Scopes = new[] { Constants.ScopeUserRead, Constants.ScopeDirectoryReadAll })]
+        [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead, Constants.ScopeDirectoryReadAll })]
         public async Task<IActionResult> Index()
         {
             string accessToken = await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new[] { Constants.ScopeUserRead, Constants.ScopeDirectoryReadAll });

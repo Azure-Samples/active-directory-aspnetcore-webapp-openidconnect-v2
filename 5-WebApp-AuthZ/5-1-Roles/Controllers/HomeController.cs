@@ -32,7 +32,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View();
         }
 
-        [MsalUiRequiredExceptionFilter(Scopes = new[] { Constants.ScopeUserRead })]
+        [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]
         public async Task<IActionResult> Profile()
         {
             // Initialize the GraphServiceClient. 
@@ -72,7 +72,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        [MsalUiRequiredExceptionFilter(Scopes = new[] { GraphScopes.UserReadBasicAll })]
+        [AuthorizeForScopes(Scopes = new[] { GraphScopes.UserReadBasicAll })]
         [Authorize(Roles = AppRoles.UserReaders )]
         public async Task<IActionResult> Users()
         {

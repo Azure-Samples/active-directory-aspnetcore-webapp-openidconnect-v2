@@ -23,13 +23,13 @@ namespace Microsoft.Identity.Web
     /// <example>
     /// The following controller action will trigger
     /// <code>
-    /// [MsalUiRequiredExceptionFilter(Scopes = new[] {"Mail.Send"})]
+    /// [AuthorizeForScopes(Scopes = new[] {"Mail.Send"})]
     /// public async Task&lt;IActionResult&gt; SendEmail()
     /// {
     /// }
     /// </code>
     /// </example>
-    public class MsalUiRequiredExceptionFilterAttribute : ExceptionFilterAttribute
+    public class AuthorizeForScopesAttribute : ExceptionFilterAttribute
     {
         /// <summary>
         /// Scopes to request
@@ -60,7 +60,7 @@ namespace Microsoft.Identity.Web
                     // the users cannot provide both scopes and ScopeKeySection at the same time
                     if (!string.IsNullOrWhiteSpace(ScopeKeySection) && Scopes != null && Scopes.Length > 0)
                     {
-                        throw new InvalidOperationException($"Either provide the '{nameof(ScopeKeySection)}' or the '{nameof(Scopes)}' to the 'MsalUiRequiredExceptionFilterAttribute'.");
+                        throw new InvalidOperationException($"Either provide the '{nameof(ScopeKeySection)}' or the '{nameof(Scopes)}' to the 'AuthorizeForScopes'.");
                     }
 
                     // If the user wishes us to pick the Scopes from a particular config setting.

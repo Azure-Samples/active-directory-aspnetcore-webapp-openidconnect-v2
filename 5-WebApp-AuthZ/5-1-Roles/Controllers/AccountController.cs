@@ -33,7 +33,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View();
         }
 
-        [MsalUiRequiredExceptionFilter(Scopes = new[] { GraphScopes.DirectoryReadAll })]
+        [AuthorizeForScopes(Scopes = new[] { GraphScopes.DirectoryReadAll })]
         [Authorize(Roles = AppRoles.DirectoryViewers)]
         public async Task<IActionResult> Groups()
         {

@@ -35,7 +35,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View();
         }
 
-        [MsalUiRequiredExceptionFilter(Scopes = new[] {Constants.ScopeUserRead})]
+        [AuthorizeForScopes(Scopes = new[] {Constants.ScopeUserRead})]
         public async Task<IActionResult> Profile()
         {
             var accessToken =
@@ -52,7 +52,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
         // Requires that the app has added the Azure Service Management / user_impersonation scope, and that
         // the admin tenant does not require admin consent for ARM.
-        [MsalUiRequiredExceptionFilter(Scopes = new[] { "https://management.azure.com/user_impersonation", "user.read", "directory.read.all" })]
+        [AuthorizeForScopes(Scopes = new[] { "https://management.azure.com/user_impersonation", "user.read", "directory.read.all" })]
         public async Task<IActionResult> Tenants()
         {
             var accessToken =
@@ -70,7 +70,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
 
 		
-		[MsalUiRequiredExceptionFilter(Scopes = new[] { "https://storage.azure.com/user_impersonation" })]
+		[AuthorizeForScopes(Scopes = new[] { "https://storage.azure.com/user_impersonation" })]
 
         public async Task<IActionResult> Blob()
         {

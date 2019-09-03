@@ -31,7 +31,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View();
         }
 
-        [MsalUiRequiredExceptionFilter(Scopes = new[] { Constants.ScopeUserRead })]
+        [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]
         public async Task<IActionResult> Profile()
         {
             // Initialize the GraphServiceClient. 

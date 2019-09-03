@@ -135,7 +135,7 @@ In the `Views\Home` folder add a view named `Tenants.cshtml`
 ```CSharp
   // Requires that the app has added the Azure Service Management / user_impersonation scope, and that
   // the admin tenant does not require admin consent for ARM.
-  [MsalUiRequiredExceptionFilter(Scopes = new[] { "https://management.azure.com/user_impersonation"})]
+  [AuthorizeForScopes(Scopes = new[] { "https://management.azure.com/user_impersonation"})]
   public async Task<IActionResult> Tenants()
   {
       var accessToken =
@@ -149,7 +149,7 @@ In the `Views\Home` folder add a view named `Tenants.cshtml`
   }
 
 
-  [MsalUiRequiredExceptionFilter(Scopes = new[] { "https://storage.azure.com/user_impersonation" })]
+  [AuthorizeForScopes(Scopes = new[] { "https://storage.azure.com/user_impersonation" })]
   public async Task<IActionResult> Blob()
   {
       var scopes = new string[] { "https://storage.azure.com/user_impersonation" };

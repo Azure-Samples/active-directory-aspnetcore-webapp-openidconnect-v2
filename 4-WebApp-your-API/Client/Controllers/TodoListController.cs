@@ -17,7 +17,7 @@ namespace TodoListClient.Controllers
         }
 
         // GET: TodoList
-        [MsalUiRequiredExceptionFilter(ScopeKeySection = "TodoList:TodoListScope")]
+        [AuthorizeForScopes(ScopeKeySection = "TodoList:TodoListScope")]
         public async Task<ActionResult> Index()
         {
             return View(await _todoListService.GetAsync());

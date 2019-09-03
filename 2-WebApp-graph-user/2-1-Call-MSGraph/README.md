@@ -143,10 +143,10 @@ In the `Controllers\HomeController.cs`file:
    private readonly IGraphApiOperations graphApiOperations;
    ```
 
-1. Add a `Profile()` action so that it calls the Microsoft Graph *me* endpoint. In case a token cannot be acquired, a challenge is attempted to re-sign-in the user, and have them consent to the requested scopes. This is expressed declaratively by the `MsalUiRequiredExceptionFilter`attribute. This attribute is part of the `Microsoft.Identity.Web` project and automatically manages incremental consent.
+1. Add a `Profile()` action so that it calls the Microsoft Graph *me* endpoint. In case a token cannot be acquired, a challenge is attempted to re-sign-in the user, and have them consent to the requested scopes. This is expressed declaratively by the `AuthorizeForScopes`attribute. This attribute is part of the `Microsoft.Identity.Web` project and automatically manages incremental consent.
 
    ```CSharp
-   [MsalUiRequiredExceptionFilter(Scopes = new[] {Constants.ScopeUserRead})]
+   [AuthorizeForScopes(Scopes = new[] {Constants.ScopeUserRead})]
    public async Task<IActionResult> Profile()
    {
     var accessToken =
