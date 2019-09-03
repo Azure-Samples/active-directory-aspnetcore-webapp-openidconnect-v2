@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
 {
@@ -19,14 +20,14 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
         {
         }
 
+        public TokenCacheDbContext(IOptions<DbContextOptions<TokenCacheDbContext>> options)
+            : base(options.Value)
+        {
+        }
+
         /// <summary>
         /// The app token cache table
         /// </summary>
-        public DbSet<AppTokenCache> AppTokenCache { get; set; }
-
-        /// <summary>
-        /// The user token cache table
-        /// </summary>
-        public DbSet<UserTokenCache> UserTokenCache { get; set; }
+        public DbSet<TokenCacheDbRecord> Records { get; set; }
     }
 }

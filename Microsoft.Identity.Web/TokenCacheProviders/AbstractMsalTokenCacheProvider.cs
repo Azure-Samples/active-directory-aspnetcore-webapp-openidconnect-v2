@@ -71,6 +71,13 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
 
         }
 
+        /// <summary>
+        /// Raised AFTER MSAL added the new token in its in-memory copy of the cache.
+        /// This notification is called every time MSAL accessed the cache, not just when a write took place:
+        /// If MSAL's current operation resulted in a cache change, the property TokenCacheNotificationArgs.HasStateChanged will be set to true.
+        /// If that is the case, we call the TokenCache.SerializeMsalV3() to get a binary blob representing the latest cache content – and persist it.
+        /// </summary>
+        /// <param name="args">Contains parameters used by the MSAL call accessing the cache.</param>
         private async Task OnAfterAccessAsync(TokenCacheNotificationArgs args)
         {
             // if the access operation resulted in a cache update

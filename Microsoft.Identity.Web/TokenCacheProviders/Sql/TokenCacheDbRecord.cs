@@ -7,23 +7,23 @@ using System.ComponentModel.DataAnnotations;
 namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
 {
     /// <summary>
-    /// Represents a user's token cache entry in database
+    /// Represents a token cache entry in database
     /// </summary>
-    public class UserTokenCache
+    public class TokenCacheDbRecord
     {
         /// <summary>
-        /// The key of the token cache in the database
+        /// Key of the cache in the database
         /// </summary>
         [Key]
-        public int UserTokenCacheId { get; set; }
+        public int TokenCacheId { get; set; }
 
         /// <summary>
-        /// The objectId of the signed-in user's object in Azure AD
+        /// The Appid or ClientId of the app
         /// </summary>
-        public string WebUserUniqueId { get; set; }
+        public string CacheKey { get; set; }
 
         /// <summary>
-        /// Cache content
+        /// Content of the cache
         /// </summary>
         public byte[] CacheBits { get; set; }
 

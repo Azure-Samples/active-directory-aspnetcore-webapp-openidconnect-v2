@@ -27,15 +27,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="TokenCacheProviders\Session\**" />
-    <Compile Remove="TokenCacheProviders\Sql\**" />
-    <EmbeddedResource Remove="TokenCacheProviders\Session\**" />
-    <EmbeddedResource Remove="TokenCacheProviders\Sql\**" />
-    <None Remove="TokenCacheProviders\Session\**" />
-    <None Remove="TokenCacheProviders\Sql\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>

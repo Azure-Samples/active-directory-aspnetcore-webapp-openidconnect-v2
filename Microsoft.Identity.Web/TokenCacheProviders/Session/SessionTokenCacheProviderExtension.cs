@@ -1,11 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using System.Linq;
 
 namespace Microsoft.Identity.Web.TokenCacheProviders.Session
@@ -78,12 +75,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
         public static IServiceCollection AddSessionAppTokenCache(this IServiceCollection services)
         {
             services.AddHttpContextAccessor();
-            services.AddScoped<IMsalAppTokenCacheProvider>(factory =>
-            {
-                return new MsalAppSessionTokenCacheProvider(factory.GetRequiredService<IOptionsMonitor<AzureADOptions>>(),
-                                                            factory.GetRequiredService<IHttpContextAccessor>());
-            });
-
+            services.AddScoped<IMsalAppTokenCacheProvider, MsalAppSessionTokenCacheProvider>();
             return services;
         }
 
@@ -106,6 +98,9 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
         public static IServiceCollection AddSessionPerUserTokenCache(this IServiceCollection services)
         {
             services.AddHttpContextAccessor();
+            services.AddSession(option =>
+            { option.Cookie.IsEssential = true; }
+            );
             services.AddScoped<IMsalUserTokenCacheProvider, MsalPerUserSessionTokenCacheProvider>();
             return services;
         }

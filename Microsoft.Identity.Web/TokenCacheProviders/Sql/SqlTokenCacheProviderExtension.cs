@@ -41,14 +41,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
             services.AddDbContext<TokenCacheDbContext>(options =>
                 options.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString));
 
-            services.AddScoped<IMsalAppTokenCacheProvider>(factory =>
-            {
-                var dpprovider = factory.GetRequiredService<IDataProtectionProvider>();
-                var tokenCacheDbContext = factory.GetRequiredService<TokenCacheDbContext>();
-                var optionsMonitor = factory.GetRequiredService<IOptionsMonitor<AzureADOptions>>();
-
-                return new MsalAppSqlTokenCacheProvider(tokenCacheDbContext, optionsMonitor, dpprovider);
-            });
+            services.AddScoped<IMsalAppTokenCacheProvider,MsalAppSqlTokenCacheProvider>();
 
             return services;
         }
@@ -68,15 +61,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            services.AddScoped<IMsalUserTokenCacheProvider>(factory =>
-            {
-                var dpprovider = factory.GetRequiredService<IDataProtectionProvider>();
-                var tokenCacheDbContext = factory.GetRequiredService<TokenCacheDbContext>();
-                var httpcontext = factory.GetRequiredService<IHttpContextAccessor>();
-
-                return new MsalPerUserSqlTokenCacheProvider(tokenCacheDbContext, dpprovider, httpcontext);
-            });
-
+            services.AddScoped<IMsalUserTokenCacheProvider,MsalPerUserSqlTokenCacheProvider>();
             return services;
         }
 
