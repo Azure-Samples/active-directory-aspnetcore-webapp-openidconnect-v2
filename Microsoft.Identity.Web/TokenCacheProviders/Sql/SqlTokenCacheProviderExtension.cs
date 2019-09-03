@@ -1,12 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
 {
@@ -23,37 +21,6 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
             this IServiceCollection services,
             MsalSqlTokenCacheOptions sqlTokenCacheOptions)
         {
-            AddSqlAppTokenCache(services, sqlTokenCacheOptions);
-            AddSqlPerUserTokenCache(services, sqlTokenCacheOptions);
-            return services;
-        }
-
-        /// <summary>Adds the Sql Server based application token cache to the service collection.</summary>
-        /// <param name="services">The services collection to add to.</param>
-        /// <param name="sqlTokenCacheOptions">The MSALSqlTokenCacheOptions is used by the caller to specify the Sql connection string</param>
-        /// <returns></returns>
-        public static IServiceCollection AddSqlAppTokenCache(
-            this IServiceCollection services,
-            MsalSqlTokenCacheOptions sqlTokenCacheOptions)
-        {
-            services.AddDataProtection();
-
-            services.AddDbContext<TokenCacheDbContext>(options =>
-                options.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString));
-
-            services.AddScoped<IMsalAppTokenCacheProvider,MsalAppSqlTokenCacheProvider>();
-
-            return services;
-        }
-
-        /// <summary>Adds the Sql Server based per user token cache to the service collection.</summary>
-        /// <param name="services">The services collection to add to.</param>
-        /// <param name="sqlTokenCacheOptions">The MSALSqlTokenCacheOptions is used by the caller to specify the Sql connection string</param>
-        /// <returns></returns>
-        public static IServiceCollection AddSqlPerUserTokenCache(
-            this IServiceCollection services,
-            MsalSqlTokenCacheOptions sqlTokenCacheOptions)
-        {
             // To share protected payloads among apps, configure SetApplicationName in each app with the same value. 
             // https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/overview?view=aspnetcore-2.2#setapplicationname
             services.AddDataProtection()
@@ -63,8 +30,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
                 options.UseSqlServer(sqlTokenCacheOptions.SqlConnectionString));
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-            services.AddScoped<IMsalUserTokenCacheProvider,MsalPerUserSqlTokenCacheProvider>();
+            services.AddScoped<IMsalTokenCacheProvider, MsalSqlTokenCacheProvider>();
             return services;
         }
 

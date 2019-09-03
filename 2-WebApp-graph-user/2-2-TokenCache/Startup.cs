@@ -51,8 +51,7 @@ namespace WebApp_OpenIDConnect_DotNet
             // and chosen token cache implementation
             services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
                     .AddMsal(Configuration, new string[] { Constants.ScopeUserRead })
-                    .AddSqlAppTokenCache(msalSqlTokenCacheOptions)
-                    .AddSqlPerUserTokenCache(msalSqlTokenCacheOptions);
+                    .AddSqlTokenCaches(msalSqlTokenCacheOptions);
 
 
             // Add Graph
