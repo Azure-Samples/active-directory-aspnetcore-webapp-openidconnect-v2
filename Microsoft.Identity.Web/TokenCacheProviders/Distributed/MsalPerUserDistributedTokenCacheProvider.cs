@@ -18,7 +18,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Distributed
     /// MemoryCache is useful in Api scenarios where there is no HttpContext.Session to cache data.
     /// </summary>
     /// <seealso cref="https://aka.ms/msal-net-token-cache-serialization"/>
-    public class MsalPerUserDistributedTokenCacheProvider : MsalDistributedTokenCacheProvider, IMsalUserTokenCacheProvider
+    public class MsalPerUserDistributedTokenCacheProvider : MsalDistributedTokenCacheAdapter, IMsalUserTokenCacheProvider
     {
         public MsalPerUserDistributedTokenCacheProvider(IOptions<AzureADOptions> azureAdOptions,
                                     IHttpContextAccessor httpContextAccessor,

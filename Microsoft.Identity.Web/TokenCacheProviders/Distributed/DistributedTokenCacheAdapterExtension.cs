@@ -8,7 +8,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Distributed
     /// <summary>
     /// Extension class used to add an in-memory token cache serializer to MSAL
     /// </summary>
-    public static class DistributedTokenCacheProviderExtension
+    public static class DistributedTokenCacheAdapterExtension
     {
         /// <summary>Adds both the app and per-user in-memory token caches.</summary>
         /// <param name="services">The services collection to add to.</param>

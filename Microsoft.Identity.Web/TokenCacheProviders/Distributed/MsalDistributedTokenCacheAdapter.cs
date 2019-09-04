@@ -14,7 +14,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Distributed
     /// An implementation of token cache for both Confidential and Public clients backed by MemoryCache.
     /// </summary>
     /// <seealso cref="https://aka.ms/msal-net-token-cache-serialization"/>
-    public class MsalDistributedTokenCacheProvider : MsalAbstractTokenCacheProvider
+    public class MsalDistributedTokenCacheAdapter : MsalAbstractTokenCacheProvider
     {
         /// <summary>
         /// .NET Core Memory cache
@@ -33,7 +33,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Distributed
         /// <param name="httpContextAccessor"></param>
         /// <param name="memoryCache"></param>
         /// <param name="cacheOptions"></param>
-        public MsalDistributedTokenCacheProvider(IOptions<AzureADOptions> azureAdOptions,
+        public MsalDistributedTokenCacheAdapter(IOptions<AzureADOptions> azureAdOptions,
                                             IHttpContextAccessor httpContextAccessor,
                                             IDistributedCache memoryCache,
                                             IOptions<DistributedCacheEntryOptions> cacheOptions) :
@@ -45,7 +45,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Distributed
 
         protected override async Task RemoveKeyAsync(string cacheKey)
         {
-            await _distributedCache.RemoveAsync(cacheKey);
+            await _distributedCache.RemoveAsync(cacheKey).ConfigureAwait(false);
         }
 
         protected override async Task<byte[]> ReadCacheBytesAsync(string cacheKey)
