@@ -105,35 +105,36 @@ The two new lines of code:
   > - Replace `.AddInMemoryTokenCaches()` by `.AddSessionTokenCaches()`
   > add `app.UseSession();` in the `Configure(IApplicationBuilder app, IHostingEnvironment env)` method, for instance after `app.UseCookiePolicy();`
   >
+  >
   > You can also use a distributed token cache, and choose the serialization implementation. For this,  in **Startup.cs**:
   > - replace `using Microsoft.Identity.Web.TokenCacheProviders.InMemory` by `using Microsoft.Identity.Web.TokenCacheProviders.Distributed`
   > - Replace `.AddInMemoryTokenCaches()` by `.AddDistributedTokenCaches()`
   > - Then choose the distributed cache implementation. For details, see https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed?view=aspnetcore-2.2#distributed-memory-cache
   >
-  > ```CSharp
-  > // use a distributed Token Cache by adding
-  >    .AddDistributedTokenCaches();
+  >   ```CSharp
+  >   // use a distributed Token Cache by adding
+  >      .AddDistributedTokenCaches();
   >
-  > // and then choose your implementation.
+  >   // and then choose your implementation.
+  >  
+  >   // For instance the distributed in memory cache (not cleaned when you stop the app)
+  >   services.AddDistributedMemoryCache()
   >
-  > // For instance the distributed in memory cache (not cleaned when you stop the app)
-  > services.AddDistributedMemoryCache()
+  >   // Or a Redis cache
+  >   services.AddStackExchangeRedisCache(options =>
+  >   {
+  >    options.Configuration = "localhost";
+  >    options.InstanceName = "SampleInstance";
+  >   });
   >
-  > // Or a Redis cache
-  > services.AddStackExchangeRedisCache(options =>
-  > {
-  >  options.Configuration = "localhost";
-  >  options.InstanceName = "SampleInstance";
-  > });
-  >
-  > // Or even a SQL Server token cache
-  > services.AddDistributedSqlServerCache(options =>
-  > {
-  >  options.ConnectionString =_config["DistCache_ConnectionString"];
-  >  options.SchemaName = "dbo";
-  >  options.TableName = "TestCache";
-  > });
-  > ```
+  >   // Or even a SQL Server token cache
+  >   services.AddDistributedSqlServerCache(options =>
+  >   {
+  >    options.ConnectionString =_config["DistCache_ConnectionString"];
+  >    options.SchemaName = "dbo";
+  >    options.TableName = "TestCache";
+  >   });
+  >   ```
 
 ### Add additional files to call Microsoft Graph
 
