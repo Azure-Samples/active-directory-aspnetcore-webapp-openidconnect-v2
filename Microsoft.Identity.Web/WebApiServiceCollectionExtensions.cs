@@ -44,6 +44,8 @@ namespace Microsoft.Identity.Web
             services.AddAuthentication(AzureADDefaults.JwtBearerAuthenticationScheme)
                     .AddAzureADBearer(options => configuration.Bind(configSectionName, options));
 
+            services.AddHttpContextAccessor();
+
             // Change the authentication configuration to accommodate the Microsoft identity platform endpoint (v2.0).
             services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
             {
