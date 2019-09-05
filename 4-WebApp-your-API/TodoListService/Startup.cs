@@ -59,6 +59,8 @@ namespace TodoListService
                 options.TokenValidationParameters.NameClaimType = "name";
             });
 
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
