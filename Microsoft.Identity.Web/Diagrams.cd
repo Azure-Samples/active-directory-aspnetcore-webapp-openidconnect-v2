@@ -46,28 +46,28 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Microsoft.Identity.Web.WebAppServiceCollectionExtensions">
-    <Position X="0.5" Y="0.5" Width="11" />
+    <Position X="0.5" Y="0.5" Width="13.25" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAgAAAAAAAAAAAAAAAACAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAI=</HashCode>
       <FileName>WebAppServiceCollectionExtensions.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Microsoft.Identity.Web.WebApiServiceCollectionExtensions">
-    <Position X="0.5" Y="2" Width="15" />
+    <Position X="0.5" Y="2" Width="14.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAACAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>WebApiServiceCollectionExtensions.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Microsoft.Identity.Web.MsalUiRequiredExceptionFilterAttribute">
+  <Class Name="Microsoft.Identity.Web.AuthorizeForScopesAttribute">
     <Position X="0.5" Y="5.75" Width="3.5" />
     <Members>
       <Method Name="BuildAuthenticationPropertiesForIncrementalConsent" Hidden="true" />
       <Method Name="CanBeSolvedByReSignInUser" Hidden="true" />
     </Members>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAgAIAIA=</HashCode>
-      <FileName>MsalUiRequiredExceptionFilterAttribute.cs</FileName>
+      <HashCode>AAAAAAAAAAAAACAAAAAAIAAAAAAAAAAAAAAAAgAIAIA=</HashCode>
+      <FileName>AuthorizeForScopesAttribute.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Microsoft.Identity.Web.AccountExtensions">
