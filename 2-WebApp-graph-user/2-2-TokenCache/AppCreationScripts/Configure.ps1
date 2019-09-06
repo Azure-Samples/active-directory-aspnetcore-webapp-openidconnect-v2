@@ -65,7 +65,7 @@ Function AddResourcePermission($requiredAccess, `
 }
 
 #
-# Exemple: GetRequiredPermissions "Microsoft Graph"  "Graph.Read|User.Read"
+# Example: GetRequiredPermissions "Microsoft Graph"  "Graph.Read|User.Read"
 # See also: http://stackoverflow.com/questions/42164581/how-to-configure-a-new-azure-ad-application-through-powershell
 Function GetRequiredPermissions([string] $applicationDisplayName, [string] $requiredDelegatedPermissions, [string]$requiredApplicationPermissions, $servicePrincipal)
 {
@@ -134,9 +134,10 @@ Function UpdateTextFile([string] $configFilePath, [System.Collections.HashTable]
     Set-Content -Path $configFilePath -Value $lines -Force
 }
 
-
 Set-Content -Value "<html><body><table>" -Path createdApps.html
 Add-Content -Value "<thead><tr><th>Application</th><th>AppId</th><th>Url in the Azure portal</th></tr></thead><tbody>" -Path createdApps.html
+
+$ErrorActionPreference = "Stop"
 
 Function ConfigureApplications
 {
@@ -145,7 +146,6 @@ Function ConfigureApplications
    configuration files in the client and service project  of the visual studio solution (App.Config and Web.Config)
    so that they are consistent with the Applications parameters
 #> 
-
     $commonendpoint = "common"
 
     # $tenantId is the Active Directory Tenant. This is a GUID which represents the "Directory ID" of the AzureAD tenant
@@ -177,7 +177,7 @@ Function ConfigureApplications
     $tenant = Get-AzureADTenantDetail
     $tenantName =  ($tenant.VerifiedDomains | Where { $_._Default -eq $True }).Name
 
-    # Get the user running the script
+    # Get the user running the script to add the user as the app owner
     $user = Get-AzureADUser -ObjectId $creds.Account.Id
 
    # Create the webApp AAD application
@@ -187,6 +187,7 @@ Function ConfigureApplications
    $fromDate = [DateTime]::Now;
    $key = CreateAppKey -fromDate $fromDate -durationInYears 2 -pw $pw
    $webAppAppKey = $pw
+   # create the application 
    $webAppAadApplication = New-AzureADApplication -DisplayName "WebApp-OpenIDConnect-DotNet-code-v2" `
                                                   -HomePage "https://localhost:44321/" `
                                                   -LogoutUrl "https://localhost:44321/signout-oidc" `
@@ -197,6 +198,7 @@ Function ConfigureApplications
                                                   -Oauth2AllowImplicitFlow $true `
                                                   -PublicClient $False
 
+   # create the service principal of the newly created application 
    $currentAppId = $webAppAadApplication.AppId
    $webAppServicePrincipal = New-AzureADServicePrincipal -AppId $currentAppId -Tags {WindowsAzureActiveDirectoryIntegratedApp}
 
@@ -225,7 +227,6 @@ Function ConfigureApplications
 
    $requiredResourcesAccess.Add($requiredPermissions)
 
-
    Set-AzureADApplication -ObjectId $webAppAadApplication.ObjectId -RequiredResourceAccess $requiredResourcesAccess
    Write-Host "Granted permissions."
 
@@ -241,7 +242,8 @@ Function ConfigureApplications
 # Pre-requisites
 if ((Get-Module -ListAvailable -Name "AzureAD") -eq $null) { 
     Install-Module "AzureAD" -Scope CurrentUser 
-} 
+}
+
 Import-Module AzureAD
 
 # Run interactively (will ask you for the tenant ID)

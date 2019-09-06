@@ -69,11 +69,11 @@ namespace Microsoft.Identity.Web
         };
 
         /// <summary>
-        /// This handler is executed after authorization code is received (once the user signs-in and consents) during the 
-        /// <a href='https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow'>Authorization code flow grant flow</a> in a web app. 
+        /// This handler is executed after authorization code is received (once the user signs-in and consents) during the
+        /// <a href='https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow'>Authorization code flow grant flow</a> in a web app.
         /// It uses the code to request an access token from the Microsoft Identity platform and caches the tokens and an entry about the signed-in user's account in the MSAL's token cache.
-        /// The access token (and refresh token) provided in the <see cref="AuthorizationCodeReceivedContext"/>, once added to the cache, are then used to acquire more tokens using the 
-        /// <a href='https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow'>on-behalf-of flow</a> for the signed-in user's account, 
+        /// The access token (and refresh token) provided in the <see cref="AuthorizationCodeReceivedContext"/>, once added to the cache, are then used to acquire more tokens using the
+        /// <a href='https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow'>on-behalf-of flow</a> for the signed-in user's account,
         /// in order to call to downstream APIs.
         /// </summary>
         /// <param name="context">The context used when an 'AuthorizationCode' is received over the OpenIdConnect protocol.</param>
@@ -117,7 +117,7 @@ namespace Microsoft.Identity.Web
                 // race condition ending-up in an error from Azure AD telling "code already redeemed")
                 context.HandleCodeRedemption();
 
-                // The cache will need the claims from the ID token. 
+                // The cache will need the claims from the ID token.
                 // If they are not yet in the HttpContext.User's claims, so adding them here.
                 if (!context.HttpContext.User.Claims.Any())
                 {
@@ -146,7 +146,7 @@ namespace Microsoft.Identity.Web
 
         /// <summary>
         /// Typically used from a Web App or WebAPI controller, this method retrieves an access token
-        /// for a downstream API using the <a href='https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow'>on-behalf-of flow</a> 
+        /// for a downstream API using the <a href='https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow'>on-behalf-of flow</a>
         /// for the user account that is ascertained from claims are provided in the <see cref="HttpContext.User"/> instance of the <paramref name="context"/> parameter
         /// </summary>
         /// <param name="scopes">Scopes to request for the downstream API to call</param>
@@ -286,8 +286,6 @@ namespace Microsoft.Identity.Web
                 _userTokenCacheProvider?.ClearAsync().ConfigureAwait(false);
             }
         }
-
-
 
         /// <summary>
         /// Creates an MSAL Confidential client application if needed
@@ -450,9 +448,9 @@ namespace Microsoft.Identity.Web
         }
 
         /// <summary>
-        /// Used by Web APIs, which cannot interact with the user, when they run into a situation where user consent is required for additional scopes. 
-        /// This method appends in the HttpResponse being sent back to the client, a 403 (forbidden) status code and populates the 'WWW-Authenticate' header with additional information. 
-        /// The client, when it receives the 403 code with this header, can use the additional information provided in the header to trigger an interaction with the user where the user 
+        /// Used by Web APIs, which cannot interact with the user, when they run into a situation where user consent is required for additional scopes.
+        /// This method appends in the HttpResponse being sent back to the client, a 403 (forbidden) status code and populates the 'WWW-Authenticate' header with additional information.
+        /// The client, when it receives the 403 code with this header, can use the additional information provided in the header to trigger an interaction with the user where the user
         /// can then consent to additional scopes.
         /// </summary>
         /// <param name="scopes">The additional scopes that the user needs to consent to</param>

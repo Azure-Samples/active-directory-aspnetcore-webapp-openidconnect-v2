@@ -13,7 +13,7 @@ using Microsoft.Identity.Client;
 namespace Microsoft.Identity.Web.TokenCacheProviders.Distributed
 {
     /// <summary>
-    /// An implementation of token cache for Confidential clients backed by MemoryCache.
+    /// An implementation of token cache for Confidential clients backed by a IDistributedCache .
     /// MemoryCache is useful in Api scenarios where there is no HttpContext to cache data.
     /// </summary>
     /// <seealso cref="https://aka.ms/msal-net-token-cache-serialization"/>

@@ -113,7 +113,7 @@ namespace Microsoft.Identity.Web
             this IServiceCollection services,
             IConfiguration configuration,
             IEnumerable<string> scopes = null,
-            string configSectionName = "AzureAD")
+            string configSectionName = "AzureAd")
         {
             services.AddTokenAcquisition();
             services.AddHttpContextAccessor();
