@@ -85,6 +85,19 @@ namespace Microsoft.Identity.Web
                            throw new UnauthorizedAccessException("Neither scope or roles claim was found in the bearer token.");
                        }
 
+                       // Make sure roles claims end up as actual role claims for use with Authorize("Role={RoleName}") attribute and User.IsInRole({RoleName})
+                       if (context.Principal.Claims.Any(x => x.Type == ClaimConstants.Roles))
+                       {
+                           ClaimsIdentity ci = context.Principal.Identity as ClaimsIdentity;
+                           if (ci != null)
+                           {
+                               foreach (var role in context.Principal.Claims.Where(w => w.Type == ClaimConstants.Roles).ToList())
+                               {
+                                   ci.AddClaim(new Claim(ci.RoleClaimType, role.Value));
+                               }
+                           }
+                       }
+
                        await Task.FromResult(0);
                    };
 
