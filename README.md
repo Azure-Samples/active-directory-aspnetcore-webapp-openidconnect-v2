@@ -11,7 +11,7 @@ products:
 - dotnet
 - azure-storage
 - aspnet
-- office-ms-graph
+- ms-graph
 urlFragment: enable-webapp-signin
 ---
 
