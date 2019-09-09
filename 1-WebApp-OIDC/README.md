@@ -1,22 +1,3 @@
----
-services: active-directory
-platforms: dotnet
-author: jmprieur
-level: 200
-client: ASP.NET Core .Web App
-service: Microsoft Graph, Azure Storage, ASP.NET Core Web API
-endpoint: Microsoft identity platform
-page_type: sample
-languages:
-  - csharp  
-products:
-  - azure
-  - azure-active-directory  
-  - dotnet
-  - office-ms-graph
-  - aspnet-core
-  - azure-storage
----
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 # Tutorial Phase - Enable your Web Apps to sign-in users
