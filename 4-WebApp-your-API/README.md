@@ -172,7 +172,7 @@ Open the solution in Visual Studio to configure the projects
 
 #### Configure the service project
 
-> Note: if you used the setup scripts, the changes below will have been applied for you
+Note: if you had used the automation to setup your application mentioned in [Step 2:  Register the sample application with your Azure Active Directory tenant](#step-2-register-the-sample-application-with-your-azure-active-directory-tenant), the changes below would have been applied by the scripts.
 
 1. Open the `TodoListService\appsettings.json` file
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
@@ -181,7 +181,7 @@ Open the solution in Visual Studio to configure the projects
 
 #### Configure the client project
 
-> Note: if you used the setup scripts, the changes below will have been applied for you
+Note: if you had used the automation to setup your application mentioned in [Step 2:  Register the sample application with your Azure Active Directory tenant](#step-2-register-the-sample-application-with-your-azure-active-directory-tenant), the changes below would have been applied by the scripts.
 
 1. Open the `Client\appsettings.json` file
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
