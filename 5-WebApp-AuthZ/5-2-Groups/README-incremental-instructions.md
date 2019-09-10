@@ -16,7 +16,7 @@ endpoint: Microsoft identity platform
 
 This sample shows how a .NET Core 2.2 MVC Web app that uses [OpenID Connect](https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-protocols-openid-connect-code) to sign in users. It also obtains the security groups the signed-in user is assigned to as a claim in their token. Security groups are a popular means to implement authorization.
 
-Authorization in Azure AD can also be done with Application Roles, as shown in [WebApp-RoleClaims](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/5-WebApp-AuthZ/5-1-Roles). Azure AD Groups and Application Roles are by no means mutually exclusive - they can be used in tandem to provide even finer grained access control.
+Authorization in Azure AD can also be done with Application Roles, as shown in [WebApp-RoleClaims](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/5-WebApp-AuthZ/5-1-Roles/README-incremental-instructions.md). Azure AD Groups and Application Roles are by no means mutually exclusive - they can be used in tandem to provide even finer grained access control.
 
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
@@ -26,7 +26,7 @@ This sample first leverages the ASP.NET Core OpenID Connect middleware to sign i
 
 ![Sign in with the Microsoft identity platform](ReadmeFiles/sign-in.png)
 
-> This is the fifth chapter of our [tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/master/README.md). Once you understand how to receive the group memberships in a user's claims, you can also try the sample [Add authorization using app roles & roles claims to an ASP.NET Core Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-1-Roles) to learn about how to use the App roles in an app using the Microsoft Identity Platform to authenticate users.
+> This is the fifth chapter of our [tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/master/README.md). Once you understand how to receive the group memberships in a user's claims, you can also try the sample [Add authorization using app roles & roles claims to an ASP.NET Core Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-1-Roles/README-incremental-instructions.md) to learn about how to use the App roles in an app using the Microsoft Identity Platform to authenticate users.
 
 > Pre-requisites:
 >
@@ -227,7 +227,7 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
 
 ## Next steps
 
-- Learn how to use app roles. [Add authorization using app roles & roles claims to a Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-1-Roles).
+- Learn how to use app roles. [Add authorization using app roles & roles claims to a Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-1-Roles/README-incremental-instructions.md).
 
 ## Learn more
 

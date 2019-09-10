@@ -16,7 +16,7 @@ endpoint: Microsoft identity platform
 
 This sample shows how a .NET Core 2.2 MVC Web app that uses [OpenID Connect](https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-protocols-openid-connect-code) to sign in users. It also obtains the security groups the signed-in user is assigned to as a claim in their token. Security groups are a popular means to implement authorization.
 
-Authorization in Azure AD can also be done with Application Roles, as shown in [WebApp-RoleClaims](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/5-WebApp-AuthZ/5-1-Roles). Azure AD Groups and Application Roles are by no means mutually exclusive - they can be used in tandem to provide even finer grained access control.
+Authorization in Azure AD can also be done with Application Roles, as shown in [WebApp-RoleClaims](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/5-WebApp-AuthZ/5-1-Roles/README.md). Azure AD Groups and Application Roles are by no means mutually exclusive - they can be used in tandem to provide even finer grained access control.
 
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
@@ -135,7 +135,7 @@ In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
 Open the solution in Visual Studio to configure the projects
 
-#### Configure the webApp project
+#### Configure the web App project
 
 Note: if you had used the automation to setup your application mentioned in [Step 2:  Register the sample application with your Azure Active Directory tenant](#step-2-register-the-sample-application-with-your-azure-active-directory-tenant), the changes below would have been applied by the scripts.
 
@@ -351,7 +351,7 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
 
 ## Next steps
 
-- Learn how to use app roles. [Add authorization using app roles & roles claims to a Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-1-Roles).
+- Learn how to use app roles. [Add authorization using app roles & roles claims to a Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-1-Roles/README.md).
 
 ## Learn more
 
