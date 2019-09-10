@@ -14,7 +14,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
     {
         /// <summary>Adds both App and per-user session token caches.</summary>
         /// For this session cache to work effectively the aspnetcore session has to be configured properly.
-        /// The latest guidance is provided at https://docs.microsoft.com/en-us/aspnet/core/fundamentals/app-state
+        /// The latest guidance is provided at https://docs.microsoft.com/aspnet/core/fundamentals/app-state
         ///
         /// // In the method - public void ConfigureServices(IServiceCollection services) in startup.cs, add the following
         /// services.AddSession(option =>
@@ -58,7 +58,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
 
         /// <summary>Adds the Http session based application token cache to the service collection.</summary>
         /// For this session cache to work effectively the aspnetcore session has to be configured properly.
-        /// The latest guidance is provided at https://docs.microsoft.com/en-us/aspnet/core/fundamentals/app-state
+        /// The latest guidance is provided at https://docs.microsoft.com/aspnet/core/fundamentals/app-state
         ///
         /// // In the method - public void ConfigureServices(IServiceCollection services) in startup.cs, add the following
         /// services.AddSession(option =>
@@ -81,7 +81,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
 
         /// <summary>Adds the http session based per user token cache to the service collection.</summary>
         /// For this session cache to work effectively the aspnetcore session has to be configured properly.
-        /// The latest guidance is provided at https://docs.microsoft.com/en-us/aspnet/core/fundamentals/app-state
+        /// The latest guidance is provided at https://docs.microsoft.com/aspnet/core/fundamentals/app-state
         ///
         /// // In the method - public void ConfigureServices(IServiceCollection services) in startup.cs, add the following
         /// services.AddSession(option =>

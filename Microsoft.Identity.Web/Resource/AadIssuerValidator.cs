@@ -14,7 +14,7 @@ using Microsoft.Identity.Web.InstanceDiscovery;
 namespace Microsoft.Identity.Web.Resource
 {
     /// <summary>
-    /// Generic class that validates token issuer from the provided Azure AD authority. Use the <see cref="AadIssuerValidatorFactory"/> to create instaces of this class.
+    /// Generic class that validates token issuer from the provided Azure AD authority. Use the <see cref="AadIssuerValidatorFactory"/> to create instances of this class.
     /// </summary>
     public class AadIssuerValidator
     {
@@ -57,6 +57,7 @@ namespace Microsoft.Identity.Web.Resource
                 var issuerMetadata = s_configManager.GetConfigurationAsync().ConfigureAwait(false).GetAwaiter().GetResult();
                 string authorityHost;
                 try
+
                 {
                     authorityHost = new Uri(aadAuthority).Authority;
                 }

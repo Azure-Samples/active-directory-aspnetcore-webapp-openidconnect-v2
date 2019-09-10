@@ -13,7 +13,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
     /// An implementation of token cache for Confidential clients backed by Http session.
     /// </summary>
     /// For this session cache to work effectively the aspnetcore session has to be configured properly.
-    /// The latest guidance is provided at https://docs.microsoft.com/en-us/aspnet/core/fundamentals/app-state
+    /// The latest guidance is provided at https://docs.microsoft.com/aspnet/core/fundamentals/app-state
     ///
     /// // In the method - public void ConfigureServices(IServiceCollection services) in startup.cs, add the following
     /// services.AddSession(option =>

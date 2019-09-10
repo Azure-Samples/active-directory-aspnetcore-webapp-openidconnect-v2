@@ -97,7 +97,7 @@ namespace Microsoft.Identity.Web
         /// <param name="claimsPrincipal">Claims about the user/account</param>
         /// <returns>A string containing the display name for the user, as brought by Azure AD (v1.0) and Microsoft identity platform (v2.0) tokens,
         /// or <c>null</c> if the claims cannot be found</returns>
-        /// <remarks>See https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens#payload-claims </remarks>
+        /// <remarks>See https://docs.microsoft.com/azure/active-directory/develop/id-tokens#payload-claims </remarks>
         public static string GetDisplayName(this ClaimsPrincipal claimsPrincipal)
         {
             // Attempting the claims brought by an Microsoft identity platform (v2.O) token first

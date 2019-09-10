@@ -55,7 +55,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
             MsalSqlTokenCacheOptions sqlTokenCacheOptions)
         {
             // To share protected payloads among apps, configure SetApplicationName in each app with the same value. 
-            // https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/overview?view=aspnetcore-2.2#setapplicationname
+            // https://docs.microsoft.com/aspnet/core/security/data-protection/configuration/overview?view=aspnetcore-2.2#setapplicationname
             services.AddDataProtection()
                 .SetApplicationName(sqlTokenCacheOptions.ApplicationName);
 

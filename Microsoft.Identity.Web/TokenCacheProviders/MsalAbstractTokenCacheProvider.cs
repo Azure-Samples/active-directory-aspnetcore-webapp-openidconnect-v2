@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Identity.Web.TokenCacheProviders
 {
+    /// <summary></summary>
+    /// <seealso cref="Microsoft.Identity.Web.TokenCacheProviders.IMsalTokenCacheProvider" />
     public abstract class MsalAbstractTokenCacheProvider : IMsalTokenCacheProvider
     {
         /// <summary>
@@ -113,6 +115,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
         }
 
         protected abstract Task WriteCacheBytesAsync(string cacheKey, byte[] bytes);
+
         protected abstract Task<byte[]> ReadCacheBytesAsync(string cacheKey);
 
         protected abstract Task RemoveKeyAsync(string cacheKey);
