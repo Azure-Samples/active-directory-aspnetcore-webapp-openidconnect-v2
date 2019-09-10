@@ -233,7 +233,7 @@ In case, you are authenticating using the [implicit grant flow](https://docs.mic
 1. A claim named `hasgroups` with a value of true will be present in the token instead of the `groups` claim .
 1. The maximum number of groups provided in the `groups` claim is limited to 6. This is done to prevent  the URI fragment beyond the URL length limits.
 
-### Support in ASP.NET OWIN middleware libraries
+### Support in ASP.NET Core middleware libraries
 
 The asp.net middleware supports roles populated from claims by specifying the claim in the `RoleClaimType` property of `TokenValidationParameters`.
 Since the `groups` claim contains the object ids of the security groups than actual names, you'd use the group id's instead of group names. See [Role-based authorization in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/roles?view=aspnetcore-2.2) for more info.

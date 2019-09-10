@@ -172,7 +172,7 @@ When you click on the page that fetches the signed-in user's roles and group ass
 
 > Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
 
-### Support in ASP.NET OWIN middleware libraries
+### Support in ASP.NET Core middleware libraries
 
 The asp.net middleware supports roles populated from claims by specifying the claim in the `RoleClaimType` property of `TokenValidationParameters`.
 
