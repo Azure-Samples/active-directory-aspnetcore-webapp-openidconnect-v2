@@ -268,15 +268,6 @@ The implementations of these classes are in the Microsoft.Identity.Web library (
         services.AddTodoListService(Configuration);
   ```
 
-- At the beginning of the `Configure` method, insert `app.UseSession()`. This code ensures that the session exists for the session-based token cache to work properly. You can skip this if you do not plan to use the session based token cache.
-
-  ```CSharp
-  public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-  {
-    app.UseSession();
-    ...
-  ```
-
 ### Create the TodoListController.cs file
 
 1. Add a folder named `Models` and then create a new  file named `TodoItem.cs`. Copy the contents of the TodoListClient\Models\TodoItem.cs in this file.
