@@ -199,7 +199,7 @@ Function ConfigureApplications
 
    # create the service principal of the newly created application 
    $currentAppId = $webAppAadApplication.AppId
-   $webAppServicePrincipal = New-AzureADServicePrincipal -AppId $currentAppId -Tags {WindowsAzureActiveDirectoryIntegratedApp} -AppRoleAssignmentRequired $true
+   $webAppServicePrincipal = New-AzureADServicePrincipal -AppId $currentAppId -Tags {WindowsAzureActiveDirectoryIntegratedApp}
 
    # add the user running the script as an app owner if needed
    $owner = Get-AzureADApplicationOwner -ObjectId $webAppAadApplication.ObjectId

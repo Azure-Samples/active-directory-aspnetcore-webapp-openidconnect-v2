@@ -93,7 +93,7 @@ namespace Microsoft.Identity.Web
             // InMemoryCache, the cache could be empty if the server was restarted. This is why
             // the null_user exception is thrown.
 
-            return ex.ErrorCode == MsalError.UserNullError;
+            return ex.ErrorCode.ContainsAny(new [] { MsalError.UserNullError, MsalError.InvalidGrantError });
         }
 
         /// <summary>

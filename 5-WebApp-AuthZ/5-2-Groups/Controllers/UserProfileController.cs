@@ -30,11 +30,19 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             string accessToken = await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new[] { Constants.ScopeUserRead, Constants.ScopeDirectoryReadAll });
 
             User me = await graphService.GetMeAsync(accessToken);
-            var photo = await graphService.GetMyPhotoAsync(accessToken);
-            IList<Group> groups = await graphService.GetMyMemberOfGroupsAsync(accessToken);
-
             ViewData["Me"] = me;
-            ViewData["Photo"] = photo;
+
+            try
+            {
+                var photo = await graphService.GetMyPhotoAsync(accessToken);
+                ViewData["Photo"] = photo;
+            }
+            catch
+            {
+                //swallow
+            }
+            
+            IList<Group> groups = await graphService.GetMyMemberOfGroupsAsync(accessToken);            
             ViewData["Groups"] = groups;
 
             return View();
