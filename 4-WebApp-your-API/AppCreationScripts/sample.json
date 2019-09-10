@@ -32,7 +32,7 @@
       "RequiredResourcesAccess": [
         {
           "Resource": "service",
-          "DelegatedPermissions": [ "user_impersonation" ]
+          "DelegatedPermissions": [ "access_as_user" ]
         }
       ]
     }

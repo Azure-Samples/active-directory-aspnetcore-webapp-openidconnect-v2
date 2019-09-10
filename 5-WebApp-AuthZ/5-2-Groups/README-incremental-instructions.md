@@ -22,15 +22,15 @@ Authorization in Azure AD can also be done with Application Roles, as shown in [
 
 ## Scenario
 
-This sample first leverages the ASP.NET Core OpenID Connect middleware to sign in the user. On the home page it displays the various `claims` that the user's [ID Token](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens) contained. The ID token is used by the asp.net security middleware to build the [ClaimsPrincipal](https://docs.microsoft.com/en-us/dotnet/api/system.security.claims.claimsprincipal), accessible via **HttpContext.User**.
+This sample first leverages the ASP.NET Core OpenID Connect middleware to sign in the user. On the home page it displays the various `claims` that the user's [ID Token](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens) contained. The ID token is used by the asp.net security middleware to build the [ClaimsPrincipal](https://docs.microsoft.com/en-us/dotnet/api/system.security.claims.claimsprincipal), which is accessible via **HttpContext.User** property.
 
 ![Sign in with the Microsoft identity platform](ReadmeFiles/sign-in.png)
 
-> This is the fifth chapter of a set of tutorials. Once you understand how to receive the group memberships in a user's claims, you can try the sample [Add authorization using app roles & roles claims to an ASP.NET Core Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-1-Roles) to learn about how to use the App roles in an app using the Microsoft Identity Platform to authenticate users.
+> This is the fifth chapter of our [tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/master/README.md). Once you understand how to receive the group memberships in a user's claims, you can also try the sample [Add authorization using app roles & roles claims to an ASP.NET Core Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-1-Roles) to learn about how to use the App roles in an app using the Microsoft Identity Platform to authenticate users.
 
 > Pre-requisites:
 >
-> go through the previous phase of the tutorial showing how the [Using the Microsoft identity platform to call the Microsoft Graph API from an An ASP.NET Core 2.x Web App](../../2-WebApp-graph-user/2-1-Call-MSGraph). This page shows the incremental change needed to set up application roles and retrieve them in your app when a user signs in..
+> This guide assumes that you've already went through the previous chapter of the tutorial [Using the Microsoft identity platform to call the Microsoft Graph API from an An ASP.NET Core 2.x Web App](../../2-WebApp-graph-user/2-1-Call-MSGraph). This page shows the incremental change needed to set up group membership claims and retrieve them in your app when a user signs in.
 
 To run this sample, you'll need:
 
@@ -45,14 +45,6 @@ To run this sample, you'll need:
 ### Step 1:  Clone or download this repository
 
 From your shell or command line:
-
-```Shell
-git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial.git
-```
-
-or download and exact the repository .zip file.
-
-> Given that the name of the sample is pretty long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
 Navigate to the `"5-WebApp-AuthZ"` folder
 
@@ -77,21 +69,21 @@ Navigate to the `"5-WebApp-AuthZ"` folder
 
 1. To receive the `groups` claim with the object id of the security groups, make sure that the user accounts you plan to sign-in to this app is assigned to a few security groups in this AAD tenant.
 
-> To get the on-premise group's `samAccountName/mailNickName' instead of Group Ids, check out the [Configure group claims for applications with Azure Active Directory (Public Preview)](https://docs.microsoft.com/en-us/azure/active-directory/hybrid/how-to-connect-fed-group-claims) feature.
+> To get the on-premise group's `samAccountName/mailNickName' instead of Group Ids, check out the [Configure group claims for applications with Azure Active Directory (Public Preview)](https://docs.microsoft.com/en-us/azure/active-directory/hybrid/how-to-connect-fed-group-claims#configure-the-azure-ad-application-registration-for-group-attributes) feature.
 
 ### Step 4: Run the sample
 
 1. Clean the solution, rebuild the solution, and run it.
 
 1. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in with a work or school account.
-1. On the home page, the app lists the various claims it obtained from your ID token. You'd notice one more claims named `groups`. If **Overage** occurred, then you'd see a different claim by the name `_claim_names`. The **Overage** scenario is discussed in detail below. 
-1. On the top menu, click on the signed-in user's name **user@domain.com**, you should now see all kind of information about yourself including your picture. Beneath that, a list of all the security groups that the signed-in user is assigned to are listed as well. All of this was obtained by making calls to Microsoft Graph. This list is useful, if an **Overage** occurs with this signed-in user. The **overage** scenario is discussed later in this article. 
+1. On the home page, the app lists the various claims it obtained from your ID token. You'd notice one more claims named `groups`. If **Overage** occurred, then you'd see a different claim by the name `_claim_names`. The **Overage** scenario is discussed in detail below.
+1. On the top menu, click on the signed-in user's name **user@domain.com**, you should now see all kind of information about yourself including your picture. Beneath that, a list of all the security groups that the signed-in user is assigned to are listed as well. All of this was obtained by making calls to Microsoft Graph. This list is useful, if an **Overage** occurs with this signed-in user. The **overage** scenario is discussed later in this article.
 
 > Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
 
-### Processing Groups claim in tokens, including handling **overage**.
+### Processing Groups claim in tokens, including handling **overage**
 
-#### The `groups` claim.
+#### The `groups` claim
 
 The object id of the security groups the signed in user is member of is returned in the `groups` claim of the token.
 
@@ -129,7 +121,7 @@ If a user is member of more groups than the overage limit (**150 for SAML tokens
 
 > An Identity Office Hours session covered Azure AD App roles and security groups, featuring this scenario and how to handle the overage claim. Watch the video [Using Security Groups and Application Roles in your apps](https://www.youtube.com/watch?v=V8VUPixLSiM)
 
- > You can use the `BulkCreateGroups.ps1` provided in the [App Creation Scripts](./AppCreationScripts/) folder to create a large number of groups and assign users to them. This will help test overage scenarios during development.
+> You can use the `BulkCreateGroups.ps1` provided in the [App Creation Scripts](./AppCreationScripts/) folder to create a large number of groups and assign users to them. This will help test overage scenarios during development.
 
 ##### Order of processing the overage claim
 
@@ -151,51 +143,33 @@ In case, you are authenticating using the [implicit grant flow](https://docs.mic
 ### Support in ASP.NET OWIN middleware libraries
 
 The asp.net middleware supports roles populated from claims by specifying the claim in the `RoleClaimType` property of `TokenValidationParameters`.
-Since the `groups` claim contains the object ids of the security groups than actual names, the following code will not work.
+Since the `groups` claim contains the object ids of the security groups than actual names, you'd use the group id's instead of group names. See [Role-based authorization in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/roles?view=aspnetcore-2.2) for more info.
 
 ```CSharp
 
 // Startup.cs
-public static IServiceCollection AddProtectWebApiWithMicrosoftIdentityPlatformV2(this IServiceCollection services, IConfiguration configuration, X509Certificate2 tokenDecryptionCertificate = null)
+public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this IServiceCollection services, IConfiguration configuration, X509Certificate2 tokenDecryptionCertificate = null)
 {
-    services.AddAuthentication(AzureADDefaults.JwtBearerAuthenticationScheme)
-        .AddAzureADBearer(options => configuration.Bind("AzureAd", options));
-
-    // Change the authentication configuration  to accommodate the Microsoft identity platform endpoint.
-    services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
-    {
         // [removed for] brevity
 
-        options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).Validate;
-
-        // Use the groups claim for populating roles
-        options.TokenValidationParameters.RoleClaimType = "groups";
-
+            // The following lines code instruct the asp.net core middleware to use the data in the "groups" claim in the Authorize attribute and User.IsInrole()
+            // See https://docs.microsoft.com/en-us/aspnet/core/security/authorization/roles?view=aspnetcore-2.2 for more info.
+            services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
+            {
+                // Use the groups claim for populating roles
+                options.TokenValidationParameters.RoleClaimType = "groups";
+            });
         // [removed for] brevity
-
-        // When an access token for our own Web API is validated, we add it to MSAL.NET's cache so that it can
-        // be used from the controllers.
-        options.Events = new JwtBearerEvents();
-
-        // [removed for] brevity
-
-        // If you want to debug, or just understand the JwtBearer events, uncomment the following line of code
-        // options.Events = JwtBearerMiddlewareDiagnostics.Subscribe(options.Events);
-    });
-
-    return services;
 }
 
 // In code..(Controllers & elsewhere)
-[Authorize(Roles = “Group-object-id")]
+[Authorize(Roles = “Group-object-id")] // In controllers
 // or
-User.IsInRole("Group-object-id");
+User.IsInRole("Group-object-id"); // In methods
 
 ```
 
-You’d have to either write your own `IAuthorizationFilter` or override User.IsInRole to use Azure AD security groups in your code.
-
-## About The code
+## About the code
 
 The following files have the code that would be of interest to you..
 
@@ -210,27 +184,27 @@ The following files have the code that would be of interest to you..
 1. UserProfile\Index.cshtml
     1. Has some client code that prints the signed-in user's information obtained from the [/me](https://docs.microsoft.com/en-us/graph/api/user-get?view=graph-rest-1.0), [/me/photo](https://docs.microsoft.com/en-us/graph/api/profilephoto-get?view=graph-rest-1.0) and [/memberOf](https://docs.microsoft.com/en-us/graph/api/user-list-memberof?view=graph-rest-1.0) endpoints.
 1. Startup.cs
-    1. in the `ConfigureServices` method:
 
      ```CSharp
+   - at the top of the file, add the following using directive:
 
-        // Add session to enable session token cache to work properly.
-        services.AddSession(option =>
-        {
-            option.Cookie.IsEssential = true;
-        });
+      using Microsoft.Identity.Web;
+      ```
 
-        services.AddAzureAdV2Authentication(Configuration)
+   - in the `ConfigureServices` method, replace the two following lines:
 
-        // Add the  following three lines:
-        .AddMsal(new string[] { "User.Read", "Directory.Read.All" }) // Adds support for the MSAL library with the permissions necessary to retrieve the signed-in user's group info in case of a token overage
-        .AddSessionTokenCaches(); // Adds aspnetcore session as Token cache provider for MSAL. 
+     ```CSharp
+      services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
+              .AddAzureAD(options => Configuration.Bind("AzureAd", options));
+
+     // by this line:
+
+     //This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
+            services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
+                    .AddMsal(Configuration, new string[] { "User.Read", "Directory.Read.All" }) // Adds support for the MSAL library with the permissions necessary to retrieve the signed-in user's group info in case of a token overage
+                    .AddInMemoryTokenCaches(); // Adds aspnetcore MemoryCache as Token cache provider for MSAL.
 
         services.AddMSGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.
-
-    1. in the `Configure` method:
-       // Add UseSession before UseMvc() to inject the Http session middleware
-        app.UseSession();
      ```
 
 1. if you used the Powershell scripts provided in the [AppCreationScripts](.\AppCreationScripts) folder, then note the extra parameter `-GroupMembershipClaims` in the  `Configure.ps1` script.
@@ -251,12 +225,6 @@ If you find a bug in the sample, please raise the issue on [GitHub Issues](../..
 
 To provide a recommendation, visit the following [User Voice page](https://feedback.azure.com/forums/169401-azure-active-directory).
 
-## Contributing
-
-If you'd like to contribute to this sample, see [CONTRIBUTING.MD](/CONTRIBUTING.md).
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information, see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
-
 ## Next steps
 
 - Learn how to use app roles. [Add authorization using app roles & roles claims to a Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-1-Roles).
@@ -266,14 +234,14 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 - Learn how [Microsoft.Identity.Web](../../Microsoft.Identity.Web) works, in particular hooks-up to the ASP.NET Core ODIC events
 
 - To understand more about groups roles and the various claims in tokens, see:
-  - [Configure group claims for applications with Azure Active Directory (Public Preview)](https://docs.microsoft.com/en-us/azure/active-directory/hybrid/how-to-connect-fed-group-claims)
+  - [Configure group claims for applications with Azure Active Directory (Public Preview)](https://docs.microsoft.com/en-us/azure/active-directory/hybrid/how-to-connect-fed-group-claims#configure-the-azure-ad-application-registration-for-group-attributes)
+  - [Role-based authorization in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/roles?view=aspnetcore-2.2)
   - [A .NET 4.5 MVC web app that uses Azure AD groups for authorization.](https://github.com/Azure-Samples/active-directory-dotnet-webapp-groupclaims)
-  - [Azure Active Directory, now with Group Claims and Application Roles!](https://techcommunity.microsoft.com/t5/Azure-Active-Directory-Identity/Azure-Active-Directory-now-with-Group-Claims-and-Application/ba-p/243862)
 - [Azure Active Directory app manifest](https://docs.microsoft.com/en-us/azure/active-directory/develop/reference-app-manifest)
+  - [user: getMemberObjects function](https://docs.microsoft.com/en-us/graph/api/user-getmemberobjects?view=graph-rest-1.0)
 - [ID tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens)
 - [Azure Active Directory access tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens)
 - [Microsoft Graph permissions reference](https://docs.microsoft.com/en-us/graph/permissions-reference)
-- [user: getMemberObjects function](https://docs.microsoft.com/en-us/graph/api/user-getmemberobjects?view=graph-rest-1.0)
 - [Application roles](https://docs.microsoft.com/en-us/azure/architecture/multitenant-identity/app-roles)
 - [Azure AD Connect sync: Understanding Users, Groups, and Contacts](https://docs.microsoft.com/en-us/azure/active-directory/connect/active-directory-aadconnectsync-understanding-users-and-contacts)
 - [Configure Office 365 Groups with on-premises Exchange hybrid](https://docs.microsoft.com/en-us/exchange/hybrid-deployment/set-up-office-365-groups)
@@ -298,3 +266,9 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
   - [Introduction to Identity on ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-2.1&tabs=visual-studio%2Caspnetcore2x)
   - [AuthenticationBuilder](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.authentication.authenticationbuilder?view=aspnetcore-2.0)
   - [Azure Active Directory with ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/azure-active-directory/?view=aspnetcore-2.1)
+
+## Contributing
+
+If you'd like to contribute to this sample, see [CONTRIBUTING.MD](/CONTRIBUTING.md).
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information, see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.

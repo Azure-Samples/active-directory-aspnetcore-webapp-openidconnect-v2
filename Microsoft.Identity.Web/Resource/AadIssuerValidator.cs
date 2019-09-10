@@ -57,6 +57,7 @@ namespace Microsoft.Identity.Web.Resource
                 var issuerMetadata = s_configManager.GetConfigurationAsync().ConfigureAwait(false).GetAwaiter().GetResult();
                 string authorityHost;
                 try
+
                 {
                     authorityHost = new Uri(aadAuthority).Authority;
                 }
