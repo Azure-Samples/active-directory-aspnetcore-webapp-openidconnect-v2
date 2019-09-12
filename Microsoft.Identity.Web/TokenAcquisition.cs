@@ -448,29 +448,31 @@ namespace Microsoft.Identity.Web
         }
 
         /// <summary>
-        /// Used by Web APIs, which cannot interact with the user, when they run into a situation where user consent is required for additional scopes.
-        /// This method appends in the HttpResponse being sent back to the client, a 403 (forbidden) status code and populates the 'WWW-Authenticate' header with additional information.
-        /// The client, when it receives the 403 code with this header, can use the additional information provided in the header to trigger an interaction with the user where the user
-        /// can then consent to additional scopes.
+        /// Used in Web APIs (which therefore cannot have an interaction with the user).
+        /// Replies to the client through the HttpReponse by sending a 403 (forbidden) and populating wwwAuthenticateHeaders so that
+        /// the client can trigger an iteraction with the user so that the user consents to more scopes
         /// </summary>
-        /// <param name="scopes">The additional scopes that the user needs to consent to</param>
-        /// <param name="msalServiceException"><see cref="MsalUiRequiredException"/> The MsalUiRequiredException that is examined to see if there is case for this response.</param>
-
+        /// <param name="scopes">Scopes to consent to</param>
+        /// <param name="msalServiceException"><see cref="MsalUiRequiredException"/> triggering the challenge</param>
         public void ReplyForbiddenWithWwwAuthenticateHeader(IEnumerable<string> scopes, MsalUiRequiredException msalServiceException)
         {
             // A user interaction is required, but we are in a Web API, and therefore, we need to report back to the client through an wwww-Authenticate header https://tools.ietf.org/html/rfc6750#section-3.1
             string proposedAction = "consent";
             if (msalServiceException.ErrorCode == MsalError.InvalidGrantError)
             {
-                if (AcceptedTokenVersionIsNotTheSameAsTokenVersion(msalServiceException))
+                if (AcceptedTokenVersionMismatch(msalServiceException))
                 {
                     throw msalServiceException;
                 }
             }
 
+            string consentUrl = $"{application.Authority}/oauth2/v2.0/authorize?client_id={_azureAdOptions.ClientId}"
+                + $"&response_type=code&redirect_uri={application.AppConfig.RedirectUri}"
+                + $"&response_mode=query&scope=offline_access%20{string.Join("%20", scopes)}";
+
             IDictionary<string, string> parameters = new Dictionary<string, string>()
                 {
-                    { "clientId", _azureAdOptions.ClientId },
+                    { "consentUri", consentUrl },
                     { "claims", msalServiceException.Claims },
                     { "scopes", string.Join(",", scopes) },
                     { "proposedAction", proposedAction }
@@ -480,7 +482,6 @@ namespace Microsoft.Identity.Web
             string scheme = "Bearer";
             StringValues v = new StringValues($"{scheme} {parameterString}");
 
-            //  StringValues v = new StringValues(new string[] { $"Bearer clientId=\"{jwtToken.Audiences.First()}\", claims=\"{ex.Claims}\", scopes=\" {string.Join(",", scopes)}\"" });
             var httpResponse = CurrentHttpContext.Response;
             var headers = httpResponse.Headers;
             httpResponse.StatusCode = (int)HttpStatusCode.Forbidden;
@@ -491,7 +492,7 @@ namespace Microsoft.Identity.Web
             headers.Add(HeaderNames.WWWAuthenticate, v);
         }
 
-        private static bool AcceptedTokenVersionIsNotTheSameAsTokenVersion(MsalUiRequiredException msalSeviceException)
+        private static bool AcceptedTokenVersionMismatch(MsalUiRequiredException msalSeviceException)
         {
             // Normally app developers should not make decisions based on the internal AAD code
             // however until the STS sends sub-error codes for this error, this is the only
