@@ -1,4 +1,4 @@
-﻿################################################################################
+################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
@@ -41,6 +41,11 @@
 /4-WebApp-your-API/.vs
 /4-WebApp-your-API/bin
 /4-WebApp-your-API/obj
+/4-WebApp-your-API/4-2-B2C/.vs
+/4-WebApp-your-API/4-2-B2C/Client/bin
+/4-WebApp-your-API/4-2-B2C/Client/obj
+/4-WebApp-your-API/4-2-B2C/TodoListService/bin
+/4-WebApp-your-API/4-2-B2C/TodoListService/obj
 /5-WebApp-AuthZ-Roles-Groups/.vs
 /5-WebApp-AuthZ-Roles-Groups/bin
 /5-WebApp-AuthZ-Roles-Groups/obj
@@ -101,3 +106,4 @@
 /2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph/bin/Release/netcoreapp2.2
 /Microsoft.Identity.Web.Test/bin/Release/netcoreapp2.2
 /Microsoft.Identity.Web.Test/obj
+

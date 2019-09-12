@@ -1,0 +1,29 @@
+@using System.Security.Principal
+@if (User.Identity.IsAuthenticated)
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li class="navbar-text">Hello @User.Identity.Name</li>
+        <!-- The Account controller is not defined in this project. Instead, it is part of Authentication.AzureADB2C.UI nuget pagacke and 
+            it defines some well known actions such as SignIn, SignOut and EditProfile-->
+        <li class="navbar-btn">
+            <form method="get" asp-area="AzureADB2C" asp-controller="Account" asp-action="EditProfile">
+                <button type="submit" class="btn btn-primary" style="margin-right:5px">Edit Profile</button>
+            </form>
+        </li>
+        <li class="navbar-btn">
+            <form method="get" asp-area="AzureADB2C" asp-controller="Account" asp-action="SignOut">
+                <button type="submit" class="btn btn-primary">Sign Out</button>
+            </form>
+        </li>
+    </ul>
+}
+else
+{
+<ul class="nav navbar-nav navbar-right">
+	<li class="navbar-btn">
+		<form method="get" asp-area="AzureADB2C" asp-controller="Account" asp-action="SignIn">
+			<button type="submit" class="btn btn-primary">Sign In/Up</button>
+		</form>
+	</li>
+</ul>
+}
