@@ -41,7 +41,7 @@
         },
         {
           "key": "TenantId",
-          "value": "organizations"
+          "value": "\"organizations\""
         },
         {
           "key": "Domain",
