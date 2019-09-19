@@ -317,7 +317,7 @@ namespace Microsoft.Identity.Web
                 request.PathBase,
                 azureAdOptions.CallbackPath ?? string.Empty);
 
-            string authority = $"{azureAdOptions.Instance}{azureAdOptions.TenantId}/";
+            string authority = $"{applicationOptions.Instance}{applicationOptions.TenantId}/";
 
             // Common options
             var appBuilder = ConfidentialClientApplicationBuilder
