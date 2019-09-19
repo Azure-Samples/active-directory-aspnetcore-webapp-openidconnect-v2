@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
 using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Services;
@@ -40,6 +39,13 @@ namespace WebApp_OpenIDConnect_DotNet
             services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
                .AddMsal(Configuration, new string[] { Constants.ScopeUserRead })
                .AddInMemoryTokenCaches();
+
+            services.Configure<ConfidentialClientApplicationOptionsWithClientCertificate>(options =>
+              {
+                  options.ClientCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2();
+                  options.ClientSecret = null;
+              }
+            );
 
             /*
                // or use a distributed Token Cache by adding 

@@ -113,7 +113,7 @@ namespace Microsoft.Identity.Web
         /// <returns></returns>
         public static IServiceCollection AddMsal(this IServiceCollection services, IConfiguration configuration, IEnumerable<string> initialScopes, string configSectionName = "AzureAd")
         {
-            services.Configure<ConfidentialClientApplicationOptions>(options => configuration.Bind(configSectionName, options));
+            services.Configure<ConfidentialClientApplicationOptionsWithClientCertificate>(options => configuration.Bind(configSectionName, options));
 
             services.AddHttpContextAccessor();
             services.AddTokenAcquisition();

@@ -27,7 +27,7 @@ namespace Microsoft.Identity.Web
     public class TokenAcquisition : ITokenAcquisition
     {
         private readonly AzureADOptions _azureAdOptions;
-        private readonly ConfidentialClientApplicationOptions _applicationOptions;
+        private readonly ConfidentialClientApplicationOptionsWithClientCertificate _applicationOptions;
 
         private readonly IMsalAppTokenCacheProvider _appTokenCacheProvider;
         private readonly IMsalUserTokenCacheProvider _userTokenCacheProvider;
@@ -49,7 +49,7 @@ namespace Microsoft.Identity.Web
             IMsalUserTokenCacheProvider userTokenCacheProvider,
             IHttpContextAccessor httpContextAccessor,
             IOptions<AzureADOptions> azureAdOptions,
-            IOptions<ConfidentialClientApplicationOptions> applicationOptions)
+            IOptions<ConfidentialClientApplicationOptionsWithClientCertificate> applicationOptions)
         {
             _httpContextAccessor = httpContextAccessor;
             _azureAdOptions = azureAdOptions.Value;
@@ -319,11 +319,20 @@ namespace Microsoft.Identity.Web
 
             string authority = $"{azureAdOptions.Instance}{azureAdOptions.TenantId}/";
 
-            var app = ConfidentialClientApplicationBuilder
+            // Common options
+            var appBuilder = ConfidentialClientApplicationBuilder
                 .CreateWithApplicationOptions(applicationOptions)
                 .WithRedirectUri(currentUri)
-                .WithAuthority(authority)
-                .Build();
+                .WithAuthority(authority);
+
+            // Case of a client certificate
+            if (applicationOptions.ClientCertificate!=null)
+            {
+                appBuilder.WithCertificate(applicationOptions.ClientCertificate);
+            }
+
+            IConfidentialClientApplication app;
+            app = appBuilder.Build();
 
             // Initialize token cache providers
             _appTokenCacheProvider?.InitializeAsync(app.AppTokenCache);
