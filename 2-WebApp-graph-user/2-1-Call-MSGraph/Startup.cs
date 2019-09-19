@@ -40,12 +40,15 @@ namespace WebApp_OpenIDConnect_DotNet
                .AddMsal(Configuration, new string[] { Constants.ScopeUserRead })
                .AddInMemoryTokenCaches();
 
+/*
+            // The following code enables client certificate (instead of client secret)
             services.Configure<ConfidentialClientApplicationOptionsWithClientCertificate>(options =>
-              {
-                  options.ClientCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2();
-                  options.ClientSecret = null;
-              }
+                {
+                        options.ClientSecret = null;
+                options.ClientCertificate = LoadCertificate();
+                }
             );
+ */
 
             /*
                // or use a distributed Token Cache by adding 
