@@ -252,7 +252,13 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
     services.AddProtectedWebApi(Configuration)
          .AddInMemoryTokenCaches();
   ```
+  
+  - Add the method **app.UseAuthentication()** before **app.UseMvc()** in the `Configure` method
 
+  ```Csharp
+     app.UseAuthentication();
+     app.UseMvc();
+  ```
   `AddProtectedWebApi` does the following:
   - add the **Jwt**BearerAuthenticationScheme (Note the replacement of **BearerAuthenticationScheme** by **Jwt**BearerAuthenticationScheme)
   - set the authority to be the Microsoft identity platform 
