@@ -113,8 +113,9 @@ namespace Microsoft.Identity.Web
         /// <returns></returns>
         public static IServiceCollection AddMsal(this IServiceCollection services, IConfiguration configuration, IEnumerable<string> initialScopes, string configSectionName = "AzureAd")
         {
+            // Ensure that configuration options for MSAL.NET, HttpContext accessor and the Token acquisition service
+            // (encapsulating MSAL.NET) are available through dependency injection
             services.Configure<ConfidentialClientApplicationOptions>(options => configuration.Bind(configSectionName, options));
-
             services.AddHttpContextAccessor();
             services.AddTokenAcquisition();
 
