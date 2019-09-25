@@ -283,6 +283,12 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
           .AddMsal(new string[] { Configuration["TodoList:TodoListScope"] })
           .AddInMemoryTokenCaches();
     ```
+1. Update the `Configure` method to include **app.UseAuthentication();** before **app.UseMvc();**  
+
+  ```Csharp
+     app.UseAuthentication();
+     app.UseMvc();
+  ```
 
 ### Creating the Web API project (TodoListService)
 
@@ -327,6 +333,12 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
   ```Csharp
     services.AddProtectedWebApi(Configuration)
          .AddInMemoryTokenCaches();
+  ```
+- Add the method **app.UseAuthentication()** before **app.UseMvc()** in the `Configure` method
+
+  ```Csharp
+     app.UseAuthentication();
+     app.UseMvc();
   ```
 
   `AddProtectedWebApi` does the following:
