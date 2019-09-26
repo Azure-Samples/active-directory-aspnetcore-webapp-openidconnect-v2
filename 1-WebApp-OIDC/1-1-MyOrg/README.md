@@ -68,8 +68,9 @@ As a first step you'll need to:
 1. When the **Register an application page** appears, enter your application's registration information:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp`.
    - In the **Supported account types** section, select **Accounts in this organizational directory only ({tenant name})**.
-     > Note that there are more than one redirect URIs. You'll need to add them from the **Authentication** tab later after the app has been created succesfully.
      ![Register app](../../ReadmeFiles/screenshot-register-app.png)
+     > Note that there are more than one redirect URIs. You'll need to add them from the **Authentication** tab later after the app has been created succesfully.
+     
 1. Select **Register** to create the application.
 1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the Visual Studio configuration file for this project.
    ![OVerview page](../../ReadmeFiles/screenshot-overview.png)
