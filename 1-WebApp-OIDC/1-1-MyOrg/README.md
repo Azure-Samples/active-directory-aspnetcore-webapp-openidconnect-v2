@@ -75,8 +75,8 @@ As a first step you'll need to:
 1. When the **Register an application page** appears, enter your application's registration information:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp`.
    - In the **Supported account types** section, select **Accounts in this organizational directory only ({tenant name})**.
-     ![Register app](../../ReadmeFiles/screenshot-register-app.png)
-     > Note that there are more than one redirect URIs. You'll need to add them from the **Authentication** tab later after the app has been created succesfully.
+   ![Register app](../../ReadmeFiles/screenshot-register-app.png)
+   > Note that there are more than one redirect URIs. You'll need to add them from the **Authentication** tab later after the app has been created succesfully.
      
 1. Select **Register** to create the application.
 1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the Visual Studio configuration file for this project.
@@ -89,7 +89,7 @@ As a first step you'll need to:
    - In the **Advanced settings** | **Implicit grant** section, check **ID tokens** as this sample requires
      the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to
      sign-in the user.
-     ![Authentication page](../../ReadmeFiles/screenshot-authentication.png)
+   ![Authentication page](../../ReadmeFiles/screenshot-authentication.png)
 1. Select **Save**.
 
 > Note that unless the Web App calls a Web API, no certificate or secret is needed.
