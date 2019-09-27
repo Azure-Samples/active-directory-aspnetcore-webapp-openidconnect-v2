@@ -75,9 +75,12 @@ As a first step you'll need to:
 1. When the **Register an application page** appears, enter your application's registration information:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp`.
    - In the **Supported account types** section, select **Accounts in this organizational directory only ({tenant name})**.
-   <details><summary>Show me</summary>
-     ![Register app](../../ReadmeFiles/screenshot-register-app.png)
-   </details>
+
+     <details>
+       <summary>Show me</summary><table><tr><td>
+       ![Register app](../../ReadmeFiles/screenshot-register-app.png)
+     </td></tr></table></details>
+   
    > Note that there are more than one redirect URIs. You'll need to add them from the **Authentication** tab later after the app has been created succesfully.
      
 1. Select **Register** to create the application.
