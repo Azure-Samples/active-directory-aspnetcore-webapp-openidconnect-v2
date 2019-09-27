@@ -32,26 +32,33 @@ To run this sample:
 
 There is one project in this sample. To register it, you can:
 
-- either use PowerShell scripts that **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you and modify the Visual Studio projects' configuration files. If you want to use this automation:
+- either use PowerShell scripts that **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you and modify the Visual Studio projects' configuration files.
 
-  1. On Windows run PowerShell and navigate to the solution's folder
-  2. In PowerShell run:
+  <details>
+  <summary>Expand to see how to use this automation</summary>
+    <table><tr><td>
 
-     ```PowerShell
-     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
-     ```
+    1. On Windows run PowerShell and navigate to the solution's folder
 
-  3. Run the script to create your Azure AD application and configure the code of the sample application accordinly
+    2. In PowerShell run:
 
-     ```PowerShell
-     .\AppCreationScripts\Configure.ps1
-     ```
+       ```PowerShell
+       Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+       ```
 
-   > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
+    3. Run the script to create your Azure AD application and configure the code of the sample application accordingly
 
-  4. Open the Visual Studio solution and click start. That's it!
+       ```PowerShell
+       .\AppCreationScripts\Configure.ps1
+       ```
 
-- or, if you don't want to use automation, follow the steps below:
+       > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
+
+    4. Open the Visual Studio solution and click start. That's it!
+
+    </td></tr></table></details>
+        
+- or, if you want to register your application with the Azure portal, follow the steps below:
 
 #### Choose the Azure AD tenant where you want to create your applications
 
