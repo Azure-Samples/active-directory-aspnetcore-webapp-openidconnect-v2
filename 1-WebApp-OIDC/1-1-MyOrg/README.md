@@ -76,8 +76,8 @@ As a first step you'll need to:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp`.
    - In the **Supported account types** section, select **Accounts in this organizational directory only ({tenant name})**.
 
-     <details>
-     <summary>Show me</summary>
+     <details open=true>
+     <summary>Show/hide image</summary>
 
        ![Register app](../../ReadmeFiles/screenshot-register-app.png)
 
