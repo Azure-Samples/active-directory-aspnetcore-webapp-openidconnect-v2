@@ -32,26 +32,32 @@ To run this sample:
 
 There is one project in this sample. To register it, you can:
 
-- either use PowerShell scripts that **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you and modify the Visual Studio projects' configuration files. If you want to use this automation:
+- either use PowerShell scripts that **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you and modify the Visual Studio projects' configuration files.
 
-  1. On Windows run PowerShell and navigate to the solution's folder
-  2. In PowerShell run:
+  <details>
+  <summary>Expand to see how to use this automation</summary>
 
-     ```PowerShell
-     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
-     ```
+    1. On Windows run PowerShell and navigate to the solution's folder
 
-  3. Run the script to create your Azure AD application and configure the code of the sample application accordinly
+    2. In PowerShell run:
 
-     ```PowerShell
-     .\AppCreationScripts\Configure.ps1
-     ```
+       ```PowerShell
+       Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+       ```
 
-   > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
+    3. Run the script to create your Azure AD application and configure the code of the sample application accordingly
 
-  4. Open the Visual Studio solution and click start. That's it!
+       ```PowerShell
+       .\AppCreationScripts\Configure.ps1
+       ```
 
-- or, if you don't want to use automation, follow the steps below:
+       > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
+
+    4. Open the Visual Studio solution and click start. That's it!
+
+    </details>
+
+- or, if you want to register your application with the Azure portal, follow the steps below:
 
 #### Choose the Azure AD tenant where you want to create your applications
 
@@ -68,9 +74,23 @@ As a first step you'll need to:
 1. When the **Register an application page** appears, enter your application's registration information:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp`.
    - In the **Supported account types** section, select **Accounts in this organizational directory only ({tenant name})**.
+     <details open=true>
+     <summary>Expand/collapse screenshot</summary>
+
+       ![Register app](../../ReadmeFiles/screenshot-register-app.png)
+
+     </details>
      > Note that there are more than one redirect URIs. You'll need to add them from the **Authentication** tab later after the app has been created succesfully.
+     
 1. Select **Register** to create the application.
 1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the Visual Studio configuration file for this project.
+   <details open=true>
+   <summary>Expand/collapse screenshot</summary>
+
+     ![OVerview page](../../ReadmeFiles/screenshot-overview.png)
+
+   </details>
+
 1. In the list of pages for the app, select **Authentication**..
    - In the Redirect URIs section, select **Web** in the combo-box and enter the following redirect URIs.
        - `https://localhost:44321/`
@@ -79,6 +99,13 @@ As a first step you'll need to:
    - In the **Advanced settings** | **Implicit grant** section, check **ID tokens** as this sample requires
      the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to
      sign-in the user.
+     <details open=true>
+     <summary>Expand/collapse screenshot</summary>
+
+       ![Authentication page](../../ReadmeFiles/screenshot-authentication.png)
+
+     </details>
+
 1. Select **Save**.
 
 > Note that unless the Web App calls a Web API, no certificate or secret is needed.
