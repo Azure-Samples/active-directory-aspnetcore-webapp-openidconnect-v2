@@ -89,7 +89,9 @@ namespace TodoListService.Controllers
                 return NotFound();
             }
 
-            if (TodoStore.Values.FirstOrDefault(x => x.Id == id) == null)
+            string owner = User.Identity.Name;
+
+            if (TodoStore.Values.FirstOrDefault(x => x.Id == id && x.Owner == owner) == null)
             {
                 return NotFound();
             }
@@ -104,6 +106,12 @@ namespace TodoListService.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
+            string owner = User.Identity.Name;
+            if (TodoStore.Values.FirstOrDefault(x => x.Id == id && x.Owner == owner) == null)
+            {
+                return NotFound();
+            }
+
             TodoStore.Remove(id);
             return Ok();
         }
