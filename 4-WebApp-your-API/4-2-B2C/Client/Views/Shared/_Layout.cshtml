@@ -29,10 +29,11 @@
                 <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">WebApp_OpenIDConnect_DotNet</a>
             </div>
             <div class="navbar-collapse collapse">
-				<ul class="nav navbar-nav">
-					<li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-					<li><a asp-area="" asp-controller="Home" asp-action="Claims">Claims</a></li>
-				</ul>
+                <ul class="nav navbar-nav">
+                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Claims">Claims</a></li>
+                    <li><a asp-area="" asp-controller="TodoList" asp-action="Index">TodoList</a></li>
+                </ul>
                 <partial name="_LoginPartial" />
             </div>
         </div>
@@ -44,7 +45,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2018 -  WebApp_OpenIDConnect_DotNet</p>
+            <p>&copy; 2019 -  WebApp_OpenIDConnect_DotNet</p>
         </footer>
     </div>
 
