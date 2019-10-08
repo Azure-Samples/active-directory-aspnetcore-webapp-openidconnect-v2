@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TodoListService", "TodoList
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TodoListClient", "Client\TodoListClient.csproj", "{79AF134C-0F4A-43F8-8C47-75039ED87CE7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web", "..\Microsoft.Identity.Web\Microsoft.Identity.Web.csproj", "{2AED6B80-C6DF-4AA3-98F0-77338CC1449A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web", "..\..\Microsoft.Identity.Web\Microsoft.Identity.Web.csproj", "{F595FB7C-0948-418E-B20B-820A2CC5C9AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{79AF134C-0F4A-43F8-8C47-75039ED87CE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79AF134C-0F4A-43F8-8C47-75039ED87CE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79AF134C-0F4A-43F8-8C47-75039ED87CE7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2AED6B80-C6DF-4AA3-98F0-77338CC1449A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2AED6B80-C6DF-4AA3-98F0-77338CC1449A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2AED6B80-C6DF-4AA3-98F0-77338CC1449A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2AED6B80-C6DF-4AA3-98F0-77338CC1449A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F595FB7C-0948-418E-B20B-820A2CC5C9AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F595FB7C-0948-418E-B20B-820A2CC5C9AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F595FB7C-0948-418E-B20B-820A2CC5C9AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F595FB7C-0948-418E-B20B-820A2CC5C9AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
