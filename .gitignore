@@ -41,6 +41,11 @@
 /4-WebApp-your-API/.vs
 /4-WebApp-your-API/bin
 /4-WebApp-your-API/obj
+/4-WebApp-your-API/4-1-AAD/.vs
+/4-WebApp-your-API/4-1-AAD/Client/bin
+/4-WebApp-your-API/4-1-AAD/Client/obj
+/4-WebApp-your-API/4-1-AAD/TodoListService/bin
+/4-WebApp-your-API/4-1-AAD/TodoListService/obj
 /4-WebApp-your-API/4-2-B2C/.vs
 /4-WebApp-your-API/4-2-B2C/Client/bin
 /4-WebApp-your-API/4-2-B2C/Client/obj
