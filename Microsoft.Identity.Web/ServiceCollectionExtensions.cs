@@ -38,5 +38,13 @@ namespace Microsoft.Identity.Web
             services.AddScoped<ITokenAcquisition, TokenAcquisition>();
             return services;
         }
+
+        public static IServiceCollection AddTokenAcquisitionB2C(this IServiceCollection services)
+        {
+            // Token acquisition service
+            services.AddHttpContextAccessor();
+            services.AddScoped<ITokenAcquisition, TokenAcquisitionB2C>();
+            return services;
+        }
     }
 }

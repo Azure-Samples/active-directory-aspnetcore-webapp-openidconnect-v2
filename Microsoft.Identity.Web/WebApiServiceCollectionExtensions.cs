@@ -3,11 +3,13 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.AzureADB2C.UI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Web.Resource;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -98,6 +100,57 @@ namespace Microsoft.Identity.Web
         }
 
         // TODO: pass an option with a section name to bind the options ? or a delegate?
+
+        public static IServiceCollection AddProtectedWebApiB2C(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            string configSectionName = "AzureAdB2C",
+            bool subscribeToJwtBearerMiddlewareDiagnosticsEvents = false)
+        {
+            services.AddAuthentication(AzureADB2CDefaults.JwtBearerAuthenticationScheme)
+                    .AddAzureADB2CBearer(options => configuration.Bind(configSectionName, options));
+
+            services.AddHttpContextAccessor();
+
+            // Change the authentication configuration to accommodate the Microsoft identity platform endpoint (v2.0).
+            services.Configure<JwtBearerOptions>(AzureADB2CDefaults.JwtBearerAuthenticationScheme, options =>
+            {
+                // Reinitialize the options as this has changed to JwtBearerOptions to pick configuration values for attributes unique to JwtBearerOptions
+                configuration.Bind(configSectionName, options);
+
+                options.TokenValidationParameters.ValidIssuer = options.Authority;
+
+                // The valid audiences are both the Client ID (options.Audience) and api://{ClientID}
+                options.TokenValidationParameters.ValidAudiences = new string[]
+                {
+                    options.Audience, $"api://{options.Audience}"
+                };
+                
+                // When an access token for our own Web API is validated, we add it to MSAL.NET's cache so that it can
+                // be used from the controllers.
+                options.Events = new JwtBearerEvents();
+
+                options.Events.OnTokenValidated = async context =>
+                {
+                    // This check is required to ensure that the Web API only accepts tokens from tenants where it has been consented and provisioned.
+                    if (!context.Principal.Claims.Any(x => x.Type == ClaimConstants.Scope)
+                     && !context.Principal.Claims.Any(y => y.Type == ClaimConstants.Scp)
+                     && !context.Principal.Claims.Any(y => y.Type == ClaimConstants.Roles))
+                    {
+                        throw new UnauthorizedAccessException("Neither scope or roles claim was found in the bearer token.");
+                    }
+
+                    await Task.FromResult(0);
+                };
+
+                if (subscribeToJwtBearerMiddlewareDiagnosticsEvents)
+                {
+                    options.Events = JwtBearerMiddlewareDiagnostics.Subscribe(options.Events);
+                }
+            });
+
+            return services;
+        }
 
         /// <summary>
         /// Protects the Web API with Microsoft identity platform (formerly Azure AD v2.0)

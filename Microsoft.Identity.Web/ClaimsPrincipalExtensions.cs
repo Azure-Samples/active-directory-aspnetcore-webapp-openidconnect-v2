@@ -21,14 +21,33 @@ namespace Microsoft.Identity.Web
         public static string GetMsalAccountId(this ClaimsPrincipal claimsPrincipal)
         {
             string userObjectId = claimsPrincipal.GetObjectId();
+            string nameIdentifierId = claimsPrincipal.GetNameIdentifierId();
             string tenantId = claimsPrincipal.GetTenantId();
+            string policyId = claimsPrincipal.GetPolicyId();
 
-            if (!string.IsNullOrWhiteSpace(userObjectId) && !string.IsNullOrWhiteSpace(tenantId))
+            if (!string.IsNullOrWhiteSpace(nameIdentifierId) && !string.IsNullOrWhiteSpace(tenantId) && !string.IsNullOrWhiteSpace(policyId))
             {
+                // B2C standard
+                return $"{nameIdentifierId}-{policyId}.{tenantId}";
+            }
+            else if (!string.IsNullOrWhiteSpace(userObjectId) && !string.IsNullOrWhiteSpace(tenantId))
+            {
+                // AAD standard
                 return $"{userObjectId}.{tenantId}";
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Gets the token cache key from a <see cref="ClaimsPrincipal"/>
+        /// </summary>
+        /// <param name="claimsPrincipal">Claims principal</param>
+        /// <returns>A string corresponding to an account identifier as defined in <see cref="Microsoft.Identity.Client.AccountId.Identifier"/></returns>
+        public static string GetTokenCacheKey(this ClaimsPrincipal claimsPrincipal)
+        {
+            string key = claimsPrincipal.GetNameIdentifierId();
+            return key;
         }
 
         /// <summary>
@@ -61,6 +80,32 @@ namespace Microsoft.Identity.Web
                 tenantId = claimsPrincipal.FindFirstValue(ClaimConstants.TenantId);
             }
             return tenantId;
+        }
+
+        /// <summary>
+        /// Gets the Policy Id associated with the <see cref="ClaimsPrincipal"/>
+        /// </summary>
+        /// <param name="claimsPrincipal">the <see cref="ClaimsPrincipal"/> from which to retrieve the policy id</param>
+        /// <returns>Policy Id of the identity, or <c>null</c> if it cannot be found</returns>
+        public static string GetPolicyId(this ClaimsPrincipal claimsPrincipal)
+        {
+            string policyId = claimsPrincipal.FindFirstValue(ClaimConstants.Tfp);
+            return policyId;
+        }
+
+        /// <summary>
+        /// Gets the NameIdentifierId associated with the <see cref="ClaimsPrincipal"/>
+        /// </summary>
+        /// <param name="claimsPrincipal">the <see cref="ClaimsPrincipal"/> from which to retrieve the sub claim</param>
+        /// <returns>Name identifier ID (sub) of the identity, or <c>null</c> if it cannot be found</returns>
+        public static string GetNameIdentifierId(this ClaimsPrincipal claimsPrincipal)
+        {
+            string sub = claimsPrincipal.FindFirstValue(ClaimConstants.Sub);
+            if (string.IsNullOrEmpty(sub))
+            {
+                sub = claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
+            }
+            return sub;
         }
 
         /// <summary>

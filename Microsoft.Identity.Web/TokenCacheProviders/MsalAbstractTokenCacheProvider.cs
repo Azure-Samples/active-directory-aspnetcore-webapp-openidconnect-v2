@@ -69,7 +69,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
                 }
                 else
                 {
-                    return _httpContextAccessor.HttpContext.User.GetMsalAccountId();
+                    return _httpContextAccessor.HttpContext.User.GetTokenCacheKey();
                 }
             }
 

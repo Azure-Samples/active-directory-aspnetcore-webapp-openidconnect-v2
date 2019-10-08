@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.AzureADB2C.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -118,44 +119,70 @@ namespace Microsoft.Identity.Web
             services.AddHttpContextAccessor();
             services.AddTokenAcquisition();
 
-            services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
+            services.Configure(AzureADDefaults.OpenIdScheme, (System.Action<OpenIdConnectOptions>)(options =>
             {
-                // Response type
-                options.ResponseType = OpenIdConnectResponseType.CodeIdToken;
+                SetBasicMsalConfigurations(initialScopes, options);
+            }));
 
-                // This scope is needed to get a refresh token when users sign-in with their Microsoft personal accounts
-                // (it's required by MSAL.NET and automatically provided when users sign-in with work or school accounts)
-                options.Scope.Add(OidcConstants.ScopeOfflineAccess);
-                if (initialScopes != null)
+            return services;
+        }
+
+        /// <summary>
+        /// Add MSAL support to the B2C Web App or B2C Web API
+        /// </summary>
+        /// <param name="services">Service collection to which to add authentication</param>
+        /// <param name="initialScopes">Initial scopes to request at sign-in</param>
+        /// <returns></returns>
+        public static IServiceCollection AddMsalB2C(this IServiceCollection services, IConfiguration configuration, IEnumerable<string> initialScopes, string configSectionName = "AzureAdB2C")
+        {
+            services.Configure<ConfidentialClientApplicationOptions>(options => configuration.Bind(configSectionName, options));
+            services.AddHttpContextAccessor();
+            services.AddTokenAcquisitionB2C();
+
+            services.Configure(AzureADB2CDefaults.OpenIdScheme, (System.Action<OpenIdConnectOptions>)(options =>
+            {
+                SetBasicMsalConfigurations(initialScopes, options);
+            }));
+
+            return services;
+        }
+
+        private static void SetBasicMsalConfigurations(IEnumerable<string> initialScopes, OpenIdConnectOptions options)
+        {
+            // Response type
+            options.ResponseType = OpenIdConnectResponseType.CodeIdToken;
+
+            // This scope is needed to get a refresh token when users sign-in with their Microsoft personal accounts
+            // (it's required by MSAL.NET and automatically provided when users sign-in with work or school accounts)
+            options.Scope.Add(OidcConstants.ScopeOfflineAccess);
+            if (initialScopes != null)
+            {
+                foreach (string scope in initialScopes)
                 {
-                    foreach (string scope in initialScopes)
+                    if (!options.Scope.Contains(scope))
                     {
-                        if (!options.Scope.Contains(scope))
-                        {
-                            options.Scope.Add(scope);
-                        }
+                        options.Scope.Add(scope);
                     }
                 }
+            }
 
-                // Handling the auth redemption by MSAL.NET so that a token is available in the token cache
-                // where it will be usable from Controllers later (through the TokenAcquisition service)
-                var handler = options.Events.OnAuthorizationCodeReceived;
-                options.Events.OnAuthorizationCodeReceived = async context =>
-                {
-                    var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
-                    await tokenAcquisition.AddAccountToCacheFromAuthorizationCodeAsync(context, options.Scope).ConfigureAwait(false);
-                    await handler(context).ConfigureAwait(false);
-                };
+            // Handling the auth redemption by MSAL.NET so that a token is available in the token cache
+            // where it will be usable from Controllers later (through the TokenAcquisition service)
+            var handler = options.Events.OnAuthorizationCodeReceived;
+            options.Events.OnAuthorizationCodeReceived = async context =>
+            {
+                var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
+                await tokenAcquisition.AddAccountToCacheFromAuthorizationCodeAsync(context, options.Scope).ConfigureAwait(false);
+                await handler(context).ConfigureAwait(false);
+            };
 
-                // Handling the sign-out: removing the account from MSAL.NET cache
-                options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
-                {
-                    // Remove the account from MSAL.NET token cache
-                    var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
-                    await tokenAcquisition.RemoveAccountAsync(context).ConfigureAwait(false);
-                };
-            });
-            return services;
+            // Handling the sign-out: removing the account from MSAL.NET cache
+            options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
+            {
+                // Remove the account from MSAL.NET token cache
+                var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
+                await tokenAcquisition.RemoveAccountAsync(context).ConfigureAwait(false);
+            };
         }
     }
 }
