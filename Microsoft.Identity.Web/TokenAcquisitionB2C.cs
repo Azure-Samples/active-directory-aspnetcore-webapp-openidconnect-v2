@@ -246,24 +246,8 @@ namespace Microsoft.Identity.Web
             string tenant)
         {
             string accountIdentifier = claimsPrincipal.GetMsalAccountId();
-            return await GetAccessTokenOnBehalfOfUserAsync(application, accountIdentifier, scopes, tenant).ConfigureAwait(false);
-        }
+            string currentPolicy = claimsPrincipal.GetPolicyId();
 
-        /// <summary>
-        /// Gets an access token for a downstream API on behalf of the user which account ID is passed as an argument
-        /// </summary>
-        /// <param name="application"></param>
-        /// <param name="accountIdentifier">User account identifier for which to acquire a token.
-        /// See <see cref="Microsoft.Identity.Client.AccountId.Identifier"/></param>
-        /// <param name="scopes">Scopes for the downstream API to call</param>
-        /// <param name="loginHint"></param>
-        /// <param name="tenant"></param>
-        private async Task<string> GetAccessTokenOnBehalfOfUserAsync(
-            IConfidentialClientApplication application,
-            string accountIdentifier,
-            IEnumerable<string> scopes,
-            string tenant)
-        {
             if (scopes == null)
             {
                 throw new ArgumentNullException(nameof(scopes));
@@ -275,9 +259,9 @@ namespace Microsoft.Identity.Web
                 account = await application.GetAccountAsync(accountIdentifier).ConfigureAwait(false);
             }
 
-            if(account == null)
+            if (account == null)
             {
-                account = (await application.GetAccountsAsync().ConfigureAwait(false)).FirstOrDefault();
+                account = GetAccountByPolicy(await application.GetAccountsAsync().ConfigureAwait(false), currentPolicy);
             }
 
             AuthenticationResult result;
@@ -382,7 +366,6 @@ namespace Microsoft.Identity.Web
             }
             headers.Add(HeaderNames.WWWAuthenticate, v);
         }
-
         private static bool AcceptedTokenVersionMismatch(MsalUiRequiredException msalSeviceException)
         {
             // Normally app developers should not make decisions based on the internal AAD code
@@ -390,6 +373,24 @@ namespace Microsoft.Identity.Web
             // way to distinguish the case.
             // This is subject to change in the future
             return (msalSeviceException.Message.Contains("AADSTS50013"));
+        }
+
+        /// <summary>
+        /// Gets an IAccount for the current B2C policy in the user claims
+        /// </summary>
+        /// <param name="accounts"></param>
+        /// <param name="policy"></param>
+        /// <returns></returns>
+        private IAccount GetAccountByPolicy(IEnumerable<IAccount> accounts, string policy)
+        {
+            foreach (var account in accounts)
+            {
+                string accountIdentifier = account.HomeAccountId.ObjectId.Split('.')[0];
+                if (accountIdentifier.EndsWith(policy.ToLower()))
+                    return account;
+            }
+
+            return null;
         }
     }
 }
