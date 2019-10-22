@@ -11,7 +11,7 @@ products:
 - dotnet
 - azure-storage
 - aspnet
-- office-ms-graph
+- ms-graph
 urlFragment: enable-webapp-signin
 ---
 
@@ -55,7 +55,7 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
    Learn how to update your Web App to [call Microsoft Graph](2-WebApp-graph-user):
 
    1. Using the [authorization code flow](2-WebApp-graph-user/2-1-Call-MSGraph), initiated by ASP.NET Core, but completed by Microsoft Authentication Library for .NET (MSAL.NET)
-   2. Learn how to [customize the token cache serialization](2-WebApp-graph-user/2-2-TokenCache)
+   2. Learn how to [customize the token cache serialization](2-WebApp-graph-user/2-2-TokenCache/README-incremental-instructions.md)
 ) with different technologies depending on your needs (in memory cache, Session token cache, SQL Cache, Redis Cache)
    3. Learn the [**Planned**]  [best practices and practices to avoid](./2-WebApp-graph-user/2-3-Best-Practices) when calling an API.
 
@@ -74,12 +74,12 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
 
    ![Web apps calls Microsoft APIs](ReadmeFiles/web-app-calls-your-api.svg)
 
-   Learn how to update your Web App to [call your own web api](./4-WebApp-your-API)
+   Learn how to update your Web App to [call your own web api](./4-WebApp-your-API/README-incremental-instructions.md)
 
 5. Once you know how to sign-in users and call Web APIs from your Web App, you might want to restrict part of the application depending on the user having a role in the application or belonging to a group. So far you've learnt how to add and process authentication. Now learn how to [add authorization to your Web application](./5-WebApp-AuthZ), restricting part of it to users
 
-   1. [based on their application roles](./5-WebApp-AuthZ/5-1-Roles)
-   2. [based on their belonging to Azure AD groups](./5-WebApp-AuthZ/5-2-Groups)
+   1. [based on their application roles](./5-WebApp-AuthZ/5-1-Roles/README-incremental-instructions.md)
+   2. [based on their belonging to Azure AD groups](./5-WebApp-AuthZ/5-2-Groups/README-incremental-instructions.md)
 
 6. Chances are that you want to [deploy your complete app to Azure](./6-Deploy-to-Azure). Learn how to do that, applying best practices:
 
@@ -135,6 +135,6 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## Other samples and documentation
 
-- the documentation for the Microsoft identity platform is available from [https://aka.ms/aadv2](https://aka.ms/aadv2)
-- Other samples for the Microsoft identity platform are available from [https://aka.ms/aaddevsamplesv2](https://aka.ms/aaddevsamplesv2)
-- The conceptual documentation for MSAL.NET is available from [https://aka.ms/msalnet](https://aka.ms/msalnet)
+- The documentation for the Microsoft identity platform is available from [https://aka.ms/aadv2](https://aka.ms/aadv2).
+- Other samples for the Microsoft identity platform are available from [https://aka.ms/aaddevsamplesv2](https://aka.ms/aaddevsamplesv2).
+- The conceptual documentation for MSAL.NET is available from [https://aka.ms/msalnet](https://aka.ms/msalnet).

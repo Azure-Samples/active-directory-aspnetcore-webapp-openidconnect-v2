@@ -9,7 +9,7 @@ if ($null -eq (Get-Module -ListAvailable -Name "AzureAD")) {
     Install-Module "AzureAD" -Scope CurrentUser 
 } 
 Import-Module AzureAD
-$ErrorActionPreference = 'Stop'
+$ErrorActionPreference = "Stop"
 
 Function Cleanup
 {

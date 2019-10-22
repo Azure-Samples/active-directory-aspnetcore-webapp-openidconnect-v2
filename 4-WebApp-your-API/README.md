@@ -172,7 +172,7 @@ Open the solution in Visual Studio to configure the projects
 
 #### Configure the service project
 
-> Note: if you used the setup scripts, the changes below will have been applied for you
+Note: if you had used the automation to setup your application mentioned in [Step 2:  Register the sample application with your Azure Active Directory tenant](#step-2-register-the-sample-application-with-your-azure-active-directory-tenant), the changes below would have been applied by the scripts.
 
 1. Open the `TodoListService\appsettings.json` file
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
@@ -181,7 +181,7 @@ Open the solution in Visual Studio to configure the projects
 
 #### Configure the client project
 
-> Note: if you used the setup scripts, the changes below will have been applied for you
+Note: if you had used the automation to setup your application mentioned in [Step 2:  Register the sample application with your Azure Active Directory tenant](#step-2-register-the-sample-application-with-your-azure-active-directory-tenant), the changes below would have been applied by the scripts.
 
 1. Open the `Client\appsettings.json` file
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
@@ -283,6 +283,12 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
           .AddMsal(new string[] { Configuration["TodoList:TodoListScope"] })
           .AddInMemoryTokenCaches();
     ```
+1. Update the `Configure` method to include **app.UseAuthentication();** before **app.UseMvc();**  
+
+  ```Csharp
+     app.UseAuthentication();
+     app.UseMvc();
+  ```
 
 ### Creating the Web API project (TodoListService)
 
@@ -328,6 +334,12 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
     services.AddProtectedWebApi(Configuration)
          .AddInMemoryTokenCaches();
   ```
+- Add the method **app.UseAuthentication()** before **app.UseMvc()** in the `Configure` method
+
+  ```Csharp
+     app.UseAuthentication();
+     app.UseMvc();
+  ```
 
   `AddProtectedWebApi` does the following:
   - add the **Jwt**BearerAuthenticationScheme (Note the replacement of **BearerAuthenticationScheme** by **Jwt**BearerAuthenticationScheme)
@@ -336,15 +348,6 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
   - register an issuer validator that accepts issuers to be in the Microsoft identity platform clouds.
 
 The implementations of these classes are in the `Microsoft.Identity.Web` library (and folder), and they are designed to be reusable in your applications (Web apps and Web apis). You are encouraged to browse the code in the library to understand the changes in detail.
-
-- At the beginning of the `Configure` method, insert `app.UseSession()`. This code ensures that the session exists for the session-based token cache to work properly. You can skip this if you do not plan to use the session based token cache.
-
-  ```CSharp
-  public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-  {
-    app.UseSession();
-    ...
-  ```
 
 ### Create the TodoListController.cs file
 

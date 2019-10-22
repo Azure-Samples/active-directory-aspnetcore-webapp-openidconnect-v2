@@ -27,9 +27,9 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
         private readonly TokenCacheDbContext _tokenCacheDb;
 
         /// <summary>
-        /// This keeps the latest copy of the token in memory to save calls to DB, if possible.
+        /// This keeps the latest copy of the token in memory ..
         /// </summary>
-        private TokenCacheDbRecord _inMemoryCache;
+        private TokenCacheDbRecord _cacheDbRecord;
 
         /// <summary>
         /// The data protector
@@ -37,67 +37,51 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
         private readonly IDataProtector _dataProtector;
 
 
-        protected override async Task<byte[]> ReadCacheBytesAsync(string cacheKey)
+        protected override Task<byte[]> ReadCacheBytesAsync(string cacheKey)
         {
-            if (_inMemoryCache == null) // first time access
+            try
             {
-                try
-                {
-                    _inMemoryCache = GetLatestRecordQuery(cacheKey).FirstOrDefault();
-                }
-                catch (SqlException ex) when (ex.Message == "Invalid object name 'Records'")
-                {
-                    // Microsoft.Identity.Web changed from several tables (AppTokenCache, UserTokenCache) to one table (record)
-                    // If you care about the cache, you can migrate them, otherwise re-create the database
-                    throw new Exception("You need to migrate the AppTokenCache and UserTokenCache tables to Records, or run SqlTokenCacheProviderExtension.CreateTokenCachingTablesInSqlDatabase() to create the database", ex);
-                }
-                catch (SqlException ex) when (ex.Message.StartsWith("Cannot open database \"MY_TOKEN_CACHE_DATABASE\" requested by the login."))
-                {
-                    throw new Exception("You need to run SqlTokenCacheProviderExtension.CreateTokenCachingTablesInSqlDatabase() to create the database", ex);
-                }
+                _cacheDbRecord = GetLatestRecordQuery(cacheKey).FirstOrDefault();
             }
-            else
+            catch (SqlException ex) when (ex.Message == "Invalid object name 'Records'")
             {
-                // retrieve last written record from the DB
-                var lastwriteInDb = GetLatestRecordQuery(cacheKey).Select(n => n.LastWrite).FirstOrDefault();
-
-                // if the persisted copy is newer than the in-memory copy
-                if (lastwriteInDb > _inMemoryCache.LastWrite)
-                {
-                    // read from from storage, update in-memory copy
-                    _inMemoryCache = GetLatestRecordQuery(cacheKey).FirstOrDefault();
-                }
+                // Microsoft.Identity.Web changed from several tables (AppTokenCache, UserTokenCache) to one table (record)
+                // If you care about the cache, you can migrate them, otherwise re-create the database
+                throw new Exception("You need to migrate the AppTokenCache and UserTokenCache tables to Records, or run SqlTokenCacheProviderExtension.CreateTokenCachingTablesInSqlDatabase() to create the database", ex);
+            }
+            catch (SqlException ex) when (ex.Message.StartsWith("Cannot open database"))
+            {
+                throw new Exception("You need to run SqlTokenCacheProviderExtension.CreateTokenCachingTablesInSqlDatabase() to create the database", ex);
             }
 
             // Send data to the TokenCache instance
-            return (_inMemoryCache == null) ? null : _dataProtector.Unprotect(_inMemoryCache.CacheBits);
+            return Task.FromResult((_cacheDbRecord == null) ? null : _dataProtector.Unprotect(_cacheDbRecord.CacheBits));
         }
 
-        protected override Task RemoveKeyAsync(string cacheKey)
+        protected override async Task RemoveKeyAsync(string cacheKey)
         {
             var cacheEntries = _tokenCacheDb.Records.Where(c => c.CacheKey == cacheKey);
             _tokenCacheDb.Records.RemoveRange(cacheEntries);
-            _tokenCacheDb.SaveChanges();
-            return Task.CompletedTask;
+            await _tokenCacheDb.SaveChangesAsync();
         }
 
         protected override async Task WriteCacheBytesAsync(string cacheKey, byte[] bytes)
         {
-            if (_inMemoryCache == null)
+            if (_cacheDbRecord == null)
             {
-                _inMemoryCache = new TokenCacheDbRecord
+                _cacheDbRecord = new TokenCacheDbRecord
                 {
                     CacheKey = cacheKey
                 };
             }
 
-            _inMemoryCache.CacheBits = _dataProtector.Protect(bytes);
-            _inMemoryCache.LastWrite = DateTime.Now;
+            _cacheDbRecord.CacheBits = _dataProtector.Protect(bytes);
+            _cacheDbRecord.LastWrite = DateTime.Now;
 
             try
             {
                 // Update the DB and the lastwrite
-                _tokenCacheDb.Entry(_inMemoryCache).State = _inMemoryCache.TokenCacheId == 0 ? EntityState.Added : EntityState.Modified;
+                _tokenCacheDb.Entry(_cacheDbRecord).State = _cacheDbRecord.TokenCacheId == 0 ? EntityState.Added : EntityState.Modified;
                 _tokenCacheDb.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
@@ -109,7 +93,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Sql
 
         private IOrderedQueryable<TokenCacheDbRecord> GetLatestRecordQuery(string cacheKey)
         {
-                return _tokenCacheDb.Records.Where(c => c.CacheKey == cacheKey).OrderByDescending(d => d.LastWrite);
+            return _tokenCacheDb.Records.Where(c => c.CacheKey == cacheKey).OrderByDescending(d => d.LastWrite);
         }
     }
 }

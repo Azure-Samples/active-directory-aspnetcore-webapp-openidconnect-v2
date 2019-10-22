@@ -14,7 +14,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
     {
         /// <summary>Adds both App and per-user session token caches.</summary>
         /// For this session cache to work effectively the aspnetcore session has to be configured properly.
-        /// The latest guidance is provided at https://docs.microsoft.com/en-us/aspnet/core/fundamentals/app-state
+        /// The latest guidance is provided at https://docs.microsoft.com/aspnet/core/fundamentals/app-state
         ///
         /// // In the method - public void ConfigureServices(IServiceCollection services) in startup.cs, add the following
         /// services.AddSession(option =>
@@ -53,6 +53,55 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
             services.AddHttpContextAccessor();;
             services.AddScoped<IMsalTokenCacheProvider, MsalSessionTokenCacheProvider>();
 
+            return services;
+        }
+
+        /// <summary>Adds the Http session based application token cache to the service collection.</summary>
+        /// For this session cache to work effectively the aspnetcore session has to be configured properly.
+        /// The latest guidance is provided at https://docs.microsoft.com/aspnet/core/fundamentals/app-state
+        ///
+        /// // In the method - public void ConfigureServices(IServiceCollection services) in startup.cs, add the following
+        /// services.AddSession(option =>
+        /// {
+        ///	    option.Cookie.IsEssential = true;
+        /// });
+        ///
+        /// In the method - public void Configure(IApplicationBuilder app, IHostingEnvironment env) in startup.cs, add the following
+        ///
+        /// app.UseSession(); // Before UseMvc()
+        ///
+        /// <param name="services">The services collection to add to.</param>
+        /// <returns></returns>
+        public static IServiceCollection AddSessionAppTokenCache(this IServiceCollection services)
+        {
+            services.AddHttpContextAccessor();
+            services.AddScoped<IMsalAppTokenCacheProvider, MsalAppSessionTokenCacheProvider>();
+            return services;
+        }
+
+        /// <summary>Adds the http session based per user token cache to the service collection.</summary>
+        /// For this session cache to work effectively the aspnetcore session has to be configured properly.
+        /// The latest guidance is provided at https://docs.microsoft.com/aspnet/core/fundamentals/app-state
+        ///
+        /// // In the method - public void ConfigureServices(IServiceCollection services) in startup.cs, add the following
+        /// services.AddSession(option =>
+        /// {
+        ///	    option.Cookie.IsEssential = true;
+        /// });
+        ///
+        /// In the method - public void Configure(IApplicationBuilder app, IHostingEnvironment env) in startup.cs, add the following
+        ///
+        /// app.UseSession(); // Before UseMvc()
+        ///
+        /// <param name="services">The services collection to add to.</param>
+        /// <returns></returns>
+        public static IServiceCollection AddSessionPerUserTokenCache(this IServiceCollection services)
+        {
+            services.AddHttpContextAccessor();
+            services.AddSession(option =>
+            { option.Cookie.IsEssential = true; }
+            );
+            services.AddScoped<IMsalUserTokenCacheProvider, MsalPerUserSessionTokenCacheProvider>();
             return services;
         }
     }

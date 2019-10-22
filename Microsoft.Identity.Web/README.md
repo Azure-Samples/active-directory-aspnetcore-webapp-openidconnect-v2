@@ -13,7 +13,7 @@ to enable them to work with the Microsoft identity platform (formerly named Azur
 
 As of today, ASP.NET Core web apps templates (`dot net new mvc -auth`) create web apps that sign in users with the Azure AD v1.0 endpoint (allowing to sign in users with their organizational accounts, also named *Work or school accounts*). This library brings `ServiceCollection` extension methods to be used in the ASP.NET Core web app **Startup.cs** file to enable the web app to sign in users with the Microsoft identity platform (formerly Azure AD v2.0 endpoint), and, optionally enable the web app to call APIs on behalf of the signed-in user.
 
-![WebAppServiceCollectionExtensions](https://user-images.githubusercontent.com/13203188/62526924-0a563780-b7ef-11e9-8ce0-db284db3f02c.png)
+![WebAppServiceCollectionExtensions](https://user-images.githubusercontent.com/13203188/64252959-82ae3680-cf1c-11e9-8a01-0a0be728a78e.png)
 
 ### Web apps that sign in users - Startup.cs
 
@@ -59,7 +59,7 @@ This method adds authentication with the Microsoft Identity platform (formerly A
 See also:
 
 - the [ASP.NET Core Web app incremental tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-1-MyOrg) in chapter 1.1 (sign-in user in an organization)
-- The [Web App that signs-in users](https://docs.microsoft.com/en-us/azure/active-directory/develop/scenario-web-app-sign-user-overview) scenario landing page in the Microsoft identity platform documentation and the following pages.
+- The [Web App that signs-in users](https://docs.microsoft.com/azure/active-directory/develop/scenario-web-app-sign-user-overview) scenario landing page in the Microsoft identity platform documentation and the following pages.
 
 ### Web apps that sign in users and call web apis on behalf of the signed-in user - startup.cs
 
@@ -83,6 +83,11 @@ public class Startup
   ...
 }
 ```
+
+Note that by default, `AddMicrosoftIdentityPlatformAuthentication` gets the configuration from the "AzureAD" section of the configuration files. It has
+several parameters that you can change.
+
+Also the proposed token cache serialization is in memory. you can also use the session cache, or various distributed caches
 
 ### Web app controller
 
@@ -125,7 +130,7 @@ public class HomeController : Controller
 
 The controller action is decorated by an attribute `AuthorizeForScopesAttribute` which enables to process the `MsalUiRequiredException` that could be thrown by the service implementing `ITokenAcquisition.GetAccessTokenOnBehalfOfUserAsync` so that the web app interacts with the user, and ask them to consent to the scopes, or re-sign-in if needed.
 
-<img alt="AuthorizeForScopesAttribute" src="https://user-images.githubusercontent.com/13203188/62526956-18a45380-b7ef-11e9-99f3-c75085d61ce5.png" width="50%"/>
+<img alt="AuthorizeForScopesAttribute" src="https://user-images.githubusercontent.com/13203188/64253212-0bc56d80-cf1d-11e9-9666-2e72b78886ed.png" width="50%"/>
 
 ### Samples and documentation
 
@@ -133,13 +138,13 @@ You can see in details how the library is used in the following samples:
 
 - [ASP.NET Core Web app incremental tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2) in chapter 2.1 ([call Microsoft Graph on behalf of signed in user](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/2-WebApp-graph-user/2-1-Call-MSGraph))
 - [ASP.NET Core Web app incremental tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2) in chapter 2.2 ([call Microsoft Graph on behalf of signed in user with a SQL token cache](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/2-WebApp-graph-user/2-2-TokenCache))
-- The [Web app that calls web apis](https://docs.microsoft.com/en-us/azure/active-directory/develop/scenario-web-app-sign-user-overview) scenario landing page in the Microsoft identity platform documentation
+- The [Web app that calls web apis](https://docs.microsoft.com/azure/active-directory/develop/scenario-web-app-sign-user-overview) scenario landing page in the Microsoft identity platform documentation
 
 ## Web APIs
 
 The library also enables web APIs to work with the Microsoft identity platform, enabling them to process access tokens for both work and school and Microsoft personal accounts.
 
-![image](https://user-images.githubusercontent.com/13203188/62526937-10e4af00-b7ef-11e9-9fee-c205c97653c5.png)
+![image](https://user-images.githubusercontent.com/13203188/64253058-ba1ce300-cf1c-11e9-8f01-88180fc0faed.png)
 
 ### Protected web APIS - Startup.cs
 
@@ -185,7 +190,7 @@ This method enables your web API to be protected using the Microsoft Identity pl
 See also:
 
 - the [ASP.NET Core Web API incremental tutorial](https://github.com/Azure-Samples/active-directory-dotnet-native-aspnetcore-v2) in chapter 1.1 ([Protect the web api](https://github.com/Azure-Samples/active-directory-dotnet-native-aspnetcore-v2/tree/master/1.%20Desktop%20app%20calls%20Web%20API))
-- The [Protected web API](https://docs.microsoft.com/en-us/azure/active-directory/develop/scenario-protected-web-api-overview) scenario landing page in the Microsoft identity platform documentation and the following pages.
+- The [Protected web API](https://docs.microsoft.com/azure/active-directory/develop/scenario-protected-web-api-overview) scenario landing page in the Microsoft identity platform documentation and the following pages.
 
 ### Protected web APIs that call downstream APIs on behalf of a user - Startup.cs
 
@@ -209,6 +214,8 @@ public class Startup
 }
 ```
 
+Like for Web Apps, you can choose various token cache implementations.
+
 If you're certain that your web API will need some specific scopes, you can optionally pass them as arguments to `AddProtectedApiCallsWebApis`.
 
 ### Web API controller
@@ -218,7 +225,7 @@ For your web API to call downstream APIs, you'll need to:
 - add (like in web apps), a parameter of type `ITokenAcquisition` to the constructor of your controller (the `ITokenAcquisition` service will be injected by dependency injection by ASP.NET Core)
 - verify, in your controller actions, that the token contains the scopes expected by the action. For this, you'll call the `VerifyUserHasAnyAcceptedScope` extension method on the `HttpContext`
 
-  <img alt="ScopesRequiredHttpContextExtensions" src="https://user-images.githubusercontent.com/13203188/62527104-60c37600-b7ef-11e9-8dcb-66bb982fe147.png" width="80%"/>
+  <img alt="ScopesRequiredHttpContextExtensions" src="https://user-images.githubusercontent.com/13203188/64253176-f9e3ca80-cf1c-11e9-8fe9-df06cee11c25.png" width="80%"/>
 
 - in your controller actions, to call: `ITokenAcquisition.GetAccessTokenOnBehalfOfUserAsync` passing the scopes for which to request a token.
 
@@ -262,6 +269,36 @@ For web apps that calls web apis, and web APIs that call downstream APIs, the co
 | `AddInMemoryTokenCaches` | `TokenCacheProviders.InMemory` | In memory token cache serialization. This implementation is great in samples. It's also good in production applications provided you don't mind if the token cache is lost when the web app is restarted. `AddInMemoryTokenCaches` takes an optional parameter of type `MsalMemoryTokenCacheOptions` that enables you to specify the duration after which the cache entry will expire unless it's used.
 | `AddSqlTokenCaches` | `TokenCacheProviders.Sql` | The token cache maintained in a SQL database. This implementation is ideal for production applications that need to keep their token caches. AddSqlTokenCaches takes a parameter of type `MsalSqlTokenCacheOptions` that let you specify the SQL connection string  
 | `AddSessionTokenCaches` | `TokenCacheProviders.Session` | The token cache is bound to the user session. This option isn't ideal if the ID token is too large because it contains too many claims as the cookie would be too large.
+| `AddDistributedTokenCaches` | `TokenCacheProviders.Distributed` | The token cache is an adapter against the ASP.NET Core `IDistributedCache` implementation, therefore enabling you to choose between a distributed memory cache, a Redis cache, or a SQL Server cache. For details about the IDistributedCache` implementations, see https://docs.microsoft.com/aspnet/core/performance/caching/distributed?view=aspnetcore-2.2#distributed-memory-cache.
+
+Examples of possible distributed cache:
+
+```CSharp
+// or use a distributed Token Cache by adding 
+    services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
+            .AddMsal(new string[] { scopesToRequest })
+            .AddDistributedTokenCaches();
+
+// and then choose your implementation
+
+// For instance the distributed in memory cache (not cleared when you stop the app)
+services.AddDistributedMemoryCache()
+
+// Or a Redis cache
+services.AddStackExchangeRedisCache(options =>
+{
+ options.Configuration = "localhost";
+ options.InstanceName = "SampleInstance";
+});
+
+// Or even a SQL Server token cache
+services.AddDistributedSqlServerCache(options =>
+{
+ options.ConnectionString = _config["DistCache_ConnectionString"];
+ options.SchemaName = "dbo";
+ options.TableName = "TestCache";
+});
+```
 
 ## Other utility classes
 
@@ -279,7 +316,7 @@ If you want to implement your own token cache serialization, you might want to u
 
 ### ClaimsPrincipalFactory
 
-In the other direction `ClaimsPrincipalFactory` instantiates a `ClaimsPrincipal` from an account objectId and tenantId. These methods can be useful when the web app or the web API subscribes to another service on behalf of the user, and then is called back by a notification where the users are identified by only their tenant ID and object ID. This is, for instance the case of [Microsoft Graph Web Hooks](https://docs.microsoft.com/en-us/graph/api/resources/webhooks) [notifications](https://docs.microsoft.com/en-us/graph/webhooks#notification-example). 
+In the other direction `ClaimsPrincipalFactory` instantiates a `ClaimsPrincipal` from an account objectId and tenantId. These methods can be useful when the web app or the web API subscribes to another service on behalf of the user, and then is called back by a notification where the users are identified by only their tenant ID and object ID. This is, for instance the case of [Microsoft Graph Web Hooks](https://docs.microsoft.com/graph/api/resources/webhooks) [notifications](https://docs.microsoft.com/graph/webhooks#notification-example). 
 
 <img alt="ClaimsPrincipalFactory" src="https://user-images.githubusercontent.com/13203188/62538251-2fef3b00-b807-11e9-912f-2674972e9f48.png" width="70%"/>
 
@@ -313,4 +350,4 @@ The token validation is performed by the classes of the [Identity Model Extensio
 token validation by reading:
 
 - [Validating Tokens](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki/ValidatingTokens) in that library's conceptual documentation
-- [TokenValidationParameters](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.tokens.tokenvalidationparameters?view=azure-dotnet)'s reference documentation.
+- [TokenValidationParameters](https://docs.microsoft.com/dotnet/api/microsoft.identitymodel.tokens.tokenvalidationparameters?view=azure-dotnet)'s reference documentation.

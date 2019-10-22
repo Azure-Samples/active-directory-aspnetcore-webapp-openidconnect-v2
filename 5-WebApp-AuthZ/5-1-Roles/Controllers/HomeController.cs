@@ -1,23 +1,23 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.Identity.Web;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Graph = Microsoft.Graph;
-using Microsoft.Identity.Web;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Models;
 using WebApp_OpenIDConnect_DotNet.Services;
+using Graph = Microsoft.Graph;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
-        readonly ITokenAcquisition tokenAcquisition;
-        readonly WebOptions webOptions;
+        private readonly ITokenAcquisition tokenAcquisition;
+        private readonly WebOptions webOptions;
 
         public HomeController(ITokenAcquisition tokenAcquisition,
                               IOptions<WebOptions> webOptionValue)
@@ -35,7 +35,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]
         public async Task<IActionResult> Profile()
         {
-            // Initialize the GraphServiceClient. 
+            // Initialize the GraphServiceClient.
             Graph::GraphServiceClient graphClient = GetGraphServiceClient(new[] { Constants.ScopeUserRead });
 
             var me = await graphClient.Me.Request().GetAsync();
@@ -73,15 +73,14 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         }
 
         [AuthorizeForScopes(Scopes = new[] { GraphScopes.UserReadBasicAll })]
-        [Authorize(Roles = AppRoles.UserReaders )]
+        [Authorize(Roles = AppRoles.UserReaders)]
         public async Task<IActionResult> Users()
         {
-            // Initialize the GraphServiceClient. 
+            // Initialize the GraphServiceClient.
             Graph::GraphServiceClient graphClient = GetGraphServiceClient(new[] { GraphScopes.UserReadBasicAll });
 
             var users = await graphClient.Users.Request().GetAsync();
             ViewData["Users"] = users.CurrentPage;
-
 
             return View();
         }

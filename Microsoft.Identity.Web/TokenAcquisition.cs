@@ -66,11 +66,11 @@ namespace Microsoft.Identity.Web
         };
 
         /// <summary>
-        /// This handler is executed after authorization code is received (once the user signs-in and consents) during the 
-        /// <a href='https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow'>Authorization code flow grant flow</a> in a web app. 
+        /// This handler is executed after authorization code is received (once the user signs-in and consents) during the
+        /// <a href='https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow'>Authorization code flow grant flow</a> in a web app.
         /// It uses the code to request an access token from the Microsoft Identity platform and caches the tokens and an entry about the signed-in user's account in the MSAL's token cache.
-        /// The access token (and refresh token) provided in the <see cref="AuthorizationCodeReceivedContext"/>, once added to the cache, are then used to acquire more tokens using the 
-        /// <a href='https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow'>on-behalf-of flow</a> for the signed-in user's account, 
+        /// The access token (and refresh token) provided in the <see cref="AuthorizationCodeReceivedContext"/>, once added to the cache, are then used to acquire more tokens using the
+        /// <a href='https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow'>on-behalf-of flow</a> for the signed-in user's account,
         /// in order to call to downstream APIs.
         /// </summary>
         /// <param name="context">The context used when an 'AuthorizationCode' is received over the OpenIdConnect protocol.</param>
@@ -114,7 +114,7 @@ namespace Microsoft.Identity.Web
                 // race condition ending-up in an error from Azure AD telling "code already redeemed")
                 context.HandleCodeRedemption();
 
-                // The cache will need the claims from the ID token. 
+                // The cache will need the claims from the ID token.
                 // If they are not yet in the HttpContext.User's claims, so adding them here.
                 if (!context.HttpContext.User.Claims.Any())
                 {
@@ -143,7 +143,7 @@ namespace Microsoft.Identity.Web
 
         /// <summary>
         /// Typically used from a Web App or WebAPI controller, this method retrieves an access token
-        /// for a downstream API using the <a href='https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow'>on-behalf-of flow</a> 
+        /// for a downstream API using the <a href='https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow'>on-behalf-of flow</a>
         /// for the user account that is ascertained from claims are provided in the <see cref="HttpContext.User"/> instance of the <paramref name="context"/> parameter
         /// </summary>
         /// <param name="scopes">Scopes to request for the downstream API to call</param>
@@ -284,8 +284,6 @@ namespace Microsoft.Identity.Web
             }
         }
 
-
-
         /// <summary>
         /// Creates an MSAL Confidential client application if needed
         /// </summary>
@@ -316,7 +314,7 @@ namespace Microsoft.Identity.Web
                 request.PathBase,
                 azureAdOptions.CallbackPath ?? string.Empty);
 
-            string authority = $"{azureAdOptions.Instance}{azureAdOptions.TenantId}/";
+            string authority = $"{applicationOptions.Instance}{applicationOptions.TenantId}/";
 
             var app = ConfidentialClientApplicationBuilder
                 .CreateWithApplicationOptions(applicationOptions)
@@ -447,29 +445,31 @@ namespace Microsoft.Identity.Web
         }
 
         /// <summary>
-        /// Used by Web APIs, which cannot interact with the user, when they run into a situation where user consent is required for additional scopes. 
-        /// This method appends in the HttpResponse being sent back to the client, a 403 (forbidden) status code and populates the 'WWW-Authenticate' header with additional information. 
-        /// The client, when it receives the 403 code with this header, can use the additional information provided in the header to trigger an interaction with the user where the user 
-        /// can then consent to additional scopes.
+        /// Used in Web APIs (which therefore cannot have an interaction with the user).
+        /// Replies to the client through the HttpReponse by sending a 403 (forbidden) and populating wwwAuthenticateHeaders so that
+        /// the client can trigger an iteraction with the user so that the user consents to more scopes
         /// </summary>
-        /// <param name="scopes">The additional scopes that the user needs to consent to</param>
-        /// <param name="msalServiceException"><see cref="MsalUiRequiredException"/> The MsalUiRequiredException that is examined to see if there is case for this response.</param>
-
+        /// <param name="scopes">Scopes to consent to</param>
+        /// <param name="msalServiceException"><see cref="MsalUiRequiredException"/> triggering the challenge</param>
         public void ReplyForbiddenWithWwwAuthenticateHeader(IEnumerable<string> scopes, MsalUiRequiredException msalServiceException)
         {
             // A user interaction is required, but we are in a Web API, and therefore, we need to report back to the client through an wwww-Authenticate header https://tools.ietf.org/html/rfc6750#section-3.1
             string proposedAction = "consent";
             if (msalServiceException.ErrorCode == MsalError.InvalidGrantError)
             {
-                if (AcceptedTokenVersionIsNotTheSameAsTokenVersion(msalServiceException))
+                if (AcceptedTokenVersionMismatch(msalServiceException))
                 {
                     throw msalServiceException;
                 }
             }
 
+            string consentUrl = $"{application.Authority}/oauth2/v2.0/authorize?client_id={_azureAdOptions.ClientId}"
+                + $"&response_type=code&redirect_uri={application.AppConfig.RedirectUri}"
+                + $"&response_mode=query&scope=offline_access%20{string.Join("%20", scopes)}";
+
             IDictionary<string, string> parameters = new Dictionary<string, string>()
                 {
-                    { "clientId", _azureAdOptions.ClientId },
+                    { "consentUri", consentUrl },
                     { "claims", msalServiceException.Claims },
                     { "scopes", string.Join(",", scopes) },
                     { "proposedAction", proposedAction }
@@ -479,7 +479,6 @@ namespace Microsoft.Identity.Web
             string scheme = "Bearer";
             StringValues v = new StringValues($"{scheme} {parameterString}");
 
-            //  StringValues v = new StringValues(new string[] { $"Bearer clientId=\"{jwtToken.Audiences.First()}\", claims=\"{ex.Claims}\", scopes=\" {string.Join(",", scopes)}\"" });
             var httpResponse = CurrentHttpContext.Response;
             var headers = httpResponse.Headers;
             httpResponse.StatusCode = (int)HttpStatusCode.Forbidden;
@@ -490,7 +489,7 @@ namespace Microsoft.Identity.Web
             headers.Add(HeaderNames.WWWAuthenticate, v);
         }
 
-        private static bool AcceptedTokenVersionIsNotTheSameAsTokenVersion(MsalUiRequiredException msalSeviceException)
+        private static bool AcceptedTokenVersionMismatch(MsalUiRequiredException msalSeviceException)
         {
             // Normally app developers should not make decisions based on the internal AAD code
             // however until the STS sends sub-error codes for this error, this is the only

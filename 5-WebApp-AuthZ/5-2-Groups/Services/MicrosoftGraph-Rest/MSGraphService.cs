@@ -113,7 +113,6 @@ namespace WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph
             return null;
         }
 
-
         /// <summary>Gets the groups the signed-in user's is a member of.</summary>
         /// <param name="accessToken">The access token for MS Graph.</param>
         /// <returns>A list of Groups</returns>
@@ -211,7 +210,6 @@ namespace WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph
             }
         }
 
-
         /// <summary>
         /// Gets the signed-in user groups and roles. A more efficient implementation that gets both group and role membership in one call
         /// </summary>
@@ -268,7 +266,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph
                 return null;
             }
         }
-        
+
         /// <summary>
         /// Gets the groups the signed-in user's is a direct member of.
         /// </summary>
@@ -362,26 +360,21 @@ namespace WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph
         /// <param name="accessToken">The access token.</param>
         private void PrepareAuthenticatedClient(string accessToken)
         {
-            if (graphServiceClient == null)
+            try
             {
-                // Create Microsoft Graph client.
-
-                try
-                {
-                    graphServiceClient = new GraphServiceClient(webOptions.GraphApiUrl,
-                                                                         new DelegateAuthenticationProvider(
-                                                                             async (requestMessage) =>
+                graphServiceClient = new GraphServiceClient(webOptions.GraphApiUrl,
+                                                                     new DelegateAuthenticationProvider(
+                                                                         async (requestMessage) =>
+                                                                         {
+                                                                             await Task.Run(() =>
                                                                              {
-                                                                                 await Task.Run(() =>
-                                                                                 {
-                                                                                     requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
-                                                                                 });
-                                                                             }));
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"Could not create a graph client {ex}");
-                }
+                                                                                 requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
+                                                                             });
+                                                                         }));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Could not create a graph client {ex}");
             }
         }
     }
