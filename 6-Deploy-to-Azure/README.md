@@ -52,11 +52,11 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
 
 Secure key management is essential to protect data in the cloud. Use [Azure Key Vault](https://azure.microsoft.com/en-ca/services/key-vault/) to encrypt keys and small secrets like passwords that use keys stored in hardware security modules (HSMs).
 
-You can follow [this sample](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet) as a guide on how to use Azure Key Vault from App Service with Managed Service Identity (MSI).
+Use [this sample](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet) as a guide on how to use Azure Key Vault from App Service with Managed Service Identity (MSI).
 
 ## MSAL token cache on distributed environments
 
-The samples in this tutorial have their token cache providers configured for apps running on a single machine. On production environment, these apps could be deployed in many machines for scalability purpose, so the token cache provider needs to be configured accordingly to this distributed architecture.
+The samples in this tutorial have their token cache providers configured for apps running on a single machine. On a production environment, these apps could be deployed in many machines for scalability purpose, so the token cache provider needs to be configured accordingly for this distributed architecture.
 
 These are the necessary changes for each cache provider option:
 
@@ -71,7 +71,7 @@ services.AddDistributedTokenCaches()
 
 ### Redis
 
-If you want to use distributed Redis cache, use this configuration on `Startup.cs`:
+If you want to use a distributed Redis cache, use this configuration on `Startup.cs`:
 
 ```csharp
 services.AddDistributedTokenCaches()
