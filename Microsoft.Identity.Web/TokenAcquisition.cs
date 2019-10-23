@@ -323,8 +323,8 @@ namespace Microsoft.Identity.Web
                 .Build();
 
             // Initialize token cache providers
-            _tokenCacheProvider?.InitializeAsync(app.AppTokenCache, true);
-            _tokenCacheProvider?.InitializeAsync(app.UserTokenCache, false);
+            _tokenCacheProvider?.InitializeAsync(app.AppTokenCache);
+            _tokenCacheProvider?.InitializeAsync(app.UserTokenCache);
 
             return app;
         }
