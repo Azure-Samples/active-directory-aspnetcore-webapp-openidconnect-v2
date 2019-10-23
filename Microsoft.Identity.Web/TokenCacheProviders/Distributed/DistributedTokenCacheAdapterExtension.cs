@@ -29,7 +29,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Distributed
             this IServiceCollection services)
         {
             services.AddDistributedMemoryCache();
-            services.AddSingleton<IMsalAppTokenCacheProvider, MsalAppDistributedTokenCacheProvider>();
+            services.AddSingleton<IMsalTokenCacheProvider, MsalDistributedTokenCacheAdapter>();
             return services;
         }
 
@@ -42,7 +42,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Distributed
         {
             services.AddDistributedMemoryCache();
             services.AddHttpContextAccessor();
-            services.AddSingleton<IMsalUserTokenCacheProvider, MsalPerUserDistributedTokenCacheProvider>();
+            services.AddSingleton<IMsalTokenCacheProvider, MsalDistributedTokenCacheAdapter>();
             return services;
         }
     }

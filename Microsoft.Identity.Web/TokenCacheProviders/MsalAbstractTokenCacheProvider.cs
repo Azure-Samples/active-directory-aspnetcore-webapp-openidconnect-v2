@@ -59,20 +59,16 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
         /// <summary>
         /// Cache key
         /// </summary>
-        private string CacheKey
+        private string GetCacheKey(bool isAppTokenCache)
         {
-            get
+            if (isAppTokenCache)
             {
-                if (_isAppTokenCache)
-                {
-                    return $"{_azureAdOptions.Value.ClientId}_AppTokenCache";
-                }
-                else
-                {
-                    return _httpContextAccessor.HttpContext.User.GetMsalAccountId();
-                }
+                return $"{_azureAdOptions.Value.ClientId}_AppTokenCache";
             }
-
+            else
+            {
+                return _httpContextAccessor.HttpContext.User.GetMsalAccountId();
+            }
         }
 
         /// <summary>
@@ -87,18 +83,21 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
             // if the access operation resulted in a cache update
             if (args.HasStateChanged)
             {
-                if (!string.IsNullOrWhiteSpace(CacheKey))
+                string cacheKey = GetCacheKey(args.IsApplicationTokenCache);
+                if (!string.IsNullOrWhiteSpace(cacheKey))
                 {
-                    await WriteCacheBytesAsync(CacheKey, args.TokenCache.SerializeMsalV3()).ConfigureAwait(false);
+                    await WriteCacheBytesAsync(cacheKey, args.TokenCache.SerializeMsalV3()).ConfigureAwait(false);
                 }
             }
         }
 
         private async Task OnBeforeAccessAsync(TokenCacheNotificationArgs args)
         {
-            if (!string.IsNullOrEmpty(CacheKey))
+            string cacheKey = GetCacheKey(args.IsApplicationTokenCache);
+
+            if (!string.IsNullOrEmpty(cacheKey))
             {
-                byte[] tokenCacheBytes = await ReadCacheBytesAsync(CacheKey).ConfigureAwait(false);
+                byte[] tokenCacheBytes = await ReadCacheBytesAsync(cacheKey).ConfigureAwait(false);
                 args.TokenCache.DeserializeMsalV3(tokenCacheBytes, shouldClearExistingCache: true);
             }
         }
@@ -111,7 +110,8 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
 
         public async Task ClearAsync()
         {
-            await RemoveKeyAsync(CacheKey).ConfigureAwait(false);
+            // This is here a user token cache
+            await RemoveKeyAsync(GetCacheKey(false)).ConfigureAwait(false);
         }
 
         protected abstract Task WriteCacheBytesAsync(string cacheKey, byte[] bytes);
