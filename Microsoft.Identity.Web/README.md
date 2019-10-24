@@ -338,7 +338,7 @@ In order to troubleshoot your web API you can set the `subscribeToJwtBearerMiddl
 
 In both cases, you can set a breakpoint in the methods of the  `OpenIdConnectMiddlewareDiagnostics` and `JwtBearerMiddlewareDiagnostics` classes respectively to observe values under the debugger.
 
-## Doing more
+## More customizations
 
 If you want to customize the `OpenIdConnectOption` or `JwtBearerOption` but still want to benefit from the implementation provided by Microsoft.Identity.Web, you can easily do it from your `Startup.cs` file:
 
