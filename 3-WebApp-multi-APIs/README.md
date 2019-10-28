@@ -30,7 +30,7 @@ To run this sample:
 
 ### Step 1: Register the sample with your Azure AD tenant
 
-You first need to [register](../../1-3-AnyOrgOrPersonal/README.md#step-1-register-the-sample-with-your-azure-ad-tenant/README.md) your app as described in [the first phase of the tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC)
+You first need to [register](../1-WebApp-OIDC/1-3-AnyOrgOrPersonal/README.md#step-1-register-the-sample-with-your-azure-ad-tenant/README.md) your app as described in [the first phase of the tutorial](../1-WebApp-OIDC/1-WebApp-OIDC)
 
 Then, the follow the following extra set of steps:
 
