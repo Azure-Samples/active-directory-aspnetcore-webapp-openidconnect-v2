@@ -24,7 +24,7 @@ To run this sample:
 
 > Pre-requisites:
 >
-> This is the third phase of the tutorial. It's recommended that you have gone through the previous phases of the tutorial, in particular how the [WebApp signs-in users with Microsoft Identity (OIDC) / with work and school or personal accounts](../../1-WebApp-OIDC/1-3-AnyOrgOrPersonal) and  [Web app calls the Microsoft Graph API on behalf of a user signing-in](../../2-WebApp-graph-user/2-1-Call-MSGraph).
+> This is the third phase of the tutorial. It's recommended that you have gone through the previous phases of the tutorial, in particular how the [WebApp signs-in users with Microsoft Identity (OIDC) / with work and school or personal accounts](../1-WebApp-OIDC/1-3-AnyOrgOrPersonal) and  [Web app calls the Microsoft Graph API on behalf of a user signing-in](../2-WebApp-graph-user/2-1-Call-MSGraph).
 >
 > This chapter shows the incremental changes required to call two Microsoft APIs other than Microsoft Graph (Azure Resource Management and Azure Storage).
 
