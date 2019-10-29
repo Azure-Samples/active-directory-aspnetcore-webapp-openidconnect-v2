@@ -5,13 +5,13 @@ using WebApp_OpenIDConnect_DotNet.Models;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
-    [Authorize]
     public class HomeController : Controller
     {
         public HomeController()
         {
         }
 
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();

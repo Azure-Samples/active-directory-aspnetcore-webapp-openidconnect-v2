@@ -8,7 +8,13 @@
 }
 else
 {
-    <ul class="nav navbar-nav navbar-right">
-        <li><a asp-area="AzureAD" asp-controller="Account" asp-action="SignIn">Sign in</a></li>
-    </ul>
+<ul class="nav navbar-nav navbar-right">
+    <li><a asp-area="AzureAD" asp-controller="Account" asp-action="SignIn">Sign in</a></li>
+        <li><a asp-area="AzureAD" asp-controller="Todo" asp-action="Index">Todos</a></li>
+
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <li><a asp-area="AzureAD" asp-controller="Onboarding" asp-action="SignUp">Sign Up</a></li>
+    }
+</ul>
 }
