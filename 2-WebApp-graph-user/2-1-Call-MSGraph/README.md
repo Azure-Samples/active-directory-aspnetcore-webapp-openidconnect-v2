@@ -14,7 +14,7 @@ endpoint: Microsoft identity platform
 
 ## Scenario
 
-Starting from a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users, this phase of the tutorial shows how to call  Microsoft Graph /me endpoint on behalf of the signed-in user. It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). Their complexities where encapsultated into the `Microsoft.Identity.Web` reusable library project part of this tutorial. Once again the notion of ASP.NET services injected by dependency injection is heavily used.
+Starting from a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users, this phase of the tutorial shows how to call  Microsoft Graph /me endpoint on behalf of the signed-in user. It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). Their complexities where encapsulated into the `Microsoft.Identity.Web` reusable library project part of this tutorial. Once again the notion of ASP.NET services injected by dependency injection is heavily used.
 
 ![Sign in with the Microsoft identity platform](ReadmeFiles/sign-in.png)
 
@@ -28,17 +28,22 @@ To run this sample:
 
 ### Step 1: Register the sample with your Azure AD tenant
 
-You first need to [register](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2#step-1-register-the-sample-with-your-azure-ad-tenant) your app as described in [the first tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/aspnetcore2-2)
+You first need to [register](../../1-WebApp-OIDC/1-1-MyOrg#step-1-register-the-sample-with-your-azure-ad-tenant) your app as described in [the first tutorial](../../1-WebApp-OIDC/1-1-MyOrg)
 
 Then follow the following extra set of steps:
 
-1. From the **Certificates & secrets** page, for your app registration, in the **Client secrets** section, choose **New client secret**:
-
-   - Type a key description (of instance `app secret`),
-   - Select a key duration of either **In 1 year**, **In 2 years**, or **Never Expires**.
-   - When you press the **Add** button, the key value will be displayed, copy, and save the value in a safe location.
-   - You'll need this key later to configure the project in Visual Studio. This key value will not be displayed again, nor retrievable by any other means.
-1. In the list of pages for the app, select **API permissions**, and notice that a delegated permission is set by default to Microsoft Graph for the scope **User.Read**
+1. In the app's registration screen, click on the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
+1. In the **Client secrets** section, click on **New client secret**:
+   - Type a key description (for instance `app secret`),
+   - Select one of the available key durations (**In 1 year**, **In 2 years**, or **Never Expires**) as per your security concerns.
+   - The generated key value will be displayed when you click the **Add** button. Copy the generated value for use in the steps later.
+   - You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
+1. In the app's registration screen, click on the **API permissions** blade in the left to open the page where we add access to the Apis that your application needs.
+   - Click the **Add permissions** button and then,
+   - Ensure that the **Microsoft APIs** tab is selected.
+   - In the *Commonly used Microsoft APIs* section, click on **Microsoft Graph**
+   - In the **Delegated permissions** section, select the **User.Read** in the list. Use the search box if necessary.
+   - Click on the **Add permissions** button in the bottom.
 
 ### Step 2: Download/Clone/Go to the folder containing the sample code and build the application
 
@@ -56,11 +61,16 @@ Go to the `"2-WebApp-graph-user\2-1-Call-MSGraph"` folder
   cd "2-WebApp-graph-user\2-1-Call-MSGraph"
   ```
 
-  In the appsettings.json file, replace, if you have not already:
+#### Configure the  webApp app (WebApp-OpenIDConnect-DotNet-code-v2) to use your app registration
 
-- the `ClientID` value with the *Application ID* from the application you registered in Application Registration portal,
-- the `TenantId` by `common`, as here you chose to sign-in users with their work or school or personal account. In case you want to sign-in different audiences, refer back to the first phase of the tutorial
-- and the `ClientSecret` by the client secret you generated in Step 1.
+Open the project in your IDE (like Visual Studio) to configure the code.
+>In the steps below, "ClientID" is the same as "Application ID" or "AppId".
+
+1. Open the `appsettings.json` file
+1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `WebApp-OpenIDConnect-DotNet-code-v2` application copied from the Azure portal.
+1. Find the app key `TenantId` and replace by `common`, as here you chose to sign-in users with their work or school or personal account. In case you want to sign-in different audiences, refer back to the first phase of the tutorial.
+1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
+1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp-OpenIDConnect-DotNet-code-v2` app, in the Azure portal.
 
 - In case you want to deploy your app in Sovereign or national clouds, ensure the `GraphApiUrl` option matches the one you want. By default this is Microsoft Graph in the Azure public cloud
 

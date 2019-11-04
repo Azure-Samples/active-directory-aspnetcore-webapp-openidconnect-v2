@@ -16,7 +16,7 @@ IF SUFFICIENT INFORMATION IS NOT PROVIDED VIA THE FOLLOWING TEMPLATE THE ISSUE M
 
 Please add an 'x' for the scenario(s) where you found an issue
 
-1. [ ] Web app that signs in users
+1. Web app that signs in users
    1. [ ] with a work and school account in your organization: [1-WebApp-OIDC/1-1-MyOrg](../blob/master/1-WebApp-OIDC/1-1-MyOrg)
    1. [ ] with any work and school account: [/1-WebApp-OIDC/1-2-AnyOrg](../blob/master/1-WebApp-OIDC/1-2-AnyOrg)
    1. [ ] with any work or school account or Microsoft personal account: [1-WebApp-OIDC/1-3-AnyOrgOrPersonal](../blob/master/1-WebApp-OIDC/1-3-AnyOrgOrPersonal)
@@ -27,7 +27,7 @@ Please add an 'x' for the scenario(s) where you found an issue
    1. [ ] With specific token caches: [2-WebApp-graph-user/2-2-TokenCache](../blob/master/2-WebApp-graph-user/2-2-TokenCache)
    1. [ ] Calling Microsoft Graph in national clouds: [2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph](../blob/master/2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph)
 1. [ ] Web app calling several APIs [3-WebApp-multi-APIs](../blob/master/3-WebApp-multi-APIs)
-1. [ ] Web app calling your own Web API
+1. [ ] Web app calling your own Web API [4-WebApp-your-API](../blob/master/4-WebApp-your-API)
 1. Web app restricting users
    1. [ ] by Roles: [5-WebApp-AuthZ/5-1-Roles](../blob/master/5-WebApp-AuthZ/5-1-Roles)
    1. [ ] by Groups: [5-WebApp-AuthZ/5-2-Groups](../blob/master/5-WebApp-AuthZ/5-2-Groups)

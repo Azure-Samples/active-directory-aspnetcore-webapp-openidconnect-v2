@@ -52,7 +52,84 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
 
 Secure key management is essential to protect data in the cloud. Use [Azure Key Vault](https://azure.microsoft.com/en-ca/services/key-vault/) to encrypt keys and small secrets like passwords that use keys stored in hardware security modules (HSMs).
 
-You can follow [this sample](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet) as a guide on how to use Azure KeyVault from App Service with Managed Service Identity (MSI).
+Use [this sample](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet) as a guide on how to use Azure Key Vault from App Service with Managed Service Identity (MSI).
+
+## MSAL token cache on distributed environments
+
+The samples in this tutorial have their token cache providers configured for apps running on a single machine. On a production environment, these apps could be deployed in many machines for scalability purpose, so the token cache provider needs to be configured accordingly for this distributed architecture.
+
+These are the necessary changes for each cache provider option:
+
+### In memory
+
+If you want to use in memory cache, use this configuration on `Startup.cs`:
+
+```csharp
+services.AddDistributedTokenCaches()
+.AddDistributedMemoryCache();
+```
+
+### Redis
+
+If you want to use a distributed Redis cache, use this configuration on `Startup.cs`:
+
+```csharp
+services.AddDistributedTokenCaches()
+.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "<your_redis_primary_connection_string_here>";
+    options.InstanceName = "<your_redis_instance_name>";
+});
+```
+
+### SQL Server
+
+There are two options for distributed SQL cache:
+
+- [using .Net Core distributed cache extensions](https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed?view=aspnetcore-2.2)
+- [configuring DataProtection for distributed environments](https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/overview?view=aspnetcore-2.2)
+
+#### If you want to use .Net Core distributed cache extensions
+
+Create the cache database by running the CLI (change the parameters according to your configurations)
+
+```csharp
+dotnet sql-cache create "<your DB connection string>" dbo <cacheTableName>
+```
+
+Then use this configuration on `Startup.cs`:
+
+```csharp
+services.AddDistributedTokenCaches()
+.AddDistributedSqlServerCache(options =>
+{
+    options.ConnectionString = "<your_sql_connection_string_here>";
+    options.SchemaName = "dbo";
+    options.TableName = "<your_cache_table_name_here>";
+});
+```
+
+#### If you want to configure `DataProtection` for distributed environments
+
+You have to configure the key ring storage to a centralized location. It could be in [Azure Key Vault](https://azure.microsoft.com/services/key-vault/) or on a [UNC share](https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-dfsc/149a3039-98ce-491a-9268-2f5ddef08192).
+
+> **Note**: If you change the key persistence location, the system no longer automatically encrypts keys at rest. It is recommended that you use one of the ProtectKeysWith* methods listed [in this doc](https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/overview?view=aspnetcore-2.2).
+
+For Azure Key Vault, configure the system with [PersistKeysToAzureBlobStorage](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.dataprotection.azuredataprotectionbuilderextensions.persistkeystoazureblobstorage?view=aspnetcore-2.2) (also consider using [ProtectKeysWithAzureKeyVault](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.dataprotection.azuredataprotectionbuilderextensions.protectkeyswithazurekeyvault)) in the `Startup` class:
+
+```csharp
+services.AddDataProtection()
+.PersistKeysToAzureBlobStorage("<storage account connection or uri>");
+```
+
+> **Note**: Your app must have **Unwrap Key** and **Wrap Key** permissions to the Azure Key Vault.
+
+For UNC share, configure the system with [PersistKeysToFileSystem](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.dataprotection.dataprotectionbuilderextensions.persistkeystofilesystem) (also consider using [ProtectKeysWithCertificate](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.dataprotection.dataprotectionbuilderextensions.protectkeyswithcertificate?view=aspnetcore-2.2)) in the `Startup` class:
+
+```csharp
+services.AddDataProtection()
+.PersistKeysToFileSystem(new DirectoryInfo(@"\\server\share\directory\"));
+```
 
 ## Community Help and Support
 
