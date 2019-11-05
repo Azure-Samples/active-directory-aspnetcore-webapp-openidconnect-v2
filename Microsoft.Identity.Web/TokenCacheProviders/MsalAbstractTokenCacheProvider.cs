@@ -75,7 +75,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
             // if the access operation resulted in a cache update
             if (args.HasStateChanged)
             {
-                string cacheKey = GetCacheKey(args.IsApplicationTokenCache);
+                string cacheKey = GetCacheKey(args.IsApplicationCache);
                 if (!string.IsNullOrWhiteSpace(cacheKey))
                 {
                     await WriteCacheBytesAsync(cacheKey, args.TokenCache.SerializeMsalV3()).ConfigureAwait(false);
@@ -85,7 +85,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
 
         private async Task OnBeforeAccessAsync(TokenCacheNotificationArgs args)
         {
-            string cacheKey = GetCacheKey(args.IsApplicationTokenCache);
+            string cacheKey = GetCacheKey(args.IsApplicationCache);
 
             if (!string.IsNullOrEmpty(cacheKey))
             {
