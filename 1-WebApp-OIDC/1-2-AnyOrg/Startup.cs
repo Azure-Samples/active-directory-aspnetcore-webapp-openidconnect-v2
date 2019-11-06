@@ -1,13 +1,24 @@
 ﻿using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.Resource;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using WebApp_OpenIDConnect_DotNet.DAL;
+using WebApp_OpenIDConnect_DotNet.Utils;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -30,8 +41,42 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddOptions();
+
+            services.AddDbContext<SampleDbContext>(options => options.UseInMemoryDatabase(databaseName: "MultiTenantOnboarding"));
+
             // Sign-in users with the Microsoft identity platform
             services.AddMicrosoftIdentityPlatformAuthentication(Configuration);
+            
+            services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
+            {
+                //options.TokenValidationParameters = BuildTokenValidationParameters(options);
+                options.Events.OnTokenValidated = async context => 
+                {
+                    string tenantId = context.SecurityToken.Claims.FirstOrDefault(x => x.Type == "tid" || x.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
+
+                    if (string.IsNullOrWhiteSpace(tenantId))
+                        throw new UnauthorizedAccessException("Unable to get tenantId from token.");
+
+                    var dbContext = context.HttpContext.RequestServices.GetRequiredService<SampleDbContext>();
+
+                    var authorizedTenant = await dbContext.AuthorizedTenants.FirstOrDefaultAsync(t => t.TenantId == tenantId);
+
+                    if (authorizedTenant == null)
+                        throw new UnauthorizedTenantException("This tenant is not authorized");
+
+                };
+                options.Events.OnAuthenticationFailed = (context) =>
+                {
+                    if (context.Exception != null && context.Exception is UnauthorizedTenantException)
+                    {
+                        context.Response.Redirect("/Home/UnauthorizedTenant");
+                        context.HandleResponse(); // Suppress the exception
+                    }
+
+                    return Task.FromResult(0);
+                };
+            });
 
             services.AddMvc(options =>
             {

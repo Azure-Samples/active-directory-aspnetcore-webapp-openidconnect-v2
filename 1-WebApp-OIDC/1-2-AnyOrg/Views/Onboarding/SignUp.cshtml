@@ -1,0 +1,22 @@
+﻿
+@{
+    ViewData["Title"] = "SignUp";
+}
+
+<h2>Tenant Onboarding</h2>
+<div class="panel panel-info">
+    <div class="panel-heading"><h4>Instructions</h4></div>
+    <div class="panel-body">
+        <p>In this multi-tenant sample, only tenants that are registered on the database will have their tokens validated.</p>
+        <p>This step represents an onboarding process, where we will provide this application's service principle into the new client tenant, using the admin consent endpoint. Then, we save the tenantId on the database to accept tokens issued by them.</p>
+        <p>Click on the button below to prompt the admin consent screen and register your tenant. You must use an <b>admin account</b> on this step.</p>
+        <form asp-controller="Onboarding" asp-action="Onboard" method="post" class="form-horizontal" role="form">
+            @Html.AntiForgeryToken()
+            <div>
+                <button type="submit" class="btn btn-info">Register my tenant</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
