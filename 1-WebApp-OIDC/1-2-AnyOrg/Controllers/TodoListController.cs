@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Identity.Web;
 using WebApp_OpenIDConnect_DotNet.BLL;
 using WebApp_OpenIDConnect_DotNet.Models;
+using WebApp_OpenIDConnect_DotNet.Utils;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
@@ -14,14 +16,19 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
     public class TodoListController : Controller
     {
         private readonly ITodoItemService _todoItemService;
-        public TodoListController(ITodoItemService todoItemService)
+        private readonly ITokenAcquisition _tokenAcquisition;
+        private readonly IMSGraphService _msGraphService;
+
+        public TodoListController(ITodoItemService todoItemService, ITokenAcquisition tokenAcquisition, IMSGraphService msGraphService)
         {
             _todoItemService = todoItemService;
+            _tokenAcquisition = tokenAcquisition;
+            _msGraphService = msGraphService;
         }
 
         public async Task<IActionResult> Index(bool showAllFilter)
         {
-            @TempData["ShowAllFilter"] = showAllFilter;
+            ViewData["ShowAllFilter"] = showAllFilter;
 
             var items = await _todoItemService.List(showAllFilter, User);
             return View(items);
@@ -34,16 +41,57 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             {
                 AssignedTo = User.GetObjectId(),
                 TenantId = User.GetTenantId(),
-                UserName = User.Identity.Name
+                UserName = User.GetDisplayName()
             };
 
             return View(model);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TodoItem model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             await _todoItemService.Create(model.Text, User);
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        [AuthorizeForScopes(Scopes = new string[] { GraphScope.DirectoryReadAll })]
+        public async Task<IActionResult> Edit(int id)
+        {
+            TodoItem todoItem = await _todoItemService.Get(id, User);
+
+            if(todoItem == null)
+            {
+                TempData["ErrorMessage"] = "Item not found";
+                return RedirectToAction("Error", "Home");
+            }
+
+            var userTenant = User.GetTenantId();
+
+            // Acquiring token for graph using the user's tenantId, so it can return all the users from their tenant
+            var graphAccessToken = await _tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new string[] { GraphScope.DirectoryReadAll }, userTenant);
+
+            TempData["UsersDropDown"] = (await _msGraphService.GetUsersAsync(graphAccessToken))
+                .Select(u => new SelectListItem
+                {
+                    Text = u.UserPrincipalName,
+                    Value = u.Id
+                }).ToList();
+
+            return View(todoItem);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(TodoItem todoItem)
+        {
+            await _todoItemService.Edit(todoItem, User);
             return RedirectToAction("Index");
         }
 

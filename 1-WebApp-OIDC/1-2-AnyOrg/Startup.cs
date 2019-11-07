@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.Resource;
+using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -48,9 +49,12 @@ namespace WebApp_OpenIDConnect_DotNet
             services.AddDbContext<SampleDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SampleDbConnStr")));
             
             services.AddScoped<ITodoItemService, TodoItemService>();
+            services.AddScoped<IMSGraphService, MSGraphService>();
 
             // Sign-in users with the Microsoft identity platform
-            services.AddMicrosoftIdentityPlatformAuthentication(Configuration);
+            services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
+                    .AddMsal(Configuration, new string[] { GraphScope.DirectoryReadAll })
+                    .AddInMemoryTokenCaches();
 
             services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
             {

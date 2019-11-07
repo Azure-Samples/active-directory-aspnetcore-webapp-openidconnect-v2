@@ -17,11 +17,11 @@
 <h3>Display</h3>
 <form asp-action="Index" method="get">
     <div class="radio">
-        <label style="margin-right:15px;">
-            <input type="radio" value="false" name="showAllFilter" asp-for="@TempData["ShowAllFilter"]"> Only mine
+        <label class="radio-inline" style="margin-right:15px;">
+            <input type="radio" value="false" name="showAllFilter" asp-for="@ViewData["ShowAllFilter"]"> Only mine
         </label>
-        <label style="margin-right:15px;">
-            <input type="radio" value="true" name="showAllFilter" asp-for="@TempData["ShowAllFilter"]"> All from my tenant
+        <label class="radio-inline" style="margin-right:15px;">
+            <input type="radio" value="true" name="showAllFilter" asp-for="@ViewData["ShowAllFilter"]"> All from my tenant
         </label>
         <input type="submit" value="Apply" class="btn btn-default" />
     </div>
