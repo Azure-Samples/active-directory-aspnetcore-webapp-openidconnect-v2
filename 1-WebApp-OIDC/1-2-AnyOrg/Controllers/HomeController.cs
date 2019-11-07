@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web;
 using System.Diagnostics;
 using System.Linq;
 using WebApp_OpenIDConnect_DotNet.DAL;
@@ -29,7 +30,12 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             dbContext.RemoveRange(tenants);
             dbContext.SaveChanges();
 
-            return RedirectToAction("Index");
+            var signedUserTenant = User.GetTenantId();
+
+            if (id == signedUserTenant)
+                return RedirectToAction("SignOut", "Account", new { area = "AzureAD" });
+            else
+                return RedirectToAction("Index");
         }
 
         [AllowAnonymous]

@@ -1,8 +1,9 @@
 @using System.Security.Principal
+@using Microsoft.Identity.Web
 @if (User.Identity.IsAuthenticated)
 {
     <ul class="nav navbar-nav navbar-right">
-        <li class="navbar-text">Hello @User.Identity.Name!</li>
+        <li class="navbar-text">Hello @User.Identity.Name! </li>
         <li><a asp-area="AzureAD" asp-controller="Account" asp-action="SignOut">Sign out</a></li>
     </ul>
 }

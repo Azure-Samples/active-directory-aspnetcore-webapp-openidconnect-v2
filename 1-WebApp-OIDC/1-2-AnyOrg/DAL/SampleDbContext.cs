@@ -12,5 +12,6 @@ namespace WebApp_OpenIDConnect_DotNet.DAL
         public SampleDbContext(DbContextOptions<SampleDbContext> options) : base(options) { }
 
         public DbSet<AuthorizedTenant> AuthorizedTenants { get; set; }
+        public DbSet<TodoItem> TodoItems { get; set; }
     }
 }

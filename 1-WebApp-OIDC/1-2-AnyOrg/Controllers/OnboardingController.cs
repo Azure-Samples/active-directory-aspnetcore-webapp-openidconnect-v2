@@ -25,14 +25,14 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         }
 
         [HttpGet]
-        public ActionResult SignUp()
+        public IActionResult SignUp()
         {
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Onboard()
+        public IActionResult Onboard()
         {
             // Generate a random value to identify the request
             string stateMarker = Guid.NewGuid().ToString();
@@ -60,11 +60,11 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                 Uri.EscapeDataString(stateMarker));
 
 
-            return new RedirectResult(authorizationRequest);
+            return Redirect(authorizationRequest);
         }
 
         // This is the redirect Uri for the admin consent authorization
-        public async Task<ActionResult> ProcessCode(string tenant, string error, string error_description, string resource, string state)
+        public async Task<IActionResult> ProcessCode(string tenant, string error, string error_description, string resource, string state)
         {
             if (error != null)
             {
