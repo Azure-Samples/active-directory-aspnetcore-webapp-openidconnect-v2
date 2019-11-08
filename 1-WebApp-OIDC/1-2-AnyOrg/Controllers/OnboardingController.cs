@@ -53,11 +53,12 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
             // Create an OAuth2 request, using the web app as the client.This will trigger a consent flow that will provision the app in the target tenant.
             string authorizationRequest = string.Format(
-                "{0}common/adminconsent?client_id={1}&redirect_uri={2}&state={3}",
+                "{0}common/v2.0/adminconsent?client_id={1}&redirect_uri={2}&state={3}&scope={4}",
                 azureADOptions.Instance,
                 Uri.EscapeDataString(azureADOptions.ClientId),
                 Uri.EscapeDataString(currentUri + "Onboarding/ProcessCode"),
-                Uri.EscapeDataString(stateMarker));
+                Uri.EscapeDataString(stateMarker),
+                Uri.EscapeDataString("https://graph.microsoft.com/.default"));
 
 
             return Redirect(authorizationRequest);

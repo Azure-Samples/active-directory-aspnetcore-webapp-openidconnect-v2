@@ -23,23 +23,19 @@ namespace WebApp_OpenIDConnect_DotNet.BLL
         /// </returns>
         public async Task<IEnumerable<User>> GetUsersAsync(string accessToken)
         {
-            var usersDropDown = new List<SelectListItem>();
-            
+            IGraphServiceUsersCollectionPage users = null;
+
             try
             {
                 PrepareAuthenticatedClient(accessToken);
-                IGraphServiceUsersCollectionPage users = await graphServiceClient.Users.Request()
+                users = await graphServiceClient.Users.Request()
                     .Filter($"accountEnabled eq true")
                     .Select("id, userPrincipalName")
                     .GetAsync();
                 
                 if (users?.CurrentPage.Count > 0)
                 {
-                    usersDropDown = users.Select(u => new SelectListItem 
-                                    { 
-                                        Text = u.UserPrincipalName,
-                                        Value = u.Id
-                                    }).ToList();
+                    return users;
                 }
             }
             catch (ServiceException e)
@@ -47,8 +43,8 @@ namespace WebApp_OpenIDConnect_DotNet.BLL
                 Debug.WriteLine("We could not retrieve the user's list: " + $"{e}");
                 return null;
             }
-            
-            return usersDropDown;
+
+            return users;
         }
 
         /// <summary>
