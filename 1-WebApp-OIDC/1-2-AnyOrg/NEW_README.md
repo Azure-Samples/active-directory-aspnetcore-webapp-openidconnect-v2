@@ -21,7 +21,7 @@ This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Conn
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
 
 > This is the second chapter of the first phase of this ASP.NET Core Web App tutorial. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user) in a later chapter.
->  You can also sign-in users in your own Azure Active Directory organizations, and even with Microsoft personal accounts or social identities. For more details the parent directory's [Readme.md](../README.md)
+> You can also sign-in users in your own Azure Active Directory organizations, and even with Microsoft personal accounts or social identities. For more details the parent directory's [Readme.md](../README.md)
 
 ## How to run this sample
 
@@ -43,6 +43,8 @@ or download and extract the repository .zip file.
 > Given that the name of the sample is quiet long, and so are the names of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
 ### Step 2:  Register the sample application with your Azure Active Directory tenant
+
+> :warning: **If you had created this sample in the past already**: [Delete its **enterprise app** from the other tenants before re-creating this application](#error-AADSTS650051).
 
 There is one project in this sample. To register it, you can:
 
@@ -257,6 +259,16 @@ AuthenticationResult result = await confidentialClientApplication
     .ExecuteAsync()
     .ConfigureAwait(false);
 ```
+
+## Troubleshooting
+
+### Error AADSTS650051
+
+If you are receiving the following error message, you might need to **delete older Enterprise Applications**
+
+> OpenIdConnectProtocolException: Message contains error: 'invalid_client', error_description: 'AADSTS650051: Application '{applicationId}' is requesting permissions that are either invalid or out of date.
+
+If you had provisioned a service principle of this app in the past and created a new one, the tenants that had signed-in in the app might still have the previous service principle registered causing a conflict with the new one. The solution for the conflict is to delete the older service principle from each tenant in the **Enterprise Application** menu.
 
 ## Contributing
 
