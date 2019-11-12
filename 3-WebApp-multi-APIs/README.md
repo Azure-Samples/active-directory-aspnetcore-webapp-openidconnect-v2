@@ -189,7 +189,7 @@ insert
 
 ## Troubleshooting
 
-To access Azure Resource Management (ARM), you'll need a work or School account (AAD account) and an Azure subscription. If your azure subscription is for a Microsoft personal account, just create a new user in your directory, and use this user to run the sample
+To access Azure Resource Management (ARM), you'll need a work or school account (AAD account) and an Azure subscription. If your Azure subscription is for a Microsoft personal account, just create a new user in your directory, and use this user to run the sample
 
 OpenIdConnectProtocolException: Message contains error: 'invalid_client', error_description: 'AADSTS650052: The app needs access to a service (\"https://*.blob.core.windows.net\") that your organization \"*tenantname*.onmicrosoft.com\" has not subscribed to or enabled. Contact your IT Admin to review the configuration of your service subscriptions.
 this is because the AzureStorage API was not registered as an API used by your Web App
