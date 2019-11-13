@@ -1,8 +1,8 @@
 ---
 services: active-directory
 platforms: dotnet
-author: jmprieur
-level: 100
+author: TiagoBrenck
+level: 400
 client: ASP.NET Core Web App
 endpoint: Microsoft identity platform
 ---
@@ -136,7 +136,7 @@ The sample implements two distinct tasks: the onboarding of a new tenant and a b
 
 #### Sign-in
 
-Users can only sign-in if their tenant has been onboarded. The sample will guide them for it, but it requires a **tenant admin account** to complete the onboarding process. Once the admin have consented, all users from their tenant will be able to sign-in.
+Users can only sign-in if their tenant had been onboarded. The sample will guide them for it, but it requires a **tenant admin account** to complete the onboarding process. Once the admin have consented, all users from their tenant will be able to sign-in.
 
 #### Todo List
 
