@@ -11,8 +11,6 @@ namespace Microsoft.Identity.Web
     /// </summary>
     public static class ClaimsPrincipalExtensions
     {
-        // TODO: how to make this work with B2C, given that there is no tenant ID with B2C?
-
         /// <summary>
         /// Gets the Account identifier for an MSAL.NET account from a <see cref="ClaimsPrincipal"/>
         /// </summary>
@@ -27,12 +25,12 @@ namespace Microsoft.Identity.Web
 
             if (!string.IsNullOrWhiteSpace(nameIdentifierId) && !string.IsNullOrWhiteSpace(tenantId) && !string.IsNullOrWhiteSpace(policyId))
             {
-                // B2C standard
+                // B2C pattern: {oid}-{tfp}.{tid}
                 return $"{nameIdentifierId}-{policyId}.{tenantId}";
             }
             else if (!string.IsNullOrWhiteSpace(userObjectId) && !string.IsNullOrWhiteSpace(tenantId))
             {
-                // AAD standard
+                // AAD pattern: {oid}.{tid}
                 return $"{userObjectId}.{tenantId}";
             }
 
