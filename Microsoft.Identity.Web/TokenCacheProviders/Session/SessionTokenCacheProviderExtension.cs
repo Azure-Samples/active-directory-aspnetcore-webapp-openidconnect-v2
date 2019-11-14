@@ -50,8 +50,8 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
                 });
             }
 
-            AddSessionAppTokenCache(services);
-            AddSessionPerUserTokenCache(services);
+            services.AddHttpContextAccessor();;
+            services.AddScoped<IMsalTokenCacheProvider, MsalSessionTokenCacheProvider>();
 
             return services;
         }
@@ -75,7 +75,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
         public static IServiceCollection AddSessionAppTokenCache(this IServiceCollection services)
         {
             services.AddHttpContextAccessor();
-            services.AddScoped<IMsalAppTokenCacheProvider, MsalAppSessionTokenCacheProvider>();
+            services.AddScoped<IMsalTokenCacheProvider, MsalSessionTokenCacheProvider>();
             return services;
         }
 
@@ -101,7 +101,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
             services.AddSession(option =>
             { option.Cookie.IsEssential = true; }
             );
-            services.AddScoped<IMsalUserTokenCacheProvider, MsalPerUserSessionTokenCacheProvider>();
+            services.AddScoped<IMsalTokenCacheProvider, MsalSessionTokenCacheProvider>();
             return services;
         }
     }
