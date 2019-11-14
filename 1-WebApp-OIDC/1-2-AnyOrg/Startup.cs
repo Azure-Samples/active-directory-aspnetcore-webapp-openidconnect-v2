@@ -45,6 +45,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
             services.AddOptions();
 
+            //If you want to run this sample using in memory db, uncomment the line below (options.UseInMemoryDatabase) and comment the one that uses options.UseSqlServer.
             //services.AddDbContext<SampleDbContext>(options => options.UseInMemoryDatabase(databaseName: "MultiTenantOnboarding"));
             services.AddDbContext<SampleDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SampleDbConnStr")));
             
@@ -101,6 +102,7 @@ namespace WebApp_OpenIDConnect_DotNet
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             {
                 var context = serviceScope.ServiceProvider.GetRequiredService<SampleDbContext>();
+                // Uncomment, run the solution, and comment again to reset the DB
                 //context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
             }
