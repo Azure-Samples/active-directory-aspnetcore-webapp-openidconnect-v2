@@ -16,11 +16,11 @@ endpoint: Microsoft identity platform
 
 ## Scenario
 
-This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users. Users can a work and school accounts from any company or organization that has integrated with Azure Active Directory. It leverages the ASP.NET Core OpenID Connect middleware.
+This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect to sign in users from multi-tenants. Users can use a work and school accounts from any company or organization that has integrated with Azure Active Directory. It leverages the ASP.NET Core OpenID Connect middleware.
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
 
-> This is the second chapter of the first phase of this ASP.NET Core Web App tutorial. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user) in a later chapter.
+> This is the second chapter of the first phase of this ASP.NET Core Web App tutorial. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, you can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user) in a later chapter.
 > You can also sign-in users in your own Azure Active Directory organizations, and even with Microsoft personal accounts or social identities. For more details the parent directory's [Readme.md](../README.md)
 
 ## How to run this sample
@@ -28,6 +28,8 @@ This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Conn
 To run this sample:
 
 > Pre-requisites: Install .NET Core 2.2 or later (for example for Windows) by following the instructions at [.NET and C# - Get Started in 10 Minutes](https://www.microsoft.com/net/core). In addition to developing on Windows, you can develop on [Linux](https://www.microsoft.com/net/core#linuxredhat), [Mac](https://www.microsoft.com/net/core#macos), or [Docker](https://www.microsoft.com/net/core#dockercmd).
+
+Ideally, you would want to have two Azure AD tenants so you can test the multi-tenant aspect of this sample. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
 
 ### Step 1:  Clone or download this repository
 
@@ -134,13 +136,15 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 Clean the solution, rebuild the solution, and run it.
 The sample implements two distinct tasks: the onboarding of a new tenant and a basic Todo List CRUD operation.
 
+Ideally, you would want to have two Azure AD tenants so you can test the multi-tenant aspect of this sample. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
+
 #### Sign-in
 
-Users can only sign-in if their tenant had been onboarded. The sample will guide them for it, but it requires a **tenant admin account** to complete the onboarding process. Once the admin have consented, all users from their tenant will be able to sign-in.
+Users can only sign-in if their tenant had been onboarded. The sample will guide them how to do so, but it requires a **tenant admin account** to complete the onboarding process. Once the admin have consented, all users from their tenant will be able to sign-in.
 
 #### Todo List
 
-Users from one tenant can't see todo items from another tenant. They will be able to perform basic CRUD operations on todo items assigned to them. When editing a todo item, users can assign it to any other user from their tenant.
+Users from one tenant can't see todo items from other tenants. They will be able to perform basic CRUD operations on todo items assigned to them. When editing a todo item, users can assign it to any other user from their tenant. The list of users is coming from Microsoft Graph, using the [Graph SDK](https://github.com/microsoftgraph/msgraph-sdk-dotnet).
 
 ## About The code
 
