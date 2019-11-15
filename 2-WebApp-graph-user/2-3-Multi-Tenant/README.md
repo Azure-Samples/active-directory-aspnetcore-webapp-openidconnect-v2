@@ -1,8 +1,8 @@
 ---
 services: active-directory
 platforms: dotnet
-author: jmprieur
-level: 100
+author: TiagoBrenck
+level: 400
 client: ASP.NET Core Web App
 endpoint: Microsoft identity platform
 ---
@@ -16,12 +16,12 @@ endpoint: Microsoft identity platform
 
 ## Scenario
 
-This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users. Users can a work and school accounts from any company or organization that has integrated with Azure Active Directory. It leverages the ASP.NET Core OpenID Connect middleware.
+This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect to sign in users from multi-tenants. Users can use a work and school accounts from any company or organization that has integrated with Azure Active Directory. It leverages the ASP.NET Core OpenID Connect middleware.
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
 
-> This is the second chapter of the first phase of this ASP.NET Core Web App tutorial. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user) in a later chapter.
->  You can also sign-in users in your own Azure Active Directory organizations, and even with Microsoft personal accounts or social identities. For more details the parent directory's [Readme.md](../README.md)
+> This is the second chapter of the first phase of this ASP.NET Core Web App tutorial. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, you can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user) in a later chapter.
+> You can also sign-in users in your own Azure Active Directory organizations, and even with Microsoft personal accounts or social identities. For more details the parent directory's [Readme.md](../README.md)
 
 ## How to run this sample
 
@@ -29,32 +29,59 @@ To run this sample:
 
 > Pre-requisites: Install .NET Core 2.2 or later (for example for Windows) by following the instructions at [.NET and C# - Get Started in 10 Minutes](https://www.microsoft.com/net/core). In addition to developing on Windows, you can develop on [Linux](https://www.microsoft.com/net/core#linuxredhat), [Mac](https://www.microsoft.com/net/core#macos), or [Docker](https://www.microsoft.com/net/core#dockercmd).
 
-### Step 1: Register the sample with your Azure AD tenant
+Ideally, you would want to have two Azure AD tenants so you can test the multi-tenant aspect of this sample. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
+
+### Step 1:  Clone or download this repository
+
+From your shell or command line:
+
+```Shell
+git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial.git
+cd "1-WebApp-OIDC\1-2-AnyOrg"
+```
+
+or download and extract the repository .zip file.
+
+> Given that the name of the sample is quiet long, and so are the names of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
+
+### Step 2:  Register the sample application with your Azure Active Directory tenant
+
+> :warning: **If you had created this sample in the past already**: [Delete its **enterprise app** from the other tenants before re-creating this application](#error-AADSTS650051).
 
 There is one project in this sample. To register it, you can:
 
-- either use PowerShell scripts that **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you and modify the Visual Studio projects' configuration files. If you want to use this automation:
+- either follow the steps [Step 2: Register the sample with your Azure Active Directory tenant](#step-2-register-the-sample-with-your-azure-active-directory-tenant) and [Step 3:  Configure the sample to use your Azure AD tenant](#choose-the-azure-ad-tenant-where-you-want-to-create-your-applications)
+- or use PowerShell scripts that:
+  - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you. Note that this works for Visual Studio only.
+  - modify the Visual Studio projects' configuration files.
 
-  1. On Windows run PowerShell and navigate to the solution's folder
-  2. In PowerShell run:
+<details>
+  <summary>Expand this section if you want to use this automation:</summary>
 
-     ```PowerShell
-     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
-     ```
+1. On Windows, run PowerShell and navigate to the root of the cloned directory
+1. In PowerShell run:
 
-  3. Run the script to create your Azure AD application and configure the code of the sample application accordingly
+   ```PowerShell
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+   ```
 
-     ```PowerShell
-     .\AppCreationScripts\Configure.ps1
-     ```
+1. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
+1. In PowerShell run:
+
+   ```PowerShell
+   .\AppCreationScripts\Configure.ps1
+   ```
 
    > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
+   > The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
 
-  4. Open the Visual Studio solution and click start. That's it!
+1. Open the Visual Studio solution and click start to run the code.
 
-- or, if you don't want to use automation, follow the steps below:
+</details>
 
-#### Choose the Azure AD tenant where you want to create your applications
+Follow the steps below to manually walk through the steps to register and configure the applications.
+
+### Step 3:  Configure the sample to use your Azure AD tenant
 
 As a first step you'll need to:
 
@@ -62,120 +89,196 @@ As a first step you'll need to:
 1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory**.
    Change your portal session to the desired Azure AD tenant.
 
-#### Register the webApp app (WebApp)
+#### Register the client app (WebApp)
 
 1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
-1. Select **New registration**.
-1. When the **Register an application page** appears, enter your application's registration information:
+1. Click **New registration** on top.
+1. In the **Register an application page** that appears, enter your application's registration information:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp`.
-   - In the **Supported account types** section, select **Accounts in any organizational directory**.
-     > Note that there are more than one redirect URIs. You'll need to add them from the **Authentication** tab later after the app has been created successfully.
-1. Select **Register** to create the application.
-1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the Visual Studio configuration file for this project.
-1. In the list of pages for the app, select **Authentication**..
-   - In the Redirect URIs section, select **Web** in the combo-box and enter the following redirect URIs.
-       - `https://localhost:44321/`
-       - `https://localhost:44321/signin-oidc`
-   - In the **Advanced settings** section set **Logout URL** to `https://localhost:44321/signout-oidc`
-   - In the **Advanced settings** | **Implicit grant** section, check **ID tokens** as this sample requires
-     the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to
-     sign-in the user.
-1. Select **Save**.
+   - Change **Supported account types** to **Accounts in any organizational directory**.
+     > Note that there are more than one redirect URIs used in this sample. You'll need to add them from the **Authentication** tab later after the app has been created successfully.
+1. Click on the **Register** button in bottom to create the application.
+1. In the app's registration screen, find the **Application (client) ID** value and record it for use later. You'll need it to configure the configuration file(s) later in your code.
+1. In the app's registration screen, click on the **Authentication** blade in the left.
+   - In the Redirect URIs section, select **Web** in the drop down and enter the following redirect URIs.
+           - `https://localhost:44321/`
+           - `https://localhost:44321/signin-oidc`
+        - In the **Advanced settings** section, set **Logout URL** to `https://localhost:44321/signout-oidc`.
+        - In the **Advanced settings** | **Implicit grant** section, check the **ID tokens** option as this sample requires the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to sign-in the user, and call an API.
 
-> Note that unless the Web App calls a Web API, no certificate or secret is needed.
+1. Click the **Save** button on top to save the changes.
+1. In the app's registration screen, click on the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
+1. In the **Client secrets** section, click on **New client secret**:
+   - Type a key description (for instance `app secret`),
+   - Select one of the available key durations (**In 1 year**, **In 2 years**, or **Never Expires**) as per your security concerns.
+   - The generated key value will be displayed when you click the **Add** button. Copy the generated value for use in the steps later.
+   - You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
+1. In the app's registration screen, click on the **API permissions** blade in the left to open the page where we add access to the Apis that your application needs.
+   - Click the **Add a permission** button and then,
+   - Ensure that the **Microsoft APIs** tab is selected.
+   - In the *Commonly used Microsoft APIs* section, click on **Microsoft Graph**
+   - In the **Delegated permissions** section, select the **Directory.Read.All** in the list. Use the search box if necessary.
+   - Click on the **Add permissions** button in the bottom.
 
-### Step 2: Download/ Clone this sample code or build the application using a template
+##### Configure the project (WebApp) to use your app registration
 
-This sample was created from the dotnet core 2.2 [dotnet new mvc](https://docs.microsoft.com/dotnet/core/tools/dotnet-new?tabs=netcore2x) template with `SingleOrg` authentication, and then tweaked to let it support tokens for the Microsoft identity platform endpoint. You can clone/download this repository or create the sample from the command line:
+Open the project in your IDE (like Visual Studio) to configure the code.
+>In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
-#### Option 1: Download/ clone this sample
+1. Open the `appsettings.json` file
+1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `WebApp` application copied from the Azure portal.
+1. Find the app key `TenantId` and replace the existing value with `organizations`.
+1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
+1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp` app, in the Azure portal.
 
-You can clone this sample from your shell or command line:
+### Step 4: Run the sample
 
-  ```console
-git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial webapp
-cd webapp
-cd "1-WebApp-OIDC\1-2-AnyOrg"
-  ```
+Clean the solution, rebuild the solution, and run it.
+The sample implements two distinct tasks: the onboarding of a new tenant and a basic Todo List CRUD operation.
 
-> Given that the name of the sample is very long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
+Ideally, you would want to have two Azure AD tenants so you can test the multi-tenant aspect of this sample. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
 
-  In the **appsettings.json** file:
-  
-  - replace the `ClientID` value with the *Application ID* from the application you registered in Application Registration portal on *Step 1*.
-  - replace the `TenantId` value with `"organizations"`
+#### Sign-in
 
-#### Option 2: Create the sample from the command line
+Users can only sign-in if their tenant had been onboarded. The sample will guide them how to do so, but it requires a **tenant admin account** to complete the onboarding process. Once the admin have consented, all users from their tenant will be able to sign-in.
 
-1. Run the following command to create a sample from the command line using the `SingleOrg` template:
+#### Todo List
 
-    ```Sh
-    dotnet new mvc --auth SingleOrg --client-id <Enter_the_Application_Id_here> --tenant-id organizations
-    ```
-
-    > Note: Replace *`Enter_the_Application_Id_here`* with the *Application Id* from the application Id you just registered in the Application Registration Portal.
-
-1. Open the generated project (.csproj) in Visual Studio, and save the solution.
-1. Add the `Microsoft.Identity.Web.csproj` project which is located at the root of this sample repo, to your solution (**Add Existing Project ...**). It's used to simplify signing-in and, in the next tutorial phases, to get a token
-1. Add a reference from your newly generated project to `Microsoft.Identity.Web` (right click on the **Dependencies** node under your new project, and choose **Add Reference ...**, and then in the projects tab find the `Microsoft.Identity.Web` project)
-1. Open the **Startup.cs** file and:
-
-   - at the top of the file, add the following using directive:
-
-     ```CSharp
-      using Microsoft.Identity.Web;
-      ```
-
-   - in the `ConfigureServices` method, replace the two following lines:
-
-     ```CSharp
-      services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
-              .AddAzureAD(options => Configuration.Bind("AzureAd", options));
-     ```
-
-     by this line:
-
-     ```CSharp
-      services.AddMicrosoftIdentityPlatformAuthentication(Configuration);
-     ```
-
-     This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
-
-    1. Change the `Properties\launchSettings.json` file to ensure that you start your web app from <https://localhost:44321> as registered. For this:
-    - update the `sslPort` of the `iisSettings` section to be `44321`
-    - in the `applicationUrl` property of use `https://localhost:44321`
-
-### Step 3: Run the sample
-
-1. Build the solution and run it.
-
-2. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in with your personal account or with work or school account.
-
-
-## Toubleshooting
-
-### known issue on iOS 12
-
-ASP.NET core applications create session cookies that represent the identity of the caller. Some Safari users using iOS 12 had issues which are described in [ASP.NET Core #4467](https://github.com/aspnet/AspNetCore/issues/4647) and the Web kit bugs database [Bug 188165 - iOS 12 Safari breaks ASP.NET Core 2.1 OIDC authentication](https://bugs.webkit.org/show_bug.cgi?id=188165). 
-
-If your web site needs to be accessed from users using iOS 12, you probably want to disable the SameSite protection, but also ensure that state changes are protected with CSRF anti-forgery mecanism. See the how to fix section of [Microsoft Security Advisory: iOS12 breaks social, WSFed and OIDC logins #4647](https://github.com/aspnet/AspNetCore/issues/4647)
-
-> Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
+Users from one tenant can't see todo items from other tenants. They will be able to perform basic CRUD operations on todo items assigned to them. When editing a todo item, users can assign it to any other user from their tenant. The list of users is coming from Microsoft Graph, using the [Graph SDK](https://github.com/microsoftgraph/msgraph-sdk-dotnet).
 
 ## About The code
 
-This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Azure AD tenant. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Azure AD tenant where the app is registered. These values are  read from the `appsettings.json` file. The middleware takes care of:
+This sample covers the following topics on a multi-tenant app.
 
-- Downloading the Azure AD metadata, finding the signing keys, and finding the issuer name for the tenant.
-- Processing OpenID Connect sign-in responses by validating the signature and issuer in an incoming JWT, extracting the user's claims, and putting the claims in `ClaimsPrincipal.Current`.
-- Integrating with the session cookie ASP.NET Core middleware to establish a session for the user.
+- usage of the `/common` endpoint
+- service principle provision for new tenants
+- custom token validation allowing only registered tenants
+- data partition
+- Microsoft Graph token by tenant
+
+It is using the OpenID Connect ASP.NET Core middleware to sign in users from multiple Azure AD tenants. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Azure AD tenant where the app is registered. These values are read from the `appsettings.json` file.
 
 You can trigger the middleware to send an OpenID Connect sign-in request by decorating a class or method with the `[Authorize]` attribute or by issuing a challenge (see the [AccountController.cs](https://github.com/aspnet/AspNetCore/blob/master/src/Azure/AzureAD/Authentication.AzureAD.UI/src/Areas/AzureAD/Controllers/AccountController.cs) file which is part of ASP.NET Core):
 
+These steps are encapsulated in the [Microsoft.Identity.Web](..\..\Microsoft.Identity.Web) project, and in particular in the [WebAppServiceCollectionExtensions.cs](..\..\Microsoft.Identity.Web\WebAppServiceCollectionExtensions.cs) file
 
-The middleware in this project is created as a part of the open-source [ASP.NET Core Security](https://github.com/aspnet/aspnetcore) project.
+### Usage of `/common` endpoint
 
-These steps are encapsulated in the [Microsoft.Identity.Web](..\..\Microsoft.Identity.Web) project, and in particular in the [StartupHelper.cs](..\..\Microsoft.Identity.Web\StartupHelper.cs) file
+In order to be able to sign-in users from multiple tenants using OpenID Connect, the [/common endpoint](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc#fetch-the-openid-connect-metadata-document) must be used so Microsoft identity platform can fetch the metadata document. In the sample, this endpoint is used as a result of setting the value for `TenantId` as `organizations` on the `appsettings.json` file, and configuring the middleware to read the values from it.
+
+```csharp
+services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
+                .AddAzureAD(options => configuration.Bind(configSectionName, options));
+```
+
+Read more about [OpenID Connect endpoints here](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-protocols#endpoints).
+
+### Service principle provision for new tenants (onboarding process)
+
+On a multi-tenant app, its service principle will be created on all the users' tenants that have signed-in at least once. Some might want that only tenant admins accept the service principle provisioning. For that, we are using the [admin consent endpoint](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-admin-consent) for the onboarding process on the `OnboardingController.cs`. The `Onboard` action and corresponding view simulate a simple onboarding experience.
+
+```csharp
+[HttpPost]
+[ValidateAntiForgeryToken]
+public IActionResult Onboard()
+{
+  ...
+  string authorizationRequest = string.Format(
+                "{0}common/v2.0/adminconsent?client_id={1}&redirect_uri={2}&state={3}&scope={4}",
+                azureADOptions.Instance,
+                Uri.EscapeDataString(azureADOptions.ClientId),
+                Uri.EscapeDataString(currentUri + "Onboarding/ProcessCode"),
+                Uri.EscapeDataString(stateMarker),
+                Uri.EscapeDataString("https://graph.microsoft.com/.default"));
+  return Redirect(authorizationRequest);
+}
+```
+
+This results in an OAuth2 code grant request that triggers the admin consent flow and creates the service principle in the admin's tenant. The `state` parameter is used to validate the response, preventing a man-in-the-middle attack. Then, the `ProcessCode` action receives the authorization code from Azure AD and, if they appear valid, it creates an entry in the application database for the new customer.
+
+### Custom token validation allowing only registered tenants
+
+On the `Startup.cs` we are calling `AddMicrosoftIdentityPlatformAuthentication` to configure the authentication, and it also validates that the token issuer is from AAD.
+
+```csharp
+options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).Validate;
+```
+
+To extend this validation to only AAD tenants registered in the application database, the event handler `OnTokenValidated` was configured to grab the `tenantId` from the token claims and check if it has on the database. If it doesn't, a custom exception `UnauthorizedTenantException` is thrown and the user is redirected to the `UnauthorizedTenant` view.
+
+```csharp
+services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
+{
+    options.Events.OnTokenValidated = async context => 
+    {
+        string tenantId = context.SecurityToken.Claims.FirstOrDefault(x => x.Type == "tid" || x.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
+
+        if (string.IsNullOrWhiteSpace(tenantId))
+            throw new UnauthorizedAccessException("Unable to get tenantId from token.");
+
+        var dbContext = context.HttpContext.RequestServices.GetRequiredService<SampleDbContext>();
+
+        var authorizedTenant = await dbContext.AuthorizedTenants.FirstOrDefaultAsync(t => t.TenantId == tenantId);
+
+        if (authorizedTenant == null)
+            throw new UnauthorizedTenantException("This tenant is not authorized");
+
+    };
+    options.Events.OnAuthenticationFailed = (context) =>
+    {
+        if (context.Exception != null && context.Exception is UnauthorizedTenantException)
+        {
+            context.Response.Redirect("/Home/UnauthorizedTenant");
+            context.HandleResponse(); // Suppress the exception
+        }
+
+        return Task.FromResult(0);
+    };
+});
+```
+
+### Data partition
+
+There are two common scenarios regarding data partition on a multi-tenant app. Having a separate database for each tenant or having a single database and using the **tenantId** to distinguish the data from each tenant. In this sample, we used the single database approach to save the todo items.
+
+`TodoListController.cs` have basic CRUD actions for `TodoItem` and each operation takes into account the signed user's **tenantId** to separate data from each tenant. The tenantId can be found in the user' claims.
+
+### Microsoft Graph token by tenant
+
+If a multi-tenant app needs to acquire a token from Graph to read data from the signed user's tenant, the token must be issued with their tenantId authority and not where the application is registered. This feature is being showed on the **Edit** action result on `TodoListController.cs`.
+
+```csharp
+var userTenant = User.GetTenantId();
+// Acquiring token for graph using the user's tenantId, so it can return all the users from their tenant
+var graphAccessToken = await _tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new string[] { GraphScope.DirectoryReadAll }, userTenant);
+```
+
+We are acquiring an access token for Graph with the scope `Directory.Read.All`, to list all the users from the tenant so you can assign a todo item to them. `GetAccessTokenOnBehalfOfUserAsync` is a helper method found on `Microsoft.Identity.Web` project, and it receives a **tenantId** as parameter to acquire a token for the desired authority. For that, we get the current authority from the built `IConfidentialClientApplication` and replace the tenantId. Below is an example of this logic.
+
+```csharp
+string signedUserAuthority = confidentialClientApplication.Authority.Replace(new Uri(confidentialClientApplication.Authority).PathAndQuery, $"/{tenant}/");
+AuthenticationResult result = await confidentialClientApplication
+    .AcquireTokenSilent(new string[] { "Directory.Read.All" }, account)
+    .WithAuthority(signedUserAuthority)
+    .ExecuteAsync()
+    .ConfigureAwait(false);
+```
+
+## Troubleshooting
+
+### Error AADSTS650051
+
+If you are receiving the following error message, you might need to **delete older Enterprise Applications**
+
+> OpenIdConnectProtocolException: Message contains error: 'invalid_client', error_description: 'AADSTS650051: Application '{applicationId}' is requesting permissions that are either invalid or out of date.
+
+If you had provisioned a service principle of this app in the past and created a new one, the tenants that had signed-in in the app might still have the previous service principle registered causing a conflict with the new one. The solution for the conflict is to delete the older service principle from each tenant in the **Enterprise Application** menu.
+
+## Contributing
+
+If you'd like to contribute to this sample, see [CONTRIBUTING.MD](/CONTRIBUTING.md).
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information, see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 ## Next steps
 
