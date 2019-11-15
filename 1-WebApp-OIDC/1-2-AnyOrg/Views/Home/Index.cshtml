@@ -1,7 +1,4 @@
-﻿@using System.Security.Principal
-@using Microsoft.Identity.Web
-@model IEnumerable<AuthorizedTenant>
-@{
+﻿@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -9,39 +6,6 @@
     ASP.NET Core web app signing-in users in any Azure AD organization
 </h1>
 <p>
-    This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect to sign in users. Users can use work and school accounts from any company or organization that has integrated with Azure Active Directory. It leverages the ASP.NET Core OpenID Connect middleware.
+    This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users. Users can use work and school accounts from any company or organization that has integrated with Azure Active Directory. It leverages the ASP.NET Core OpenID Connect middleware.
 </p>
-<img src="https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/raw/master/1-WebApp-OIDC/1-2-AnyOrg/ReadmeFiles/sign-in.png" />
-<hr />
-
-<h2>Authorized Tenants</h2>
-<p>
-    These are the authorized tenants on the database. If you want to repeat the onboarding process, offboard the desired tenant from this list.
-</p>
-<p>
-    Offboarding the signed user's tenant, will trigger a <b>sign-out.</b>
-</p>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Tenant Id</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var tenant in Model)
-        {
-            <tr>
-                <td>
-                    <span>@tenant.TenantId</span>
-                    @if (tenant.TenantId == User.GetTenantId())
-                    {
-                        <span class="label label-primary">your tenant</span>
-                    }
-                </td>
-                <td><a asp-controller="Home" asp-action="DeleteTenant" asp-route-id=@tenant.TenantId class="btn btn-danger">Offboard</a></td>
-            </tr>
-        }
-    </tbody>
-</table>
+<img src="https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/raw/master/1-WebApp-OIDC/1-2-AnyOrg/ReadmeFiles/sign-in.png"/>

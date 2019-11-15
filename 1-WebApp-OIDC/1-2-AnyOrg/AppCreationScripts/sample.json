@@ -20,13 +20,6 @@
       "HomePage": "https://localhost:44321/",
       "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc",
       "LogoutUrl": "https://localhost:44321/signout-oidc",
-      "PasswordCredentials": "Auto",
-      "RequiredResourcesAccess": [
-        {
-          "Resource": "Microsoft Graph",
-          "DelegatedPermissions": [ "Directory.Read.All" ]
-        }
-      ]
     }
   ],
 
@@ -53,10 +46,6 @@
         {
           "key": "Domain",
           "value": "$tenantName"
-        },
-        {
-          "key": "ClientSecret",
-          "value": ".AppKey"
         }
       ]
     }
