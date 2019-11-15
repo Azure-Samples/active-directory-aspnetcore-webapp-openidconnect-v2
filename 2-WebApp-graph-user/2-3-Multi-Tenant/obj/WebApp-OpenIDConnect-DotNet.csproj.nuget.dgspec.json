@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Github\\active-directory-aspnetcore-webapp-openidconnect-v2\\2-WebApp-graph-user\\2-3-Best-Practices\\WebApp-OpenIDConnect-DotNet.csproj": {}
+    "C:\\Github\\active-directory-aspnetcore-webapp-openidconnect-v2\\2-WebApp-graph-user\\2-3-Multi-Tenant\\WebApp-OpenIDConnect-DotNet.csproj": {}
   },
   "projects": {
-    "C:\\Github\\active-directory-aspnetcore-webapp-openidconnect-v2\\2-WebApp-graph-user\\2-3-Best-Practices\\WebApp-OpenIDConnect-DotNet.csproj": {
+    "C:\\Github\\active-directory-aspnetcore-webapp-openidconnect-v2\\2-WebApp-graph-user\\2-3-Multi-Tenant\\WebApp-OpenIDConnect-DotNet.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Github\\active-directory-aspnetcore-webapp-openidconnect-v2\\2-WebApp-graph-user\\2-3-Best-Practices\\WebApp-OpenIDConnect-DotNet.csproj",
+        "projectUniqueName": "C:\\Github\\active-directory-aspnetcore-webapp-openidconnect-v2\\2-WebApp-graph-user\\2-3-Multi-Tenant\\WebApp-OpenIDConnect-DotNet.csproj",
         "projectName": "WebApp-OpenIDConnect-DotNet",
-        "projectPath": "C:\\Github\\active-directory-aspnetcore-webapp-openidconnect-v2\\2-WebApp-graph-user\\2-3-Best-Practices\\WebApp-OpenIDConnect-DotNet.csproj",
+        "projectPath": "C:\\Github\\active-directory-aspnetcore-webapp-openidconnect-v2\\2-WebApp-graph-user\\2-3-Multi-Tenant\\WebApp-OpenIDConnect-DotNet.csproj",
         "packagesPath": "C:\\Users\\v-tibre\\.nuget\\packages\\",
-        "outputPath": "C:\\Github\\active-directory-aspnetcore-webapp-openidconnect-v2\\2-WebApp-graph-user\\2-3-Best-Practices\\obj\\",
+        "outputPath": "C:\\Github\\active-directory-aspnetcore-webapp-openidconnect-v2\\2-WebApp-graph-user\\2-3-Multi-Tenant\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Microsoft\\Xamarin\\NuGet\\",
