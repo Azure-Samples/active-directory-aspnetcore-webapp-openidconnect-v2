@@ -10,7 +10,7 @@ endpoint: Microsoft identity platform
 
 # An ASP.NET Core Web app signing-in users in any org with the Microsoft identity platform
 
-> This sample is for Azure AD, not Azure AD B2C. See [active-directory-b2c-dotnetcore-webapp](https://github.com/Azure-Samples/active-directory-b2c-dotnetcore-webapp), until we incorporate the B2C variation in the tutorial.
+> This sample is for Azure AD, not Azure AD B2C.
 
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
@@ -19,9 +19,6 @@ endpoint: Microsoft identity platform
 This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect to sign in users from multi-tenants. Users can use a work and school accounts from any company or organization that has integrated with Azure Active Directory. It leverages the ASP.NET Core OpenID Connect middleware.
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
-
-> This is the second chapter of the first phase of this ASP.NET Core Web App tutorial. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, you can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user) in a later chapter.
-> You can also sign-in users in your own Azure Active Directory organizations, and even with Microsoft personal accounts or social identities. For more details the parent directory's [Readme.md](../README.md)
 
 ## How to run this sample
 
@@ -37,7 +34,7 @@ From your shell or command line:
 
 ```Shell
 git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial.git
-cd "1-WebApp-OIDC\1-2-AnyOrg"
+cd "2-WebApp-graph-user\2-3-Multi-Tenant"
 ```
 
 or download and extract the repository .zip file.
@@ -89,12 +86,12 @@ As a first step you'll need to:
 1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory**.
    Change your portal session to the desired Azure AD tenant.
 
-#### Register the client app (WebApp)
+#### Register the web app (WebApp-MultiTenant-v2)
 
 1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
 1. Click **New registration** on top.
 1. In the **Register an application page** that appears, enter your application's registration information:
-   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp`.
+   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp-MultiTenant-v2`.
    - Change **Supported account types** to **Accounts in any organizational directory**.
      > Note that there are more than one redirect URIs used in this sample. You'll need to add them from the **Authentication** tab later after the app has been created successfully.
 1. Click on the **Register** button in bottom to create the application.
@@ -120,16 +117,16 @@ As a first step you'll need to:
    - In the **Delegated permissions** section, select the **Directory.Read.All** in the list. Use the search box if necessary.
    - Click on the **Add permissions** button in the bottom.
 
-##### Configure the project (WebApp) to use your app registration
+##### Configure the project (WebApp-OpenIDConnect-DotNet) to use your app registration
 
 Open the project in your IDE (like Visual Studio) to configure the code.
 >In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
 1. Open the `appsettings.json` file
-1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `WebApp` application copied from the Azure portal.
+1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `WebApp-MultiTenant-v2` application copied from the Azure portal.
 1. Find the app key `TenantId` and replace the existing value with `organizations`.
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
-1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp` app, in the Azure portal.
+1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp-MultiTenant-v2` app, in the Azure portal.
 
 ### Step 4: Run the sample
 
@@ -280,14 +277,6 @@ If you'd like to contribute to this sample, see [CONTRIBUTING.MD](/CONTRIBUTING.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information, see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
-## Next steps
-
-Learn how to:
-
-- Change your web app to sign-in users with [any Microsoft accounts](../1-3-AnyOrgOrPersonal/README-1-1-to-1-3.md)
-- Enable users from [National clouds](../1-4-Sovereign) to sign-in to your application
-- enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user)
-
 ## Learn more
 To understand more about token validation, see
 - [Validating tokens](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki/ValidatingTokens)
@@ -296,6 +285,3 @@ To understand more about app registration, see:
 
 - [Quickstart: Register an application with the Microsoft identity platform (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
 - [Quickstart: Configure a client application to access web APIs (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
-
-## Previous steps
-- enable [your organization](../1-1-MyOrg) only to sign-in to your web app.

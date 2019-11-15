@@ -1,7 +1,7 @@
 {
   "Sample": {
     "Title": "An ASP.NET Core 2.x Web App which lets sign-in users with work and school in any org",
-    "Level": 200,
+    "Level": 400,
     "Client": "ASP.NET Core 2.x Web App",
     "Service": "Microsoft Graph",
     "RepositoryUrl": "microsoft-identity-platform-aspnetcore-webapp-tutorial",
@@ -14,7 +14,7 @@
   "AADApps": [
     {
       "Id": "webApp",
-      "Name": "WebApp",
+      "Name": "WebApp-MultiTenant-v2",
       "Kind": "WebApp",
       "Audience": "AzureADMultipleOrgs",
       "HomePage": "https://localhost:44321/",
@@ -48,7 +48,7 @@
         },
         {
           "key": "TenantId",
-          "value": "organizations"
+          "value": "'organizations'"
         },
         {
           "key": "Domain",

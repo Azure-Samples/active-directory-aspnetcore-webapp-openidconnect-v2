@@ -49,9 +49,9 @@ This function removes the Azure AD applications for the sample. These applicatio
     # Removes the applications
     Write-Host "Cleaning-up applications from tenant '$tenantName'"
 
-    Write-Host "Removing 'webApp' (WebApp) if needed"
-    Get-AzureADApplication -Filter "DisplayName eq 'WebApp'"  | ForEach-Object {Remove-AzureADApplication -ObjectId $_.ObjectId }
-    $apps = Get-AzureADApplication -Filter "DisplayName eq 'WebApp'"
+    Write-Host "Removing 'webApp' (WebApp-MultiTenant-v2) if needed"
+    Get-AzureADApplication -Filter "DisplayName eq 'WebApp-MultiTenant-v2'"  | ForEach-Object {Remove-AzureADApplication -ObjectId $_.ObjectId }
+    $apps = Get-AzureADApplication -Filter "DisplayName eq 'WebApp-MultiTenant-v2'"
     if ($apps)
     {
         Remove-AzureADApplication -ObjectId $apps.ObjectId
@@ -60,10 +60,10 @@ This function removes the Azure AD applications for the sample. These applicatio
     foreach ($app in $apps) 
     {
         Remove-AzureADApplication -ObjectId $app.ObjectId
-        Write-Host "Removed WebApp.."
+        Write-Host "Removed WebApp-MultiTenant-v2.."
     }
     # also remove service principals of this app
-    Get-AzureADServicePrincipal -filter "DisplayName eq 'WebApp'" | ForEach-Object {Remove-AzureADServicePrincipal -ObjectId $_.Id -Confirm:$false}
+    Get-AzureADServicePrincipal -filter "DisplayName eq 'WebApp-MultiTenant-v2'" | ForEach-Object {Remove-AzureADServicePrincipal -ObjectId $_.Id -Confirm:$false}
     
 }
 
