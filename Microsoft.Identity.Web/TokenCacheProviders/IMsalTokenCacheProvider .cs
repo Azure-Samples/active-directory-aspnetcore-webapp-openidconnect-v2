@@ -18,7 +18,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
         /// <param name="isAppTokenCache">Is the token cache an App token cache or
         /// a user token cache</param>
         /// <returns></returns>
-        Task InitializeAsync(ITokenCache tokenCache, bool isAppTokenCache);
+        Task InitializeAsync(ITokenCache tokenCache);
 
         /// <summary>
         /// Clear the cache
