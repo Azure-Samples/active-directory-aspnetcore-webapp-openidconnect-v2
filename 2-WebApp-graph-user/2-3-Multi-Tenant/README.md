@@ -8,7 +8,7 @@ endpoint: Microsoft identity platform
 ---
 
 
-# An ASP.NET Core Web app signing-in users in any org with the Microsoft identity platform
+# Build a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect
 
 > This sample is for Azure AD, not Azure AD B2C.
 
@@ -16,9 +16,11 @@ endpoint: Microsoft identity platform
 
 ## Scenario
 
-This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect to sign in users from multi-tenants. Users can use a work and school accounts from any company or organization that has integrated with Azure Active Directory. It leverages the ASP.NET Core OpenID Connect middleware.
+This sample shows how to build a .NET Core MVC web application that uses OpenID Connect to sign in users from multi-tenants in Azure Active Directory. It leverages the ASP.NET Core OpenID Connect middleware. Additionally it also introduces developers to the concept of a [multi-tenant](https://docs.microsoft.com/en-us/azure/active-directory/develop/single-and-multi-tenant-apps)  application.
 
-![Sign in with Azure AD](ReadmeFiles/sign-in.png)
+For more information about apps and tenancy, see [Tenancy in Azure Active Directory](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps)
+
+![Sign in with Azure AD](ReadmeFiles/topology.png)
 
 ## How to run this sample
 
@@ -139,9 +141,21 @@ Ideally, you would want to have two Azure AD tenants so you can test the multi-t
 
 Users can only sign-in if their tenant had been onboarded. The sample will guide them how to do so, but it requires a **tenant admin account** to complete the onboarding process. Once the admin have consented, all users from their tenant will be able to sign-in.
 
+If you try to sign-in for the first time without an admin account, you will be presented with the following screen. Please switch to an admin account for this step:
+
+![Admin Approval](ReadmeFiles/admin-approval.png)
+
+If you try to sign-in with a tenant that haven't been onboarded yet, you will land in this page. Please click on **Take me to the onboarding process** button and follow the instructions to get your tenant registered in the sample database:
+
+![Unauthorized Tenant](ReadmeFiles/unauthorized-tenant.png)
+
 #### Todo List
 
 Users from one tenant can't see todo items from other tenants. They will be able to perform basic CRUD operations on todo items assigned to them. When editing a todo item, users can assign it to any other user from their tenant. The list of users is coming from Microsoft Graph, using the [Graph SDK](https://github.com/microsoftgraph/msgraph-sdk-dotnet).
+
+The list of users will be presented in the dropdown:
+
+![Todo Edit](ReadmeFiles/todo-edit.png)
 
 ## About The code
 
