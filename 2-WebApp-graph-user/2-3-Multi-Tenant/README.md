@@ -1,12 +1,22 @@
 ---
 services: active-directory
 platforms: dotnet
+endpoint: Microsoft identity platform
+page_type: sample
 author: TiagoBrenck
 level: 400
 client: ASP.NET Core Web App
-endpoint: Microsoft identity platform
+service: Microsoft Graph
+languages:
+  - CSharp
+products:
+  - azure
+  - azure-active-directory
+  - dotnet
+  - CSharp
+  - office-ms-graph
+description: "Build a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect"
 ---
-
 
 # Build a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect
 
@@ -14,13 +24,32 @@ endpoint: Microsoft identity platform
 
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
-## Scenario
+## About this sample
 
-This sample shows how to build a .NET Core MVC web application that uses OpenID Connect to sign in users from multi-tenants in Azure Active Directory. It leverages the ASP.NET Core OpenID Connect middleware. Additionally it also introduces developers to the concept of a [multi-tenant](https://docs.microsoft.com/en-us/azure/active-directory/develop/single-and-multi-tenant-apps)  application.
+This sample shows how to build an ASP.NET Core MVC web application that usesOpenID Connect to sign in users from multiple Azure AD tenants. Additionally it also introduces developers to the concept of a [multi-tenant](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps) Azure Active Directory application.
+
+### Overview
+
+When it comes to developing apps, developers can choose to configure their app to be either single-tenant or multi-tenant during app registration in the [Azure portal](https://portal.azure.com).
+
+- `Single-tenant` apps are only available in the tenant they were registered in, also known as their home tenant.
+- `Multi-tenant` apps are available to users in both their home tenant and other tenants where they are provisioned.
 
 For more information about apps and tenancy, see [Tenancy in Azure Active Directory](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps)
 
 ![Sign in with Azure AD](ReadmeFiles/topology.png)
+
+## Scenario
+
+This sample shows how to build a .NET Core MVC web application that uses the [OpenID Connect](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc) protocol to sign in users from multiple Azure AD tenants and acquire token for [Microsoft Graph](https://graph.microsoft.com) using the [Microsoft Authentication Library (MSAL)](https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-overview). It leverages the ASP.NET Core OpenID Connect middleware.
+
+The application puts forward a scenario where a SaaS application invites the administrators of Azure AD tenants to `enrol` their tenants into this app. This process is analogous to a customer `buying` a SaaS product.  
+
+ 1. Once you start the application, it will ask you to sign-in as an administrator. If its your first time signing-in, you'd land on a page with a heading **Unauthorized Tenant**. Click on the **Take me to the onboarding process** button to onboard your tenant to this application.
+ 1. Once you have **Registered your tenant** 
+
+> Looking for previous versions of this code sample? Check out the tags on the [releases](../../releases) GitHub page.
+
 
 ## How to run this sample
 
@@ -28,7 +57,7 @@ To run this sample:
 
 > Pre-requisites: Install .NET Core 2.2 or later (for example for Windows) by following the instructions at [.NET and C# - Get Started in 10 Minutes](https://www.microsoft.com/net/core). In addition to developing on Windows, you can develop on [Linux](https://www.microsoft.com/net/core#linuxredhat), [Mac](https://www.microsoft.com/net/core#macos), or [Docker](https://www.microsoft.com/net/core#dockercmd).
 
-Ideally, you would want to have two Azure AD tenants so you can test the multi-tenant aspect of this sample. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
+Ideally, you would want to have two Azure AD tenants so you can test all the aspects of this multi-tenant sample. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
 
 ### Step 1:  Clone or download this repository
 
