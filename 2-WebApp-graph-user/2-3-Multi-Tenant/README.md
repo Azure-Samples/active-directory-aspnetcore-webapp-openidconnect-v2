@@ -26,7 +26,7 @@ description: "Build a multi-tenant SaaS web application that calls Microsoft Gra
 
 ## About this sample
 
-This sample shows how to build an ASP.NET Core MVC web application that usesOpenID Connect to sign in users from multiple Azure AD tenants. Additionally it also introduces developers to the concept of a [multi-tenant](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps) Azure Active Directory application.
+This sample shows how to build an ASP.NET Core MVC web application that uses OpenID Connect to sign in users from multiple Azure AD tenants. Additionally it also introduces developers to the concept of a [multi-tenant](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps) Azure Active Directory application.
 
 ### Overview
 
@@ -131,6 +131,7 @@ As a first step you'll need to:
    - In the Redirect URIs section, select **Web** in the drop down and enter the following redirect URIs.
            - `https://localhost:44321/`
            - `https://localhost:44321/signin-oidc`
+           - `https://localhost:44321/Onboarding/ProcessCode`
         - In the **Advanced settings** section, set **Logout URL** to `https://localhost:44321/signout-oidc`.
         - In the **Advanced settings** | **Implicit grant** section, check the **ID tokens** option as this sample requires the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to sign-in the user, and call an API.
 

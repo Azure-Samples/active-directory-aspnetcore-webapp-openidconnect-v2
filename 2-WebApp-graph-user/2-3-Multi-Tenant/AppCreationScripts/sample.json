@@ -18,7 +18,7 @@
       "Kind": "WebApp",
       "Audience": "AzureADMultipleOrgs",
       "HomePage": "https://localhost:44321/",
-      "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc",
+      "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc, https://localhost:44321/Onboarding/ProcessCode",
       "LogoutUrl": "https://localhost:44321/signout-oidc",
       "PasswordCredentials": "Auto",
       "RequiredResourcesAccess": [

@@ -191,7 +191,7 @@ Function ConfigureApplications
    $webAppAadApplication = New-AzureADApplication -DisplayName "WebApp-MultiTenant-v2" `
                                                   -HomePage "https://localhost:44321/" `
                                                   -LogoutUrl "https://localhost:44321/signout-oidc" `
-                                                  -ReplyUrls "https://localhost:44321/", "https://localhost:44321/signin-oidc" `
+                                                  -ReplyUrls "https://localhost:44321/", "https://localhost:44321/signin-oidc", "https://localhost:44321/Onboarding/ProcessCode" `
                                                   -IdentifierUris "https://$tenantName/WebApp-MultiTenant-v2" `
                                                   -AvailableToOtherTenants $True `
                                                   -PasswordCredentials $key `
