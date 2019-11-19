@@ -214,7 +214,7 @@ If a user is member of more groups than the overage limit (**150 for SAML tokens
 
 > An Identity Office Hours session covered Azure AD App roles and security groups, featuring this scenario and how to handle the overage claim. Watch the video [Using Security Groups and Application Roles in your apps](https://www.youtube.com/watch?v=V8VUPixLSiM)
 
- > You can use the `BulkCreateGroups.ps1` provided in the [App Creation Scripts](./AppCreationScripts/) folder to create a large number of groups and assign users to them. This will help test overage scenarios during development.
+> You can use the `BulkCreateGroups.ps1` provided in the [App Creation Scripts](./AppCreationScripts/) folder to create a large number of groups and assign users to them. This will help test overage scenarios during development.
 
 ##### Order of processing the overage claim
 
@@ -225,6 +225,8 @@ If a user is member of more groups than the overage limit (**150 for SAML tokens
 1. If none found, look into the `groups`  claim for user’s groups.
 
 > When attending to overage scenarios, which requires a call to [Microsoft Graph](https://graph.microsoft.com) to read the signed-in user's group memberships, your app will need to have the [Directory.Read.All](https://docs.microsoft.com/en-us/graph/permissions-reference#group-permissions) for the [getMemberObjects](https://docs.microsoft.com/en-us/graph/api/user-getmemberobjects?view=graph-rest-1.0) function to execute successfully.
+
+- Developers who wish to gain good familiarity of programming for Microsoft Graph are advised to go through the [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A) recorded session.
 
 #### When using the implicit_grant flow to authenticate
 
