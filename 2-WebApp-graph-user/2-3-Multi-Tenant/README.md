@@ -312,7 +312,7 @@ AuthenticationResult result = await confidentialClientApplication
 
 ### Error AADSTS650051
 
-If you are receiving the following error message, you might need to **delete older Enterprise Applications**
+If you are receiving the following error message, you might need to **delete older Enterprise Applications of this sample**
 
 > OpenIdConnectProtocolException: Message contains error: 'invalid_client', error_description: 'AADSTS650051: Application '{applicationId}' is requesting permissions that are either invalid or out of date.
 
