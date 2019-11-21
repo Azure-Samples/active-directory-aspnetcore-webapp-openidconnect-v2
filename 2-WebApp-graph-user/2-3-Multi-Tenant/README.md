@@ -168,15 +168,15 @@ The sample implements two distinct tasks: the onboarding of a new tenant and a b
 
 Ideally, you would want to have two Azure AD tenants so you can test the multi-tenant aspect of this sample. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
 
-#### Sign-in
+#### Signing-in
 
-Users can only sign-in if their tenant had been onboarded. The sample will guide them how to do so, but it requires a **tenant admin account** to complete the onboarding process. Once the admin have consented, all users from their tenant will be able to sign-in.
+Users can only sign-in if their tenant had been "onboarded". The sample will guide them how to do so, but it requires a **tenant admin account** to complete the onboarding process. Once the admin have consented, all users from their tenant will be able to sign-in.
 
-If you try to sign-in for the first time without an admin account, you will be presented with the following screen. Please switch to an admin account for this step:
+If you try to onboard without an admin account, you will be presented with the following screen. Please switch to an admin account to complete this step:
 
 ![Admin Approval](ReadmeFiles/admin-approval.png)
 
-If you try to sign-in with a tenant that haven't been onboarded yet, you will land in this page. Please click on **Take me to the onboarding process** button and follow the instructions to get your tenant registered in the sample database:
+If you try to sign-in with a tenant that haven't been "onboarded" yet, you will land in this page. Please click on **Take me to the onboarding process** button and follow the instructions to get your tenant registered in the sample database:
 
 ![Unauthorized Tenant](ReadmeFiles/unauthorized-tenant.png)
 
@@ -184,7 +184,7 @@ If you try to sign-in with a tenant that haven't been onboarded yet, you will la
 
 Users from one tenant can't see todo items from other tenants. They will be able to perform basic CRUD operations on todo items assigned to them. When editing a todo item, users can assign it to any other user from their tenant. The list of users is coming from Microsoft Graph, using the [Graph SDK](https://github.com/microsoftgraph/msgraph-sdk-dotnet).
 
-The list of users will be presented in the dropdown:
+The list of users will be presented in the **Assigned To** dropdown:
 
 ![Todo Edit](ReadmeFiles/todo-edit.png)
 
@@ -217,7 +217,7 @@ Read more about [OpenID Connect endpoints here](https://docs.microsoft.com/en-us
 
 ### Service principle provision for new tenants (onboarding process)
 
-On a multi-tenant app, its service principle will be created on all the users' tenants that have signed-in at least once. Some might want that only tenant admins accept the service principle provisioning. For that, we are using the [admin consent endpoint](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-admin-consent) for the onboarding process on the `OnboardingController.cs`. The `Onboard` action and corresponding view simulate a simple onboarding experience.
+On a multi-tenant app, its service principle will be created on all the users' tenants that have signed-in at least once. Some might want that only tenant admins accept the service principle provisioning. For that, we are using the [admin consent endpoint](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-admin-consent) for the onboarding process on the `OnboardingController.cs`. The `Onboard` action and corresponding view, simulate an onboarding experience.
 
 ```csharp
 [HttpPost]
@@ -238,6 +238,8 @@ public IActionResult Onboard()
 
 This results in an OAuth2 code grant request that triggers the admin consent flow and creates the service principle in the admin's tenant. The `state` parameter is used to validate the response, preventing a man-in-the-middle attack. Then, the `ProcessCode` action receives the authorization code from Azure AD and, if they appear valid, it creates an entry in the application database for the new customer.
 
+The `https://graph.microsoft.com/.default` is a static scope. You can find more about static scope on [this link.](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-admin-consent#request-the-permissions-from-a-directory-admin)
+
 ### Custom token validation allowing only registered tenants
 
 On the `Startup.cs` we are calling `AddMicrosoftIdentityPlatformAuthentication` to configure the authentication, and it also validates that the token issuer is from AAD.
@@ -246,7 +248,7 @@ On the `Startup.cs` we are calling `AddMicrosoftIdentityPlatformAuthentication` 
 options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).Validate;
 ```
 
-To extend this validation to only AAD tenants registered in the application database, the event handler `OnTokenValidated` was configured to grab the `tenantId` from the token claims and check if it has on the database. If it doesn't, a custom exception `UnauthorizedTenantException` is thrown and the user is redirected to the `UnauthorizedTenant` view.
+To extend this validation to only Azure AD tenants registered in the application database, the event handler `OnTokenValidated` was configured to grab the `tenantId` from the token claims and check if it has an entry on the database. If it doesn't, a custom exception `UnauthorizedTenantException` is thrown, canceling the authentication, and the user is redirected to the `UnauthorizedTenant` view. At this stage, the user is not authenticated in the application.
 
 ```csharp
 services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
