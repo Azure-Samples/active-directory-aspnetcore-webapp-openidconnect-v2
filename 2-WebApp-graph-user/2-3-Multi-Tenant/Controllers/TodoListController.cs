@@ -85,7 +85,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         }
 
         [HttpGet]
-        [AuthorizeForScopes(Scopes = new string[] { GraphScope.DirectoryReadAll })]
+        [AuthorizeForScopes(Scopes = new string[] { GraphScope.UserReadAll })]
         public async Task<IActionResult> Edit(int id)
         {
             TodoItem todoItem = await _todoItemService.Get(id, User);
@@ -99,7 +99,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             var userTenant = User.GetTenantId();
 
             // Acquiring token for graph using the user's tenantId, so it can return all the users from their tenant
-            var graphAccessToken = await _tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new string[] { GraphScope.DirectoryReadAll }, userTenant);
+            var graphAccessToken = await _tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new string[] { GraphScope.UserReadAll }, userTenant);
 
             TempData["UsersDropDown"] = (await _msGraphService.GetUsersAsync(graphAccessToken))
                 .Select(u => new SelectListItem

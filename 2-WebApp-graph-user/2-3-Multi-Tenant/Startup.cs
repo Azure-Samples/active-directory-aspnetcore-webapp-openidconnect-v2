@@ -74,7 +74,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
             // Sign-in users with the Microsoft identity platform
             services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
-                    .AddMsal(Configuration, new string[] { GraphScope.DirectoryReadAll })
+                    .AddMsal(Configuration, new string[] { GraphScope.UserReadAll })
                     .AddInMemoryTokenCaches();
 
             services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>

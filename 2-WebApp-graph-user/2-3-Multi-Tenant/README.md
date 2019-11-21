@@ -147,7 +147,7 @@ As a first step you'll need to:
    - Click the **Add a permission** button and then,
    - Ensure that the **Microsoft APIs** tab is selected.
    - In the *Commonly used Microsoft APIs* section, click on **Microsoft Graph**
-   - In the **Delegated permissions** section, select the **Directory.Read.All** in the list. Use the search box if necessary.
+   - In the **Delegated permissions** section, select the **User.Read.All** in the list. Use the search box if necessary.
    - Click on the **Add permissions** button in the bottom.
 
 ##### Configure the project (WebApp-OpenIDConnect-DotNet) to use your app registration
@@ -294,15 +294,15 @@ If a multi-tenant app needs to acquire a token from Graph to read data from the 
 ```csharp
 var userTenant = User.GetTenantId();
 // Acquiring token for graph using the user's tenantId, so it can return all the users from their tenant
-var graphAccessToken = await _tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new string[] { GraphScope.DirectoryReadAll }, userTenant);
+var graphAccessToken = await _tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new string[] { GraphScope.UserReadAll }, userTenant);
 ```
 
-We are acquiring an access token for Graph with the scope `Directory.Read.All`, to list all the users from the tenant so you can assign a todo item to them. `GetAccessTokenOnBehalfOfUserAsync` is a helper method found on `Microsoft.Identity.Web` project, and it receives a **tenantId** as parameter to acquire a token for the desired authority. For that, we get the current authority from the built `IConfidentialClientApplication` and replace the tenantId. Below is an example of this logic.
+We are acquiring an access token for Graph with the scope `User.Read.All`, to list all the users from the tenant so you can assign a todo item to them. `GetAccessTokenOnBehalfOfUserAsync` is a helper method found on `Microsoft.Identity.Web` project, and it receives a **tenantId** as parameter to acquire a token for the desired authority. For that, we get the current authority from the built `IConfidentialClientApplication` and replace the tenantId. Below is an example of this logic.
 
 ```csharp
 string signedUserAuthority = confidentialClientApplication.Authority.Replace(new Uri(confidentialClientApplication.Authority).PathAndQuery, $"/{tenant}/");
 AuthenticationResult result = await confidentialClientApplication
-    .AcquireTokenSilent(new string[] { "Directory.Read.All" }, account)
+    .AcquireTokenSilent(new string[] { "User.Read.All" }, account)
     .WithAuthority(signedUserAuthority)
     .ExecuteAsync()
     .ConfigureAwait(false);

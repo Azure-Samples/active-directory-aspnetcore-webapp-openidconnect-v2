@@ -24,7 +24,7 @@
       "RequiredResourcesAccess": [
         {
           "Resource": "Microsoft Graph",
-          "DelegatedPermissions": [ "Directory.Read.All" ]
+          "DelegatedPermissions": [ "User.Read.All" ]
         }
       ]
     }
