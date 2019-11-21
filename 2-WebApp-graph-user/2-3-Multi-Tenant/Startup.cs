@@ -38,7 +38,7 @@ using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApp_OpenIDConnect_DotNet.BLL;
+using WebApp_OpenIDConnect_DotNet.Services;
 using WebApp_OpenIDConnect_DotNet.DAL;
 using WebApp_OpenIDConnect_DotNet.Utils;
 
@@ -79,7 +79,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
             services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
             {
-                options.Events.OnTokenValidated = async context => 
+                options.Events.OnTokenValidated = async context =>
                 {
                     string tenantId = context.SecurityToken.Claims.FirstOrDefault(x => x.Type == "tid" || x.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
 

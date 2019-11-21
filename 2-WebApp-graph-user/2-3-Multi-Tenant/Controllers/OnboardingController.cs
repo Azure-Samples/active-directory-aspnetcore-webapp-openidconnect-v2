@@ -22,15 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using WebApp_OpenIDConnect_DotNet.DAL;
 using WebApp_OpenIDConnect_DotNet.Models;
 
@@ -97,10 +97,14 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                 return RedirectToAction("Error", "Home");
             }
 
+            var authenticationProperties = new AuthenticationProperties { RedirectUri = "Home/Index" };
+
             // Check if tenant is already authorized
-            if(dbContext.AuthorizedTenants.FirstOrDefault(x => x.TenantId == tenant) != null)
+            if (dbContext.AuthorizedTenants.FirstOrDefault(x => x.TenantId == tenant) != null)
             {
-                return RedirectToAction("Index", "Home");
+                // Challenge an authentication so dotnet can set the user identity claims. 
+                // Since the user will have a session on AAD already, they wont need to select an account again.
+                return Challenge(authenticationProperties, AzureADDefaults.OpenIdScheme);
             }
 
             // Find a tenant carrying a TempAuthorizationCode that we previously saved
@@ -120,7 +124,9 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
                 await dbContext.SaveChangesAsync();
 
-                return RedirectToAction("Index", "Home");
+                // Challenge an authentication so dotnet can set the user identity claims. 
+                // Since the user will have a session on AAD already, they wont need to select an account again.
+                return Challenge(authenticationProperties, AzureADDefaults.OpenIdScheme);
             }
         }
     }

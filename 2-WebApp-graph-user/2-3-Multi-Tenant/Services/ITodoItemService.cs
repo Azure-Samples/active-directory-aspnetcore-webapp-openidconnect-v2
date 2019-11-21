@@ -27,7 +27,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using WebApp_OpenIDConnect_DotNet.Models;
 
-namespace WebApp_OpenIDConnect_DotNet.BLL
+namespace WebApp_OpenIDConnect_DotNet.Services
 {
     public interface ITodoItemService
     {

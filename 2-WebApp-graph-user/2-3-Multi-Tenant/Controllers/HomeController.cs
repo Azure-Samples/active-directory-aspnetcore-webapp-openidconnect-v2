@@ -23,16 +23,18 @@ SOFTWARE.
  */
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using WebApp_OpenIDConnect_DotNet.DAL;
 using WebApp_OpenIDConnect_DotNet.Models;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
-    [Authorize]
+    [AllowAnonymous]
     public class HomeController : Controller
     {
         private readonly SampleDbContext dbContext;
@@ -62,14 +64,12 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                 return RedirectToAction("Index");
         }
 
-        [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult UnauthorizedTenant()
         {
             return View();
         }
 
-        [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

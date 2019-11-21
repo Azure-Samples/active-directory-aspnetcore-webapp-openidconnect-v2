@@ -31,7 +31,7 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace WebApp_OpenIDConnect_DotNet.BLL
+namespace WebApp_OpenIDConnect_DotNet.Services
 {
     public class MSGraphService : IMSGraphService
     {

@@ -43,13 +43,14 @@ For more information about apps and tenancy, see [Tenancy in Azure Active Direct
 
 This sample shows how to build a .NET Core MVC web application that uses the [OpenID Connect](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc) protocol to sign in users from multiple Azure AD tenants and acquire token for [Microsoft Graph](https://graph.microsoft.com) using the [Microsoft Authentication Library (MSAL)](https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-overview). It leverages the ASP.NET Core OpenID Connect middleware.
 
-The application puts forward a scenario where a SaaS application invites the administrators of Azure AD tenants to `enrol` their tenants into this app. This process is analogous to a customer `buying` a SaaS product.  
+The application puts forward a scenario where a SaaS application invites the administrators of Azure AD tenants to `enroll` their tenants into this app. This process is analogous to a customer `buying` a SaaS product.  
 
- 1. Once you start the application, it will ask you to sign-in as an administrator. If its your first time signing-in, you'd land on a page with a heading **Unauthorized Tenant**. Click on the **Take me to the onboarding process** button to onboard your tenant to this application.
- 1. Once you have **Registered your tenant** 
+ 1. Once you start the application, you will land in the homepage where you can sign-in or onboard your tenant.
+ 1. If you sign-in before onboarding your tenant, you'd land on a page with a heading **Unauthorized Tenant**. Click on the **Take me to the onboarding process** button to onboard your tenant to this application.
+ 1. On the onboarding page, you will be asked to sign-in as an **administrator** and accept an **admin consent** for the application.
+ 1. Once you have **registered your tenant**, all users from that tenant will be able to sign-in and explore the todo list.
 
 > Looking for previous versions of this code sample? Check out the tags on the [releases](../../releases) GitHub page.
-
 
 ## How to run this sample
 

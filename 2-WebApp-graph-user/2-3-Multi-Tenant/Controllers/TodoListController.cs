@@ -30,7 +30,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Identity.Web;
-using WebApp_OpenIDConnect_DotNet.BLL;
+using WebApp_OpenIDConnect_DotNet.Services;
 using WebApp_OpenIDConnect_DotNet.Models;
 using WebApp_OpenIDConnect_DotNet.Utils;
 

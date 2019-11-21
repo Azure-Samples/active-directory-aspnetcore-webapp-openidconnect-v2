@@ -26,7 +26,7 @@ using Microsoft.Graph;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace WebApp_OpenIDConnect_DotNet.BLL
+namespace WebApp_OpenIDConnect_DotNet.Services
 {
     public interface IMSGraphService
     {
