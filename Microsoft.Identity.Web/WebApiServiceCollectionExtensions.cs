@@ -13,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
@@ -122,25 +121,8 @@ namespace Microsoft.Identity.Web
                 // flow will be delayed (lazy construction of MSAL's application
                 options.Events.OnTokenValidated = async context =>
                 {
-                    if (scopes != null && scopes.Any())
-                    {
-                        var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
-                        context.Success();
-                        await tokenAcquisition.AddAccountToCacheFromJwtAsync(context, scopes).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        context.Success();
-
-                        // Todo : rather use options.SaveToken?
-                        JwtSecurityToken jwtSecurityToken = context.SecurityToken as JwtSecurityToken;
-                        if (jwtSecurityToken != null)
-                        {
-                            string rawData = (jwtSecurityToken.InnerToken != null) ? jwtSecurityToken.InnerToken.RawData : jwtSecurityToken.RawData;
-                            (context.Principal.Identity as ClaimsIdentity).AddClaim(new Claim("jwt", rawData));
-                        }
-                    }
-                    // Adds the token to the cache, and also handles the incremental consent and claim challenges
+                    context.HttpContext.StoreTokenUsedToCallWebAPI(context.SecurityToken as JwtSecurityToken);
+                    context.Success();
                     await Task.FromResult(0).ConfigureAwait(false);
                 };
             });
