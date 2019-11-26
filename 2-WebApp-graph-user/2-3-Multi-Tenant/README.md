@@ -41,14 +41,14 @@ For more information about apps and tenancy, see [Tenancy in Azure Active Direct
 
 ## Scenario
 
-This sample shows how to build a .NET Core MVC web application that uses the [OpenID Connect](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc) protocol to sign in users from multiple Azure AD tenants and acquire token for [Microsoft Graph](https://graph.microsoft.com) using the [Microsoft Authentication Library (MSAL)](https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-overview). It leverages the ASP.NET Core OpenID Connect middleware.
+This sample shows how to build a .NET Core MVC web application that uses the [OpenID Connect](https://docs.microsoft.com/azure/active-directory/develop/v2-protocols-oidc) protocol to sign in users from multiple Azure AD tenants and acquire token for [Microsoft Graph](https://graph.microsoft.com) using the [Microsoft Authentication Library (MSAL)](https://docs.microsoft.com/azure/active-directory/develop/msal-overview). It leverages the ASP.NET Core OpenID Connect middleware.
 
 The application puts forward a scenario where a SaaS application invites the administrators of Azure AD tenants to `enroll` their tenants into this app. This process is analogous to a customer `buying` a SaaS product.  
 
- 1. Once you start the application, you will land in the homepage where you can sign-in or onboard your tenant.
- 1. If you sign-in before onboarding your tenant, you'd land on a page with a heading **Unauthorized Tenant**. Click on the **Take me to the onboarding process** button to onboard your tenant to this application.
- 1. On the onboarding page, you will be asked to sign-in as an **administrator** and accept an **admin consent** for the application.
- 1. Once you have **registered your tenant**, all users from that tenant will be able to sign-in and explore the todo list.
+ 1. Once you start the application, you will land on the homepage where you can **sign-in** or **onboard** your tenant.
+ 1. If you try to **Sign-In** before onboarding your tenant, you'd land on the **Unauthorized Tenant** page. Click on the **Take me to the onboarding process** button to onboard your tenant to this application.
+ 1. On the onboarding page, you will be asked to sign-in as a tenant **administrator** and accept the permissions requested in the **admin consent** screen to successfully provision the application in your tenant.
+ 1. Once you have **registered your tenant**, all users from that tenant will be able to sign-in and explore the ToDo list.
 
 > Looking for previous versions of this code sample? Check out the tags on the [releases](../../releases) GitHub page.
 
@@ -74,8 +74,6 @@ or download and extract the repository .zip file.
 > Given that the name of the sample is quiet long, and so are the names of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
 ### Step 2:  Register the sample application with your Azure Active Directory tenant
-
-> :warning: **If you had created this sample in the past already**: [Delete its **enterprise app** from the other tenants before re-creating this application](#error-AADSTS650051).
 
 There is one project in this sample. To register it, you can:
 
@@ -134,7 +132,7 @@ As a first step you'll need to:
            - `https://localhost:44321/signin-oidc`
            - `https://localhost:44321/Onboarding/ProcessCode`
         - In the **Advanced settings** section, set **Logout URL** to `https://localhost:44321/signout-oidc`.
-        - In the **Advanced settings** | **Implicit grant** section, check the **ID tokens** option as this sample requires the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to sign-in the user, and call an API.
+        - In the **Advanced settings** | **Implicit grant** section, check the **ID tokens** option as the [AspNetCore security middleware](https://github.com/aspnet/AspNetCore/tree/master/src/Security) used in the sample uses the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) by default to get the user info right after sign-in.
 
 1. Click the **Save** button on top to save the changes.
 1. In the app's registration screen, click on the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
@@ -164,41 +162,43 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 ### Step 4: Run the sample
 
 Clean the solution, rebuild the solution, and run it.
-The sample implements two distinct tasks: the onboarding of a new tenant and a basic Todo List CRUD operation.
+The sample implements two distinct tasks: the onboarding of a new tenant and a basic ToDo List CRUD operation.
 
 Ideally, you would want to have two Azure AD tenants so you can test the multi-tenant aspect of this sample. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
 
 #### Signing-in
 
-Users can only sign-in if their tenant had been "onboarded". The sample will guide them how to do so, but it requires a **tenant admin account** to complete the onboarding process. Once the admin have consented, all users from their tenant will be able to sign-in.
+Users can only sign-in if their tenant had been "onboarded" first. The sample will guide them how to do so, but it requires a **tenant admin account** to complete the onboarding process. Once the admin has consented and provisioned the app in their tenant, all users from their tenant will be able to sign-in.
 
 If you try to onboard without an admin account, you will be presented with the following screen. Please switch to an admin account to complete this step:
 
-![Admin Approval](ReadmeFiles/admin-approval.png)
+![Admin Consent](ReadmeFiles/admin-approval.png)
 
-If you try to sign-in with a tenant that haven't been "onboarded" yet, you will land in this page. Please click on **Take me to the onboarding process** button and follow the instructions to get your tenant registered in the sample database:
+If you try to sign-in with a tenant that hasn't been "onboarded" yet, you will land on the following page. Please click on **Take me to the onboarding process** button and follow the instructions to get your tenant registered in the sample database:
 
 ![Unauthorized Tenant](ReadmeFiles/unauthorized-tenant.png)
 
-#### Todo List
+> :warning: If you onboarded your tenant using this sample in the past already and getting the **AADSTS650051** error when onboarding again, please refer to the [Error AADSTS650051](#error-aadsts650051) section below.
 
-Users from one tenant can't see todo items from other tenants. They will be able to perform basic CRUD operations on todo items assigned to them. When editing a todo item, users can assign it to any other user from their tenant. The list of users is coming from Microsoft Graph, using the [Graph SDK](https://github.com/microsoftgraph/msgraph-sdk-dotnet).
+#### ToDo List
+
+Users from one tenant can't see the **ToDo** items of users from other tenants. They will be able to perform basic CRUD operations on ToDo items assigned to them. When editing a ToDo item, users can assign it to any other user from their tenant. The list of users in a tenant is fetched from Microsoft Graph, using the [Graph SDK](https://github.com/microsoftgraph/msgraph-sdk-dotnet).
 
 The list of users will be presented in the **Assigned To** dropdown:
 
-![Todo Edit](ReadmeFiles/todo-edit.png)
+![todo Edit](ReadmeFiles/todo-edit.png)
 
 ## About The code
 
-This sample covers the following topics on a multi-tenant app.
+This sample details the following aspects of a multi-tenant app.
 
-- usage of the `/common` endpoint
-- service principle provision for new tenants
-- custom token validation allowing only registered tenants
-- data partition
-- Microsoft Graph token by tenant
+- usage of the `/common` endpoint.
+- Service Principle provisioning of an app in Azure AD tenants
+- Custom Token Validation to allow users from onboarded tenants only.
+- Data partitioning in multi-tenant apps.
+- Acquiring Access tokens for Microsoft Graph for each tenant.
 
-It is using the OpenID Connect ASP.NET Core middleware to sign in users from multiple Azure AD tenants. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Azure AD tenant where the app is registered. These values are read from the `appsettings.json` file.
+This sample is using the OpenID Connect ASP.NET Core middleware to sign in users from multiple Azure AD tenants. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Azure AD tenant where the app is registered. These values are read from the `appsettings.json` file.
 
 You can trigger the middleware to send an OpenID Connect sign-in request by decorating a class or method with the `[Authorize]` attribute or by issuing a challenge (see the [AccountController.cs](https://github.com/aspnet/AspNetCore/blob/master/src/Azure/AzureAD/Authentication.AzureAD.UI/src/Areas/AzureAD/Controllers/AccountController.cs) file which is part of ASP.NET Core):
 
@@ -206,18 +206,18 @@ These steps are encapsulated in the [Microsoft.Identity.Web](..\..\Microsoft.Ide
 
 ### Usage of `/common` endpoint
 
-In order to be able to sign-in users from multiple tenants using OpenID Connect, the [/common endpoint](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc#fetch-the-openid-connect-metadata-document) must be used so Microsoft identity platform can fetch the metadata document. In the sample, this endpoint is used as a result of setting the value for `TenantId` as `organizations` on the `appsettings.json` file, and configuring the middleware to read the values from it.
+In order to be able to sign-in users from multiple tenants, the [/common endpoint](https://docs.microsoft.com/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant#update-your-code-to-send-requests-to-common) must be used. In the sample, this endpoint is used as a result of setting the value for `TenantId` as `organizations` on the `appsettings.json` file, and configuring the middleware to read the values from it.
 
 ```csharp
 services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
                 .AddAzureAD(options => configuration.Bind(configSectionName, options));
 ```
 
-Read more about [OpenID Connect endpoints here](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-protocols#endpoints).
+ You can read about the various endpoints of the Microsoft Identity Platform [here](https://docs.microsoft.com/azure/active-directory/develop/active-directory-v2-protocols#endpoints).
 
 ### Service principle provision for new tenants (onboarding process)
 
-On a multi-tenant app, its service principle will be created on all the users' tenants that have signed-in at least once. Some might want that only tenant admins accept the service principle provisioning. For that, we are using the [admin consent endpoint](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-admin-consent) for the onboarding process on the `OnboardingController.cs`. The `Onboard` action and corresponding view, simulate an onboarding experience.
+For a multi-tenant app, its service principle will be created on all the users' tenants that have signed-in at least once. Some might want that only tenant admins accept the service principle provisioning. For that, we are using the [admin consent endpoint](https://docs.microsoft.com/azure/active-directory/develop/v2-admin-consent) for the onboarding process on the `OnboardingController.cs`. The `Onboard` action and corresponding view, simulate an onboarding experience.
 
 ```csharp
 [HttpPost]
@@ -238,7 +238,7 @@ public IActionResult Onboard()
 
 This results in an OAuth2 code grant request that triggers the admin consent flow and creates the service principle in the admin's tenant. The `state` parameter is used to validate the response, preventing a man-in-the-middle attack. Then, the `ProcessCode` action receives the authorization code from Azure AD and, if they appear valid, it creates an entry in the application database for the new customer.
 
-The `https://graph.microsoft.com/.default` is a static scope. You can find more about static scope on [this link.](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-admin-consent#request-the-permissions-from-a-directory-admin)
+The `https://graph.microsoft.com/.default` is a static scope. You can find more about static scope on [this link.](https://docs.microsoft.com/azure/active-directory/develop/v2-admin-consent#request-the-permissions-from-a-directory-admin)
 
 ### Custom token validation allowing only registered tenants
 
@@ -281,15 +281,15 @@ services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =
 });
 ```
 
-### Data partition
+### Data partitioning by tenant
 
 There are two common scenarios regarding data partition on a multi-tenant app. Having a separate database for each tenant or having a single database and using the **tenantId** to distinguish the data from each tenant. In this sample, we used the single database approach to save the todo items.
 
-`TodoListController.cs` have basic CRUD actions for `TodoItem` and each operation takes into account the signed user's **tenantId** to separate data from each tenant. The tenantId can be found in the user' claims.
+`TodoListController.cs` have basic CRUD actions for `todoItem` and each operation takes into account the signed user's **tenantId** to separate data from each tenant. The tenantId can be found in the user' claims.
 
 ### Microsoft Graph token by tenant
 
-If a multi-tenant app needs to acquire a token from Graph to read data from the signed user's tenant, the token must be issued with their tenantId authority and not where the application is registered. This feature is being showed on the **Edit** action result on `TodoListController.cs`.
+If a multi-tenant app needs to acquire a token from Graph to read data from the signed user's tenant, the token must be issued with their tenantId authority and not where the application is registered. This feature is being showed on the **Edit** action result on `todoListController.cs`.
 
 ```csharp
 var userTenant = User.GetTenantId();
@@ -312,7 +312,7 @@ AuthenticationResult result = await confidentialClientApplication
 
 ### Error AADSTS650051
 
-If you are receiving the following error message, you might need to **delete older Enterprise Applications of this sample**
+If you are receiving the following error message, you might need to **delete older service principals of this application**. Please [delete the existing [service principal](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals) from the **enterprise app** blade of the tenant before re-creating this application]. Click on the **Enterprise Applications** blade in the portal, locate this application `WebApp-MultiTenant-v2`, navigate to its **properties** and click **Delete** to delete the service principal.
 
 > OpenIdConnectProtocolException: Message contains error: 'invalid_client', error_description: 'AADSTS650051: Application '{applicationId}' is requesting permissions that are either invalid or out of date.
 
@@ -325,10 +325,25 @@ If you'd like to contribute to this sample, see [CONTRIBUTING.MD](/CONTRIBUTING.
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information, see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 ## Learn more
-To understand more about token validation, see
+
+To learn more about single and multi-tenant apps
+
+- [Tenancy in Azure Active Directory](https://docs.microsoft.com/en-us/azure/active-directory/develop/single-and-multi-tenant-apps)
+- [How to: Sign in any Azure Active Directory user using the multi-tenant application pattern](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant)
+- [Application and service principal objects in Azure Active Directory](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals)
+- [National Clouds](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-national-cloud)
+- [Endpoints](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-protocols#endpoints)
+
+To learn more about admin consent experiences
+- [Understanding Azure AD application consent experiences](https://docs.microsoft.com/en-us/azure/active-directory/develop/application-consent-experience)
+- [Understand user and admin consent](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant#understand-user-and-admin-consent)
+
+To learn more about token validation, see
 - [Validating tokens](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki/ValidatingTokens)
+- [Validating an id_token](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens#validating-an-id_token)
 
 To understand more about app registration, see:
 
 - [Quickstart: Register an application with the Microsoft identity platform (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
 - [Quickstart: Configure a client application to access web APIs (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
+
