@@ -3,12 +3,12 @@ services: active-directory
 platforms: dotnet
 author: kalyankrishna1
 level: 200
-client: ASP.NET Core 2.x Web App
+client: ASP.NET Core Web App
 service: Microsoft Graph
 endpoint: Microsoft identity platform
 ---
 
-# Call the Microsoft Graph API from an An ASP.NET Core 2.x Web App, using Sql Server for caching tokens
+# Call the Microsoft Graph API from an An ASP.NET Core Web App, using Sql Server for caching tokens
 
 ## About this sample
 
@@ -16,9 +16,9 @@ endpoint: Microsoft identity platform
 
 ## Scenario
 
-Starting from a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users, this chapter of the tutorial shows how to make a call to Microsoft Graph `/me` endpoint on behalf of the signed-in user. This sample additionally provides instructions on how to use Sql Server for caching tokens.
+Starting from a .NET Core MVC Web app that uses OpenID Connect to sign in users, this chapter of the tutorial shows how to make a call to Microsoft Graph `/me` endpoint on behalf of the signed-in user. This sample additionally provides instructions on how to use Sql Server for caching tokens.
 
-It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). The complexities of the library's integration with the ASP.NET Core dependency Injection patterns is encapsultated into the `Microsoft.Identity.Web` library project, which is a part of this tutorial.
+It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). The complexities of the library's integration with the ASP.NET Core dependency Injection patterns is encapsulated into the `Microsoft.Identity.Web` library project, which is a part of this tutorial.
 
 ![Sign in with the Microsoft identity platform](ReadmeFiles/sign-in.png)
 
@@ -257,7 +257,7 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
 
 Use [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) to get support from the community.
 Ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
-Make sure that your questions or comments are tagged with [`azure-active-directory` `adal` `msal` `dotnet`].
+Make sure that your questions or comments are tagged with [`azure-active-directory` `msal` `dotnet`].
 
 If you find a bug in the sample, please raise the issue on [GitHub Issues](../../issues).
 
