@@ -47,6 +47,9 @@
 /4-WebApp-your-API/.vs
 /4-WebApp-your-API/bin
 /4-WebApp-your-API/obj
+/4-WebApp-your-API/Client/.vs
+/4-WebApp-your-API/Client/bin
+/4-WebApp-your-API/Client/obj
 /5-WebApp-AuthZ-Roles-Groups/.vs
 /5-WebApp-AuthZ-Roles-Groups/bin
 /5-WebApp-AuthZ-Roles-Groups/obj
