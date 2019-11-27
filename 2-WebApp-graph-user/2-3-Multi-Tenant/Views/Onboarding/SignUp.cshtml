@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "SignUp";
+}
+
+<h2>Tenant Onboarding</h2>
+<div class="panel panel-info">
+    <div class="panel-heading"><h4>On-boarding instructions</h4></div>
+    <div class="panel-body">
+        <p>In this multi-tenant sample, details of tenants that have on-boarded are saved to a database. Tokens presented by users are validated to ensure that only users from on-boarded tenants can use the ToDo list..</p>
+        <p>
+            This page provides a link to start the onboarding process. Once the tenant administrator signs-in and consents to the app's requested permissions, this application's service principle is provisioned into this new client's tenant.
+            This sample uses the <a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-admin-consent#request-the-permissions-from-a-directory-admin">admin consent endpoint</a> for this purpose.
+            Once the tenant administrator has consented, we save the tenant Id in the database and the application is ready to accept users from this tenant.
+        </p>
+        <p>Click on the button below to initiate the admin consent process register your tenant. You must use an <a href="https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/directory-assign-admin-roles">admin account</a> on this step.</p>
+        <form asp-controller="Onboarding" asp-action="Onboard" method="post" class="form-horizontal" role="form">
+            @Html.AntiForgeryToken()
+            <div>
+                <button type="submit" class="btn btn-info">On-board my tenant</button>
+            </div>
+        </form>
+    </div>
+</div>
