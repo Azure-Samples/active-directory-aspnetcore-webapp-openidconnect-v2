@@ -1,0 +1,53 @@
+﻿@using System.Security.Principal
+@using Microsoft.Identity.Web
+@model IEnumerable<AuthorizedTenant>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h1>
+    An ASP.NET Core web app signing-in users from any Azure AD organization
+</h1>
+<p>
+    This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect to sign in users.
+    Users can use work and school accounts from any company or organization that has integrated with Azure Active Directory.
+    It leverages the ASP.NET Core OpenID Connect middleware to sign-in users.
+</p>
+<img src="https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/raw/master/2-WebApp-graph-user/2-3-Multi-Tenant/ReadmeFiles/Sign-in.png" />
+
+@if (User.Identity.IsAuthenticated)
+{
+    <hr />
+    <h2>Authorized Tenants List (For demonstration purpose only)</h2>
+    <p>
+        The following is a list of onboarded tenants retrieved from the application's own database.
+        If you want to repeat the onboarding process, off-board the desired tenant from this list.
+    </p>
+    <p>
+        Off-boarding the signed user's tenant, will trigger a <b>sign-out.</b>
+    </p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Tenant Id</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tenant in Model)
+            {
+                <tr>
+                    <td>
+                        <span>@tenant.TenantId</span>
+                        @if (tenant.TenantId == User.GetTenantId())
+                        {
+                            <span class="label label-primary">your tenant</span>
+                        }
+                    </td>
+                    <td><a asp-controller="Home" asp-action="DeleteTenant" asp-route-id=@tenant.TenantId class="btn btn-danger">Off-board</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

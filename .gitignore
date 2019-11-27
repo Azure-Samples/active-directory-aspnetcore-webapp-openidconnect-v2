@@ -1,4 +1,4 @@
-﻿################################################################################
+################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
@@ -35,6 +35,9 @@
 /2-WebApp-graph-user/2-3-Best-Practices/.vs
 /2-WebApp-graph-user/2-3-Best-Practices/bin
 /2-WebApp-graph-user/2-3-Best-Practices/obj
+/2-WebApp-graph-user/2-3-Multi-Tenant/.vs
+/2-WebApp-graph-user/2-3-Multi-Tenant/bin
+/2-WebApp-graph-user/2-3-Multi-Tenant/obj
 /3-WebApp-multi-APIs/.vs
 /3-WebApp-multi-APIs/bin
 /3-WebApp-multi-APIs/obj
@@ -104,3 +107,6 @@
 /4-WebApp-your-API/4-2-B2C/.vs
 /4-WebApp-your-API/4-2-B2C/Client/obj
 /4-WebApp-your-API/4-2-B2C/TodoListService/obj
+/2-WebApp-graph-user/2-3-Multi-Tenant/.vs/WebApp-OpenIDConnect-DotNet
+/2-WebApp-graph-user/2-3-Multi-Tenant/bin/Debug/netcoreapp2.2
+/2-WebApp-graph-user/2-3-Multi-Tenant/obj
