@@ -12,7 +12,7 @@ In this phase of the tutorial, you will learn, how to add sign-in users to your 
 
    1. If you are a Line of Business (LOB) developer, you'll want to [sign-in users in your organization](./1-1-MyOrg) with their work or school accounts.
    1. If you are an ISV, you'll want to [sign-in users in any organization](./1-2-AnyOrg), still  with their work or school accounts.
-   1. If you are an ISV targetting both organizations and individuals, you'll want to [sign-in users with their work and school accounts or Microsoft personal accounts](./1-3-AnyOrgOrPersonal).
+   1. If you are an ISV targeting both organizations and individuals, you'll want to [sign-in users with their work and school accounts or Microsoft personal accounts](./1-3-AnyOrgOrPersonal).
    1. If you target organizations (work or school accounts), you can also enable your application to sign-in users in [national and sovereign clouds](./1-4-Sovereign).
    1. If you are a business wanting to connect with your customers, or with small business partners, you might also want to [sign-in users with their social identities](./1-5-B2C) using Microsoft Azure AD B2C
    1. Finally, you'll want to let users [sign-out](./1-6-SignOut) of our application, or of the browser
