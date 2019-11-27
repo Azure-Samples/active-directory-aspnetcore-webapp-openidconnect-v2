@@ -46,6 +46,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
         public IActionResult Index()
         {
+            //Getting all authorized tenants to be displayed on a table, for demonstration purpose
             var authorizedTenants = dbContext.AuthorizedTenants.Where(x => x.TenantId != null && x.AuthorizedOn != null).ToList();
             return View(authorizedTenants);
         }
@@ -58,6 +59,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
             var signedUserTenant = User.GetTenantId();
 
+            // If the user deletes its own tenant from the list, they should be signed-out
             if (id == signedUserTenant)
                 return RedirectToAction("SignOut", "Account", new { area = "AzureAD" });
             else
@@ -67,6 +69,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult UnauthorizedTenant()
         {
+            //If you landed here, is because you tried to sign-in with a user from a tenant that hasnt been onboarded in the application yet.
             return View();
         }
 

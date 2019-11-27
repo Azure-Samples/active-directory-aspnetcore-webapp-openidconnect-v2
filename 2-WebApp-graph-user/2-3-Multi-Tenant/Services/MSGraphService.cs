@@ -52,6 +52,8 @@ namespace WebApp_OpenIDConnect_DotNet.Services
             try
             {
                 PrepareAuthenticatedClient(accessToken);
+
+                // Using Graph SDK to get users, filtering by active ones and returning just id and userPrincipalName field
                 users = await graphServiceClient.Users.Request()
                     .Filter($"accountEnabled eq true")
                     .Select("id, userPrincipalName")

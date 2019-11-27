@@ -67,6 +67,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                 TempAuthorizationCode = stateMarker //Use the stateMarker as a tempCode, so we can find this entity on the ProcessCode method
             };
 
+            // Saving a temporary tenant to validate the stateMarker on the admin consent response
             dbContext.AuthorizedTenants.Add(authorizedTenant);
             dbContext.SaveChanges();
 
@@ -79,11 +80,10 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             string authorizationRequest = string.Format(
                 "{0}common/v2.0/adminconsent?client_id={1}&redirect_uri={2}&state={3}&scope={4}",
                 azureADOptions.Instance,
-                Uri.EscapeDataString(azureADOptions.ClientId),
-                Uri.EscapeDataString(currentUri + "Onboarding/ProcessCode"),
-                Uri.EscapeDataString(stateMarker),
-                Uri.EscapeDataString("https://graph.microsoft.com/.default"));
-
+                Uri.EscapeDataString(azureADOptions.ClientId), // The application Id on Azure Portal
+                Uri.EscapeDataString(currentUri + "Onboarding/ProcessCode"), //Uri that will get redirected after the admin has consented
+                Uri.EscapeDataString(stateMarker), // The state parameter is used to validate the response, preventing a man-in-the-middle attack, and it will also be used to identify the entity on ProcessCode action.
+                Uri.EscapeDataString("https://graph.microsoft.com/.default")); // The scopes to be presented to the admin. Here we are using the static scope /.default. 
 
             return Redirect(authorizationRequest);
         }
@@ -99,7 +99,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
             var authenticationProperties = new AuthenticationProperties { RedirectUri = "Home/Index" };
 
-            // Check if tenant is already authorized
+            // If tenant is already authorized, there is no need updated its record
             if (dbContext.AuthorizedTenants.FirstOrDefault(x => x.TenantId == tenant) != null)
             {
                 // Challenge an authentication so dotnet can set the user identity claims. 
