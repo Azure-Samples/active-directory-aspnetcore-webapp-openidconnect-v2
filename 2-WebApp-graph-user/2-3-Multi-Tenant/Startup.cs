@@ -38,8 +38,8 @@ using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApp_OpenIDConnect_DotNet.Services;
 using WebApp_OpenIDConnect_DotNet.DAL;
+using WebApp_OpenIDConnect_DotNet.Services;
 using WebApp_OpenIDConnect_DotNet.Utils;
 
 namespace WebApp_OpenIDConnect_DotNet
@@ -68,8 +68,10 @@ namespace WebApp_OpenIDConnect_DotNet
             //If you want to run this sample using in memory db, uncomment the line below (options.UseInMemoryDatabase) and comment the one that uses options.UseSqlServer.
             //services.AddDbContext<SampleDbContext>(options => options.UseInMemoryDatabase(databaseName: "MultiTenantOnboarding"));
             services.AddDbContext<SampleDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SampleDbConnStr")));
-            
+
             services.AddScoped<ITodoItemService, TodoItemService>();
+
+            // Add Microsoft Graph support
             services.AddScoped<IMSGraphService, MSGraphService>();
 
             // Sign-in users with the Microsoft identity platform
@@ -92,7 +94,6 @@ namespace WebApp_OpenIDConnect_DotNet
 
                     if (authorizedTenant == null)
                         throw new UnauthorizedTenantException("This tenant is not authorized");
-
                 };
                 options.Events.OnAuthenticationFailed = (context) =>
                 {

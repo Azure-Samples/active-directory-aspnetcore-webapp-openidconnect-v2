@@ -178,7 +178,7 @@ If you try to sign-in with a tenant that hasn't been "onboarded" yet, you will l
 
 ![Unauthorized Tenant](ReadmeFiles/unauthorized-tenant.png)
 
-> :warning: If you onboarded your tenant using this sample in the past already and getting the **AADSTS650051** error when onboarding again, please refer to the [Error AADSTS650051](#error-aadsts650051) section below.
+> :warning: If you had onboarded your tenant using this sample in the past and now getting the **AADSTS650051** error when onboarding again, please refer to the [Error AADSTS650051](#error-aadsts650051) section below to mitigate this error.
 
 #### ToDo List
 
@@ -215,9 +215,9 @@ services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
 
  You can read about the various endpoints of the Microsoft Identity Platform [here](https://docs.microsoft.com/azure/active-directory/develop/active-directory-v2-protocols#endpoints).
 
-### Service principle provision for new tenants (onboarding process)
+### Service principle provisioning for new tenants (onboarding process)
 
-For a multi-tenant app, its service principle will be created on all the users' tenants that have signed-in at least once. Some might want that only tenant admins accept the service principle provisioning. For that, we are using the [admin consent endpoint](https://docs.microsoft.com/azure/active-directory/develop/v2-admin-consent) for the onboarding process on the `OnboardingController.cs`. The `Onboard` action and corresponding view, simulate an onboarding experience.
+For a multi-tenant app to work across tenants, its service principle will need to be provisioned in the users' tenant. It can either happen when the first user signs in, or most tenant admins only allow a tenant admin to carry out the service principle provisioning. For provisioning, we will be using the [admin consent endpoint](https://docs.microsoft.com/azure/active-directory/develop/v2-admin-consent) for the onboarding process. The code for this is provided in the `OnboardingController.cs`. The `Onboard` action and corresponding view, simulate the onboarding flow and experience.
 
 ```csharp
 [HttpPost]
@@ -236,13 +236,13 @@ public IActionResult Onboard()
 }
 ```
 
-This results in an OAuth2 code grant request that triggers the admin consent flow and creates the service principle in the admin's tenant. The `state` parameter is used to validate the response, preventing a man-in-the-middle attack. Then, the `ProcessCode` action receives the authorization code from Azure AD and, if they appear valid, it creates an entry in the application database for the new customer.
+This results in an OAuth2 code grant request that triggers the admin consent flow and creates the service principle in the admin's tenant. The `state` parameter is used to validate the response, preventing a man-in-the-middle attack. Then, the `ProcessCode` action receives the authorization code from Azure AD and, if they appear valid, we create an entry in the application database for the new customer.
 
-The `https://graph.microsoft.com/.default` is a static scope. You can find more about static scope on [this link.](https://docs.microsoft.com/azure/active-directory/develop/v2-admin-consent#request-the-permissions-from-a-directory-admin)
+The `https://graph.microsoft.com/.default` is a static scope that allows the tenant admin to consent for all permissions in one go. You can find more about static scope on [this link.](https://docs.microsoft.com/azure/active-directory/develop/v2-admin-consent#request-the-permissions-from-a-directory-admin)
 
 ### Custom token validation allowing only registered tenants
 
-On the `Startup.cs` we are calling `AddMicrosoftIdentityPlatformAuthentication` to configure the authentication, and it also validates that the token issuer is from AAD.
+On the `Startup.cs` we are calling `AddMicrosoftIdentityPlatformAuthentication` to configure the authentication, and within that method, we validates that the token issuer is from AAD.
 
 ```csharp
 options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).Validate;
@@ -283,17 +283,17 @@ services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =
 
 ### Data partitioning by tenant
 
-There are two common scenarios regarding data partition on a multi-tenant app. Having a separate database for each tenant or having a single database and using the **tenantId** to distinguish the data from each tenant. In this sample, we used the single database approach to save the todo items.
+There are two common scenarios regarding data partition on a multi-tenant app. Having a separate database for each tenant or having a single database and using the **tenantId** to separate the data of each tenant. In this sample, we have taken the single database approach to save the ToDo items for all users from all tenants.
 
-`TodoListController.cs` have basic CRUD actions for `todoItem` and each operation takes into account the signed user's **tenantId** to separate data from each tenant. The tenantId can be found in the user' claims.
+`TodoListController.cs` has the basic CRUD actions for `ToDoItem` and each operation takes into account the signed user's **tenantId** to separate data from each tenant. The tenantId can be found in the user' claims.
 
-### Microsoft Graph token by tenant
+### Acquiring Access token for Microsoft Graph for each tenant
 
-If a multi-tenant app needs to acquire a token from Graph to read data from the signed user's tenant, the token must be issued with their tenantId authority and not where the application is registered. This feature is being showed on the **Edit** action result on `todoListController.cs`.
+If a multi-tenant app needs to acquire an access token for Microsoft Graph to be able to read data from the signed user's tenant, the token must be issued from their tenanted authority and not from the tenant where the SaaS application is registered. This feature is being showed on the **Edit** action result on `todoListController.cs`.
 
 ```csharp
 var userTenant = User.GetTenantId();
-// Acquiring token for graph using the user's tenantId, so it can return all the users from their tenant
+// Acquiring token for graph using the user's tenant, so it can return all the users from their tenant
 var graphAccessToken = await _tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new string[] { GraphScope.UserReadAll }, userTenant);
 ```
 

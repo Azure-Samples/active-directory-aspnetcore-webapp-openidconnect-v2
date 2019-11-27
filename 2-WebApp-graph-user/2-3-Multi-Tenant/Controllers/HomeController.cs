@@ -23,12 +23,10 @@ SOFTWARE.
  */
 
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using WebApp_OpenIDConnect_DotNet.DAL;
 using WebApp_OpenIDConnect_DotNet.Models;
 
@@ -44,32 +42,41 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             this.dbContext = dbContext;
         }
 
+        /// <summary>
+        /// Retrieves a list all authorized tenants to be displayed in a table, for demonstration purpose only
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Index()
         {
-            //Getting all authorized tenants to be displayed on a table, for demonstration purpose
             var authorizedTenants = dbContext.AuthorizedTenants.Where(x => x.TenantId != null && x.AuthorizedOn != null).ToList();
             return View(authorizedTenants);
         }
 
+        /// <summary>Deletes the selected tenant from the app's own DB (off-boarding).</summary>
+        /// <param name="id">The tenant Id.</param>
+        /// <returns></returns>
         public IActionResult DeleteTenant(string id)
         {
             var tenants = dbContext.AuthorizedTenants.Where(x => x.TenantId == id).ToList();
             dbContext.RemoveRange(tenants);
             dbContext.SaveChanges();
 
-            var signedUserTenant = User.GetTenantId();
+            var signedUsersTenant = User.GetTenantId();
 
-            // If the user deletes its own tenant from the list, they should be signed-out
-            if (id == signedUserTenant)
+            // If the user deletes its own tenant from the list, they would also be signed-out
+            if (id == signedUsersTenant)
                 return RedirectToAction("SignOut", "Account", new { area = "AzureAD" });
             else
                 return RedirectToAction("Index");
         }
 
+        /// <summary>
+        /// If you landed here, its because you tried to sign-in with a user account from a tenant that hasn't onboarded the application yet.
+        /// </summary>
+        /// <returns></returns>
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult UnauthorizedTenant()
         {
-            //If you landed here, is because you tried to sign-in with a user from a tenant that hasnt been onboarded in the application yet.
             return View();
         }
 

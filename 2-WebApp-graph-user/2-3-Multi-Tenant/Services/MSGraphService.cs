@@ -22,17 +22,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Graph;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace WebApp_OpenIDConnect_DotNet.Services
 {
+    /// <summary>Provides helper methods built over MS Graph SDK</summary>
+    /// <seealso cref="WebApp_OpenIDConnect_DotNet.Services.IMSGraphService" />
     public class MSGraphService : IMSGraphService
     {
         // the Graph SDK's GraphServiceClient
@@ -58,7 +58,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
                     .Filter($"accountEnabled eq true")
                     .Select("id, userPrincipalName")
                     .GetAsync();
-                
+
                 if (users?.CurrentPage.Count > 0)
                 {
                     return users;
@@ -81,6 +81,14 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         {
             try
             {
+                /***
+                <!--Microsoft Azure AD Graph API endpoint,
+                'https://graph.microsoft.com'   Microsoft Graph global service
+                'https://graph.microsoft.us' Microsoft Graph for US Government
+                'https://graph.microsoft.de' Microsoft Graph Germany
+                'https://microsoftgraph.chinacloudapi.cn' Microsoft Graph China
+                -->
+                 * ***/
                 graphServiceClient = new GraphServiceClient("https://graph.microsoft.com/beta",
                                                                      new DelegateAuthenticationProvider(
                                                                          async (requestMessage) =>

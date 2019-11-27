@@ -22,16 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Identity.Web;
-using WebApp_OpenIDConnect_DotNet.Services;
+using System.Linq;
+using System.Threading.Tasks;
 using WebApp_OpenIDConnect_DotNet.Models;
+using WebApp_OpenIDConnect_DotNet.Services;
 using WebApp_OpenIDConnect_DotNet.Utils;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
@@ -90,7 +88,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         {
             TodoItem todoItem = await _todoItemService.Get(id, User);
 
-            if(todoItem == null)
+            if (todoItem == null)
             {
                 TempData["ErrorMessage"] = "Item not found";
                 return RedirectToAction("Error", "Home");
@@ -98,7 +96,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
             var userTenant = User.GetTenantId();
 
-            // Acquiring token for graph using the user's tenantId, so it can return all the users from their tenant
+            // Acquiring token for graph in the signed-in users tenant, so it can be used to retrieve all the users from their tenant
             var graphAccessToken = await _tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new string[] { GraphScope.UserReadAll }, userTenant);
 
             TempData["UsersDropDown"] = (await _msGraphService.GetUsersAsync(graphAccessToken))
