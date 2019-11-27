@@ -94,7 +94,9 @@ There are two options for distributed SQL cache:
 Create the cache database by running the CLI (change the parameters according to your configurations)
 
 ```csharp
+dotnet tool install --global dotnet-sql-cache
 dotnet sql-cache create "<your DB connection string>" dbo <cacheTableName>
+//For example: dotnet sql-cache create "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=My_Database;Integrated Security=True;" dbo TokenCache
 ```
 
 Then use this configuration on `Startup.cs`:
