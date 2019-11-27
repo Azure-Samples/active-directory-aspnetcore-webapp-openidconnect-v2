@@ -3,7 +3,7 @@ services: active-directory
 platforms: dotnet
 author: jmprieur
 level: 200
-client: ASP.NET Core 2.x Web App
+client: ASP.NET Core Web App
 service: Microsoft Graph
 endpoint: Microsoft identity platform
 ---
@@ -13,7 +13,7 @@ endpoint: Microsoft identity platform
 
 ## Scenario
 
-This sample shows how to update your ASP.NET Core 2.2 Web API so that it now calls other Microsoft APIs than Microsoft Graph. The sample now calls the Azure Resource Manager API
+This sample shows how to update your ASP.NET Core Web API so that it now calls other Microsoft APIs than Microsoft Graph. The sample now calls the Azure Resource Manager API
 as well as the Azure Storage
 
 ![Sign in and call ARM and Azure Storage](ReadmeFiles/graph-arm-storage.svg)
