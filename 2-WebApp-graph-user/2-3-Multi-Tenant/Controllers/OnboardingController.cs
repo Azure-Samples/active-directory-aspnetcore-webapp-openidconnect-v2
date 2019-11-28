@@ -27,6 +27,7 @@ using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
@@ -41,11 +42,13 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
     {
         private readonly SampleDbContext dbContext;
         private readonly AzureADOptions azureADOptions;
+        private readonly IConfiguration configuration;
 
-        public OnboardingController(SampleDbContext dbContext, IOptions<AzureADOptions> azureADOptions)
+        public OnboardingController(SampleDbContext dbContext, IOptions<AzureADOptions> azureADOptions, IConfiguration configuration)
         {
             this.dbContext = dbContext;
             this.azureADOptions = azureADOptions.Value;
+            this.configuration = configuration;
         }
 
         [HttpGet]
@@ -86,7 +89,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                 Uri.EscapeDataString(azureADOptions.ClientId),                  // The application Id as obtained from the Azure Portal
                 Uri.EscapeDataString(currentUri + "Onboarding/ProcessCode"),    // Uri that the admin will be redirected to after the consent
                 Uri.EscapeDataString(stateMarker),                              // The state parameter is used to validate the response, preventing a man-in-the-middle attack, and it will also be used to identify this request in the ProcessCode action.
-                Uri.EscapeDataString("https://graph.microsoft.com/.default"));  // The scopes to be presented to the admin to consent. Here we are using the static scope '/.default' (https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent#the-default-scope).
+                Uri.EscapeDataString(configuration.GetValue<string>("GraphAPI:StaticScope")));  // The scopes to be presented to the admin to consent. Here we are using the static scope '/.default' (https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent#the-default-scope).
 
             return Redirect(authorizationRequest);
         }

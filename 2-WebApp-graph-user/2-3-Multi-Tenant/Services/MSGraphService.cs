@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Graph;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,12 @@ namespace WebApp_OpenIDConnect_DotNet.Services
     {
         // the Graph SDK's GraphServiceClient
         private GraphServiceClient graphServiceClient;
+        private IConfiguration configuration;
+
+        public MSGraphService(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
 
         /// <summary>
         /// Gets the users in a tenant.
@@ -82,14 +89,15 @@ namespace WebApp_OpenIDConnect_DotNet.Services
             try
             {
                 /***
-                <!--Microsoft Azure AD Graph API endpoint,
+                //Microsoft Azure AD Graph API endpoint,
                 'https://graph.microsoft.com'   Microsoft Graph global service
                 'https://graph.microsoft.us' Microsoft Graph for US Government
                 'https://graph.microsoft.de' Microsoft Graph Germany
                 'https://microsoftgraph.chinacloudapi.cn' Microsoft Graph China
-                -->
-                 * ***/
-                graphServiceClient = new GraphServiceClient("https://graph.microsoft.com/beta",
+                 ***/
+
+                string graphEndpoint = configuration.GetValue<string>("GraphAPI:Endpoint");
+                graphServiceClient = new GraphServiceClient(graphEndpoint,
                                                                      new DelegateAuthenticationProvider(
                                                                          async (requestMessage) =>
                                                                          {

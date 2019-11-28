@@ -28,6 +28,22 @@ description: "Build a multi-tenant SaaS web application that calls Microsoft Gra
 
 This sample shows how to build an ASP.NET Core MVC web application that uses OpenID Connect to sign in users from multiple Azure AD tenants. Additionally it also introduces developers to the concept of a [multi-tenant](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps) Azure Active Directory application.
 
+It also introduces developers to the concept of
+
+- Multi-tenant Azure Active Directory application
+- [Azure National cloud deployments](https://docs.microsoft.com/en-us/graph/deployments)
+
+> :grey_exclamation: If you want to run this sample in [Azure Worldwide Cloud](https://portal.azure.com/), please navigate to the [README.md](README.md).
+
+### Microsoft National cloud environments
+
+National clouds (aka Sovereign clouds) are physically isolated instances of Azure. These regions of Azure are designed to make sure that data residency, sovereignty, and compliance requirements are honored within geographical boundaries.
+In addition to the public cloud​, Azure Active Directory is deployed in the following National clouds:  
+
+- Microsoft Cloud for US Government
+- Microsoft Cloud Germany
+- Azure and Office 365 operated by 21Vianet in China
+
 ### Overview
 
 When it comes to developing apps, developers can choose to configure their app to be either single-tenant or multi-tenant during app registration in the [Azure portal](https://portal.azure.com).
@@ -50,7 +66,7 @@ The application puts forward a scenario where a SaaS application invites the adm
  1. On the onboarding page, you will be asked to sign-in as a tenant **administrator** and accept the permissions requested in the **admin consent** screen to successfully provision the application in your tenant.
  1. Once you have **registered your tenant**, all users from that tenant will be able to sign-in and explore the ToDo list.
 
-> Looking for previous versions of this code sample? Check out the tags on the [releases](../../releases) GitHub page.
+> :grey_exclamation: Azure Government applications can use Azure AD Government identities, but can also use Azure AD Public identities to authenticate to an application hosted in Azure Government. A multi-tenant application **will not** be accessible using Azure AD Public identities. To know more about choosing identity authority go to [choosing your identity authority in Azure Government](https://docs.microsoft.com/en-us/azure/azure-government/documentation-government-plan-identity#choosing-your-identity-authority).
 
 ## How to run this sample
 
@@ -59,6 +75,12 @@ To run this sample:
 > Pre-requisites: Install .NET Core 2.2 or later (for example for Windows) by following the instructions at [.NET and C# - Get Started in 10 Minutes](https://www.microsoft.com/net/core). In addition to developing on Windows, you can develop on [Linux](https://www.microsoft.com/net/core#linuxredhat), [Mac](https://www.microsoft.com/net/core#macos), or [Docker](https://www.microsoft.com/net/core#dockercmd).
 
 Ideally, you would want to have two Azure AD tenants so you can test all the aspects of this multi-tenant sample. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
+
+If you are using the automation provided via Powershell to create your app, you need to change the [Configure.ps1](./AppCreationScripts/Configure.ps1) and [Cleanup.ps1](./AppCreationScripts/Cleanup.ps1) as instructed below to append the `-AzureEnvironmentName` parameter. The details on this parameter and its possible values are listed in [Connect-AzureAD](https://docs.microsoft.com/en-us/powershell/module/azuread/connect-azuread?view=azureadps-2.0).
+
+ ```Powershell
+ Connect-AzureAD -TenantId $tenantId -AzureEnvironmentName AzureUSGovernment
+ ```
 
 ### Step 1:  Clone or download this repository
 
@@ -112,7 +134,7 @@ Follow the steps below to manually walk through the steps to register and config
 
 As a first step you'll need to:
 
-1. Sign in to the [Azure portal](https://portal.azure.com) using either a work or school account or a personal Microsoft account.
+1. Sign in to the [National cloud Azure portal](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-national-cloud#app-registration-endpoints) using either a work or school account or a personal Microsoft account.
 1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory**.
    Change your portal session to the desired Azure AD tenant.
 
@@ -154,10 +176,12 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 >In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
 1. Open the `appsettings.json` file
+1. Find the app key `Instance` and replace the existing value with the corresponding [Azure AD endpoint](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-national-cloud#azure-ad-authentication-endpoints) for the national cloud you want to target.
 1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `WebApp-MultiTenant-v2` application copied from the Azure portal.
 1. Find the app key `TenantId` and replace the existing value with `organizations`.
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
 1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp-MultiTenant-v2` app, in the Azure portal.
+1. Find the app keys `GraphAPI:Endpoint` and `GraphAPI:StaticScope` and replace the existing value with the corresponding [Microsoft Graph endpoint](https://docs.microsoft.com/en-us/graph/deployments#microsoft-graph-and-graph-explorer-service-root-endpoints) for the  national cloud you want to target.
 
 ### Step 4: Run the sample
 
