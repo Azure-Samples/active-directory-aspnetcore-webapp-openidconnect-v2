@@ -107,3 +107,6 @@
 /4-WebApp-your-API/4-2-B2C/.vs
 /4-WebApp-your-API/4-2-B2C/Client/obj
 /4-WebApp-your-API/4-2-B2C/TodoListService/obj
+/2-WebApp-graph-user/2-3-Multi-Tenant/.vs/WebApp-OpenIDConnect-DotNet
+/2-WebApp-graph-user/2-3-Multi-Tenant/bin/Debug/netcoreapp2.2
+/2-WebApp-graph-user/2-3-Multi-Tenant/obj
