@@ -226,7 +226,7 @@ public IActionResult Onboard()
 {
   ...
   string authorizationRequest = string.Format(
-                "{0}common/v2.0/adminconsent?client_id={1}&redirect_uri={2}&state={3}&scope={4}",
+                "{0}organizations/v2.0/adminconsent?client_id={1}&redirect_uri={2}&state={3}&scope={4}",
                 azureADOptions.Instance,
                 Uri.EscapeDataString(azureADOptions.ClientId),
                 Uri.EscapeDataString(currentUri + "Onboarding/ProcessCode"),

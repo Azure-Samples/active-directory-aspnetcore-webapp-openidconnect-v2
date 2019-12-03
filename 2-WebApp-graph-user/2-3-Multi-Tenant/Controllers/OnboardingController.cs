@@ -84,7 +84,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             // Create an OAuth2 request, using the web app as the client. This will trigger a consent flow that will provision the app in the target tenant.
             // Refer to https://docs.microsoft.com/azure/active-directory/develop/v2-admin-consent for details about the Url format being constructed below
             string authorizationRequest = string.Format(
-                "{0}common/v2.0/adminconsent?client_id={1}&redirect_uri={2}&state={3}&scope={4}",
+                "{0}organizations/v2.0/adminconsent?client_id={1}&redirect_uri={2}&state={3}&scope={4}",
                 azureADOptions.Instance,
                 Uri.EscapeDataString(azureADOptions.ClientId),                  // The application Id as obtained from the Azure Portal
                 Uri.EscapeDataString(currentUri + "Onboarding/ProcessCode"),    // Uri that the admin will be redirected to after the consent
