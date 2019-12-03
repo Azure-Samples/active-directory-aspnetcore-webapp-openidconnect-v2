@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
+using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 
 namespace Microsoft.Identity.Web.TokenCacheProviders
@@ -59,7 +60,12 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
             }
             else
             {
-                return _httpContextAccessor.HttpContext.User.GetMsalAccountId();
+                    // In the case of Web Apps, the cache key is the user account Id, and the expectation is that AcquireTokenSilent
+                    // should return a token otherwise this might require a challenge
+                    // In the case Web APIs, the token cache key is a hash of the access token used to call the Web API
+                    JwtSecurityToken jwtSecurityToken = _httpContextAccessor.HttpContext.GetTokenUsedToCallWebAPI();
+                    return (jwtSecurityToken != null) ? jwtSecurityToken.RawSignature
+                                                                      : _httpContextAccessor.HttpContext.User.GetMsalAccountId();
             }
         }
 
