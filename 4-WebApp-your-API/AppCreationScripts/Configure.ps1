@@ -220,7 +220,7 @@ Function ConfigureApplications
    Write-Host "Creating the AAD application (TodoListService-aspnetcore-webapi)"
    # create the application 
    $serviceAadApplication = New-AzureADApplication -DisplayName "TodoListService-aspnetcore-webapi" `
-                                                   -HomePage "https://localhost:44351/" `
+                                                   -HomePage "https://localhost:44351" `
                                                    -PublicClient $False
    $serviceIdentifierUri = 'api://'+$serviceAadApplication.AppId
    Set-AzureADApplication -ObjectId $serviceAadApplication.ObjectId -IdentifierUris $serviceIdentifierUri

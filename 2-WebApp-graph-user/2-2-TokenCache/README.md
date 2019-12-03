@@ -3,12 +3,12 @@ services: active-directory
 platforms: dotnet
 author: kalyankrishna1
 level: 200
-client: ASP.NET Core 2.x Web App
+client: ASP.NET Core Web App
 service: Microsoft Graph
 endpoint: Microsoft identity platform
 ---
 
-# Call the Microsoft Graph API from an An ASP.NET Core 2.x Web App, using Sql Server for caching tokens
+# Call the Microsoft Graph API from an An ASP.NET Core Web App, using Sql Server for caching tokens
 
 ## About this sample
 
@@ -16,9 +16,9 @@ endpoint: Microsoft identity platform
 
 ## Scenario
 
-Starting from a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users, this chapter of the tutorial shows how to make a call to Microsoft Graph `/me` endpoint on behalf of the signed-in user. This sample additionally provides instructions on how to use Sql Server for caching tokens.
+Starting from a .NET Core MVC Web app that uses OpenID Connect to sign in users, this chapter of the tutorial shows how to make a call to Microsoft Graph `/me` endpoint on behalf of the signed-in user. This sample additionally provides instructions on how to use Sql Server for caching tokens.
 
-It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). The complexities of the library's integration with the ASP.NET Core dependency Injection patterns is encapsultated into the `Microsoft.Identity.Web` library project, which is a part of this tutorial.
+It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). The complexities of the library's integration with the ASP.NET Core dependency Injection patterns is encapsulated into the `Microsoft.Identity.Web` library project, which is a part of this tutorial.
 
 ![Sign in with the Microsoft identity platform](ReadmeFiles/sign-in.png)
 
@@ -147,9 +147,12 @@ Note: if you had used the automation to setup your application mentioned in [Ste
    > },
    > ```
 
-1. If you do not have an existing database and tables needed for token caching, this sample can use  [EF Core- code first](https://docs.microsoft.com/en-us/ef/core/get-started/aspnetcore/new-db?tabs=visual-studio) to create a database and tables for you. to do that, follow the steps below.
-    1. In the file `Startup.cs`, uncomment the code under the **// Uncomment the following to initialize the sql server database with tables required to cache tokens.**. This comment exists once in the **ConfigureServices** methods.
-    1. Run the solution again, when a user signs-in the very first time, the Entity Framework will create the database and tables  `AppTokenCache` and `UserTokenCache` for app and user token caching respectively.
+1. If you do not have an existing database and tables needed for token caching, you can execute the `dotnet sql-cache create` command to create the table for you. To do that, follow the steps below.
+
+    ```powershell
+    dotnet tool install --global dotnet-sql-cache
+    dotnet sql-cache create "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MY_TOKEN_CACHE_DATABASE;Integrated Security=True;" dbo TokenCache
+    ```
 
 - In case you want to deploy your app in Sovereign or national clouds, ensure the `GraphApiUrl` option matches the one you want. By default this is Microsoft Graph in the Azure public cloud
 
@@ -180,26 +183,23 @@ public void ConfigureServices(IServiceCollection services)
     // Token acquisition service based on MSAL.NET 
     // and the Sql server based token cache implementation
     services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
-            .AddMsal(new string[] { Constants.ScopeUserRead })
-            .AddSqlAppTokenCache(Configuration)
-            .AddSqlPerUserTokenCache(Configuration);
+                    .AddMsal(Configuration, new string[] { Constants.ScopeUserRead })
+                    .AddDistributedTokenCaches();
+
+    services.AddDistributedSqlServerCache(options =>
+    {
+            options.ConnectionString = Configuration.GetConnectionString("TokenCacheDbConnStr");
+            options.SchemaName = "dbo";
+            options.TableName = "TokenCache";
+    });
 ```
 
-The aforementioned four lines of code are explained below.
+The aforementioned lines of code are explained below.
 
 1. The first two lines enable MSAL.NET to hook-up to the OpenID Connect events to redeem the authorization code obtained by the ASP.NET Core middleware. After obtaining a token for Microsoft Graph, it saves it into the token cache, for use by the Controllers.
 1. The last two lines hook up the Sql server database based token caching solution to MSAL.NET. The Sql based token cache requires a **Connection string** named `TokenCacheDbConnStr` available in the **ConnectionStrings** collections of the **appsettings.json** configuration file.
 
 The files `MSALAppSqlTokenCacheProvider.cs` and `MSALPerUserSqlTokenCacheProvider` of the `Microsoft.Identity.Web` project contains the app and per-user token cache implementations that use Sql server as the token cache.
-
-### Sharing the same Token Cache database between apps
-
-Since we are using `IDataProtector` to protect the token being persisted on the database, in order to enable it to be used between different apps, `SetApplicationName()` must be configured with the same value for all apps. You can read [more details about IDataProtector here.](https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/overview?view=aspnetcore-2.2#setapplicationname)
-
-```csharp
-services.AddDataProtection()
-        .SetApplicationName("WebApp_Tutorial");
-```
 
 ## Next steps
 
@@ -257,7 +257,7 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
 
 Use [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) to get support from the community.
 Ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
-Make sure that your questions or comments are tagged with [`azure-active-directory` `adal` `msal` `dotnet`].
+Make sure that your questions or comments are tagged with [`azure-active-directory` `msal` `dotnet`].
 
 If you find a bug in the sample, please raise the issue on [GitHub Issues](../../issues).
 

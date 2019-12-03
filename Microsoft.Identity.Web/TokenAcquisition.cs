@@ -143,13 +143,21 @@ namespace Microsoft.Identity.Web
 
         /// <summary>
         /// Typically used from a Web App or WebAPI controller, this method retrieves an access token
-        /// for a downstream API using the <a href='https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow'>on-behalf-of flow</a>
-        /// for the user account that is ascertained from claims are provided in the <see cref="HttpContext.User"/> instance of the <paramref name="context"/> parameter
+        /// for a downstream API using;
+        /// 1) the token cache (for Web Apps and Web APis) if a token exists in the cache
+        /// 2) or the <a href='https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow'>on-behalf-of flow</a>
+        /// in Web APIs, for the user account that is ascertained from claims are provided in the <see cref="HttpContext.User"/> 
+        /// instance of the current HttpContext
         /// </summary>
         /// <param name="scopes">Scopes to request for the downstream API to call</param>
         /// <param name="tenant">Enables overriding of the tenant/account for the same identity. This is useful in the
         /// cases where a given account is guest in other tenants, and you want to acquire tokens for a specific tenant, like where the user is a guest in</param>
         /// <returns>An access token to call the downstream API and populated with this downstream Api's scopes</returns>
+        /// <remarks>Calling this method from a Web API supposes that you have previously called, 
+        /// in a method called by JwtBearerOptions.Events.OnTokenValidated, the HttpContextExtensions.StoreTokenUsedToCallWebAPI method
+        /// passing the validated token (as a JwtSecurityToken). Calling it from a Web App supposes that
+        /// you have previously called AddAccountToCacheFromAuthorizationCodeAsync from a method called by
+        /// OpenIdConnectOptions.Events.OnAuthorizationCodeReceived</remarks>
         public async Task<string> GetAccessTokenOnBehalfOfUserAsync(
             IEnumerable<string> scopes,
             string tenant = null)
@@ -161,101 +169,43 @@ namespace Microsoft.Identity.Web
 
             // Use MSAL to get the right token to call the API
             var application = GetOrBuildConfidentialClientApplication();
+            string accessToken;
 
-            // Case of a lazy OBO
-            Claim jwtClaim = CurrentHttpContext.User.FindFirst("jwt");
-            if (jwtClaim != null)
+            try
             {
-                (CurrentHttpContext.User.Identity as ClaimsIdentity).RemoveClaim(jwtClaim);
-                var result = await application
-                    .AcquireTokenOnBehalfOf(scopes.Except(_scopesRequestedByMsalNet), new UserAssertion(jwtClaim.Value))
-                    .ExecuteAsync()
+                accessToken = await GetAccessTokenOnBehalfOfUserFromCacheAsync(application, CurrentHttpContext.User, scopes, tenant)
                     .ConfigureAwait(false);
-                return result.AccessToken;
             }
-            else
+            catch(MsalUiRequiredException ex)
             {
-                return await GetAccessTokenOnBehalfOfUserAsync(application, CurrentHttpContext.User, scopes, tenant).ConfigureAwait(false);
-            }
-        }
+                // GetAccessTokenOnBehalfOfUserAsync is an abstraction that can be called from a Web App or a Web API
+                // to get a token for a Web API on behalf of the user, but not necessarily with the on behalf of OAuth2.0
+                // flow as this one only applies to Web APIs.
+                JwtSecurityToken validatedToken = CurrentHttpContext.GetTokenUsedToCallWebAPI();
 
-        /// <summary>
-        /// In a Web API, adds to the MSAL.NET cache, the account of the user for which a bearer token was received when the Web API was called.
-        /// An access token and a refresh token are added to the cache, so that they can then be used to acquire another token on-behalf-of the
-        /// same user in order to call to downstream APIs.
-        /// </summary>
-        /// <param name="tokenValidatedContext">Token validation context passed to the handler of the OnTokenValidated event
-        /// for the JwtBearer middleware</param>
-        /// <param name="scopes">[Optional] scopes to pre-request for a downstream API</param>
-        /// <example>
-        /// From the configuration of the Authentication of the ASP.NET Core Web API (for example in the Startup.cs file)
-        /// <code>JwtBearerOptions option;</code>
-        ///
-        /// Subscribe to the token validated event:
-        /// <code>
-        /// options.Events = new JwtBearerEvents();
-        /// options.Events.OnTokenValidated = async context =>
-        /// {
-        ///   var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService&lt;ITokenAcquisition&gt;();
-        ///   tokenAcquisition.AddAccountToCacheFromJwt(context);
-        /// };
-        /// </code>
-        /// </example>
-        public Task AddAccountToCacheFromJwtAsync(
-            Microsoft.AspNetCore.Authentication.JwtBearer.TokenValidatedContext tokenValidatedContext,
-            IEnumerable<string> scopes)
-        {
-            if (tokenValidatedContext == null)
-            {
-                throw new ArgumentNullException(nameof(tokenValidatedContext));
+                // Case of Web APIs: we need to do an on-behalf-of flow
+                if (validatedToken != null)
+                {
+                    // In the case the token is a JWE (encrypted token), we use the decrypted token.
+                    string tokenUsedToCallTheWebApi = validatedToken.InnerToken == null ? validatedToken.RawData
+                                                : validatedToken.InnerToken.RawData;
+                    var result = await application
+                                        .AcquireTokenOnBehalfOf(scopes.Except(_scopesRequestedByMsalNet),
+                                                                new UserAssertion(tokenUsedToCallTheWebApi))
+                                        .ExecuteAsync()
+                                        .ConfigureAwait(false);
+                    accessToken = result.AccessToken;
+                }
+
+                // Case of the Web App: we let the the MsalUiRequiredException be caught by the 
+                // AuthorizeForScopesAttribute exception filter so that the user can consent, do 2FA, etc ...
+                else
+                {
+                    throw;
+                }
             }
 
-            return AddAccountToCacheFromJwtAsync(
-                scopes,
-                tokenValidatedContext.SecurityToken as JwtSecurityToken,
-                tokenValidatedContext.Principal);
-        }
-
-        /// <summary>
-        /// [not recommended] In a Web App, adds, to the MSAL.NET cache, the account of the user authenticating to the Web App.
-        /// An On-behalf-of token is added to the cache, so that it can then be used to acquire another token on-behalf-of the
-        /// same user in order for the Web App to call a Web APIs.
-        /// </summary>
-        /// <param name="tokenValidatedContext">Token validation context passed to the handler of the OnTokenValidated event
-        /// for the OpenIdConnect middleware</param>
-        /// <param name="scopes">[Optional] scopes to pre-request for a downstream API</param>
-        /// <remarks>In a Web App, it's preferable to not request an access token, but only a code, and use the <see cref="AddAccountToCacheFromAuthorizationCodeAsync"/></remarks>
-        /// <example>
-        /// From the configuration of the Authentication of the ASP.NET Core Web API:
-        /// <code>OpenIdConnectOptions options;</code>
-        ///
-        /// Subscribe to the token validated event:
-        /// <code>
-        ///  options.Events.OnAuthorizationCodeReceived = OnTokenValidated;
-        /// </code>
-        ///
-        /// And then in the OnTokenValidated method, call <see cref="AddAccountToCacheFromJwtAsync(OpenIdConnect.TokenValidatedContext, IEnumerable&lt;string&gt;)"/>:
-        /// <code>
-        /// private async Task OnTokenValidated(TokenValidatedContext context)
-        /// {
-        ///   var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService&lt;ITokenAcquisition&gt;();
-        ///  _tokenAcquisition.AddAccountToCacheFromJwt(tokenValidationContext);
-        /// }
-        /// </code>
-        /// </example>
-        public Task AddAccountToCacheFromJwtAsync(
-            AspNetCore.Authentication.OpenIdConnect.TokenValidatedContext tokenValidatedContext, // JwtBearer.TokenValidatedContext also exists
-            IEnumerable<string> scopes = null)
-        {
-            if (tokenValidatedContext == null)
-            {
-                throw new ArgumentNullException(nameof(tokenValidatedContext));
-            }
-
-            return AddAccountToCacheFromJwtAsync(
-                scopes,
-                tokenValidatedContext.SecurityToken,
-                tokenValidatedContext.Principal);
+            return accessToken;
         }
 
         /// <summary>
@@ -337,7 +287,7 @@ namespace Microsoft.Identity.Web
         /// <param name="scopes">Scopes for the downstream API to call</param>
         /// <param name="tenant">(optional) Specific tenant for which to acquire a token to access the scopes
         /// on behalf of the user described in the claimsPrincipal</param>
-        private async Task<string> GetAccessTokenOnBehalfOfUserAsync(
+        private async Task<string> GetAccessTokenOnBehalfOfUserFromCacheAsync(
             IConfidentialClientApplication application,
             ClaimsPrincipal claimsPrincipal,
             IEnumerable<string> scopes,
@@ -345,7 +295,7 @@ namespace Microsoft.Identity.Web
         {
             string accountIdentifier = claimsPrincipal.GetMsalAccountId();
             string loginHint = claimsPrincipal.GetLoginHint();
-            return await GetAccessTokenOnBehalfOfUserAsync(application, accountIdentifier, scopes, loginHint, tenant).ConfigureAwait(false);
+            return await GetAccessTokenOnBehalfOfUserFromCacheAsync(application, accountIdentifier, scopes, loginHint, tenant).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -357,7 +307,7 @@ namespace Microsoft.Identity.Web
         /// <param name="scopes">Scopes for the downstream API to call</param>
         /// <param name="loginHint"></param>
         /// <param name="tenant"></param>
-        private async Task<string> GetAccessTokenOnBehalfOfUserAsync(
+        private async Task<string> GetAccessTokenOnBehalfOfUserFromCacheAsync(
             IConfidentialClientApplication application,
             string accountIdentifier,
             IEnumerable<string> scopes,
@@ -405,43 +355,6 @@ namespace Microsoft.Identity.Web
             }
 
             return result.AccessToken;
-        }
-
-        /// <summary>
-        /// Adds an account to the token cache from a JWT token and other parameters related to the token cache implementation
-        /// </summary>
-        private async Task AddAccountToCacheFromJwtAsync(IEnumerable<string> scopes, JwtSecurityToken jwtToken, ClaimsPrincipal principal)
-        {
-            try
-            {
-                UserAssertion userAssertion;
-                IEnumerable<string> requestedScopes;
-                if (jwtToken != null)
-                {
-                    // In encrypted tokens, the decrypted token is in the InnerToken
-                    string rawData = (jwtToken.InnerToken != null) ? jwtToken.InnerToken.RawData : jwtToken.RawData;
-                    userAssertion = new UserAssertion(rawData, "urn:ietf:params:oauth:grant-type:jwt-bearer");
-                    requestedScopes = scopes ?? jwtToken.Audiences.Select(a => $"{a}/.default");
-                }
-                else
-                {
-                    throw new ArgumentOutOfRangeException("tokenValidationContext.SecurityToken should be a JWT Token");
-                    // TODO: Understand if we could support other kind of client assertions (SAML);
-                }
-
-                var application = GetOrBuildConfidentialClientApplication();
-
-                // .Result to make sure that the cache is filled-in before the controller tries to get access tokens
-                var result = await application
-                    .AcquireTokenOnBehalfOf(requestedScopes.Except(_scopesRequestedByMsalNet), userAssertion)
-                    .ExecuteAsync()
-                    .ConfigureAwait(false);
-            }
-            catch (MsalException ex)
-            {
-                Debug.WriteLine(ex.Message);
-                throw;
-            }
         }
 
         /// <summary>
