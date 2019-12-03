@@ -102,14 +102,10 @@ namespace Microsoft.Identity.Web
         /// </summary>
         /// <param name="services">Service collection to which to add authentication</param>
         /// <param name="configuration">Configuration</param>
-        /// <param name="scopes">Optional parameters. If not specified, the token used to call the protected API
-        /// will be kept with the user's claims until the API calls a downstream API. Otherwise the account for the
-        /// user is immediately added to the token cache</param>
         /// <returns></returns>
         public static IServiceCollection AddProtectedApiCallsWebApis(
             this IServiceCollection services,
             IConfiguration configuration,
-            IEnumerable<string> scopes = null,
             string configSectionName = "AzureAd")
         {
             services.AddTokenAcquisition();
@@ -117,8 +113,6 @@ namespace Microsoft.Identity.Web
             services.Configure<ConfidentialClientApplicationOptions>(options => configuration.Bind(configSectionName, options));
             services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
             {
-                // If you don't pre-provide scopes when adding calling AddProtectedApiCallsWebApis, the On behalf of
-                // flow will be delayed (lazy construction of MSAL's application
                 options.Events.OnTokenValidated = async context =>
                 {
                     context.HttpContext.StoreTokenUsedToCallWebAPI(context.SecurityToken as JwtSecurityToken);
