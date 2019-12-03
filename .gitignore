@@ -1,4 +1,4 @@
-﻿################################################################################
+################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
@@ -35,12 +35,27 @@
 /2-WebApp-graph-user/2-3-Best-Practices/.vs
 /2-WebApp-graph-user/2-3-Best-Practices/bin
 /2-WebApp-graph-user/2-3-Best-Practices/obj
+/2-WebApp-graph-user/2-3-Multi-Tenant/.vs
+/2-WebApp-graph-user/2-3-Multi-Tenant/bin
+/2-WebApp-graph-user/2-3-Multi-Tenant/obj
+/2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph/.vs
+/2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph/bin
+/2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph/obj
 /3-WebApp-multi-APIs/.vs
 /3-WebApp-multi-APIs/bin
 /3-WebApp-multi-APIs/obj
 /4-WebApp-your-API/.vs
 /4-WebApp-your-API/bin
 /4-WebApp-your-API/obj
+/4-WebApp-your-API/Client/.vs
+/4-WebApp-your-API/Client/bin
+/4-WebApp-your-API/Client/obj
+/5-WebApp-AuthZ/5-1-Roles/.vs
+/5-WebApp-AuthZ/5-1-Roles/bin
+/5-WebApp-AuthZ/5-1-Roles/obj
+/5-WebApp-AuthZ/5-2-Groups/.vs
+/5-WebApp-AuthZ/5-2-Groups/bin
+/5-WebApp-AuthZ/5-2-Groups/obj
 /5-WebApp-AuthZ-Roles-Groups/.vs
 /5-WebApp-AuthZ-Roles-Groups/bin
 /5-WebApp-AuthZ-Roles-Groups/obj
@@ -96,3 +111,14 @@
 /4-WebApp-your-API/TodoListService/obj
 /4-WebApp-your-API/TodoListService/bin
 /4-WebApp-your-API/Client/obj
+/2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph/bin/Debug/netcoreapp2.2
+/2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph/obj
+/2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph/bin/Release/netcoreapp2.2
+/Microsoft.Identity.Web.Test/bin/Release/netcoreapp2.2
+/Microsoft.Identity.Web.Test/obj
+/4-WebApp-your-API/4-2-B2C/.vs
+/4-WebApp-your-API/4-2-B2C/Client/obj
+/4-WebApp-your-API/4-2-B2C/TodoListService/obj
+/2-WebApp-graph-user/2-3-Multi-Tenant/.vs/WebApp-OpenIDConnect-DotNet
+/2-WebApp-graph-user/2-3-Multi-Tenant/bin/Debug/netcoreapp2.2
+/2-WebApp-graph-user/2-3-Multi-Tenant/obj

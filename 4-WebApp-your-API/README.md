@@ -5,7 +5,7 @@ author: kalyankrishna1
 level: 200
 client: ASP.NET Core Web App
 service: ASP.NET Core Web API
-endpoint: AAD v2.0
+endpoint: Microsoft identity platform
 ---
 
 # How to secure a Web API built with ASP.NET Core using the Microsoft identity platform (formerly Azure Active Directory for developers)
@@ -172,7 +172,7 @@ Open the solution in Visual Studio to configure the projects
 
 #### Configure the service project
 
-> Note: if you used the setup scripts, the changes below will have been applied for you
+Note: if you had used the automation to setup your application mentioned in [Step 2:  Register the sample application with your Azure Active Directory tenant](#step-2-register-the-sample-application-with-your-azure-active-directory-tenant), the changes below would have been applied by the scripts.
 
 1. Open the `TodoListService\appsettings.json` file
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
@@ -181,7 +181,7 @@ Open the solution in Visual Studio to configure the projects
 
 #### Configure the client project
 
-> Note: if you used the setup scripts, the changes below will have been applied for you
+Note: if you had used the automation to setup your application mentioned in [Step 2:  Register the sample application with your Azure Active Directory tenant](#step-2-register-the-sample-application-with-your-azure-active-directory-tenant), the changes below would have been applied by the scripts.
 
 1. Open the `Client\appsettings.json` file
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
@@ -189,7 +189,7 @@ Open the solution in Visual Studio to configure the projects
 1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `TodoListClient-aspnetcore-webapi` application copied from the Azure portal.
 1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `TodoListClient-aspnetcore-webapi` app, in the Azure portal.
 1. Find the app key `TodoListScope` and replace the existing value with Scope if you changed the name from `api://<client id>/user_impersonation`.
-1. Find the app key `TodoListBaseAddress` and replace the existing value with the base address of the TodoListService-aspnetcore-webapi project (or use the default `https://localhost:44351/`).
+1. Find the app key `TodoListBaseAddress` and replace the existing value with the base address of the TodoListService-aspnetcore-webapi project (or use the default `https://localhost:44351`).
 
 ### Step 4: Run the sample
 
@@ -248,12 +248,12 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
      by this line:
 
      ```CSharp
-     services.AddAzureAdV2Authentication(Configuration)
+     services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
           .AddMsal(new string[] { Configuration["TodoList:TodoListScope"] })
           .AddInMemoryTokenCaches();
      ```
 
-     This enables your application to use the Microsoft identity platform (formerly Azure AD v2.0) endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
+     This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
 
     1. Change the `Properties\launchSettings.json` file to ensure that you start your web app from <https://localhost:44321> as registered. For this:
     - update the `sslPort` of the `iisSettings` section to be `44321`
@@ -279,10 +279,16 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
 1. Update the `configureServices` method in `startup.cs` to add the MSAL library and a token cache.
 
     ```CSharp
-     services.AddAzureAdV2Authentication(Configuration)
+     services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
           .AddMsal(new string[] { Configuration["TodoList:TodoListScope"] })
           .AddInMemoryTokenCaches();
     ```
+1. Update the `Configure` method to include **app.UseAuthentication();** before **app.UseMvc();**  
+
+  ```Csharp
+     app.UseAuthentication();
+     app.UseMvc();
+  ```
 
 ### Creating the Web API project (TodoListService)
 
@@ -325,26 +331,23 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
   with
 
   ```Csharp
-    services.AddProtectWebApiWithMicrosoftIdentityPlatformV2(Configuration)
+    services.AddProtectedWebApi(Configuration)
          .AddInMemoryTokenCaches();
   ```
+- Add the method **app.UseAuthentication()** before **app.UseMvc()** in the `Configure` method
 
-  `AddProtectWebApiWithMicrosoftIdentityPlatformV2` does the following:
+  ```Csharp
+     app.UseAuthentication();
+     app.UseMvc();
+  ```
+
+  `AddProtectedWebApi` does the following:
   - add the **Jwt**BearerAuthenticationScheme (Note the replacement of **BearerAuthenticationScheme** by **Jwt**BearerAuthenticationScheme)
-  - set the authority to be the Microsoft identity platform v2.0 identity
+  - set the authority to be the Microsoft identity platform identity
   - sets the audiences to validate
   - register an issuer validator that accepts issuers to be in the Microsoft identity platform clouds.
 
 The implementations of these classes are in the `Microsoft.Identity.Web` library (and folder), and they are designed to be reusable in your applications (Web apps and Web apis). You are encouraged to browse the code in the library to understand the changes in detail.
-
-- At the beginning of the `Configure` method, insert `app.UseSession()`. This code ensures that the session exists for the session-based token cache to work properly. You can skip this if you do not plan to use the session based token cache.
-
-  ```CSharp
-  public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-  {
-    app.UseSession();
-    ...
-  ```
 
 ### Create the TodoListController.cs file
 
@@ -414,6 +417,10 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
 > NOTE: Remember, the To Do list is stored in memory in this TodoListService sample. Azure Web Sites will spin down your web site if it is inactive, and your To Do list will get emptied.
 Also, if you increase the instance count of the web site, requests will be distributed among the instances. To Do will, therefore, not be the same on each instance.
 
+## Next steps
+
+If you're interested in the Web API calling a downstream API, you might want to have a look at the [ASP.NET Core Web API tutorial](https://github.com/Azure-Samples/active-directory-dotnet-native-aspnetcore-v2), in chapter 2 [2. Web API now calls Microsoft Graph/](https://github.com/Azure-Samples/active-directory-dotnet-native-aspnetcore-v2/tree/master/2.%20Web%20API%20now%20calls%20Microsoft%20Graph). The client is a desktop app there, whereas you have a Web App, but apart from that all the app registration steps apply.
+
 ## Community Help and Support
 
 Use [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) to get support from the community.
@@ -434,7 +441,7 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 For more information, visit the following links:
 
-- Articles about the new Microsoft Identity Platform are at [http://aka.ms/aaddevv2](http://aka.ms/aaddevv2), with a focus on:
+- Articles about the Microsoft identity platform are at [http://aka.ms/aaddevv2](http://aka.ms/aaddevv2), with a focus on:
   - [Azure AD OAuth Bearer protocol](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-protocols)
   - [The OAuth 2.0 protocol in Azure AD](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
   - [Access token](https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens)

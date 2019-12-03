@@ -17,7 +17,7 @@
       "Name": "TodoListService-aspnetcore-webapi",
       "Kind": "WebApi",
       "Audience": "AzureADMyOrg",
-      "HomePage": "https://localhost:44351/"
+      "HomePage": "https://localhost:44351"
      
     },
     {
@@ -32,7 +32,7 @@
       "RequiredResourcesAccess": [
         {
           "Resource": "service",
-          "DelegatedPermissions": [ "user_impersonation" ]
+          "DelegatedPermissions": [ "access_as_user" ]
         }
       ]
     }

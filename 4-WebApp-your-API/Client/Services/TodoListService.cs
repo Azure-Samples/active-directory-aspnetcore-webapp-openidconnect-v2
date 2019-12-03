@@ -25,7 +25,7 @@ SOFTWARE.
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Identity.Web.Client;
+using Microsoft.Identity.Web;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -138,7 +138,7 @@ namespace TodoListClient.Services
 
         private async Task PrepareAuthenticatedClient()
         {
-            var accessToken = await this._tokenAcquisition.GetAccessTokenOnBehalfOfUser(this._contextAccessor.HttpContext, new[] { this._TodoListScope });
+            var accessToken = await this._tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new[] { this._TodoListScope });
             Debug.WriteLine($"access token-{accessToken}");
             this._httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             this._httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

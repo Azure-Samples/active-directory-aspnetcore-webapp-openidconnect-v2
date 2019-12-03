@@ -2,14 +2,15 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.Client.TokenCacheProviders;
+using System.IdentityModel.Tokens.Jwt;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -32,28 +33,49 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            // This is required to be instantiated before the OpenIdConnectOptions starts getting configured.
+            // By default, the claims mapping will map claim names in the old format to accommodate older SAML applications.
+            // 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role' instead of 'roles'
+            // This flag ensures that the ClaimsIdentity claims collection will be built from the claims in the token
+            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+
+            // Execute the following commands to initialize the sql server database with tables required to cache tokens.
+            // NOTE : This is a one time use method. We advise using it in development environments to create the tables required to enable token caching.
+            // For production deployments, preferably, generate the schema from the tables generated in dev environments and use it to create the necessary tables in production.
+            /*
+                dotnet tool install --global dotnet-sql-cache
+                dotnet sql-cache create "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MsalTokenCacheDatabase;Integrated Security=True;" dbo TokenCache    
+             */
+
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
-            services.AddAzureAdV2Authentication(Configuration)
-                .AddMsal(new string[] { Constants.ScopeUserRead })
-                    .AddSqlAppTokenCache(new MSALSqlTokenCacheOptions(Configuration.GetConnectionString("TokenCacheDbConnStr")))
-                    .AddSqlPerUserTokenCache(new MSALSqlTokenCacheOptions(Configuration.GetConnectionString("TokenCacheDbConnStr")));
+            services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
+                    .AddMsal(Configuration, new string[] { Constants.ScopeUserRead })
+                    .AddDistributedTokenCaches();
+
+            services.AddDistributedSqlServerCache(options =>
+            {
+                options.ConnectionString = Configuration.GetConnectionString("TokenCacheDbConnStr");
+                options.SchemaName = "dbo";
+                options.TableName = "TokenCache";
+            });
+
 
             // Add Graph
             services.AddGraphService(Configuration);
 
-            services.AddMvc(options =>
+            services.AddControllersWithViews(options =>
             {
                 var policy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
-            })
-            .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            });
+            services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -70,13 +92,16 @@ namespace WebApp_OpenIDConnect_DotNet
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            app.UseRouting();
             app.UseAuthentication();
+            app.UseAuthorization();
 
-            app.UseMvc(routes =>
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
+                endpoints.MapControllerRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
         }
     }

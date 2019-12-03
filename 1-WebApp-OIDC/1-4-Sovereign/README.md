@@ -4,7 +4,7 @@ platforms: dotnet
 author: negoe
 level: 100
 client: ASP.NET Core Web App
-endpoint: AAD v2.0
+endpoint: Microsoft identity platform
 ---
 # Build an ASP.NET Core Web app signing-in users in sovereign clouds with the Microsoft identity platform
 
@@ -12,7 +12,7 @@ endpoint: AAD v2.0
 
 ## Scenario
 
-This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users. Users can only sign in with their 'work and school' accounts in their organization **belonging to national or sovereign clouds**. This sample use  US Government cloud scenario. It leverages the ASP.NET Core OpenID Connect middleware.
+This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect to sign in users. Users can only sign in with their 'work and school' accounts in their organization **belonging to national or sovereign clouds**. This sample use  US Government cloud scenario. It leverages the ASP.NET Core OpenID Connect middleware.
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
 
@@ -38,11 +38,11 @@ More details in [Authentication in National Clouds](https://docs.microsoft.com/e
 
 To run this sample:
 
-> Pre-requisites: Install .NET Core 2.2 or later (for example for Windows) by following the instructions at [.NET and C# - Get Started in 10 Minutes](https://www.microsoft.com/net/core). In addition to developing on Windows, you can develop on [Linux](https://ww w.microsoft.com/net/core#linuxredhat), [Mac](https://www.microsoft.com/net/core#macos), or [Docker](https://www.microsoft.com/net/core#dockercmd).
+> Pre-requisites: Install .NET Core 3.0 or later (for example for Windows) by following the instructions at [.NET and C# - Get Started in 10 Minutes](https://www.microsoft.com/net/core). In addition to developing on Windows, you can develop on [Linux](https://ww w.microsoft.com/net/core#linuxredhat), [Mac](https://www.microsoft.com/net/core#macos), or [Docker](https://www.microsoft.com/net/core#dockercmd).
 
 
 ### Step 1: Download/Clone this sample code 
-This sample was created from the dotnet core 2.2 [dotnet new mvc](https://docs.microsoft.com/dotnet/core/tools/dotnet-new?tabs=netcore2x) template with `SingleOrg` authentication, and then tweaked to let it support tokens for the Azure AD V2 endpoint.
+This sample was created from the dotnet core 3.0 [dotnet new mvc](https://docs.microsoft.com/dotnet/core/tools/dotnet-new?tabs=netcore2x) template with `SingleOrg` authentication, and then tweaked to let it support tokens for the Microsoft identity platform endpoint.
 
 You can clone this sample from your shell or command line:
 
@@ -124,10 +124,10 @@ cd "1-WebApp-OIDC\1-4-Sovereign"
      by this line:
 
      ```CSharp
-            services.AddAzureAdV2Authentication(Configuration);
+            services.AddMicrosoftIdentityPlatformAuthentication(Configuration);
      ```
 
-     This enables your application to use the Microsoft identity platform (formerly known as Azure AD v2.0) endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
+     This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
 
     1. Change the `Properties\launchSettings.json` file to ensure that you start your web app from <https://localhost:44321> as registered. For this:
     - update the `sslPort` of the `iisSettings` section to be `44321`
@@ -137,7 +137,7 @@ cd "1-WebApp-OIDC\1-4-Sovereign"
 
 1. Build the solution and run it.
 
-2. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. The app immediately attempts to authenticate you via the Azure AD v2 endpoint. Sign in with your personal account or with work or school account.
+2. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in with your personal account or with work or school account.
 
 ## Troubleshooting
 

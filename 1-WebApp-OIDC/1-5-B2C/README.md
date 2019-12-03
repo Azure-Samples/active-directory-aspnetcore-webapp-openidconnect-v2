@@ -4,7 +4,7 @@ platforms: dotnet
 author: TiagoBrenck
 level: 100
 client: ASP.NET Core Web App
-endpoint: AAD v2.0
+endpoint: Microsoft identity platform
 ---
 # An ASP.NET Core Web app signing-in users with the Microsoft identity platform in Azure AD B2C
 
@@ -12,7 +12,7 @@ endpoint: AAD v2.0
 
 ## Scenario
 
-This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users in **Azure AD B2C**. It assumes you have some familiarity with **Azure AD B2C**. If you'd like to learn all that B2C has to offer, start with our documentation at https://aka.ms/aadb2c.
+This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect to sign in users in **Azure AD B2C**. It assumes you have some familiarity with **Azure AD B2C**. If you'd like to learn all that B2C has to offer, start with our documentation at https://aka.ms/aadb2c.
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
 
@@ -20,7 +20,7 @@ This sample shows how to build a .NET Core 2.2 MVC Web app that uses OpenID Conn
 
 To run this sample:
 
-> Pre-requisites: Install .NET Core 2.2 or later (for example for Windows) by following the instructions at [.NET and C# - Get Started in 10 Minutes](https://www.microsoft.com/net/core). In addition to developing on Windows, you can develop on [Linux](https://www.microsoft.com/net/core#linuxredhat), [Mac](https://www.microsoft.com/net/core#macos), or [Docker](https://www.microsoft.com/net/core#dockercmd).
+> Pre-requisites: Install .NET Core 3.0 or later (for example for Windows) by following the instructions at [.NET and C# - Get Started in 10 Minutes](https://www.microsoft.com/net/core). In addition to developing on Windows, you can develop on [Linux](https://www.microsoft.com/net/core#linuxredhat), [Mac](https://www.microsoft.com/net/core#macos), or [Docker](https://www.microsoft.com/net/core#dockercmd).
 
 ### Step 1: Clone or download this repository
 
@@ -37,6 +37,14 @@ Navigate to the `"1-5-B2C"` folder
  ```Sh
   cd "1-5-B2C"
   ```
+
+## Option 1 - Run the pre-configured sample
+
+1. Build the solution and run it.
+1. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. Click on **SignIn/Up** button.
+1. Click on Sign-In
+
+## Option 2 - Configure the sample with your own B2C app
 
 ### Step 2: Get your own Azure AD B2C tenant
 
@@ -57,7 +65,7 @@ Now you need to [register your web app in your B2C tenant](https://docs.microsof
 Your web application registration should include the following information:
 
 - Enable the **Web App/Web API** setting for your application.
-- Set the **Reply URL** to `https://localhost:44321/signin/B2C_1_sign_up_in` and `https://localhost:44321/signout/B2C_1_sign_up_in`.
+- Set the **Reply URL** to `https://localhost:44316/signin/B2C_1_sign_up_in` and `https://localhost:44316/signout/B2C_1_sign_up_in`.
 - Copy the Application ID generated for your application, so you can use it in the next step.
 
 ### Step 5: Configure the sample with your app coordinates
@@ -65,7 +73,7 @@ Your web application registration should include the following information:
 1. Open the solution in Visual Studio.
 1. Open the `appsettings.json` file.
 1. Find the assignment for `Instance` and replace the value with your tenant name. For example, `https://fabrikam.b2clogin.com`
-1. Find the assignment for `Domain` and replace the value with your Azure AD B2C domain name. For example, `https://fabrikam.onmicrosoft.com`
+1. Find the assignment for `Domain` and replace the value with your Azure AD B2C domain name. For example, `fabrikam.onmicrosoft.com`
 1. Find the assignment for `ClientID` and replace the value with the Application ID from Step 4.
 1. Find the assignment for `SignUpSignInPolicyId` and replace with the name of the `Sign up and sign in` policy you created in Step 3.
 
@@ -82,7 +90,7 @@ Your web application registration should include the following information:
 }
 ```
 
-### Step 5: Run the sample
+### Step 6: Run the sample
 
 1. Build the solution and run it.
 1. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. Click on **SignIn/Up** button.
@@ -100,8 +108,13 @@ If your web site needs to be accessed from users using iOS 12, you probably want
 
 ## About The code
 
+#### Where is MSAL?
+This sample does NOT use MSAL as it only signs-in users (it does not call a Web API). It uses the built-in ASP.NET Core middleware. MSAL is used for fetching access  for accessing protected APIs (not shown here), as well as ID tokens. For logging-in purposes, it is sufficient to obtain an ID Token, and the middleware is capable of doing this on its own.
+
+#### Where is the Account controller?
 The `AccountController.cs` used in this sample is part of the built-in .NET Core authentication controllers found in the NuGet package `Microsoft.AspNetCore.Authentication.AzureADB2C.UI`, and you can find its implementation [here](https://github.com/aspnet/AspNetCore/blob/master/src/Azure/AzureAD/Authentication.AzureADB2C.UI/src/Areas/AzureADB2C/Controllers/AccountController.cs). If you want to customize the **Sign-in**, **Sign-up** or **Sign-out** actions, you are encouraged to create your own controller.
 
+#### B2C middlerware
 This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Azure AD B2C tenant. The middleware is initialized in the `Startup.cs` file by passing the default authentication scheme and `AzureADB2COptions.cs` options. The options are read from the `appsettings.json` file. The middleware takes care of:
 
 - Requesting OpenID Connect sign-in using the policy from the `appsettings.json` file.
@@ -134,6 +147,10 @@ To understand more about Azure AD B2C see:
 
 - [Azure AD B2C documentation](https://docs.microsoft.com/en-us/azure/active-directory-b2c/)
 - [Azure AD B2C sign-in/sign-up user flow](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-reference-policies)
+
+To understand more about ASP.NET Core and Azure identity integration
+
+- [ASP.NET Core Azure AD samples](https://github.com/aspnet/AspNetCore/tree/master/src/Azure/AzureAD/samples)
 
 To understand more about token validation, see:
 

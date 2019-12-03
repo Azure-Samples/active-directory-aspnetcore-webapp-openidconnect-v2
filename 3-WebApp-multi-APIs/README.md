@@ -3,9 +3,9 @@ services: active-directory
 platforms: dotnet
 author: jmprieur
 level: 200
-client: ASP.NET Core 2.x Web App
+client: ASP.NET Core Web App
 service: Microsoft Graph
-endpoint: AAD v2.0
+endpoint: Microsoft identity platform
 ---
 # ASP.NET Core 2.2 Web API calling ARM and Azure Storage
 
@@ -13,7 +13,7 @@ endpoint: AAD v2.0
 
 ## Scenario
 
-This sample shows how to update your ASP.NET Core 2.2 Web API so that it now calls other Microsoft APIs than Microsoft Graph. The sample now calls the Azure Resource Manager API
+This sample shows how to update your ASP.NET Core Web API so that it now calls other Microsoft APIs than Microsoft Graph. The sample now calls the Azure Resource Manager API
 as well as the Azure Storage
 
 ![Sign in and call ARM and Azure Storage](ReadmeFiles/graph-arm-storage.svg)
@@ -24,13 +24,13 @@ To run this sample:
 
 > Pre-requisites:
 >
-> This is the third phase of the tutorial. It's recommended that you have gone through the previous phases of the tutorial, in particular how the [WebApp signs-in users with Microsoft Identity (OIDC) / with work and school or personal accounts](../../1-WebApp-OIDC/1-3-AnyOrgOrPersonal) and  [Web app calls the Microsoft Graph API on behalf of a user signing-in](../../2-WebApp-graph-user/2-1-Call-MSGraph).
+> This is the third phase of the tutorial. It's recommended that you have gone through the previous phases of the tutorial, in particular how the [WebApp signs-in users with Microsoft Identity (OIDC) / with work and school or personal accounts](../1-WebApp-OIDC/1-3-AnyOrgOrPersonal) and  [Web app calls the Microsoft Graph API on behalf of a user signing-in](../2-WebApp-graph-user/2-1-Call-MSGraph).
 >
 > This chapter shows the incremental changes required to call two Microsoft APIs other than Microsoft Graph (Azure Resource Management and Azure Storage).
 
 ### Step 1: Register the sample with your Azure AD tenant
 
-You first need to [register](../../1-3-AnyOrgOrPersonal/README.md#step-1-register-the-sample-with-your-azure-ad-tenant/README.md) your app as described in [the first phase of the tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC)
+You first need to [register](../1-WebApp-OIDC/1-3-AnyOrgOrPersonal/README.md#step-1-register-the-sample-with-your-azure-ad-tenant/README.md) your app as described in [the first phase of the tutorial](../1-WebApp-OIDC)
 
 Then, the follow the following extra set of steps:
 
@@ -66,7 +66,7 @@ If you have not already,  clone this sample from your shell or command line:
 
 1. Build the solution and run it.
 
-2. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Azure AD v2 endpoint. Sign in with your personal account or with a work or school account.
+2. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in with your personal account or with a work or school account.
 
 3. Go to the Contacts page, you should now see all kind of information about yourself (a call was made to the Microsoft Graph *me* endpoint)
 
@@ -76,7 +76,7 @@ Starting from the [previous phase of the tutorial](../../2-WebApp-graph-user/2-1
 
 ### Update the `Startup.cs` file to enable TokenAcquisition by a MSAL.NET based service
 
-After the following lines in the ConfigureServices(IServiceCollection services) method, after `services.AddAzureAdV2Authentication(Configuration);`, add `services.AddHttpClient<IArmOperations, ArmApiOperationService>();`:
+After the following lines in the ConfigureServices(IServiceCollection services) method, after `services.AddMicrosoftIdentityPlatformAuthentication(Configuration);`, add `services.AddHttpClient<IArmOperations, ArmApiOperationService>();`:
 
 ```CSharp
  public void ConfigureServices(IServiceCollection services)
@@ -84,7 +84,7 @@ After the following lines in the ConfigureServices(IServiceCollection services) 
     . . .
     // Token acquisition service based on MSAL.NET 
     // and chosen token cache implementation
-    services.AddAzureAdV2Authentication(Configuration)
+    services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
             .AddMsal(new string[] { Constants.ScopeUserRead })
             .AddInMemoryTokenCache();
     services.AddHttpClient<IArmOperations, ArmApiOperationService>();
@@ -135,7 +135,7 @@ In the `Views\Home` folder add a view named `Tenants.cshtml`
 ```CSharp
   // Requires that the app has added the Azure Service Management / user_impersonation scope, and that
   // the admin tenant does not require admin consent for ARM.
-  [MsalUiRequiredExceptionFilter(Scopes = new[] { "https://management.azure.com/user_impersonation"})]
+  [AuthorizeForScopes(Scopes = new[] { "https://management.azure.com/user_impersonation"})]
   public async Task<IActionResult> Tenants()
   {
       var accessToken =
@@ -149,7 +149,7 @@ In the `Views\Home` folder add a view named `Tenants.cshtml`
   }
 
 
-  [MsalUiRequiredExceptionFilter(Scopes = new[] { "https://storage.azure.com/user_impersonation" })]
+  [AuthorizeForScopes(Scopes = new[] { "https://storage.azure.com/user_impersonation" })]
   public async Task<IActionResult> Blob()
   {
       var scopes = new string[] { "https://storage.azure.com/user_impersonation" };
@@ -188,6 +188,8 @@ insert
 ```
 
 ## Troubleshooting
+
+To access Azure Resource Management (ARM), you'll need a work or school account (AAD account) and an Azure subscription. If your Azure subscription is for a Microsoft personal account, just create a new user in your directory, and use this user to run the sample
 
 OpenIdConnectProtocolException: Message contains error: 'invalid_client', error_description: 'AADSTS650052: The app needs access to a service (\"https://*.blob.core.windows.net\") that your organization \"*tenantname*.onmicrosoft.com\" has not subscribed to or enabled. Contact your IT Admin to review the configuration of your service subscriptions.
 this is because the AzureStorage API was not registered as an API used by your Web App

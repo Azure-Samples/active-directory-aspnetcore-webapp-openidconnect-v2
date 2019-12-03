@@ -1,23 +1,23 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.Identity.Web;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Graph = Microsoft.Graph;
-using Microsoft.Identity.Web.Client;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Models;
 using WebApp_OpenIDConnect_DotNet.Services;
+using Graph = Microsoft.Graph;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
-        readonly ITokenAcquisition tokenAcquisition;
-        readonly WebOptions webOptions;
+        private readonly ITokenAcquisition tokenAcquisition;
+        private readonly WebOptions webOptions;
 
         public HomeController(ITokenAcquisition tokenAcquisition,
                               IOptions<WebOptions> webOptionValue)
@@ -32,10 +32,10 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View();
         }
 
-        [MsalUiRequiredExceptionFilter(Scopes = new[] { Constants.ScopeUserRead })]
+        [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]
         public async Task<IActionResult> Profile()
         {
-            // Initialize the GraphServiceClient. 
+            // Initialize the GraphServiceClient.
             Graph::GraphServiceClient graphClient = GetGraphServiceClient(new[] { Constants.ScopeUserRead });
 
             var me = await graphClient.Me.Request().GetAsync();
@@ -60,8 +60,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         {
             return GraphServiceClientFactory.GetAuthenticatedGraphClient(async () =>
             {
-                string result = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(
-                       HttpContext, scopes);
+                string result = await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(scopes);
                 return result;
             }, webOptions.GraphApiUrl);
         }
@@ -73,16 +72,15 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        [MsalUiRequiredExceptionFilter(Scopes = new[] { GraphScopes.UserReadBasicAll })]
-        [Authorize(Roles = AppRoles.UserReaders )]
+        [AuthorizeForScopes(Scopes = new[] { GraphScopes.UserReadBasicAll })]
+        [Authorize(Roles = AppRoles.UserReaders)]
         public async Task<IActionResult> Users()
         {
-            // Initialize the GraphServiceClient. 
+            // Initialize the GraphServiceClient.
             Graph::GraphServiceClient graphClient = GetGraphServiceClient(new[] { GraphScopes.UserReadBasicAll });
 
             var users = await graphClient.Users.Request().GetAsync();
             ViewData["Users"] = users.CurrentPage;
-
 
             return View();
         }

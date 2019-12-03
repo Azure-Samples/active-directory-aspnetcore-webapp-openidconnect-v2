@@ -1,13 +1,15 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.Client.TokenCacheProviders;
+using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
 
 namespace WebApp_OpenIDConnect_DotNet
@@ -32,24 +34,32 @@ namespace WebApp_OpenIDConnect_DotNet
             });
 
             // Sign-in users with the Microsoft identity platform
-            services.AddAzureAdV2Authentication(Configuration)
-                    .AddMsal(new string[] { "User.Read", "Directory.Read.All" })
+            services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
+                    .AddMsal(Configuration, new string[] { "User.Read", "Directory.Read.All" })
                     .AddInMemoryTokenCaches();
 
             services.AddMSGraphService(Configuration);
 
-            services.AddMvc(options =>
+            // Uncomment the following lines code instruct the asp.net core middleware to use the data in the "groups" claim in the Authorize attribute and User.IsInrole()
+            // See https://docs.microsoft.com/en-us/aspnet/core/security/authorization/roles?view=aspnetcore-2.2 for more info.
+            //services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
+            //{
+            //    // Use the groups claim for populating roles
+            //    options.TokenValidationParameters.RoleClaimType = "groups";
+            //});
+
+            services.AddControllersWithViews(options =>
             {
                 var policy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
-            })
-            .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            });
+            services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -66,13 +76,16 @@ namespace WebApp_OpenIDConnect_DotNet
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            app.UseRouting();
             app.UseAuthentication();
+            app.UseAuthorization();
 
-            app.UseMvc(routes =>
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
+                endpoints.MapControllerRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
         }
     }

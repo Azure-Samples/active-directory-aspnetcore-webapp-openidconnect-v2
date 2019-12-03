@@ -3,9 +3,9 @@ services: active-directory
 platforms: dotnet
 author: negoe
 level: 200
-client: ASP.NET Core 2.x Web App
+client: ASP.NET Core Web App
 service: Microsoft Graph
-endpoint: AAD v2.0
+endpoint: Microsoft identity platform
 ---
 
 # Using the Microsoft identity platform to call the Microsoft Graph API from an An ASP.NET Core 2.x Web App, on behalf of a user signing-in using their work and school account in Microsoft National Cloud
@@ -14,9 +14,9 @@ endpoint: AAD v2.0
 
 ## Scenario
 
-Starting from a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users, this phase of the tutorial shows how to call  Microsoft Graph /me endpoint on behalf of the signed-in user in US Government cloud. It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). Their complexities were encapsulated into the `Microsoft.Identity.Web` reusable library project part of this tutorial. Once again the notion of ASP.NET services injected by dependency injection is heavily used.
+Starting from a .NET Core MVC Web app that uses OpenID Connect to sign in users, this phase of the tutorial shows how to call  Microsoft Graph /me endpoint on behalf of the signed-in user in US Government cloud. It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). Their complexities were encapsulated into the `Microsoft.Identity.Web` reusable library project part of this tutorial. Once again the notion of ASP.NET services injected by dependency injection is heavily used.
 
-![Sign in with the Microsoft identity platform for developers (formerly Azure AD v2.0)](ReadmeFiles/sign-in.png)
+![Sign in with the Microsoft identity platform](ReadmeFiles/sign-in.png)
 
 ## How to run this sample
 
@@ -25,6 +25,8 @@ To run this sample:
 > Pre-requisites:
 >
 > go through the previous phase of the tutorial showing how the [WebApp signs-in users with Microsoft Identity (OIDC) / with work and school](../../1-WebApp-OIDC/1-2-AnyOrg). This page shows the incremental change required to call the Microsoft Graph API on behalf of a user that has successfully signed in to the web app.
+
+- Developers who wish to gain good familiarity of programming for Microsoft Graph are advised to go through the [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A) recorded session.
 
 ### Step 1: Register the sample with your Azure AD tenant
 
@@ -73,7 +75,7 @@ In case you want to deploy your app in other sovereign or national clouds, go to
 
 1. Build the solution and run it.
 
-2. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform (formerly Azure AD v2.0) endpoint. Sign in with your personal account or with a work or school account.
+2. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in with your personal account or with a work or school account.
 
 3. Go to the **Profile** page, you should now see all kind of information about yourself as well as your picture (a call was made to the Microsoft Graph */me* endpoint)
 
@@ -91,7 +93,7 @@ After the following lines in the ConfigureServices(IServiceCollection services) 
     . . .
     // Token acquisition service based on MSAL.NET 
     // and chosen token cache implementation
-    services.AddAzureAdV2Authentication(Configuration)
+    services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
             .AddMsal(new string[] { Constants.ScopeUserRead })
             .AddInMemoryTokenCache();
 ```
@@ -139,10 +141,10 @@ In the `Controllers\HomeController.cs`file:
    private readonly IGraphApiOperations graphApiOperations;
    ```
 
-1. Add a `Profile()` action so that it calls the Microsoft Graph *me* endpoint. In case a token cannot be acquired, a challenge is attempted to re-sign-in the user, and have them consent to the requested scopes. This is expressed declaratively by the `MsalUiRequiredExceptionFilter`attribute. This attribute is part of the `Microsoft.Identity.Web` project and automatically manages incremental consent.
+1. Add a `Profile()` action so that it calls the Microsoft Graph *me* endpoint. In case a token cannot be acquired, a challenge is attempted to re-sign-in the user, and have them consent to the requested scopes. This is expressed declaratively by the `AuthorizeForScopes`attribute. This attribute is part of the `Microsoft.Identity.Web` project and automatically manages incremental consent.
 
    ```CSharp
-   [MsalUiRequiredExceptionFilter(Scopes = new[] {Constants.ScopeUserRead})]
+   [AuthorizeForScopes(Scopes = new[] {Constants.ScopeUserRead})]
    public async Task<IActionResult> Profile()
    {
     var accessToken =

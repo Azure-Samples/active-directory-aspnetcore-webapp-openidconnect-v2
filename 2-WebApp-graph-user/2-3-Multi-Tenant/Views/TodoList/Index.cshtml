@@ -1,0 +1,78 @@
+﻿@using System.Security.Principal
+@using Microsoft.Identity.Web
+@model IEnumerable<TodoItem>
+@{
+    ViewData["Title"] = "Todo List";
+}
+
+<h2>ToDo List</h2>
+<div class="panel panel-info">
+    <div class="panel-heading"><h4>Data Partitioning by tenant</h4></div>
+    <div class="panel-body">
+        <p>This sample uses a single database to hold users data from all the various tenants.</p>
+        <p>The ToDo List uses claims provided in the <b><a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens">id_token</a></b> like <b>tid</b>  and <b>oid</b> (user's object Id) to segregate data between users and tenants.</p>
+    </div>
+</div>
+
+<h3>Display</h3>
+<form asp-action="Index" method="get">
+    <div class="radio">
+        <label class="radio-inline" style="margin-right:15px;">
+            <input type="radio" value="false" name="showAllFilter" asp-for="@ViewData["ShowAllFilter"]"> Only mine
+        </label>
+        <label class="radio-inline" style="margin-right:15px;">
+            <input type="radio" value="true" name="showAllFilter" asp-for="@ViewData["ShowAllFilter"]"> All from my tenant
+        </label>
+        <input type="submit" value="Apply" class="btn btn-default" />
+    </div>
+</form>
+<hr />
+<p>
+    <a class="btn btn-primary" asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Text</th>
+            <th>Assigned To</th>
+            <th>TenantId</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Text)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                    <span class="glyphicon glyphicon-tag" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="User Identifier: @item.AssignedTo"></span>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TenantId)
+                </td>
+                <td>
+                    @if (User.GetObjectId() == item.AssignedTo)
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> <span>|</span>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        })
+    </script>
+}

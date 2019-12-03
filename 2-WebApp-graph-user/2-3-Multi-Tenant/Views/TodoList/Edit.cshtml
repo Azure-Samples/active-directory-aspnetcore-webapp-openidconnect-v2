@@ -1,0 +1,60 @@
+﻿@model WebApp_OpenIDConnect_DotNet.Models.TodoItem
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit</h2>
+<div class="panel panel-info">
+    <div class="panel-heading"><h4>Graph token on multi-tenant apps</h4></div>
+    <div class="panel-body">
+        <p>Acquiring Graph tokens on a multi-tenant app requires an extra attention.</p>
+        <p>You have to issue a token for the signed user tenantId and <b>not the tenant where the app is registered.</b></p>
+        <p>On this page, you can assign the Todo Item to any user in your tenant, but you won't see any users from the other tenants that have registered this app.</p>
+    </div>
+</div>
+
+<h4>TodoItem</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Text" class="control-label"></label>
+                <input asp-for="Text" class="form-control" />
+                <span asp-validation-for="Text" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AssignedTo" class="control-label"></label>
+
+                <select class="form-control" asp-for="AssignedTo" asp-items="@((List<SelectListItem>)TempData["UsersDropDown"])"></select>
+            </div>
+                
+            <div class="form-group">
+                <label asp-for="TenantId" class="control-label"></label>
+                <input asp-for="TenantId" class="form-control" readonly="readonly" />
+                <input type="hidden" asp-for="UserName" />
+                <input type="hidden" asp-for="Id" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+            $('#AssignedTo').on("change", function () {
+                var userName = $( "#AssignedTo option:selected" ).text();
+                $('#UserName').val(userName);
+            });
+        })
+    </script>
+}

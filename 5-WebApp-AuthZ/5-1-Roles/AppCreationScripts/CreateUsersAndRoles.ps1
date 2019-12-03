@@ -107,9 +107,10 @@ Function CreateRolesUsersAndRoleAssignments
         $servicePrincipal = Get-AzureADServicePrincipal -Filter "AppId eq '$($app.AppId)'"  
         
         Set-AzureADApplication -ObjectId $app.ObjectId -AppRoles $appRoles
-        Write-Host "Successfully added app roles to the app 'WebApp-RolesClaims'."
 
         $appName = $app.DisplayName
+
+        Write-Host "Successfully added app roles to the app '$appName'."
 
         Write-Host "Creating users and assigning them to roles."
 
@@ -120,19 +121,19 @@ Function CreateRolesUsersAndRoleAssignments
         $userAssignment = New-AzureADUserAppRoleAssignment -ObjectId $user.ObjectId -PrincipalId $user.ObjectId -ResourceId $servicePrincipal.ObjectId -Id $directoryViewerRole.Id
 
         # Creating a directory viewer
-        Write-Host "Creating a user and assigning to '$($directoryViewerRole.DisplayName)' role"
+        Write-Host "Creating a new user and assigning to '$($directoryViewerRole.DisplayName)' role"
         $aDirectoryViewer = CreateUserRepresentingAppRole $appName $directoryViewerRole $tenantName
         $userAssignment = New-AzureADUserAppRoleAssignment -ObjectId $aDirectoryViewer.ObjectId -PrincipalId $aDirectoryViewer.ObjectId -ResourceId $servicePrincipal.ObjectId -Id $directoryViewerRole.Id
-        Write-Host "Created "($anApprover.UserPrincipalName)" with password 'test123456789.'"
+        Write-Host "Created user "($aDirectoryViewer.UserPrincipalName)" with password 'test123456789.'"
 
         # Creating a users reader
         Write-Host "Creating a user and assigning to '$($userreaderRole.DisplayName)' role"
-        $auserreaderRole = CreateUserRepresentingAppRole $appName $userreaderRole $tenantName
-        $userAssignment = New-AzureADUserAppRoleAssignment -ObjectId $auserreaderRole.ObjectId -PrincipalId $auserreaderRole.ObjectId -ResourceId $servicePrincipal.ObjectId -Id $userreaderRole.Id
-        Write-Host "Created "($auserreaderRole.UserPrincipalName)" with password 'test123456789.'"
+        $auserreader = CreateUserRepresentingAppRole $appName $userreaderRole $tenantName
+        $userAssignment = New-AzureADUserAppRoleAssignment -ObjectId $auserreader.ObjectId -PrincipalId $auserreader.ObjectId -ResourceId $servicePrincipal.ObjectId -Id $userreaderRole.Id
+        Write-Host "Created user "($auserreader.UserPrincipalName)" with password 'test123456789.'"
     }
     else {
-        Write-Host "Failed to add app roles to the app 'WebApp-RolesClaims'."
+        Write-Host -ForegroundColor Red "Failed to add app roles to the app 'WebApp-RolesClaims'."
     }
 
     Write-Host -ForegroundColor Green "Run the ..\CleanupUsersAndRoles.ps1 command to remove users created for this sample's application ."

@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Graph;
-using Microsoft.Identity.Web.Client;
+using Microsoft.Identity.Web;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebApp_OpenIDConnect_DotNet.Services.MicrosoftGraph;
@@ -8,6 +9,7 @@ using Constants = WebApp_OpenIDConnect_DotNet.Infrastructure.Constants;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
+    // [Authorize(Roles = "8873daa2-17af-4e72-973e-930c94ef7549")] // Using groups ids in the Authorize attribute
     public class UserProfileController : Controller
     {
         private readonly ITokenAcquisition tokenAcquisition;
@@ -19,17 +21,28 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             this.graphService = MSGraphService;
         }
 
-        [MsalUiRequiredExceptionFilter(Scopes = new[] { Constants.ScopeUserRead, Constants.ScopeDirectoryReadAll })]
+        [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead, Constants.ScopeDirectoryReadAll })]        
         public async Task<IActionResult> Index()
         {
-            string accessToken = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, new[] { Constants.ScopeUserRead, Constants.ScopeDirectoryReadAll });
+            // Using group ids/names in the IsInRole method
+            // var isinrole = User.IsInRole("8873daa2-17af-4e72-973e-930c94ef7549");
+
+            string accessToken = await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new[] { Constants.ScopeUserRead, Constants.ScopeDirectoryReadAll });
 
             User me = await graphService.GetMeAsync(accessToken);
-            var photo = await graphService.GetMyPhotoAsync(accessToken);
-            IList<Group> groups = await graphService.GetMyMemberOfGroupsAsync(accessToken);
-
             ViewData["Me"] = me;
-            ViewData["Photo"] = photo;
+
+            try
+            {
+                var photo = await graphService.GetMyPhotoAsync(accessToken);
+                ViewData["Photo"] = photo;
+            }
+            catch
+            {
+                //swallow
+            }
+            
+            IList<Group> groups = await graphService.GetMyMemberOfGroupsAsync(accessToken);            
             ViewData["Groups"] = groups;
 
             return View();

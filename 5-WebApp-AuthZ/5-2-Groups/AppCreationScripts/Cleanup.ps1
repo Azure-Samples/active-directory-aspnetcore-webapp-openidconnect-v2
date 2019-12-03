@@ -5,11 +5,11 @@ param(
     [string] $tenantId
 )
 
-if ((Get-Module -ListAvailable -Name "AzureAD") -eq $null) { 
+if ($null -eq (Get-Module -ListAvailable -Name "AzureAD")) { 
     Install-Module "AzureAD" -Scope CurrentUser 
 } 
 Import-Module AzureAD
-$ErrorActionPreference = 'Stop'
+$ErrorActionPreference = "Stop"
 
 Function Cleanup
 {
@@ -44,20 +44,27 @@ This function removes the Azure AD applications for the sample. These applicatio
         $tenantId = $creds.Tenant.Id
     }
     $tenant = Get-AzureADTenantDetail
-    $tenantName =  ($tenant.VerifiedDomains | Where { $_._Default -eq $True }).Name
+    $tenantName =  ($tenant.VerifiedDomains | Where-Object { $_._Default -eq $True }).Name
     
     # Removes the applications
     Write-Host "Cleaning-up applications from tenant '$tenantName'"
 
     Write-Host "Removing 'webApp' (WebApp-GroupClaims) if needed"
-    $app=Get-AzureADApplication -Filter "DisplayName eq 'WebApp-GroupClaims'"  
-
-    if ($app)
+    Get-AzureADApplication -Filter "DisplayName eq 'WebApp-GroupClaims'"  | ForEach-Object {Remove-AzureADApplication -ObjectId $_.ObjectId }
+    $apps = Get-AzureADApplication -Filter "DisplayName eq 'WebApp-GroupClaims'"
+    if ($apps)
     {
-        Remove-AzureADApplication -ObjectId $app.ObjectId
-        Write-Host "Removed."
+        Remove-AzureADApplication -ObjectId $apps.ObjectId
     }
 
+    foreach ($app in $apps) 
+    {
+        Remove-AzureADApplication -ObjectId $app.ObjectId
+        Write-Host "Removed WebApp-GroupClaims.."
+    }
+    # also remove service principals of this app
+    Get-AzureADServicePrincipal -filter "DisplayName eq 'WebApp-GroupClaims'" | ForEach-Object {Remove-AzureADServicePrincipal -ObjectId $_.Id -Confirm:$false}
+    
 }
 
 Cleanup -Credential $Credential -tenantId $TenantId

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
-using Microsoft.Identity.Web.Client;
+using Microsoft.Identity.Web;
 using System.Threading.Tasks;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Services;
@@ -33,7 +33,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View();
         }
 
-        [MsalUiRequiredExceptionFilter(Scopes = new[] { GraphScopes.DirectoryReadAll })]
+        [AuthorizeForScopes(Scopes = new[] { GraphScopes.DirectoryReadAll })]
         [Authorize(Roles = AppRoles.DirectoryViewers)]
         public async Task<IActionResult> Groups()
         {
@@ -41,8 +41,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
             GraphServiceClient graphServiceClient = GraphServiceClientFactory.GetAuthenticatedGraphClient(async () =>
             {
-                string result = await tokenAcquisition.GetAccessTokenOnBehalfOfUser(
-                       HttpContext, scopes);
+                string result = await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(scopes);
                 return result;
             }, webOptions.GraphApiUrl);
 

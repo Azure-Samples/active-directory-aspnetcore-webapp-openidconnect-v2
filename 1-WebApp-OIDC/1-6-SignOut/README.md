@@ -7,9 +7,9 @@ This page explains how sign-out works
 ## What sign out involves
 
 Signing out from a Web app is about more than removing the information about the signed-in account from the Web App's state.
-The Web app must also redirect the user to the Microsoft identity platform v2.0 `logout` endpoint to sign out. When your web app redirects the user to the `logout` endpoint, this endpoint clears the user's session from the browser. If your app did not go to the `logout` endpoint, the user would reauthenticate to your app without entering their credentials again, because they would have a valid single sign-in session with the Microsoft Identity platform v2.0 endpoint.
+The Web app must also redirect the user to the Microsoft identity platform `logout` endpoint to sign out. When your web app redirects the user to the `logout` endpoint, this endpoint clears the user's session from the browser. If your app did not go to the `logout` endpoint, the user would reauthenticate to your app without entering their credentials again, because they would have a valid single sign-in session with the Microsoft identity platform endpoint.
 
-To learn more, see the [Send a sign-out request](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc#send-a-sign-out-request) paragraph in the [Microsoft Identity platform v2.0 and the OpenID Connect protocol](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc) conceptual documentation
+To learn more, see the [Send a sign-out request](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc#send-a-sign-out-request) paragraph in the [Microsoft identity platform and the OpenID Connect protocol](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc) conceptual documentation
 
 ## Application registration
 
@@ -56,7 +56,7 @@ from <https://github.com/aspnet/AspNetCore/blob/master/src/Azure/AzureAD/Authent
 The ASP.NET Core OpenIdConnect middleware enables your app to intercept the call to the Microsoft identity platform logout endpoint by providing an OpenIdConnect event named `OnRedirectToIdentityProviderForSignOut`.
 
 ```CSharp
-public static IServiceCollection AddAzureAdV2Authentication(this IServiceCollection services,
+public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this IServiceCollection services,
                                                             IConfiguration configuration)
 {
     services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>

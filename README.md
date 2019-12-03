@@ -1,15 +1,23 @@
 ---
-services: active-directory
-platforms: dotnet
-author: jmprieur
-level: 200
-client: ASP.NET Core .Web App
-service: Microsoft Graph, Azure Storage, ASP.NET Core Web API
-endpoint: AAD v2.0
+languages:
+- csharp
+- powershell
+- html
+page_type: sample
+description: "Learn how to add sign-in users to your web app, and how to call web APIs, either from Microsoft or your own."
+products:
+- azure
+- azure-active-directory
+- dotnet
+- azure-storage
+- aspnet
+- ms-graph
+urlFragment: enable-webapp-signin
 ---
-[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 # Tutorial - Enable your Web Apps to sign-in users and call APIs with the Microsoft identity platform for developers
+
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 ## About this tutorial
 
@@ -21,55 +29,59 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
 
 > Note
 >
-> We recommend that you right click on the picture above and open it in a new tab, or a new windows. You'll see a clickable image:
+> We recommend that you right click on the picture above and open it in a new tab, or a new window. You'll see a clickable image:
 >
 > - clicking on a metro/railway station will get you directly to the README.md for the corresponding part of the tutorial (some are still in progress)
 > - clicking on some of the connectors between stations will get you to an incremental README.md showing how to get from one part of the tutorial to the next (that's for instance the case for the Sign-in ... stations)
 
 ### Details of the phases
 
-1. The first phase is to [add sign-in to your Web App](1-WebApp-OIDC) leveraging the Microsoft identity platform for developers (fomerly Azure AD v2.0). You'll learn how to use  the ASP.NET Core OpenID Connect (OIDC) middleware itself leveraging [Microsoft Identity Model extensions for .NET](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki) to protect your Web App.
+1. The first phase is to [add sign-in users to your Web App](1-WebApp-OIDC) leveraging the Microsoft identity platform for developers (formerly Azure AD v2.0). You'll learn how to use  the ASP.NET Core OpenID Connect (OIDC) middleware itself leveraging [Microsoft Identity Model extensions for .NET](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki) to protect your Web App.
 
-   ![Web apps signs-in users](./ReadmeFiles/Web-app-signs-in-users.svg)
+   ![Web apps signs-in users](ReadmeFiles/Web-app-signs-in-users.svg)
 
    Depending on your business needs, you have the flexibility to decide which audience to sign-in to your application:
    1. If you are a Line of Business (LOB) developer, you'll want to [sign-in users in your organization](./1-WebApp-OIDC/1-1-MyOrg) with their work or school accounts.
    1. If you are an ISV, you'll want to [sign-in users in any organization](./1-WebApp-OIDC/1-2-AnyOrg), still  with their work or school accounts.
-   1. If you are an ISV targetting both organizations and individuals, you'll want to [sign-in users with their work and school accounts or Microsoft personal accounts](./1-WebApp-OIDC/1-3-AnyOrgOrPersonal).
-   1. LOB developer or ISV, if you target organizations (work or school accounts), you can also enable your application to sign-in users in [**in progress**]  [national and sovereign clouds](./1-WebApp-OIDC/1-4-Sovereign).
-   1. If you are a business wanting to connect with your customers, or with small business partners, you might also want to [**coming soon**]  [sign-in users with their social identities](./1-WebApp-OIDC/1-5-B2C) using Microsoft Azure AD B2C.
+   1. If you are an ISV targeting both organizations and individuals, you'll want to [sign-in users with their work and school accounts or Microsoft personal accounts](./1-WebApp-OIDC/1-3-AnyOrgOrPersonal).
+   1. LOB developer or ISV, if you target organizations (work or school accounts), you can also enable your application to sign-in users in [national and sovereign clouds](./1-WebApp-OIDC/1-4-Sovereign).
+   1. If you are a business wanting to connect with your customers, or with small business partners, you might also want to [sign-in users with their social identities](./1-WebApp-OIDC/1-5-B2C) using Microsoft Azure AD B2C.
    1. Finally, you'll want to let users [sign-out](./1-WebApp-OIDC/1-6-SignOut) of our application, or globally of the browser.
 
 2. Your Web App might maintain its own resources (in that case you have all you need so far), but it could also be that it calls Microsoft APIs.
 
-   ![Web apps calls Microsoft Graph](./ReadmeFiles/Web-app-calls-Microsoft-Graph.svg)
+   ![Web apps calls Microsoft Graph](ReadmeFiles/Web-app-calls-Microsoft-Graph.svg)
 
    Learn how to update your Web App to [call Microsoft Graph](2-WebApp-graph-user):
 
    1. Using the [authorization code flow](2-WebApp-graph-user/2-1-Call-MSGraph), initiated by ASP.NET Core, but completed by Microsoft Authentication Library for .NET (MSAL.NET)
-   2. Learn how to [customize the token cache serialization](2-WebApp-graph-user/2-2-TokenCache)
+   2. Learn how to [customize the token cache serialization](2-WebApp-graph-user/2-2-TokenCache/README-incremental-instructions.md)
 ) with different technologies depending on your needs (in memory cache, Session token cache, SQL Cache, Redis Cache)
-   3. Learn the [**coming soon**]  [best practices and practices to avoid](./2-WebApp-graph-user/2-3-Best-Practices) when calling an API.
+   3. Learn the [**Planned**]  [best practices and practices to avoid](./2-WebApp-graph-user/2-3-Best-Practices) when calling an API.
 
 3. Your Web App might also want to call other Web APIs than Microsoft Graph.
 
-   ![Web apps calls Microsoft APIs](./ReadmeFiles/web-app-calls-microsoft-apis.svg)
+   ![Web apps calls Microsoft APIs](ReadmeFiles/web-app-calls-microsoft-apis.svg)
 
-   Learn how to [call several Microsoft APIS](./3-WebApp-multi-APIs), feature conditional access and claims challenge:
+   Learn how to [call several Microsoft APIS](./3-WebApp-multi-APIs). This also explains how to handle conditional access, incremental consent and claims challenge:
 
    1. the Azure Storage API. This is the opportunity to learn about incremental consent, and conditional access, and how to process them.
    2. the Azure ARM API. This is the opportunity to learn about admin consent.
 
-4. [Planned] [**coming soon**]  Then you might yourself have written a Web API, and want to call it from your Web App.
+   > Note that this phase, contrary to the others, requires you to have an Azure Subscription
 
-   ![Web apps calls Microsoft APIs](./ReadmeFiles/web-app-calls-your-api.svg)
+4. Then you might yourself have written a Web API, and want to call it from your Web App.
 
-5. [Planned] [**in progress*] Once you know how to sign-in users and call Web APIs from your Web App, you might want to restrict part of the application depending on the user having a role in the application or belonging to a group. So far you've learnt how to add and process authentication. Now learn how to [add authorization to your Web application](./5-WebApp-AuthZ):
+   ![Web apps calls Microsoft APIs](ReadmeFiles/web-app-calls-your-api.svg)
 
-   1. [with application roles](./5-WebApp-AuthZ/5-1-Roles)
-   2. [with Azure AD groups](./5-WebApp-AuthZ/5-2-Groups)
+   Learn how to update your Web App to [call your own web api](./4-WebApp-your-API/README-incremental-instructions.md)
 
-6. [Planned][**coming soon**]  Chances are that you want to [deploy your complete app to Azure](./6-Deploy-to-Azure). Learn how to do that, applying best practices:
+5. Once you know how to sign-in users and call Web APIs from your Web App, you might want to restrict part of the application depending on the user having a role in the application or belonging to a group. So far you've learnt how to add and process authentication. Now learn how to [add authorization to your Web application](./5-WebApp-AuthZ), restricting part of it to users
+
+   1. [based on their application roles](./5-WebApp-AuthZ/5-1-Roles/README-incremental-instructions.md)
+   2. [based on their belonging to Azure AD groups](./5-WebApp-AuthZ/5-2-Groups/README-incremental-instructions.md)
+
+6. Chances are that you want to [deploy your complete app to Azure](./6-Deploy-to-Azure). Learn how to do that, applying best practices:
 
    1. Changing the app registration to add more ReplyUris
    2. Using certificates instead of client secrets
@@ -88,8 +100,7 @@ This tutorial only covers the case the Web App calls a Web API on behalf of a us
 ### Pre-requisites
 
 - Install .NET Core for Windows by following the instructions at [dot.net/core](https://dot.net/core), which will include [Visual Studio 2017](https://aka.ms/vsdownload).
-- An Internet connection
-- An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/en-us/documentation/articles/active-directory-howto-tenant/)
+- An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://docs.microsoft.com/azure/active-directory/develop/quickstart-create-new-tenant)
 - A user account in your Azure AD tenant, or a Microsoft personal account
 
 ### Step 1:  Clone or download this repository
@@ -124,6 +135,6 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## Other samples and documentation
 
-- the documentation for the Microsoft identity platform for developers is available from [https://aka.ms/aadv2](https://aka.ms/aadv2)
-- Other samples for the Microsoft identity platform for developers are available from [https://aka.ms/aaddevsamplesv2](https://aka.ms/aaddevsamplesv2)
-- The conceptual documentation for MSAL.NET is available from [https://aka.ms/msalnet](https://aka.ms/msalnet)
+- The documentation for the Microsoft identity platform is available from [https://aka.ms/aadv2](https://aka.ms/aadv2).
+- Other samples for the Microsoft identity platform are available from [https://aka.ms/aaddevsamplesv2](https://aka.ms/aaddevsamplesv2).
+- The conceptual documentation for MSAL.NET is available from [https://aka.ms/msalnet](https://aka.ms/msalnet).
