@@ -33,7 +33,7 @@ This sample shows how to build an ASP.NET Core MVC web application that uses Ope
 When it comes to developing apps, developers can choose to configure their app to be either single-tenant or multi-tenant during app registration in the [Azure portal](https://portal.azure.com).
 
 - `Single-tenant` apps are only available in the tenant they were registered in, also known as their home tenant.
-- `Multi-tenant` apps are available to users in both their home tenant and other tenants where they are provisioned. Apps that allow users to sign-in using their personal accounts that they use to sign into services like Xbox and Skype are also multi-tenant apps.
+- `Multi-tenant` apps are available to users in both their home tenant and other tenants where they are provisioned.
 
 For more information about apps and tenancy, see [Tenancy in Azure Active Directory](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps)
 
@@ -121,7 +121,7 @@ As a first step you'll need to:
 1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
 1. Click **New registration** on top.
 1. In the **Register an application page** that appears, enter your application's registration information:
-   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp-MultiTenant-v2`.
+   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp-MultiTenant-v2WebApp-MultiTenant-v2`.
    - Change **Supported account types** to **Accounts in any organizational directory**.
      > Note that there are more than one redirect URIs used in this sample. You'll need to add them from the **Authentication** tab later after the app has been created successfully.
 1. Click on the **Register** button in bottom to create the application.
@@ -193,7 +193,7 @@ The list of users will be presented in the **Assigned To** dropdown:
 This sample details the following aspects of a multi-tenant app.
 
 - usage of the `/common` endpoint.
-- Service principal provisioning of an app in Azure AD tenants
+- Service Principle provisioning of an app in Azure AD tenants
 - Custom Token Validation to allow users from onboarded tenants only.
 - Data partitioning in multi-tenant apps.
 - Acquiring Access tokens for Microsoft Graph for each tenant.
@@ -215,9 +215,9 @@ services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
 
  You can read about the various endpoints of the Microsoft Identity Platform [here](https://docs.microsoft.com/azure/active-directory/develop/active-directory-v2-protocols#endpoints).
 
-### Service principal provisioning for new tenants (onboarding process)
+### Service principle provisioning for new tenants (onboarding process)
 
-For a multi-tenant app to work across tenants, its service principal will need to be provisioned in the users' tenant. It can either happen when the first user signs in, or most tenant admins only allow a tenant admin to carry out the service principal provisioning. For provisioning, we will be using the [admin consent endpoint](https://docs.microsoft.com/azure/active-directory/develop/v2-admin-consent) for the onboarding process. The code for this is provided in the `OnboardingController.cs`. The `Onboard` action and corresponding view, simulate the onboarding flow and experience.
+For a multi-tenant app to work across tenants, its service principle will need to be provisioned in the users' tenant. It can either happen when the first user signs in, or most tenant admins only allow a tenant admin to carry out the service principle provisioning. For provisioning, we will be using the [admin consent endpoint](https://docs.microsoft.com/azure/active-directory/develop/v2-admin-consent) for the onboarding process. The code for this is provided in the `OnboardingController.cs`. The `Onboard` action and corresponding view, simulate the onboarding flow and experience.
 
 ```csharp
 [HttpPost]
@@ -236,7 +236,7 @@ public IActionResult Onboard()
 }
 ```
 
-This results in an OAuth2 code grant request that triggers the admin consent flow and creates the service principal in the admin's tenant. The `state` parameter is used to validate the response, preventing a man-in-the-middle attack. Then, the `ProcessCode` action receives the authorization code from Azure AD and, if they appear valid, we create an entry in the application database for the new customer.
+This results in an OAuth2 code grant request that triggers the admin consent flow and creates the service principle in the admin's tenant. The `state` parameter is used to validate the response, preventing a man-in-the-middle attack. Then, the `ProcessCode` action receives the authorization code from Azure AD and, if they appear valid, we create an entry in the application database for the new customer.
 
 The `https://graph.microsoft.com/.default` is a static scope that allows the tenant admin to consent for all permissions in one go. You can find more about static scope on [this link.](https://docs.microsoft.com/azure/active-directory/develop/v2-admin-consent#request-the-permissions-from-a-directory-admin)
 
@@ -316,7 +316,12 @@ If you are receiving the following error message, you might need to **delete old
 
 > OpenIdConnectProtocolException: Message contains error: 'invalid_client', error_description: 'AADSTS650051: Application '{applicationId}' is requesting permissions that are either invalid or out of date.
 
-If you had provisioned a service principal of this app in the past and created a new one, the tenants that had signed-in in the app might still have the previous service principal registered causing a conflict with the new one. The solution for the conflict is to delete the older service principal from each tenant in the **Enterprise Application** menu.
+If you had provisioned a service principle of this app in the past and created a new one, the tenants that had signed-in in the app might still have the previous service principle registered causing a conflict with the new one. The solution for the conflict is to delete the older service principle from each tenant in the **Enterprise Application** menu.
+
+### Error `The provided request must include a 'response_type' input parameter`
+
+If you try to sign-in with a Microsoft account (MSA), such as hotmail.com, outlook.com, and msn.com, you'd receive this error during admin consent because MSA is not supported at the `/common` endpoint which this sample is using to obtain the admin consent.
+Please use an admin account with from the Azure AD tenant for this purpose.
 
 ## Contributing
 
