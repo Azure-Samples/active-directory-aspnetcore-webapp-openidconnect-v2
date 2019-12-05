@@ -14,9 +14,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace Microsoft.Identity.Web
@@ -258,19 +261,30 @@ namespace Microsoft.Identity.Web
             var request = CurrentHttpContext.Request;
             var azureAdOptions = _azureAdOptions;
             var applicationOptions = _applicationOptions;
+            string authority = $"{applicationOptions.Instance}{applicationOptions.TenantId}/";
             string currentUri = UriHelper.BuildAbsolute(
                 request.Scheme,
                 request.Host,
                 request.PathBase,
                 azureAdOptions.CallbackPath ?? string.Empty);
 
-            string authority = $"{applicationOptions.Instance}{applicationOptions.TenantId}/";
+            if ((string.IsNullOrWhiteSpace(applicationOptions.CertificateLocation) || string.IsNullOrWhiteSpace(applicationOptions.CertificatePassword)) &&
+                string.IsNullOrWhiteSpace(applicationOptions.ClientSecret))
+                throw new SecurityException("must specify certificate or secret when building a confidential client");
 
-            var app = ConfidentialClientApplicationBuilder
-                .CreateWithApplicationOptions(applicationOptions)
-                .WithRedirectUri(currentUri)
+            var builder = ConfidentialClientApplicationBuilder
+                .Create(applicationOptions.ClientId)
+                .WithTenantId(applicationOptions.TenantId)
                 .WithAuthority(authority)
-                .Build();
+                .WithRedirectUri(currentUri);
+
+            // prefer public keys over application password
+            if (!string.IsNullOrWhiteSpace(applicationOptions.CertificateLocation) && !string.IsNullOrWhiteSpace(applicationOptions.CertificatePassword))
+                builder.WithCertificate(new X509Certificate2(Path.Combine(AppContext.BaseDirectory, applicationOptions.CertificateLocation), applicationOptions.CertificatePassword));
+            else
+                builder.WithClientSecret(applicationOptions.ClientSecret);
+
+            var app = builder.Build();
 
             // Initialize token cache providers
             _tokenCacheProvider?.InitializeAsync(app.AppTokenCache);
