@@ -248,8 +248,8 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
      by this line:
 
      ```CSharp
-     services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
-          .AddMsal(new string[] { Configuration["TodoList:TodoListScope"] })
+     services.AddSignIn(Configuration)
+          .AddWebAppCallProtectedWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
           .AddInMemoryTokenCaches();
      ```
 
@@ -279,8 +279,8 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
 1. Update the `configureServices` method in `startup.cs` to add the MSAL library and a token cache.
 
     ```CSharp
-     services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
-          .AddMsal(new string[] { Configuration["TodoList:TodoListScope"] })
+     services.AddSignIn(Configuration)
+          .AddWebAppCallProtectedWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
           .AddInMemoryTokenCaches();
     ```
 1. Update the `Configure` method to include **app.UseAuthentication();** before **app.UseMvc();**  

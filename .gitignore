@@ -122,3 +122,4 @@
 /2-WebApp-graph-user/2-3-Multi-Tenant/.vs/WebApp-OpenIDConnect-DotNet
 /2-WebApp-graph-user/2-3-Multi-Tenant/bin/Debug/netcoreapp2.2
 /2-WebApp-graph-user/2-3-Multi-Tenant/obj
+/Microsoft.Identity.Web.Test/bin/Release/netcoreapp3.0

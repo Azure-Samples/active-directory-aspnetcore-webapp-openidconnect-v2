@@ -253,7 +253,7 @@ The asp.net middleware supports roles populated from claims by specifying the cl
 ```CSharp
 
 // Startup.cs
-public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this IServiceCollection services, IConfiguration configuration, X509Certificate2 tokenDecryptionCertificate = null)
+public static IServiceCollection AddSignIn(this IServiceCollection services, IConfiguration configuration, X509Certificate2 tokenDecryptionCertificate = null)
 {
             // [removed for] brevity
 

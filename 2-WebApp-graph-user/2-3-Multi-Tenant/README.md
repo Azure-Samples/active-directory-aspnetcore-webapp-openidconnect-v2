@@ -242,7 +242,7 @@ The `https://graph.microsoft.com/.default` is a static scope that allows the ten
 
 ### Custom token validation allowing only registered tenants
 
-On the `Startup.cs` we are calling `AddMicrosoftIdentityPlatformAuthentication` to configure the authentication, and within that method, we validates that the token issuer is from AAD.
+On the `Startup.cs` we are calling `AddSignIn` to configure the authentication, and within that method, we validates that the token issuer is from AAD.
 
 ```csharp
 options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).Validate;

@@ -178,7 +178,7 @@ The asp.net middleware supports roles populated from claims by specifying the cl
 ```CSharp
 
 // Startup.cs
-public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this IServiceCollection services, IConfiguration configuration, X509Certificate2 tokenDecryptionCertificate = null)
+public static IServiceCollection AddSignIn(this IServiceCollection services, IConfiguration configuration, X509Certificate2 tokenDecryptionCertificate = null)
 {
             // [removed for] brevity
 
@@ -232,8 +232,8 @@ The following files have the code that would be of interest to you.
      // by this line:
 
      //This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
-            services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
-                    .AddMsal(Configuration, new string[] { "User.Read", "Directory.Read.All" }) // Adds support for the MSAL library with the permissions necessary to retrieve the signed-in user's group info in case of a token overage
+            services.AddSignIn(Configuration)
+                    .AddWebAppCallProtectedWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" }) // Adds support for the MSAL library with the permissions necessary to retrieve the signed-in user's group info in case of a token overage
                     .AddInMemoryTokenCaches(); // Adds aspnetcore MemoryCache as Token cache provider for MSAL.
 
         services.AddMSGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.

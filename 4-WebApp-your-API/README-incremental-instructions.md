@@ -207,8 +207,8 @@ Add a reference to the `Microsoft.Identity.Web` library if not already present. 
 1. Update the `configureServices` method in `startup.cs` to add the MSAL library and a token cache.
 
 ```CSharp
-    services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
-            .AddMsal(new string[] { Configuration["TodoList:TodoListScope"] })
+    services.AddSignIn(Configuration)
+            .AddWebAppCallProtectedWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
             .AddInMemoryTokenCaches();
  ```
 

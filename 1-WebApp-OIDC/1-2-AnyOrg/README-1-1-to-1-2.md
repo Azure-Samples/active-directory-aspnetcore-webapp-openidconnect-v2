@@ -48,14 +48,14 @@ The actual sign-in audience (accounts to sign-in) is the lowest set of what is s
 
 In order to restrict users from specific organizations to sign-in to your web app, you'll need to follow the steps above, and customize a bit more the code to restrict the valid token issuers. The token issuers are really the tenanted Azure AD authority which are allowed to issue a token to access your web application.
 
-In the `Startup.cs` file, in the `ConfigureServices` method, after `services.AddMicrosoftIdentityPlatformAuthentication(Configuration)` add some code to validate specific issuers by overriding the `TokenValidationParameters.IssuerValidator` delegate.
+In the `Startup.cs` file, in the `ConfigureServices` method, after `services.AddSignIn(Configuration)` add some code to validate specific issuers by overriding the `TokenValidationParameters.IssuerValidator` delegate.
 
 ```CSharp
     public void ConfigureServices(IServiceCollection services)
     {
     ...
     // Sign-in users with the Microsoft identity platform
-    services.AddMicrosoftIdentityPlatformAuthentication(Configuration);
+    services.AddSignIn(Configuration);
 
     // Restrict users to specific belonging to specific tenants
     services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>

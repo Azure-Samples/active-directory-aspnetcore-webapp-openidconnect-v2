@@ -47,7 +47,7 @@ public class Startup
   public void ConfigureServices(IServiceCollection services)
   {
    ...
-   services.AddMicrosoftIdentityPlatformAuthentication(Configuration);
+   services.AddSignIn(Configuration);
    ...
   }
   ...
@@ -63,7 +63,7 @@ See also:
 
 ### Web apps that sign in users and call web apis on behalf of the signed-in user - startup.cs
 
-If moreover you want your Web app to call web APIS, you'll need to add a line with `.AddMsal()`, and choose a token cache implementation, for instance `.AddInMemoryTokenCaches()`
+If moreover you want your Web app to call web APIS, you'll need to add a line with `.AddWebAppCallProtectedWebApi()`, and choose a token cache implementation, for instance `.AddInMemoryTokenCaches()`
 
 ```CSharp
 using Microsoft.Identity.Web;
@@ -75,8 +75,8 @@ public class Startup
   public void ConfigureServices(IServiceCollection services)
   {
    ...
-   services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
-           .AddMsal(new string[] { scopesToRequest })
+   services.AddSignIn(Configuration)
+           .AddWebAppCallProtectedWebApi(new string[] { scopesToRequest })
            .AddInMemoryTokenCaches();
    ...
   }
@@ -84,7 +84,7 @@ public class Startup
 }
 ```
 
-Note that by default, `AddMicrosoftIdentityPlatformAuthentication` gets the configuration from the "AzureAD" section of the configuration files. It has
+Note that by default, `AddSignIn` gets the configuration from the "AzureAD" section of the configuration files. It has
 several parameters that you can change.
 
 Also the proposed token cache serialization is in memory. you can also use the session cache, or various distributed caches
@@ -110,7 +110,7 @@ public class HomeController : Controller
   ...
 ```
 
-Then in your controller actions, you'll need to call: `ITokenAcquisition.GetAccessTokenOnBehalfOfUserAsync` passing the scopes for which to request a token. The other methods of ITokenAcquisition are used from the `AddMsal()` method and similar methods for web APIs (see below).
+Then in your controller actions, you'll need to call: `ITokenAcquisition.GetAccessTokenOnBehalfOfUserAsync` passing the scopes for which to request a token. The other methods of ITokenAcquisition are used from the `AddWebAppCallProtectedWebApi()` method and similar methods for web APIs (see below).
 
 ```CSharp
 [Authorize]
@@ -274,8 +274,8 @@ Examples of possible distributed cache:
 
 ```CSharp
 // or use a distributed Token Cache by adding 
-    services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
-            .AddMsal(new string[] { scopesToRequest })
+    services.AddSignIn(Configuration)
+            .AddWebAppCallProtectedWebApi(new string[] { scopesToRequest })
             .AddDistributedTokenCaches();
 
 // and then choose your implementation
@@ -327,7 +327,7 @@ Finally, you can create a `ClaimsPrincipal` from an instance of MSAL.NET `IAccou
 
 ### Troubleshooting your web app or web API
 
-In order to troubleshoot your web app you can set the `subscribeToOpenIdConnectMiddlewareDiagnosticsEvents` optional boolean to `true` when you call `AddMicrosoftIdentityPlatformAuthentication`. This will display on the output window the progression of the OpenID connect message through OpenID Connect middleware (from the reception of the message from Azure Active directory to the availability of the user identity in `HttpContext.User`)  
+In order to troubleshoot your web app you can set the `subscribeToOpenIdConnectMiddlewareDiagnosticsEvents` optional boolean to `true` when you call `AddSignIn`. This will display on the output window the progression of the OpenID connect message through OpenID Connect middleware (from the reception of the message from Azure Active directory to the availability of the user identity in `HttpContext.User`)  
 
 <img alt="OpenIdConnectMiddlewareDiagnostics" src="https://user-images.githubusercontent.com/13203188/62538366-75ac0380-b807-11e9-9ce0-d0eec9381b78.png" width="75%"/>
 
