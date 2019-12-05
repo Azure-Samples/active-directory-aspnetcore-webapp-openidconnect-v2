@@ -111,7 +111,7 @@ namespace Microsoft.Identity.Web
         /// <param name="services">Service collection to which to add authentication</param>
         /// <param name="initialScopes">Initial scopes to request at sign-in</param>
         /// <returns></returns>
-        public static IServiceCollection AddWebAppCallProtectedWebApi(this IServiceCollection services, IConfiguration configuration, IEnumerable<string> initialScopes, string configSectionName = "AzureAd")
+        public static IServiceCollection AddWebAppCallsProtectedWebApi(this IServiceCollection services, IConfiguration configuration, IEnumerable<string> initialScopes, string configSectionName = "AzureAd")
         {
             // Ensure that configuration options for MSAL.NET, HttpContext accessor and the Token acquisition service
             // (encapsulating MSAL.NET) are available through dependency injection

@@ -35,7 +35,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
             // Sign-in users with the Microsoft identity platform
             services.AddSignIn(Configuration)
-                    .AddWebAppCallProtectedWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" })
+                    .AddWebAppCallsProtectedWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" })
                     .AddInMemoryTokenCaches();
 
             services.AddMSGraphService(Configuration);

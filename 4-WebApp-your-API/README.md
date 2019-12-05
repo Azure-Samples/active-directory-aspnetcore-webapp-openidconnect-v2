@@ -249,7 +249,7 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
 
      ```CSharp
      services.AddSignIn(Configuration)
-          .AddWebAppCallProtectedWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
+          .AddWebAppCallsProtectedWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
           .AddInMemoryTokenCaches();
      ```
 
@@ -280,7 +280,7 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
 
     ```CSharp
      services.AddSignIn(Configuration)
-          .AddWebAppCallProtectedWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
+          .AddWebAppCallsProtectedWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
           .AddInMemoryTokenCaches();
     ```
 1. Update the `Configure` method to include **app.UseAuthentication();** before **app.UseMvc();**  

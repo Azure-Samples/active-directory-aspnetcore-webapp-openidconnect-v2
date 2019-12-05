@@ -94,7 +94,7 @@ After the following lines in the ConfigureServices(IServiceCollection services) 
     // Token acquisition service based on MSAL.NET 
     // and chosen token cache implementation
     services.AddSignIn(Configuration)
-            .AddWebAppCallProtectedWebApi(new string[] { Constants.ScopeUserRead })
+            .AddWebAppCallsProtectedWebApi(new string[] { Constants.ScopeUserRead })
             .AddInMemoryTokenCache();
 ```
 

@@ -63,7 +63,7 @@ See also:
 
 ### Web apps that sign in users and call web apis on behalf of the signed-in user - startup.cs
 
-If moreover you want your Web app to call web APIS, you'll need to add a line with `.AddWebAppCallProtectedWebApi()`, and choose a token cache implementation, for instance `.AddInMemoryTokenCaches()`
+If moreover you want your Web app to call web APIS, you'll need to add a line with `.AddWebAppCallsProtectedWebApi()`, and choose a token cache implementation, for instance `.AddInMemoryTokenCaches()`
 
 ```CSharp
 using Microsoft.Identity.Web;
@@ -76,7 +76,7 @@ public class Startup
   {
    ...
    services.AddSignIn(Configuration)
-           .AddWebAppCallProtectedWebApi(new string[] { scopesToRequest })
+           .AddWebAppCallsProtectedWebApi(new string[] { scopesToRequest })
            .AddInMemoryTokenCaches();
    ...
   }
@@ -110,7 +110,7 @@ public class HomeController : Controller
   ...
 ```
 
-Then in your controller actions, you'll need to call: `ITokenAcquisition.GetAccessTokenOnBehalfOfUserAsync` passing the scopes for which to request a token. The other methods of ITokenAcquisition are used from the `AddWebAppCallProtectedWebApi()` method and similar methods for web APIs (see below).
+Then in your controller actions, you'll need to call: `ITokenAcquisition.GetAccessTokenOnBehalfOfUserAsync` passing the scopes for which to request a token. The other methods of ITokenAcquisition are used from the `AddWebAppCallsProtectedWebApi()` method and similar methods for web APIs (see below).
 
 ```CSharp
 [Authorize]
@@ -194,7 +194,7 @@ See also:
 
 ### Protected web APIs that call downstream APIs on behalf of a user - Startup.cs
 
-If moreover you want your web API to call downstream web APIS, you'll need to add lines with `.AddProtectedApiCallsWebApis()`, and choose a token cache implementation, for instance `.AddInMemoryTokenCaches()`
+If moreover you want your web API to call downstream web APIS, you'll need to add lines with `.AddProtectedWebApiCallsProtectedWebApi()`, and choose a token cache implementation, for instance `.AddInMemoryTokenCaches()`
 
 ```CSharp
 using Microsoft.Identity.Web;
@@ -206,7 +206,7 @@ public class Startup
   {
    ...
    services.AddProtectedWebApi(Configuration)
-           .AddProtectedApiCallsWebApis()
+           .AddProtectedWebApiCallsProtectedWebApi()
            .AddInMemoryTokenCaches();
    ...
   }
@@ -216,7 +216,7 @@ public class Startup
 
 Like for Web Apps, you can choose various token cache implementations.
 
-If you're certain that your web API will need some specific scopes, you can optionally pass them as arguments to `AddProtectedApiCallsWebApis`.
+If you're certain that your web API will need some specific scopes, you can optionally pass them as arguments to `AddProtectedWebApiCallsProtectedWebApi`.
 
 ### Web API controller
 
@@ -275,7 +275,7 @@ Examples of possible distributed cache:
 ```CSharp
 // or use a distributed Token Cache by adding 
     services.AddSignIn(Configuration)
-            .AddWebAppCallProtectedWebApi(new string[] { scopesToRequest })
+            .AddWebAppCallsProtectedWebApi(new string[] { scopesToRequest })
             .AddDistributedTokenCaches();
 
 // and then choose your implementation

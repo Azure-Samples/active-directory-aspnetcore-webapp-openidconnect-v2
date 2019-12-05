@@ -103,7 +103,7 @@ namespace Microsoft.Identity.Web
         /// <param name="services">Service collection to which to add authentication</param>
         /// <param name="configuration">Configuration</param>
         /// <returns></returns>
-        public static IServiceCollection AddProtectedApiCallsWebApis(
+        public static IServiceCollection AddProtectedWebApiCallsProtectedWebApi(
             this IServiceCollection services,
             IConfiguration configuration,
             string configSectionName = "AzureAd")

@@ -76,7 +76,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
             // Sign-in users with the Microsoft identity platform
             services.AddSignIn(Configuration)
-                    .AddWebAppCallProtectedWebApi(Configuration, new string[] { GraphScope.UserReadAll })
+                    .AddWebAppCallsProtectedWebApi(Configuration, new string[] { GraphScope.UserReadAll })
                     .AddInMemoryTokenCaches();
 
             services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>

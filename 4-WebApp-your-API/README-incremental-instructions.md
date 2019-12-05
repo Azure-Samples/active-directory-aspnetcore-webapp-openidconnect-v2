@@ -208,7 +208,7 @@ Add a reference to the `Microsoft.Identity.Web` library if not already present. 
 
 ```CSharp
     services.AddSignIn(Configuration)
-            .AddWebAppCallProtectedWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
+            .AddWebAppCallsProtectedWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
             .AddInMemoryTokenCaches();
  ```
 

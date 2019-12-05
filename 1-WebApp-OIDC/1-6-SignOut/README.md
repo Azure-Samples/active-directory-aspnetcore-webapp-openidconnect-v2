@@ -73,10 +73,10 @@ public static IServiceCollection AddSignIn(this IServiceCollection services,
 
 ### Clearing the token cache
 
-Your application can also intercept the logout event, for instance to clear the entry of the token cache associated with the account that signed out. We'll see in the second part of this tutorial (about the Web app calling a Web API), that the web app will store access tokens for the user in a cache. Intercepting the logout callback enables your web application to remove the user from the token cache. This is illustrated in the `AddWebAppCallProtectedWebApi()` method of [StartupHelper.cs L137-143](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/b87a1d859ff9f9a4a98eb7b701e6a1128d802ec5/Microsoft.Identity.Web/StartupHelpers.cs#L137-L143)
+Your application can also intercept the logout event, for instance to clear the entry of the token cache associated with the account that signed out. We'll see in the second part of this tutorial (about the Web app calling a Web API), that the web app will store access tokens for the user in a cache. Intercepting the logout callback enables your web application to remove the user from the token cache. This is illustrated in the `AddWebAppCallsProtectedWebApi()` method of [StartupHelper.cs L137-143](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/b87a1d859ff9f9a4a98eb7b701e6a1128d802ec5/Microsoft.Identity.Web/StartupHelpers.cs#L137-L143)
 
 ```CSharp
-public static IServiceCollection AddWebAppCallProtectedWebApi(this IServiceCollection services, IEnumerable<string> initialScopes)
+public static IServiceCollection AddWebAppCallsProtectedWebApi(this IServiceCollection services, IEnumerable<string> initialScopes)
 {
     services.AddTokenAcquisition();
 
