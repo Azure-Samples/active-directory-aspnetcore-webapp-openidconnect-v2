@@ -9,6 +9,14 @@ This library contains a set of reusable classes useful in ASP.NET Core:
 
 to enable them to work with the Microsoft identity platform (formerly named Azure AD v2.0 endpoint). In the library, web apps and protected web APIs are collectively referred to as web resources.
 
+
+ ## Breaking changes
+
+ If you've been using Microsoft.Identity.Web in your project you might want to know that, on 12/05/2019, a number of APIs are renamed to be consistent:
+.AddMicrosoftIdentityPlatformAuthentication => AddSignIn
+.AddMsal => .AddWebAppCallsProtectedWebApi
+.AddProtectedWebApiCallsWebAPis => AddProtectedWebApiCallsProtectedWebAPi
+
 ## Web apps
 
 As of today, ASP.NET Core web apps templates (`dot net new mvc -auth`) create web apps that sign in users with the Azure AD v1.0 endpoint (allowing to sign in users with their organizational accounts, also named *Work or school accounts*). This library brings `ServiceCollection` extension methods to be used in the ASP.NET Core web app **Startup.cs** file to enable the web app to sign in users with the Microsoft identity platform (formerly Azure AD v2.0 endpoint), and, optionally enable the web app to call APIs on behalf of the signed-in user.
