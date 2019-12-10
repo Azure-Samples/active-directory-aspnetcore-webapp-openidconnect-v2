@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +16,11 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Identity.Web
 {
+   public class AzureADOptions: ConfidentialClientApplicationOptions
+    {
+        public string CallbackPath { get; set; }
+    }
+
     /// <summary>
     /// Extensions for IServiceCollection for startup initialization of Web APIs.
     /// </summary>
@@ -40,14 +43,15 @@ namespace Microsoft.Identity.Web
             string configSectionName = "AzureAd",
             bool subscribeToJwtBearerMiddlewareDiagnosticsEvents = false)
         {
-            services.AddAuthentication(AzureADDefaults.JwtBearerAuthenticationScheme)
-                    .AddAzureADBearer(options => configuration.Bind(configSectionName, options));
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer((options => configuration.Bind(configSectionName, options)));
+                  //  .AddAzureADBearer(options => configuration.Bind(configSectionName, options));
             services.Configure<AzureADOptions>(options => configuration.Bind(configSectionName, options));
 
             services.AddHttpContextAccessor();
 
             // Change the authentication configuration to accommodate the Microsoft identity platform endpoint (v2.0).
-            services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
+            services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 // This is an Microsoft identity platform Web API
                 options.Authority += "/v2.0";
@@ -111,7 +115,7 @@ namespace Microsoft.Identity.Web
             services.AddTokenAcquisition();
             services.AddHttpContextAccessor();
             services.Configure<ConfidentialClientApplicationOptions>(options => configuration.Bind(configSectionName, options));
-            services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
+            services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.Events.OnTokenValidated = async context =>
                 {

@@ -11,6 +11,7 @@ using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Services;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace WebApp_OpenIDConnect_DotNet
 {

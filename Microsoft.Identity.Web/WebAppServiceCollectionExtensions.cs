@@ -1,8 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,12 +36,14 @@ namespace Microsoft.Identity.Web
             bool subscribeToOpenIdConnectMiddlewareDiagnosticsEvents = false)
         {
 
-            services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
-                .AddAzureAD(options => configuration.Bind(configSectionName, options));
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                    .AddOpenIdConnect(CookieAuthenticationDefaults.AuthenticationScheme, options => configuration.Bind(configSectionName, options));
             services.Configure<AzureADOptions>(options => configuration.Bind(configSectionName, options));
 
-            services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
+            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+
                 // Per the code below, this application signs in users in any Work and School
                 // accounts and any Microsoft Personal Accounts.
                 // If you want to direct Azure AD to restrict the users that can sign-in, change
@@ -119,7 +120,7 @@ namespace Microsoft.Identity.Web
             services.AddHttpContextAccessor();
             services.AddTokenAcquisition();
 
-            services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
+            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
                 // Response type
                 options.ResponseType = OpenIdConnectResponseType.CodeIdToken;
