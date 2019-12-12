@@ -32,7 +32,7 @@ namespace Microsoft.Identity.Web
         public static IServiceCollection AddSignIn(
             this IServiceCollection services,
             IConfiguration configuration,
-            string configSectionName = "OpenIdConnect",
+            string configSectionName = "AzureAD",
             bool subscribeToOpenIdConnectMiddlewareDiagnosticsEvents = false)
         {
 
