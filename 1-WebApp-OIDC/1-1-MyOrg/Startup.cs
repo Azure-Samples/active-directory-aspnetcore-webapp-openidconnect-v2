@@ -39,7 +39,7 @@ namespace WebApp_OpenIDConnect_DotNet
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
-           services.AddRazorPages();
+            services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

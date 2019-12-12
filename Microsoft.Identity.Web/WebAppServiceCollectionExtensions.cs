@@ -32,16 +32,21 @@ namespace Microsoft.Identity.Web
         public static IServiceCollection AddSignIn(
             this IServiceCollection services,
             IConfiguration configuration,
-            string configSectionName = "AzureAd",
+            string configSectionName = "OpenIdConnect",
             bool subscribeToOpenIdConnectMiddlewareDiagnosticsEvents = false)
         {
 
-            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                    .AddOpenIdConnect(CookieAuthenticationDefaults.AuthenticationScheme, options => configuration.Bind(configSectionName, options));
-            services.Configure<AzureADOptions>(options => configuration.Bind(configSectionName, options));
-
-            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+            services.AddAuthentication(auth =>
             {
+                auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                auth.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                auth.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddCookie()
+            .AddOpenIdConnect(options =>
+            {
+                configuration.GetSection(configSectionName).Bind(options);
+
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 
                 // Per the code below, this application signs in users in any Work and School
@@ -67,7 +72,7 @@ namespace Microsoft.Identity.Web
                 // For more details see [ID Tokens](https://docs.microsoft.com/azure/active-directory/develop/id-tokens)
                 // and [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens)
                 options.TokenValidationParameters.NameClaimType = "preferred_username";
-                
+
                 // Avoids having users being presented the select account dialog when they are already signed-in
                 // for instance when going through incremental consent
                 options.Events.OnRedirectToIdentityProvider = context =>
@@ -101,6 +106,7 @@ namespace Microsoft.Identity.Web
                     OpenIdConnectMiddlewareDiagnostics.Subscribe(options.Events);
                 }
             });
+
             return services;
         }
 
