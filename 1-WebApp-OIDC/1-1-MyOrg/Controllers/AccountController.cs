@@ -22,7 +22,6 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
         public IActionResult SignOut()
         {
-            var callbackUrl = Url.Page("/Account/SignedOut", pageHandler: null, values: null, protocol: Request.Scheme);
             return SignOut(
                  new AuthenticationProperties
                  {
