@@ -169,55 +169,54 @@ In the `Controllers\HomeController.cs`file:
 
 1. Add a constructor to HomeController, making the ITokenAcquisition service available (used by the ASP.NET dependency injection mechanism)
 
-   ```CSharp
-    readonly ITokenAcquisition tokenAcquisition;
-    readonly WebOptions webOptions;
+```CSharp
+readonly ITokenAcquisition tokenAcquisition;
+readonly WebOptions webOptions;
 
-    public HomeController(ITokenAcquisition tokenAcquisition, IOptions<WebOptions> webOptionValue)
-    {
-            this.tokenAcquisition = tokenAcquisition;
-            this.webOptions = webOptionValue.Value;
-    }
-   ```
+public HomeController(ITokenAcquisition tokenAcquisition, IOptions<WebOptions> webOptionValue)
+{
+    this.tokenAcquisition = tokenAcquisition;
+    this.webOptions = webOptionValue.Value;
+}
+```
 
 1. Add a `Profile()` action so that it calls the Microsoft Graph *me* endpoint. In case a token cannot be acquired, a challenge is attempted to re-sign-in the user, and have them consent to the requested scopes. This is expressed declaratively by the `AuthorizeForScopes`attribute. This attribute is part of the `Microsoft.Identity.Web` project and automatically manages incremental consent.
 
 ```CSharp
-[AuthorizeForScopes(Scopes = new[] {Constants.ScopeUserRead})]
+[AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]
 public async Task<IActionResult> Profile()
 {
-        // Initialize the GraphServiceClient. 
-        Graph::GraphServiceClient graphClient = GetGraphServiceClient(new[] { Constants.ScopeUserRead });
+    // Initialize the GraphServiceClient. 
+    Graph::GraphServiceClient graphClient = GetGraphServiceClient(new[] { Constants.ScopeUserRead });
 
-        var me = await graphClient.Me.Request().GetAsync();
-        ViewData["Me"] = me;
+    var me = await graphClient.Me.Request().GetAsync();
+    ViewData["Me"] = me;
 
-        try
+    try
+    {
+        // Get user photo
+        using (var photoStream = await graphClient.Me.Photo.Content.Request().GetAsync())
         {
-                // Get user photo
-                using (var photoStream = await graphClient.Me.Photo.Content.Request().GetAsync())
-                {
-                    byte[] photoByte = ((MemoryStream)photoStream).ToArray();
-                    ViewData["Photo"] = Convert.ToBase64String(photoByte);
-                }
+            byte[] photoByte = ((MemoryStream)photoStream).ToArray();
+            ViewData["Photo"] = Convert.ToBase64String(photoByte);
         }
-        catch (System.Exception)
-        {
-                ViewData["Photo"] = null;
-        }
+    }
+    catch (System.Exception)
+    {
+        ViewData["Photo"] = null;
+    }
 
-        return View();
+    return View();
 }
 
 private Graph::GraphServiceClient GetGraphServiceClient(string[] scopes)
 {
-        return GraphServiceClientFactory.GetAuthenticatedGraphClient(async () =>
-        {
-            string result = await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(scopes);
-            return result;
-        }, webOptions.GraphApiUrl);
+    return GraphServiceClientFactory.GetAuthenticatedGraphClient(async () =>
+    {
+        string result = await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(scopes);
+        return result;
+    }, webOptions.GraphApiUrl);
 }
-
 ```
 
 ### Add a Profile view to display the *me* object
@@ -234,50 +233,50 @@ HTML table displaying the properties of the *me* object as returned by Microsoft
 <h3>@ViewData["Message"]</h3>
 
 <table class="table table-striped table-condensed" style="font-family: monospace">
-  <tr>
-    <th>Property</th>
-    <th>Value</th>
-  </tr>
-  <tr>
-    <td>photo</td>
-    <td>
+    <tr>
+        <th>Property</th>
+        <th>Value</th>
+    </tr>
+    <tr>
+        <td>photo</td>
+        <td>
             @{
-                    if (ViewData["photo"] != null)
-                    {
-                      <img style="margin: 5px 0; width: 150px" src="data:image/jpeg;base64, @ViewData["photo"]" />
-                    }
-                    else
-                    {
-                      <h3>NO PHOTO</h3>
-                      <p>Check user profile in Azure Active Directory to add a photo.</p>
-                    }
+                if (ViewData["photo"] != null)
+                {
+                    <img style="margin: 5px 0; width: 150px" src="data:image/jpeg;base64, @ViewData["photo"]" />
+                }
+                else
+                {
+                    <h3>NO PHOTO</h3>
+                    <p>Check user profile in Azure Active Directory to add a photo.</p>
+                }
             }
-    </td>
-  </tr>
-  @{       
-    var me = ViewData["me"] as Microsoft.Graph.User;
-    var properties = me.GetType().GetProperties();
-    foreach (var child in properties)
-    {
-          object value = child.GetValue(me);
-          string stringRepresentation;
-          if (!(value is string) && value is IEnumerable<string>)
-          {
-            stringRepresentation = "["
-                + string.Join(", ", (value as IEnumerable<string>).OfType<object>().Select(c => c.ToString()))
-                + "]";
-          }
-          else
-          {
-            stringRepresentation = value?.ToString();
-          }
-  
-          <tr>
-            <td> @child.Name </td>
-            <td> @stringRepresentation </td>
-          </tr>
-    }      
-  }
+        </td>
+    </tr>
+    @{       
+        var me = ViewData["me"] as Microsoft.Graph.User;
+        var properties = me.GetType().GetProperties();
+        foreach (var child in properties)
+        {
+            object value = child.GetValue(me);
+            string stringRepresentation;
+            if (!(value is string) && value is IEnumerable<string>)
+            {
+                stringRepresentation = "["
+                    + string.Join(", ", (value as IEnumerable<string>).OfType<object>().Select(c => c.ToString()))
+                    + "]";
+            }
+            else
+            {
+                stringRepresentation = value?.ToString();
+            }
+
+            <tr>
+                <td> @child.Name </td>
+                <td> @stringRepresentation </td>
+            </tr>
+        }      
+    }
 </table>
 ```
 
