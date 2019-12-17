@@ -150,15 +150,9 @@ The two new lines of code:
 
 ### Add additional files to call Microsoft Graph
 
-Add the `Services\Microsoft-Graph-Rest\*.cs` files. This is an implementation of a custom service which encapsulates the call to the Microsoft Graph /me endpoint. Given an access token for Microsoft Graph, it's capable of getting the user information and the photo of the user.
+Add `Microsoft.Graph` package, to use [Microsoft Graph SDK](https://github.com/microsoftgraph/msgraph-sdk-dotnet/blob/dev/docs/overview.md).
 
-```CSharp
-public interface IGraphApiOperations
-{
- Task<dynamic> GetUserInformation(string accessToken);
- Task<string> GetPhotoAsBase64Async(string accessToken);
-}
-```
+Add the `Services\*.cs` files. The `GraphServiceClientFactory.cs` returns a `GraphServiceClient` with an authentication provider, used for [Microsoft Graph SDK](https://github.com/microsoftgraph/msgraph-sdk-dotnet/blob/dev/docs/overview.md). Given an access token for Microsoft Graph, it's capable of making a request to Graph services sending that access token in the header.
 
 ### Update the `Startup.cs` file to enable the Microsoft Graph custom service
 
@@ -176,35 +170,55 @@ In the `Controllers\HomeController.cs`file:
 1. Add a constructor to HomeController, making the ITokenAcquisition service available (used by the ASP.NET dependency injection mechanism)
 
    ```CSharp
-   public HomeController(ITokenAcquisition tokenAcquisition, IGraphApiOperations graphApiOperations)
-   {
-     this.tokenAcquisition = tokenAcquisition;
-     this.graphApiOperations = graphApiOperations;
+    readonly ITokenAcquisition tokenAcquisition;
+    readonly WebOptions webOptions;
 
-   }
-   private ITokenAcquisition tokenAcquisition;
-   private readonly IGraphApiOperations graphApiOperations;
+    public HomeController(ITokenAcquisition tokenAcquisition, IOptions<WebOptions> webOptionValue)
+    {
+            this.tokenAcquisition = tokenAcquisition;
+            this.webOptions = webOptionValue.Value;
+    }
    ```
 
 1. Add a `Profile()` action so that it calls the Microsoft Graph *me* endpoint. In case a token cannot be acquired, a challenge is attempted to re-sign-in the user, and have them consent to the requested scopes. This is expressed declaratively by the `AuthorizeForScopes`attribute. This attribute is part of the `Microsoft.Identity.Web` project and automatically manages incremental consent.
 
-   ```CSharp
-   [AuthorizeForScopes(Scopes = new[] {Constants.ScopeUserRead})]
-   public async Task<IActionResult> Profile()
-   {
-    var accessToken =
-    await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, 
-                                                     new[] {Constants.ScopeUserRead});
+```CSharp
+[AuthorizeForScopes(Scopes = new[] {Constants.ScopeUserRead})]
+public async Task<IActionResult> Profile()
+{
+        // Initialize the GraphServiceClient. 
+        Graph::GraphServiceClient graphClient = GetGraphServiceClient(new[] { Constants.ScopeUserRead });
 
-    var me = await graphApiOperations.GetUserInformation(accessToken);
-    var photo = await graphApiOperations.GetPhotoAsBase64Async(accessToken);
+        var me = await graphClient.Me.Request().GetAsync();
+        ViewData["Me"] = me;
 
-    ViewData["Me"] = me;
-    ViewData["Photo"] = photo;
+        try
+        {
+                // Get user photo
+                using (var photoStream = await graphClient.Me.Photo.Content.Request().GetAsync())
+                {
+                    byte[] photoByte = ((MemoryStream)photoStream).ToArray();
+                    ViewData["Photo"] = Convert.ToBase64String(photoByte);
+                }
+        }
+        catch (System.Exception)
+        {
+                ViewData["Photo"] = null;
+        }
 
-    return View();
-   }
-   ```
+        return View();
+}
+
+private Graph::GraphServiceClient GetGraphServiceClient(string[] scopes)
+{
+        return GraphServiceClientFactory.GetAuthenticatedGraphClient(async () =>
+        {
+            string result = await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(scopes);
+            return result;
+        }, webOptions.GraphApiUrl);
+}
+
+```
 
 ### Add a Profile view to display the *me* object
 
@@ -220,37 +234,50 @@ HTML table displaying the properties of the *me* object as returned by Microsoft
 <h3>@ViewData["Message"]</h3>
 
 <table class="table table-striped table-condensed" style="font-family: monospace">
- <tr>
+  <tr>
     <th>Property</th>
     <th>Value</th>
- </tr>
- <tr>
-   <td>photo</td>
-   <td>
-   @{
-     if (ViewData["photo"] != null)
-     {
-     <img style="margin: 5px 0; width: 150px" src="data:image/jpeg;base64, @ViewData["photo"]" />
-     }
-     else
-     {
-      <h3>NO PHOTO</h3>
-      <p>Check user profile in Azure Active Directory to add a photo.</p>
-     }
-    }
+  </tr>
+  <tr>
+    <td>photo</td>
+    <td>
+            @{
+                    if (ViewData["photo"] != null)
+                    {
+                      <img style="margin: 5px 0; width: 150px" src="data:image/jpeg;base64, @ViewData["photo"]" />
+                    }
+                    else
+                    {
+                      <h3>NO PHOTO</h3>
+                      <p>Check user profile in Azure Active Directory to add a photo.</p>
+                    }
+            }
     </td>
   </tr>
-  @{
-    var me = ViewData["me"] as JObject;
-    var children = me.Properties();
-    foreach (var child in children)
+  @{       
+    var me = ViewData["me"] as Microsoft.Graph.User;
+    var properties = me.GetType().GetProperties();
+    foreach (var child in properties)
     {
-     <tr>
-       <td>@child.Name</td>
-       <td>@child.Value</td>
-     </tr>
-    }
-   }
+          object value = child.GetValue(me);
+          string stringRepresentation;
+          if (!(value is string) && value is IEnumerable<string>)
+          {
+            stringRepresentation = "["
+                + string.Join(", ", (value as IEnumerable<string>).OfType<object>().Select(c => c.ToString()))
+                + "]";
+          }
+          else
+          {
+            stringRepresentation = value?.ToString();
+          }
+  
+          <tr>
+            <td> @child.Name </td>
+            <td> @stringRepresentation </td>
+          </tr>
+    }      
+  }
 </table>
 ```
 
