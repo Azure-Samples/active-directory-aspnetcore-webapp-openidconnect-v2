@@ -258,7 +258,7 @@ public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this
 }
 
 // In code..(Controllers & elsewhere)
-[Authorize(Roles = “Group-object-id")] // In controllers
+[Authorize(Roles = "Group-object-id")] // In controllers
 // or
 User.IsInRole("Group-object-id"); // In methods
 
