@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Configuration;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Web.Resource;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -164,6 +166,65 @@ namespace Microsoft.Identity.Web
                 };
             });
             return services;
+        }
+
+        public static AuthenticationBuilder AddSignIn(this AuthenticationBuilder builder, Action<OpenIdConnectOptions> configureOptions) =>
+            builder.AddSignIn(
+                OpenIdConnectDefaults.AuthenticationScheme,
+                OpenIdConnectDefaults.AuthenticationScheme,
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                configureOptions);
+
+        public static AuthenticationBuilder AddSignIn(
+            this AuthenticationBuilder builder,
+            string scheme,
+            string openIdConnectScheme,
+            string cookieScheme,
+            Action<OpenIdConnectOptions> configureOptions)
+        {
+            builder.Services.Configure(scheme, configureOptions);
+            builder.AddCookie(cookieScheme);
+            builder.AddOpenIdConnect(openIdConnectScheme, options =>
+            {
+                options.SignInScheme = cookieScheme;
+                options.Authority = options.Authority + "/v2.0/";
+                options.TokenValidationParameters.NameClaimType = "preferred_username";
+
+                // If you want to restrict the users that can sign-in to several organizations
+                // Set the tenant value in the appsettings.json file to 'organizations', and add the
+                // issuers you want to accept to options.TokenValidationParameters.ValidIssuers collection
+                options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).Validate;
+
+                // Avoids having users being presented the select account dialog when they are already signed-in
+                // for instance when going through incremental consent
+                options.Events.OnRedirectToIdentityProvider = context =>
+                {
+                    var login = context.Properties.GetParameter<string>(OpenIdConnectParameterNames.LoginHint);
+                    if (!string.IsNullOrWhiteSpace(login))
+                    {
+                        context.ProtocolMessage.LoginHint = login;
+                        context.ProtocolMessage.DomainHint = context.Properties.GetParameter<string>(
+                            OpenIdConnectParameterNames.DomainHint);
+
+                        // delete the login_hint and domainHint from the Properties when we are done otherwise
+                        // it will take up extra space in the cookie.
+                        context.Properties.Parameters.Remove(OpenIdConnectParameterNames.LoginHint);
+                        context.Properties.Parameters.Remove(OpenIdConnectParameterNames.DomainHint);
+                    }
+
+                    // Additional claims
+                    if (context.Properties.Items.ContainsKey(OidcConstants.AdditionalClaims))
+                    {
+                        context.ProtocolMessage.SetParameter(
+                            OidcConstants.AdditionalClaims,
+                            context.Properties.Items[OidcConstants.AdditionalClaims]);
+                    }
+
+                    return Task.FromResult(0);
+                };
+            });
+
+            return builder;
         }
     }
 }

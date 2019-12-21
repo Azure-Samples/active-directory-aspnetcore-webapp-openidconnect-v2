@@ -58,4 +58,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.1" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.7.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Identity.Web.UI\Microsoft.Identity.Web.UI.csproj" />
+  </ItemGroup>
 </Project>

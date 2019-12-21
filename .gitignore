@@ -8,6 +8,9 @@
 /Microsoft.Identity.Web/.vs
 /Microsoft.Identity.Web/bin
 /Microsoft.Identity.Web/obj
+/Microsoft.Identity.Web.UI/.vs
+/Microsoft.Identity.Web.UI/bin
+/Microsoft.Identity.Web.UI/obj
 /1-WebApp-OIDC/1-1-MyOrg/.vs
 /1-WebApp-OIDC/1-1-MyOrg/bin
 /1-WebApp-OIDC/1-1-MyOrg/obj
