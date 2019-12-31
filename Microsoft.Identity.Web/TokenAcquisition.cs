@@ -56,9 +56,9 @@ namespace Microsoft.Identity.Web
         }
 
         /// <summary>
-        /// Scopes which are already requested by MSAL.NET. they should not be re-requested;
+        /// Scopes which are already requested by MSAL.NET. They should not be re-requested;
         /// </summary>
-        private readonly string[] _scopesRequestedByMsalNet = new string[]
+        private readonly string[] _scopesRequestedByMsal = new string[]
         {
             OidcConstants.ScopeOpenId,
             OidcConstants.ScopeProfile,
@@ -115,7 +115,7 @@ namespace Microsoft.Identity.Web
                 context.HandleCodeRedemption();
 
                 // The cache will need the claims from the ID token.
-                // If they are not yet in the HttpContext.User's claims, so adding them here.
+                // If they are not yet in the HttpContext.User's claims, add them here.
                 if (!context.HttpContext.User.Claims.Any())
                 {
                     (context.HttpContext.User.Identity as ClaimsIdentity).AddClaims(context.Principal.Claims);
@@ -127,7 +127,7 @@ namespace Microsoft.Identity.Web
                 // case a further call to AcquireTokenByAuthorizationCodeAsync in the future is required for incremental consent (getting a code requesting more scopes)
                 // Share the ID Token though
                 var result = await application
-                    .AcquireTokenByAuthorizationCode(scopes.Except(_scopesRequestedByMsalNet), context.ProtocolMessage.Code)
+                    .AcquireTokenByAuthorizationCode(scopes.Except(_scopesRequestedByMsal), context.ProtocolMessage.Code)
                     .ExecuteAsync()
                     .ConfigureAwait(false);
 
@@ -144,14 +144,14 @@ namespace Microsoft.Identity.Web
         /// <summary>
         /// Typically used from a Web App or WebAPI controller, this method retrieves an access token
         /// for a downstream API using;
-        /// 1) the token cache (for Web Apps and Web APis) if a token exists in the cache
+        /// 1) the token cache (for Web Apps and Web APIs) if a token exists in the cache
         /// 2) or the <a href='https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow'>on-behalf-of flow</a>
         /// in Web APIs, for the user account that is ascertained from claims are provided in the <see cref="HttpContext.User"/> 
         /// instance of the current HttpContext
         /// </summary>
         /// <param name="scopes">Scopes to request for the downstream API to call</param>
         /// <param name="tenant">Enables overriding of the tenant/account for the same identity. This is useful in the
-        /// cases where a given account is guest in other tenants, and you want to acquire tokens for a specific tenant, like where the user is a guest in</param>
+        /// cases where a given account is a guest in other tenants, and you want to acquire tokens for a specific tenant, like where the user is a guest in</param>
         /// <returns>An access token to call the downstream API and populated with this downstream Api's scopes</returns>
         /// <remarks>Calling this method from a Web API supposes that you have previously called, 
         /// in a method called by JwtBearerOptions.Events.OnTokenValidated, the HttpContextExtensions.StoreTokenUsedToCallWebAPI method
@@ -176,8 +176,10 @@ namespace Microsoft.Identity.Web
                 accessToken = await GetAccessTokenOnBehalfOfUserFromCacheAsync(application, CurrentHttpContext.User, scopes, tenant)
                     .ConfigureAwait(false);
             }
-            catch(MsalUiRequiredException ex)
+
+            catch (MsalUiRequiredException ex)
             {
+                Debug.WriteLine(ex.Message);
                 // GetAccessTokenOnBehalfOfUserAsync is an abstraction that can be called from a Web App or a Web API
                 // to get a token for a Web API on behalf of the user, but not necessarily with the on behalf of OAuth2.0
                 // flow as this one only applies to Web APIs.
@@ -190,7 +192,7 @@ namespace Microsoft.Identity.Web
                     string tokenUsedToCallTheWebApi = validatedToken.InnerToken == null ? validatedToken.RawData
                                                 : validatedToken.InnerToken.RawData;
                     var result = await application
-                                        .AcquireTokenOnBehalfOf(scopes.Except(_scopesRequestedByMsalNet),
+                                        .AcquireTokenOnBehalfOf(scopes.Except(_scopesRequestedByMsal),
                                                                 new UserAssertion(tokenUsedToCallTheWebApi))
                                         .ExecuteAsync()
                                         .ConfigureAwait(false);
@@ -340,7 +342,7 @@ namespace Microsoft.Identity.Web
             if (string.IsNullOrWhiteSpace(tenant))
             {
                 result = await application
-                    .AcquireTokenSilent(scopes.Except(_scopesRequestedByMsalNet), account)
+                    .AcquireTokenSilent(scopes.Except(_scopesRequestedByMsal), account)
                     .ExecuteAsync()
                     .ConfigureAwait(false);
             }
@@ -348,7 +350,7 @@ namespace Microsoft.Identity.Web
             {
                 string authority = application.Authority.Replace(new Uri(application.Authority).PathAndQuery, $"/{tenant}/");
                 result = await application
-                    .AcquireTokenSilent(scopes.Except(_scopesRequestedByMsalNet), account)
+                    .AcquireTokenSilent(scopes.Except(_scopesRequestedByMsal), account)
                     .WithAuthority(authority)
                     .ExecuteAsync()
                     .ConfigureAwait(false);
@@ -359,14 +361,14 @@ namespace Microsoft.Identity.Web
 
         /// <summary>
         /// Used in Web APIs (which therefore cannot have an interaction with the user).
-        /// Replies to the client through the HttpReponse by sending a 403 (forbidden) and populating wwwAuthenticateHeaders so that
-        /// the client can trigger an iteraction with the user so that the user consents to more scopes
+        /// Replies to the client through the HttpResponse by sending a 403 (forbidden) and populating wwwAuthenticateHeaders so that
+        /// the client can trigger an interaction with the user so that the user consents to more scopes
         /// </summary>
         /// <param name="scopes">Scopes to consent to</param>
         /// <param name="msalServiceException"><see cref="MsalUiRequiredException"/> triggering the challenge</param>
         public void ReplyForbiddenWithWwwAuthenticateHeader(IEnumerable<string> scopes, MsalUiRequiredException msalServiceException)
         {
-            // A user interaction is required, but we are in a Web API, and therefore, we need to report back to the client through an wwww-Authenticate header https://tools.ietf.org/html/rfc6750#section-3.1
+            // A user interaction is required, but we are in a Web API, and therefore, we need to report back to the client through a www-Authenticate header https://tools.ietf.org/html/rfc6750#section-3.1
             string proposedAction = "consent";
             if (msalServiceException.ErrorCode == MsalError.InvalidGrantError)
             {
