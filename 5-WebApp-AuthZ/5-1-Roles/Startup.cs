@@ -61,6 +61,13 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.TokenValidationParameters.RoleClaimType = "roles";
             });
 
+            // Creating policies that wraps the authorization requirements
+            services.AddAuthorization(options => 
+            {
+                options.AddPolicy(AppPolicies.UserReadersOnly, policy => policy.RequireRole(AppRoles.UserReaders));
+                options.AddPolicy(AppPolicies.DirectoryViewersOnly, policy => policy.RequireRole(AppRoles.DirectoryViewers));
+            });
+
             services.AddControllersWithViews(options =>
             {
                 var policy = new AuthorizationPolicyBuilder()

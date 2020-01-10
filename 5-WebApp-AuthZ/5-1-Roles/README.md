@@ -8,7 +8,7 @@ service: Microsoft Graph
 endpoint: Microsoft identity platform
 ---
 
-# Add authorization using **app roles** & **roles** claims to an ASP.NET Core web app thats signs-in users with the Microsoft identity platform
+# Add authorization using **app roles** & **roles** claims to an ASP.NET Core web app that signs-in users with the Microsoft identity platform
 
 ## About this sample
 
@@ -273,15 +273,19 @@ public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this
         // [removed for] brevity
 }
 
+/*
 // In code..(Controllers & elsewhere)
-[Authorize(Roles = DirectoryViewers")] // In controllers
+    [Authorize(Roles = DirectoryViewers")] // In controllers
+    [Authorize(Policy = DirectoryViewersOnly")] // In controllers
 // or
-User.IsInRole("USerReaders"); // In methods
+    User.IsInRole("UserReaders"); // In methods
+*/
+
 ```
 
 ## About the code
 
-1. In the `ConfigureServices` method of `Startup.cs', add the following line:
+1. In the `ConfigureServices` method of `Startup.cs'`, we added the following line to build the `ClaimsIdentity` object using the claims names in the token:
 
      ```CSharp
             // This is required to be instantiated before the OpenIdConnectOptions starts getting configured.
@@ -291,15 +295,25 @@ User.IsInRole("USerReaders"); // In methods
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
      ```
 
-1. In the `HomeController.cs`, the following method is added with the `Authorize` attribute with the name of the app role **UserReaders**, that permits listing of users in the tenant.
+1. Still in the `ConfigureServices` method of `Startup.cs'`, we created the policies that wraps the authorization requirements in it. It is a good practice to wrap your authorization rules in policies, even if it is just one role, because policies are easily expandable, support unit tests, can have multiple requirements, can be code based and [more](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-3.1):
 
     ```CSharp
-        [Authorize(Roles = AppRoles.UserReaders )]
+        services.AddAuthorization(options => 
+        {
+            options.AddPolicy(AppPolicies.UserReadersOnly, policy => policy.RequireRole(AppRoles.UserReaders));
+            options.AddPolicy(AppPolicies.DirectoryViewersOnly, policy => policy.RequireRole(AppRoles.DirectoryViewers));
+        });
+    ```
+
+1. In the `HomeController.cs`, the following method is added with the `Authorize` attribute with the name of the policy created to check the app role **UserReaders**, that permits listing of users in the tenant.
+
+    ```CSharp
+        [Authorize(Policy = AppPolicies.UserReadersOnly)]
         public async Task<IActionResult> Users()
         {
      ```
 
-1. In the `ConfigureServices` method of `Startup.cs', the following line instructs the asp.net security middleware to use the **roles** claim to fetch roles for authorization:
+1. In the `ConfigureServices` method of `Startup.cs'`, the following line instructs the asp.net security middleware to use the **roles** claim to fetch roles for authorization:
 
      ```CSharp
                 // The claim in the Jwt token where App roles are available.
@@ -314,10 +328,10 @@ User.IsInRole("USerReaders"); // In methods
         {
      ```
 
-1. The following method is also added with the `Authorize` attribute with the name of the app role **DirectoryViewers**, that permits listing of roles and groups the signed-in user is assigned to.
+1. The following method is also added with the `Authorize` attribute with the name of the policy created to check the app role **DirectoryViewers**, that permits listing of roles and groups the signed-in user is assigned to.
 
     ```CSharp
-        [Authorize(Roles = AppRoles.DirectoryViewers)]
+        [Authorize(Policy = AppPolicies.DirectoryViewersOnly)]
         public async Task<IActionResult> Groups()
         {
      ```
@@ -357,7 +371,7 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
 
 ## Next steps
 
-- Learn how to use app groups. [Add authorization using security groups & groups claims to a Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-2-Groups/README.md).
+- Learn how to use app groups. [Add authorization using security groups & groups claims to a Web app that signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-2-Groups/README.md).
 
 ## Learn more
 

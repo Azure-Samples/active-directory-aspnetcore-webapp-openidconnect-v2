@@ -73,7 +73,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         }
 
         [AuthorizeForScopes(Scopes = new[] { GraphScopes.UserReadBasicAll })]
-        [Authorize(Roles = AppRoles.UserReaders)]
+        [Authorize(Policy = AppPolicies.UserReadersOnly)]
         public async Task<IActionResult> Users()
         {
             // Initialize the GraphServiceClient.

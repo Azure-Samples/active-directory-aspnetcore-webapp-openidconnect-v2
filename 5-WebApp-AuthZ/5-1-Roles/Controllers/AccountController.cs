@@ -34,7 +34,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         }
 
         [AuthorizeForScopes(Scopes = new[] { GraphScopes.DirectoryReadAll })]
-        [Authorize(Roles = AppRoles.DirectoryViewers)]
+        [Authorize(Policy = AppPolicies.DirectoryViewersOnly)]
         public async Task<IActionResult> Groups()
         {
             string[] scopes = new[] { GraphScopes.DirectoryReadAll };

@@ -13,4 +13,10 @@ namespace WebApp_OpenIDConnect_DotNet.Infrastructure
         public const string UserReaders = "UserReaders";
         public const string DirectoryViewers = "DirectoryViewers";
     }
+
+    public static class AppPolicies
+    {
+        public const string UserReadersOnly = "UserReadersOnly";
+        public const string DirectoryViewersOnly = "DirectoryViewersOnly";
+    }
 }
