@@ -285,7 +285,7 @@ public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this
 
 ## About the code
 
-1. In the `ConfigureServices` method of `Startup.cs'`, we added the following line to build the `ClaimsIdentity` object using the claims names in the token:
+1. In the `ConfigureServices` method of `Startup.cs`, we added the following line to build the `ClaimsIdentity` object using the claims names in the token:
 
      ```CSharp
             // This is required to be instantiated before the OpenIdConnectOptions starts getting configured.
@@ -295,7 +295,7 @@ public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
      ```
 
-1. Still in the `ConfigureServices` method of `Startup.cs'`, we created the policies that wraps the authorization requirements in it. It is a good practice to wrap your authorization rules in policies, even if it is just one role, because policies are easily expandable, support unit tests, can have multiple requirements, can be code based and [more](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-3.1):
+1. Still in the `ConfigureServices` method of `Startup.cs`, we created the policies that wraps the authorization requirements in it. It is a good practice to wrap your authorization rules in policies, even if it is just one role, because policies are easily expandable, support unit tests, can have multiple requirements, can be code based and [more](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-3.1):
 
     ```CSharp
         services.AddAuthorization(options => 
