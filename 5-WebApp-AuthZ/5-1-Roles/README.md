@@ -275,7 +275,6 @@ public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this
 
 /*
 // In code..(Controllers & elsewhere)
-    [Authorize(Roles = DirectoryViewers")] // In controllers
     [Authorize(Policy = DirectoryViewersOnly")] // In controllers
 // or
     User.IsInRole("UserReaders"); // In methods
