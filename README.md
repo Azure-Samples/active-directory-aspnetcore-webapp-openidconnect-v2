@@ -1,20 +1,3 @@
----
-languages:
-- csharp
-- powershell
-- html
-page_type: sample
-description: "Learn how to add sign-in users to your web app, and how to call web APIs, either from Microsoft or your own."
-products:
-- azure
-- azure-active-directory
-- dotnet
-- azure-storage
-- aspnet
-- ms-graph
-urlFragment: enable-webapp-signin
----
-
 # Tutorial - Enable your Web Apps to sign-in users and call APIs with the Microsoft identity platform for developers
 
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
