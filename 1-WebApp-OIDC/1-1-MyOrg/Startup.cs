@@ -26,7 +26,8 @@ namespace WebApp_OpenIDConnect_DotNet
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
+                options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
+                options.HandleSameSiteCookieCompatibility();
             });
 
             // Sign-in users with the Microsoft identity platform
