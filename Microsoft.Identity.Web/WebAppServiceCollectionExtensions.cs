@@ -163,11 +163,24 @@ namespace Microsoft.Identity.Web
             return services;
         }
 
+        /// <summary>
+        /// Handles SameSite cookie issue according to the https://docs.microsoft.com/en-us/aspnet/core/security/samesite?view=aspnetcore-3.1.
+        /// The default list of user-agents that disallow SameSite None, was taken from https://devblogs.microsoft.com/aspnet/upcoming-samesite-cookie-changes-in-asp-net-and-asp-net-core/
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public static CookiePolicyOptions HandleSameSiteCookieCompatibility(this CookiePolicyOptions options)
         {
             return HandleSameSiteCookieCompatibility(options, DisallowsSameSiteNone);
         }
 
+        /// <summary>
+        /// Handles SameSite cookie issue according to the docs: https://docs.microsoft.com/en-us/aspnet/core/security/samesite?view=aspnetcore-3.1
+        /// The default list of user-agents that disallow SameSite None, was taken from https://devblogs.microsoft.com/aspnet/upcoming-samesite-cookie-changes-in-asp-net-and-asp-net-core/
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="disallowsSameSiteNone">If you dont want to use the default user-agent list implementation, the method sent in this parameter will be run against the user-agent and if returned true, SameSite value will be set to Unspecified. The default user-agent list used can be found at: https://devblogs.microsoft.com/aspnet/upcoming-samesite-cookie-changes-in-asp-net-and-asp-net-core/</param>
+        /// <returns></returns>
         public static CookiePolicyOptions HandleSameSiteCookieCompatibility(this CookiePolicyOptions options, Func<string, bool> disallowsSameSiteNone)
         {
             options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
@@ -190,6 +203,7 @@ namespace Microsoft.Identity.Web
             }
         }
 
+        // Method taken from https://devblogs.microsoft.com/aspnet/upcoming-samesite-cookie-changes-in-asp-net-and-asp-net-core/
         public static bool DisallowsSameSiteNone(string userAgent)
         {
             // Cover all iOS based browsers here. This includes:
