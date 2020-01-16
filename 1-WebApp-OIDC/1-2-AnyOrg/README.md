@@ -20,8 +20,10 @@ This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect 
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
 
-> This is the second chapter of the first phase of this ASP.NET Core Web App tutorial. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user) in a later chapter.
->  You can also sign-in users in your own Azure Active Directory organizations, and even with Microsoft personal accounts or social identities. For more details the parent directory's [Readme.md](../README.md)
+> This is the second chapter of the ASP.NET Core Web App tutorial. To try this sample 
+Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user) in a later chapter.
+
+>  In addition to signing-in users from any organization, you can also sign-in users from just your own Azure Active Directory organization,or users using their  Microsoft personal accounts or social identities. For more details on all the available signIn options, refer to this [Readme.md](../README.md).
 
 ## How to run this sample
 
@@ -33,26 +35,36 @@ To run this sample:
 
 There is one project in this sample. To register it, you can:
 
-- either use PowerShell scripts that **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you and modify the Visual Studio projects' configuration files. If you want to use this automation:
+- either follow the steps [Step 2: Register the sample with your Azure Active Directory tenant](#step-2-register-the-sample-with-your-azure-active-directory-tenant) and [Step 3:  Configure the sample to use your Azure AD tenant](#choose-the-azure-ad-tenant-where-you-want-to-create-your-applications)
+- or use PowerShell scripts that:
+  - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you. Note that this works for Visual Studio only.
+  - modify the Visual Studio projects' configuration files.
 
-  1. On Windows run PowerShell and navigate to the solution's folder
-  2. In PowerShell run:
+<details>
+  <summary>Expand this section if you want to use this automation:</summary>
 
-     ```PowerShell
-     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
-     ```
+1. On Windows, run PowerShell and navigate to the root of the cloned directory
+1. In PowerShell run:
 
-  3. Run the script to create your Azure AD application and configure the code of the sample application accordingly
+   ```PowerShell
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+   ```
 
-     ```PowerShell
-     .\AppCreationScripts\Configure.ps1
-     ```
+1. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
+1. In PowerShell run:
+
+   ```PowerShell
+   .\AppCreationScripts\Configure.ps1
+   ```
 
    > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
+   > The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
 
-  4. Open the Visual Studio solution and click start. That's it!
+1. Open the Visual Studio solution and click start to run the code.
 
-- or, if you don't want to use automation, follow the steps below:
+</details>
+
+Follow the steps below to manually walk through the steps to register and configure the applications.
 
 #### Choose the Azure AD tenant where you want to create your applications
 
@@ -151,7 +163,7 @@ cd "1-WebApp-OIDC\1-2-AnyOrg"
 
 2. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in with your personal account or with work or school account.
 
-## Toubleshooting
+## Troubleshooting
 
 ### known issue on iOS 12
 
@@ -171,10 +183,64 @@ This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign 
 
 You can trigger the middleware to send an OpenID Connect sign-in request by decorating a class or method with the `[Authorize]` attribute or by issuing a challenge (see the [AccountController.cs](https://github.com/aspnet/AspNetCore/blob/master/src/Azure/AzureAD/Authentication.AzureAD.UI/src/Areas/AzureAD/Controllers/AccountController.cs) file which is part of ASP.NET Core):
 
-
 The middleware in this project is created as a part of the open-source [ASP.NET Core Security](https://github.com/aspnet/aspnetcore) project.
 
 These steps are encapsulated in the [Microsoft.Identity.Web](..\..\Microsoft.Identity.Web) project, and in particular in the [StartupHelper.cs](..\..\Microsoft.Identity.Web\StartupHelper.cs) file
+
+## How to restrict users from specific organizations from signing-in your web app
+
+In order to restrict users from specific organizations from signing-in to your web app, you'll need to customize your code a bit more to restrict issuers. In Azure AD, the token issuers are the Azure AD tenants which issue tokens to applications.
+
+In the `Startup.cs` file, in the `ConfigureServices` method, after `services.AddMicrosoftIdentityPlatformAuthentication(Configuration)` add some code to filter  issuers by overriding the `TokenValidationParameters.IssuerValidator` delegate.
+
+```CSharp
+    public void ConfigureServices(IServiceCollection services)
+    {
+    ...
+    // Sign-in users with the Microsoft identity platform
+    services.AddMicrosoftIdentityPlatformAuthentication(Configuration);
+
+    // Restrict users to specific belonging to specific tenants
+    services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
+    {
+        options.TokenValidationParameters.IssuerValidator = ValidateSpecificIssuers;
+    });
+   ...
+```
+
+An example of code for `ValidateSpecificIssuers` is the following:
+
+```CSharp
+    private string ValidateSpecificIssuers(string issuer, SecurityToken securityToken,
+                                          TokenValidationParameters validationParameters)
+    {
+        var validIssuers = GetAcceptedTenantIds()
+                             .Select(tid => $"https://login.microsoftonline.com/{tid}");
+        if (validIssuers.Contains(issuer))
+        {
+            return issuer;
+        }
+        else
+        {
+            throw new SecurityTokenInvalidIssuerException("The sign-in user's account does not belong to one of the tenants that this Web App accepts users from.");
+        }
+    }
+
+    private string[] GetAcceptedTenantIds()
+    {
+        // If you are an ISV who wants to make the Web app available only to certain customers who
+        // are paying for the service, you might want to fetch this list of accepted tenant ids from
+        // a database.
+        // Here for simplicity we just return a hard-coded list of TenantIds.
+        return new[]
+        {
+            "<GUID1>",
+            "<GUID2>"
+        };
+    }
+```
+
+> If you are building a SaaS application that will be used in multiple Azure AD tenants, the please note that there are a number of steps that a SaaS developer should be aware of and is beyond the scope of this article. You are advised to go through the the multi-tenant app developer's guide [Build a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect](../2-WebApp-graph-user/2-3-Multi-Tenant/Readme.md) as well.
 
 ## Next steps
 
@@ -185,6 +251,7 @@ Learn how to:
 - enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user)
 
 ## Learn more
+
 To understand more about token validation, see
 - [Validating tokens](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki/ValidatingTokens)
 
@@ -194,4 +261,5 @@ To understand more about app registration, see:
 - [Quickstart: Configure a client application to access web APIs (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
 
 ## Previous steps
+
 - enable [your organization](../1-1-MyOrg) only to sign-in to your web app.

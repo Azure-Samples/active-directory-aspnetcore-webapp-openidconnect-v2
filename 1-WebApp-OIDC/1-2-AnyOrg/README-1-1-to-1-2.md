@@ -44,11 +44,11 @@ The actual sign-in audience (accounts to sign-in) is the lowest set of what is s
 - setting in the portal the **Supported account types** to **Accounts in any organizational directory and personal Microsoft accounts (e.g. Skype, Xbox, Outlook.com)** and set the `TenantId` value to `"organizations"` in the **appsettings.json** file
 - setting in the portal the **Supported account types** to **Accounts in any organizational directory** and set the `TenantId` value to `"common"` in the **appsettings.json** file
 
-## How to restrict users from specific organizations to sign-in to your web app
+## How to restrict users from specific organizations from signing-in your web app
 
-In order to restrict users from specific organizations to sign-in to your web app, you'll need to follow the steps above, and customize a bit more the code to restrict the valid token issuers. The token issuers are really the tenanted Azure AD authority which are allowed to issue a token to access your web application.
+In order to restrict users from specific organizations from signing-in to your web app, you'll need to customize your code a bit more to restrict issuers. In Azure AD, the token issuers are the Azure AD tenants which issue tokens to applications.
 
-In the `Startup.cs` file, in the `ConfigureServices` method, after `services.AddMicrosoftIdentityPlatformAuthentication(Configuration)` add some code to validate specific issuers by overriding the `TokenValidationParameters.IssuerValidator` delegate.
+In the `Startup.cs` file, in the `ConfigureServices` method, after `services.AddMicrosoftIdentityPlatformAuthentication(Configuration)` add some code to filter  issuers by overriding the `TokenValidationParameters.IssuerValidator` delegate.
 
 ```CSharp
     public void ConfigureServices(IServiceCollection services)
@@ -79,7 +79,7 @@ An example of code for `ValidateSpecificIssuers` is the following:
         }
         else
         {
-            throw new SecurityTokenInvalidIssuerException("The accounts does not belong to one of the tenants that this Web App accepts to sign-in.");
+            throw new SecurityTokenInvalidIssuerException("The sign-in user's account does not belong to one of the tenants that this Web App accepts users from.");
         }
     }
 
@@ -96,6 +96,8 @@ An example of code for `ValidateSpecificIssuers` is the following:
         };
     }
 ```
+
+> If you are building a SaaS application that will be used in multiple Azure AD tenants, the please note that there are a number of steps that a SaaS developer should be aware of and is beyond the scope of this article. You are advised to go through the the multi-tenant app developer's guide [Build a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect](../2-WebApp-graph-user/2-3-Multi-Tenant/Readme.md) as well.
 
 ## Next steps
 
