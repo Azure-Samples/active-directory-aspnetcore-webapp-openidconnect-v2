@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
@@ -32,7 +33,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Distributed
         /// <param name="httpContextAccessor"></param>
         /// <param name="memoryCache"></param>
         /// <param name="cacheOptions"></param>
-        public MsalDistributedTokenCacheAdapter(IOptions<AzureADOptions> azureAdOptions,
+        public MsalDistributedTokenCacheAdapter(IOptions<OpenIdConnectOptions> azureAdOptions,
                                             IHttpContextAccessor httpContextAccessor,
                                             IDistributedCache memoryCache,
                                             IOptions<DistributedCacheEntryOptions> cacheOptions) :

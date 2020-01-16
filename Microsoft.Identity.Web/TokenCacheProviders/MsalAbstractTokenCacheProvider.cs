@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
@@ -16,7 +17,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
         /// <summary>
         /// Azure AD options
         /// </summary>
-        protected readonly IOptions<AzureADOptions> _azureAdOptions;
+        protected readonly IOptions<OpenIdConnectOptions> _azureAdOptions;
 
         /// <summary>
         /// Http accessor
@@ -28,7 +29,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
         /// </summary>
         /// <param name="azureAdOptions"></param>
         /// <param name="httpContextAccessor"></param>
-        protected MsalAbstractTokenCacheProvider(IOptions<AzureADOptions> azureAdOptions, IHttpContextAccessor httpContextAccessor)
+        protected MsalAbstractTokenCacheProvider(IOptions<OpenIdConnectOptions> azureAdOptions, IHttpContextAccessor httpContextAccessor)
         {
             _azureAdOptions = azureAdOptions;
             _httpContextAccessor = httpContextAccessor;

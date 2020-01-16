@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Client;
@@ -16,11 +17,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Identity.Web
 {
-   public class AzureADOptions: ConfidentialClientApplicationOptions
-    {
-        public string CallbackPath { get; set; }
-    }
-
     /// <summary>
     /// Extensions for IServiceCollection for startup initialization of Web APIs.
     /// </summary>
@@ -46,7 +42,7 @@ namespace Microsoft.Identity.Web
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer((options => configuration.Bind(configSectionName, options)));
                   //  .AddAzureADBearer(options => configuration.Bind(configSectionName, options));
-            services.Configure<AzureADOptions>(options => configuration.Bind(configSectionName, options));
+            services.Configure<OpenIdConnectOptions>(options => configuration.Bind(configSectionName, options));
 
             services.AddHttpContextAccessor();
 

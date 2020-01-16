@@ -8,6 +8,7 @@ using Microsoft.Identity.Client;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace Microsoft.Identity.Web.TokenCacheProviders.Session
 {
@@ -32,7 +33,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
     {
         private HttpContext CurrentHttpContext => _httpContextAccessor.HttpContext;
 
-        public MsalSessionTokenCacheProvider(IOptions<AzureADOptions> azureAdOptions,
+        public MsalSessionTokenCacheProvider(IOptions<OpenIdConnectOptions> azureAdOptions,
                             IHttpContextAccessor httpContextAccessor) :
               base(azureAdOptions, httpContextAccessor)
         {

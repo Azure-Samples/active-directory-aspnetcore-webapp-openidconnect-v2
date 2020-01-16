@@ -25,7 +25,7 @@ namespace Microsoft.Identity.Web
     /// </summary>
     public class TokenAcquisition : ITokenAcquisition
     {
-        private readonly AzureADOptions _azureAdOptions;
+        private readonly OpenIdConnectOptions _azureAdOptions;
         private readonly ConfidentialClientApplicationOptions _applicationOptions;
 
         private readonly IMsalTokenCacheProvider _tokenCacheProvider;
@@ -45,7 +45,7 @@ namespace Microsoft.Identity.Web
         public TokenAcquisition(
             IMsalTokenCacheProvider tokenCacheProvider,
             IHttpContextAccessor httpContextAccessor,
-            IOptions<AzureADOptions> azureAdOptions,
+            IOptions<OpenIdConnectOptions> azureAdOptions,
             IOptions<ConfidentialClientApplicationOptions> applicationOptions)
         {
             _httpContextAccessor = httpContextAccessor;
@@ -261,7 +261,7 @@ namespace Microsoft.Identity.Web
                 request.Scheme,
                 request.Host,
                 request.PathBase,
-                azureAdOptions.CallbackPath ?? string.Empty);
+                azureAdOptions.CallbackPath.Value ?? string.Empty);
 
             string authority = $"{applicationOptions.Instance}{applicationOptions.TenantId}/";
 
@@ -375,7 +375,7 @@ namespace Microsoft.Identity.Web
                 }
             }
 
-            string consentUrl = $"{application.Authority}/oauth2/v2.0/authorize?client_id={_azureAdOptions.ClientId}"
+            string consentUrl = $"{application.Authority}/oauth2/v2.0/authorize?client_id={_applicationOptions.ClientId}"
                 + $"&response_type=code&redirect_uri={application.AppConfig.RedirectUri}"
                 + $"&response_mode=query&scope=offline_access%20{string.Join("%20", scopes)}";
 
