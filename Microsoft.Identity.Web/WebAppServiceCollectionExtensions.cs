@@ -187,8 +187,10 @@ namespace Microsoft.Identity.Web
             builder.AddOpenIdConnect(openIdConnectScheme, options =>
             {
                 options.SignInScheme = cookieScheme;
-                options.Authority += "/v2.0";
 
+                if (!AuthorityHelpers.IsV2Authority(options.Authority))
+                    options.Authority += "/v2.0";
+                
                 options.TokenValidationParameters.NameClaimType = "preferred_username";
 
                 // If you want to restrict the users that can sign-in to several organizations
