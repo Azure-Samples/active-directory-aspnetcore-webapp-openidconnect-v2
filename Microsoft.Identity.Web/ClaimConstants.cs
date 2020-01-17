@@ -19,5 +19,9 @@ namespace Microsoft.Identity.Web
         // Newer scope claim
         public const string Scp = "scp";
         public const string Roles = "roles";
+        
+        // Policy claims
+        public const string Acr = "acr";
+        public const string Tfp = "tfp";
     }
 }

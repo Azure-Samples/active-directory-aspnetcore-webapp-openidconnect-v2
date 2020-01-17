@@ -71,6 +71,7 @@ namespace Microsoft.Identity.Web.Resource
                 var aliases = issuerMetadata.Metadata
                     .Where(m => m.Aliases.Any(a => string.Equals(a, authority, StringComparison.OrdinalIgnoreCase)))
                     .SelectMany(m => m.Aliases)
+                    .Append(authority) // For b2c scenarios, the alias will be the authorityHost itself
                     .Distinct();
                 s_issuerValidators[authority] = new AadIssuerValidator(aliases);
                 return s_issuerValidators[authority];
@@ -163,6 +164,10 @@ namespace Microsoft.Identity.Web.Resource
             {
                 if (jwtSecurityToken.Payload.TryGetValue(ClaimConstants.Tid, out object tenantId))
                     return tenantId as string;
+
+                // Since B2C doesnt have TID as default, try to get it from iss claims
+                if (jwtSecurityToken.Claims.Any(c => c.Type == ClaimConstants.Acr || c.Type == ClaimConstants.Tfp))
+                    return GetTenantIdFromIss(jwtSecurityToken.Issuer);
             }
 
             // brentsch - todo, TryGetPayloadValue is available in 5.5.0
@@ -171,6 +176,26 @@ namespace Microsoft.Identity.Web.Resource
                 var tid = jsonWebToken.GetPayloadValue<string>(ClaimConstants.Tid);
                 if (tid != null)
                     return tid;
+
+                // Since B2C doesnt have TID as default, try to get it from iss claims
+                if (jsonWebToken.Claims.Any(c => c.Type == ClaimConstants.Acr || c.Type == ClaimConstants.Tfp))
+                    return GetTenantIdFromIss(jsonWebToken.Issuer);
+            }
+
+            return string.Empty;
+        }
+
+        // The AAD iss claims contains the tenantId in its value. The uri is {domain}/{tid}/v2.0
+        private static string GetTenantIdFromIss(string iss)
+        {
+            if (string.IsNullOrEmpty(iss))
+                return string.Empty;
+
+            var uri = new Uri(iss);
+
+            if (uri.Segments.Length > 1)
+            {
+                return uri.Segments[1].TrimEnd('/');
             }
 
             return string.Empty;
