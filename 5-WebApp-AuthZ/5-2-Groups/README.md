@@ -273,7 +273,11 @@ User.IsInRole("Group-object-id"); // In methods
 
 ```
 
-#### Option 2: Create the sample from the command line
+## About the code
+
+### Create the sample from the command line
+
+This project was created using the following command.
 
 1. Run the following command to create a sample from the command line using the `SingleOrg` template:
 
@@ -293,9 +297,8 @@ User.IsInRole("Group-object-id"); // In methods
      ```CSharp
       using Microsoft.Identity.Web;
 
-## About the code
 
-The following files have the code that would be of interest to you..
+The following files in the have the code that would be of interest to you..
 
 1. HomeController.cs
     1. Passes the **HttpContext.User** (the signed-in user) to the view.
@@ -309,12 +312,7 @@ The following files have the code that would be of interest to you..
     1. Has some client code that prints the signed-in user's information obtained from the [/me](https://docs.microsoft.com/graph/api/user-get?view=graph-rest-1.0), [/me/photo](https://docs.microsoft.com/graph/api/profilephoto-get) and [/memberOf](https://docs.microsoft.com/graph/api/user-list-memberof) endpoints.
 1. Startup.cs
 
-     ```CSharp
-   - at the top of the file, add the following using directive:
-
-      using Microsoft.Identity.Web;
-      ```
-
+   
    - in the `ConfigureServices` method, the following lines have been replaced :
 
      ```CSharp
@@ -328,7 +326,7 @@ The following files have the code that would be of interest to you..
                     .AddMsal(Configuration, new string[] { "User.Read", "Directory.Read.All" }) // Adds support for the MSAL library with the permissions necessary to retrieve the signed-in user's group info in case of a token overage
                     .AddInMemoryTokenCaches(); // Adds aspnetcore MemoryCache as Token cache provider for MSAL.
 
-        services.AddMSGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.
+        services.AddGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.
      ```
 
 1. if you used the Powershell scripts provided in the [AppCreationScripts](.\AppCreationScripts) folder, then note the extra parameter `-GroupMembershipClaims` in the  `Configure.ps1` script.
