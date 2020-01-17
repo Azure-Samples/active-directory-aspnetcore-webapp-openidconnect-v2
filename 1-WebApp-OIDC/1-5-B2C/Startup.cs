@@ -58,10 +58,18 @@ namespace WebApp_OpenIDConnect_DotNet
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddSignIn(options => Configuration.Bind("AzureAdB2C", options));
 
-            services.AddControllersWithViews().AddMicrosoftIdentityUI();
+            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options => 
+            {
+                // The AddSignIn method sets NameClaimType to preferred_username but since B2C doesnt have this claim, we have to change it to name
+                options.TokenValidationParameters.NameClaimType = "name";
+            });
+
+            services.AddControllersWithViews()
+                .AddMicrosoftIdentityUI();
+
             services.AddRazorPages();
 
-            //Configuring appsettings section AzureADB2C, into IOptions
+            //Configuring appsettings section AzureAdB2C, into IOptions
             services.AddOptions();
             services.Configure<OpenIdConnectOptions>(Configuration.GetSection("AzureAdB2C"));
         }
