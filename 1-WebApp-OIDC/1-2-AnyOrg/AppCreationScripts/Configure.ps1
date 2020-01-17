@@ -135,7 +135,7 @@ Function ConfigureApplications
    # Update config file for 'webApp'
    $configFile = $pwd.Path + "\..\appsettings.json"
    Write-Host "Updating the sample code ($configFile)"
-   $dictionary = @{ "ClientId" = $webAppAadApplication.AppId;"TenantId" = organizations;"Domain" = $tenantName };
+   $dictionary = @{ "ClientId" = $webAppAadApplication.AppId;"TenantId" = "organizations";"Domain" = $tenantName };
    UpdateTextFile -configFilePath $configFile -dictionary $dictionary
   
    Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  

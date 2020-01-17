@@ -2,9 +2,18 @@
 services: active-directory
 platforms: dotnet
 author: jmprieur
-level: 100
+level: 200
 client: ASP.NET Core Web App
 endpoint: Microsoft identity platform
+page_type: sample
+languages:
+  - csharp  
+products:
+  - azure
+  - azure-active-directory  
+  - dotnet
+  - office-ms-graph
+description: "Change your ASP.NET Core Web app to sign-in users in any org with the Microsoft identity platform"
 ---
 # Change your ASP.NET Core Web app to sign-in users in any org with the Microsoft identity platform
 

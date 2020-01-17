@@ -2,12 +2,19 @@
 services: active-directory
 platforms: dotnet
 author: jmprieur
-level: 100
+level: 200
 client: ASP.NET Core Web App
 endpoint: Microsoft identity platform
+page_type: sample
+languages:
+  - csharp  
+products:
+  - azure
+  - azure-active-directory  
+  - dotnet
+  - office-ms-graph
+description: "Change your ASP.NET Core Web app to sign-in users in any org with the Microsoft identity platform"
 ---
-
-
 # An ASP.NET Core Web app signing-in users in any org with the Microsoft identity platform
 
 > This sample is for Azure AD, not Azure AD B2C. See [active-directory-b2c-dotnetcore-webapp](https://github.com/Azure-Samples/active-directory-b2c-dotnetcore-webapp), until we incorporate the B2C variation in the tutorial.
