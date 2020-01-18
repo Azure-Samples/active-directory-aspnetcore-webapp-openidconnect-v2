@@ -18,6 +18,8 @@ param(
  There are four ways to run this script. For more information, read the AppCreationScripts.md file in the same folder as this script.
 #>
 
+$ErrorActionPreference = "Stop"
+
 # Create an application role of given name and description
 Function CreateAppRole([string] $Name, [string] $Description)
 {
@@ -88,15 +90,7 @@ Function CreateRolesUsersAndRoleAssignments
 
     # Get the user running the script
     $user = Get-AzureADUser -ObjectId $creds.Account.Id
-
-    # Add application Roles
-    $directoryViewerRole = CreateAppRole -Name "DirectoryViewers" -Description "Directory viewers can view objects in the whole directory."
-    $userreaderRole = CreateAppRole -Name "UserReaders"  -Description "User readers can read basic profiles of all users in the directory"
-
-    $appRoles = New-Object System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.AppRole]
-    $appRoles.Add($directoryViewerRole)
-    $appRoles.Add($userreaderRole)
-        
+    
     # Add the roles
     Write-Host "Adding app roles to to the app 'WebApp-RolesClaims' in tenant '$tenantName'"
 
@@ -104,14 +98,13 @@ Function CreateRolesUsersAndRoleAssignments
     
     if ($app)
     {
-        $servicePrincipal = Get-AzureADServicePrincipal -Filter "AppId eq '$($app.AppId)'"  
+        $servicePrincipal = Get-AzureADServicePrincipal -Filter "AppId eq '$($app.AppId)'"
         
-        Set-AzureADApplication -ObjectId $app.ObjectId -AppRoles $appRoles
-
+        $directoryViewerRole = $servicePrincipal.AppRoles | Where-Object { $_.DisplayName -eq "DirectoryViewers" }
+        $userreaderRole = $servicePrincipal.AppRoles | Where-Object { $_.DisplayName -eq "UserReaders" }
+        
         $appName = $app.DisplayName
-
-        Write-Host "Successfully added app roles to the app '$appName'."
-
+        
         Write-Host "Creating users and assigning them to roles."
 
         # Create users

@@ -2,6 +2,8 @@
  Use this script to remove the 200+ groups created in your Azure AD tenant by BulkCreateGroups.ps1
 #>
 
+$ErrorActionPreference = "Stop"
+
 $group = Get-AzureADGroup -SearchString "TestGroup001" 
 Remove-AzureADGroup -ObjectId $group.ObjectId
 Write-Host "Successfully deleted $($group.DisplayName)"
