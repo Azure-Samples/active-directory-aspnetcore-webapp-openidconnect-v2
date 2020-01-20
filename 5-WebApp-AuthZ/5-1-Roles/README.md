@@ -100,7 +100,7 @@ There is one project in this sample. To register it, you can:
 1. In PowerShell run:
 
    ```PowerShell
-      cd .\AppCreationScripts\
+   cd .\AppCreationScripts\
    .\Configure.ps1
    ```
 
@@ -251,11 +251,18 @@ public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this
                 // Use the groups claim for populating roles
                 options.TokenValidationParameters.RoleClaimType = "roles";
             });
+
+            // Adding authorization policies that enforce authorization using Azure AD roles.
+            services.AddAuthorization(options => 
+            {
+                options.AddPolicy(AuthorizationPolicies.AssignmentToUserReaderRoleRequired, policy => policy.RequireRole(AppRole.UserReaders));
+                options.AddPolicy(AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired, policy => policy.RequireRole(AppRole.DirectoryViewers));
+            });
         // [removed for] brevity
 }
 
 // In code..(Controllers & elsewhere)
-[Authorize(Roles = DirectoryViewers")] // In controllers
+[Authorize(Policy = AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired)]
 // or
 User.IsInRole("UserReaders"); // In methods
 ```
@@ -303,21 +310,28 @@ This project was created using the following command.
             // 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role' instead of 'roles'
             // This flag ensures that the ClaimsIdentity claims collection will be built from the claims in the token
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-     ```
 
-1. In the `HomeController.cs`, the following method is added with the `Authorize` attribute with the name of the app role **UserReaders**, that permits listing of users in the tenant.
-
-    ```CSharp
-        [Authorize(Roles = AppRoles.UserReaders )]
-        public async Task<IActionResult> Users()
-        {
+            // Adding authorization policies that enforce authorization using Azure AD roles.
+            services.AddAuthorization(options => 
+            {
+                options.AddPolicy(AuthorizationPolicies.AssignmentToUserReaderRoleRequired, policy => policy.RequireRole(AppRole.UserReaders));
+                options.AddPolicy(AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired, policy => policy.RequireRole(AppRole.DirectoryViewers));
+            });
      ```
 
 1. In the `ConfigureServices` method of `Startup.cs', the following line instructs the asp.net security middleware to use the **roles** claim to fetch roles for authorization:
 
      ```CSharp
-                // The claim in the Jwt token where App roles are available.
-                options.TokenValidationParameters.RoleClaimType = "roles";
+     // The claim in the Jwt token where App roles are available.
+     options.TokenValidationParameters.RoleClaimType = "roles";
+     ```
+
+1. In the `HomeController.cs`, the following method is added with the `Authorize` attribute with the name of the policy that enforces that the signed-in user is present in the app role **UserReaders**, that permits listing of users in the tenant.
+
+    ```CSharp
+        [Authorize(Policy = AuthorizationPolicies.AssignmentToUserReaderRoleRequired)]
+        public async Task<IActionResult> Users()
+        {
      ```
 
 1. A new class called `AccountController.cs` is introduced. This contains the code to intercept the default AccessDenied error's route and present the user with an option to sign-out and sign-back in with a different account that has access to the required role.
@@ -328,10 +342,10 @@ This project was created using the following command.
         {
      ```
 
-1. The following method is also added with the `Authorize` attribute with the name of the app role **DirectoryViewers**, that permits listing of roles and groups the signed-in user is assigned to.
+1. The following method is also added with the `Authorize` attribute with the name of the policy that enforces that the signed-in user is present in the app role **DirectoryViewers**, that permits listing of roles and groups the signed-in user is assigned to.
 
     ```CSharp
-        [Authorize(Roles = AppRoles.DirectoryViewers)]
+        [Authorize(Policy = AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired)]
         public async Task<IActionResult> Groups()
         {
      ```

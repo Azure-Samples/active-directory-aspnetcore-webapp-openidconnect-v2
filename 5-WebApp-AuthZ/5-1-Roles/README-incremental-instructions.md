@@ -176,6 +176,13 @@ public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this
                 // Use the groups claim for populating roles
                 options.TokenValidationParameters.RoleClaimType = "roles";
             });
+
+            // Adding authorization policies that enforce authorization using Azure AD roles.
+            services.AddAuthorization(options => 
+            {
+                options.AddPolicy(AuthorizationPolicies.AssignmentToUserReaderRoleRequired, policy => policy.RequireRole(AppRole.UserReaders));
+                options.AddPolicy(AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired, policy => policy.RequireRole(AppRole.DirectoryViewers));
+            });
         // [removed for] brevity
 }
 
@@ -198,7 +205,7 @@ The following files have the code that would be of interest to you.
 
 1. Startup.cs
 
-1. In the `ConfigureServices` method of `Startup.cs', add the following line:
+1. In the `ConfigureServices` method of `Startup.cs', add the following lines:
 
      ```CSharp
             // This is required to be instantiated before the OpenIdConnectOptions starts getting configured.
@@ -211,7 +218,7 @@ The following files have the code that would be of interest to you.
 1. In the `HomeController.cs`, the following method is added with the `Authorize` attribute with the name of the app role **UserReaders**, that permits listing of users in the tenant.
 
     ```CSharp
-        [Authorize(Roles = AppRoles.UserReaders )]
+        [Authorize(Policy = AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired)]
         public async Task<IActionResult> Users()
         {
      ```
@@ -219,8 +226,15 @@ The following files have the code that would be of interest to you.
 1. In the `ConfigureServices` method of `Startup.cs', the following line instructs the asp.net security middleware to use the **roles** claim to fetch roles for authorization:
 
      ```CSharp
-                // The claim in the Jwt token where App roles are available.
-                options.TokenValidationParameters.RoleClaimType = "roles";
+    // The claim in the Jwt token where App roles are available.
+    options.TokenValidationParameters.RoleClaimType = "roles";
+
+     // Adding authorization policies that enforce authorization using Azure AD roles.
+    services.AddAuthorization(options => 
+    {
+        options.AddPolicy(AuthorizationPolicies.AssignmentToUserReaderRoleRequired, policy => policy.RequireRole(AppRole.UserReaders));
+        options.AddPolicy(AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired, policy => policy.RequireRole(AppRole.DirectoryViewers));
+    });
      ```
 
 1. A new class called `AccountController.cs` is introduced. This contains the code to intercept the default AccessDenied error's route and present the user with an option to sign-out and sign-back in with a different account that has access to the required role.
@@ -234,7 +248,7 @@ The following files have the code that would be of interest to you.
 1. The following method is also added with the `Authorize` attribute with the name of the app role **DirectoryViewers**, that permits listing of roles and groups the signed-in user is assigned to.
 
     ```CSharp
-        [Authorize(Roles = AppRoles.DirectoryViewers)]
+        [Authorize(Policy = AuthorizationPolicies.AssignmentToUserReaderRoleRequired)]
         public async Task<IActionResult> Groups()
         {
      ```
