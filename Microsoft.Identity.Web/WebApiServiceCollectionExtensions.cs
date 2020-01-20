@@ -49,6 +49,9 @@ namespace Microsoft.Identity.Web
             // Change the authentication configuration to accommodate the Microsoft identity platform endpoint (v2.0).
             services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
             {
+                // Reinitialize the options as this has changed to JwtBearerOptions to pick configuration values for attributes unique to JwtBearerOptions
+                configuration.Bind(configSectionName, options);
+
                 // This is an Microsoft identity platform Web API
                 options.Authority += "/v2.0";
 

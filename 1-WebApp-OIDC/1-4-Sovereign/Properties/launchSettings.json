@@ -11,7 +11,7 @@
         "WebApp_OpenIDConnect_DotNet": {
             "commandName": "Project",
             "launchBrowser": true,
-            "applicationUrl": "https://localhost:44366;http://localhost:3110",
+            "applicationUrl": "https://localhost:44321;http://localhost:3110",
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             }
