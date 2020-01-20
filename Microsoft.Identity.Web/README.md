@@ -118,7 +118,7 @@ public class HomeController : Controller
   ...
 ```
 
-Then in your controller actions, you'll need to call: `ITokenAcquisition.GetAccessTokenOnBehalfOfUserAsync` passing the scopes for which to request a token. The other methods of ITokenAcquisition are used from the `AddWebAppCallsProtectedWebApi()` method and similar methods for web APIs (see below).
+Then in your controller actions, you'll need to call: `ITokenAcquisition.GetAccessTokenForUserAsync` passing the scopes for which to request a token. The other methods of ITokenAcquisition are used from the `AddWebAppCallsProtectedWebApi()` method and similar methods for web APIs (see below).
 
 ```CSharp
 [Authorize]
@@ -130,7 +130,7 @@ public class HomeController : Controller
   public async Task<IActionResult> Action()
   {
    string[] scopes = new []{"user.read"};
-   string token = await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(scopes);
+   string token = await tokenAcquisition.GetAccessTokenForUserAsync(scopes);
    ...
    // call the downstream API with the bearer token in the Authorize header
   }
@@ -235,7 +235,7 @@ For your web API to call downstream APIs, you'll need to:
 
   <img alt="ScopesRequiredHttpContextExtensions" src="https://user-images.githubusercontent.com/13203188/64253176-f9e3ca80-cf1c-11e9-8fe9-df06cee11c25.png" width="80%"/>
 
-- in your controller actions, to call: `ITokenAcquisition.GetAccessTokenOnBehalfOfUserAsync` passing the scopes for which to request a token.
+- in your controller actions, to call: `ITokenAcquisition.GetAccessTokenForUserAsync` passing the scopes for which to request a token.
 
 The following code snippet shows how to combine these steps:
 

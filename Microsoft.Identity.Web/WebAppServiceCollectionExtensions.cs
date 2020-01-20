@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Web.Resource;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -20,6 +21,33 @@ namespace Microsoft.Identity.Web
     /// </summary>
     public static class WebAppServiceCollectionExtensions
     {
+        #region
+        [Obsolete("Use AddSignIn")]
+        public static IServiceCollection AddMicrosoftIdentityPlatform(
+                this IServiceCollection services,
+                IConfiguration configuration,
+                string configSectionName = "AzureAd",
+                bool subscribeToOpenIdConnectMiddlewareDiagnosticsEvents = false)
+        {
+            return AddSignIn(services, 
+                             configuration, 
+                             configSectionName, 
+                             subscribeToOpenIdConnectMiddlewareDiagnosticsEvents);
+        }
+
+        [Obsolete("Use AddWebAppCallsProtectedWebApi")]
+        public static IServiceCollection AddMsal(this IServiceCollection services,
+                                                               IConfiguration configuration,
+                                                               IEnumerable<string> initialScopes,
+                                                               string configSectionName = "AzureAd")
+        {
+            return AddWebAppCallsProtectedWebApi(services,
+                                                 configuration,
+                                                 initialScopes,
+                                                 configSectionName);
+        }
+        #endregion
+
         /// <summary>
         /// Add authentication with Microsoft identity platform.
         /// This method expects the configuration file will have a section named "AzureAd" with the necessary settings to initialize authentication options.
@@ -66,7 +94,7 @@ namespace Microsoft.Identity.Web
                 // For more details see [ID Tokens](https://docs.microsoft.com/azure/active-directory/develop/id-tokens)
                 // and [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens)
                 options.TokenValidationParameters.NameClaimType = "preferred_username";
-                
+
                 // Avoids having users being presented the select account dialog when they are already signed-in
                 // for instance when going through incremental consent
                 options.Events.OnRedirectToIdentityProvider = context =>

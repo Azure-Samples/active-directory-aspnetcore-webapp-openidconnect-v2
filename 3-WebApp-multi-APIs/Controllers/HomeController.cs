@@ -39,7 +39,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         public async Task<IActionResult> Profile()
         {
             var accessToken =
-                await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new[] {Constants.ScopeUserRead});
+                await tokenAcquisition.GetAccessTokenForUserAsync(new[] {Constants.ScopeUserRead});
 
             var me = await graphApiOperations.GetUserInformation(accessToken);
             var photo = await graphApiOperations.GetPhotoAsBase64Async(accessToken);
@@ -56,12 +56,12 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         public async Task<IActionResult> Tenants()
         {
             var accessToken =
-                await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new[] { $"{ArmApiOperationService.ArmResource}user_impersonation" });
+                await tokenAcquisition.GetAccessTokenForUserAsync(new[] { $"{ArmApiOperationService.ArmResource}user_impersonation" });
 
             var tenantIds = await armOperations.EnumerateTenantsIdsAccessibleByUser(accessToken);
             /*
                         var tenantsIdsAndNames =  await graphApiOperations.EnumerateTenantsIdAndNameAccessibleByUser(tenantIds,
-                            async tenantId => { return await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new string[] { "Directory.Read.All" }, tenantId); });
+                            async tenantId => { return await tokenAcquisition.GetAccessTokenForUserAsync(new string[] { "Directory.Read.All" }, tenantId); });
             */
             ViewData["tenants"] = tenantIds;
 
@@ -77,7 +77,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             var scopes = new string[] { "https://storage.azure.com/user_impersonation" };
 
             var accessToken =
-                await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(scopes);
+                await tokenAcquisition.GetAccessTokenForUserAsync(scopes);
 
             // create a blob on behalf of the user
             TokenCredential tokenCredential = new TokenCredential(accessToken);
