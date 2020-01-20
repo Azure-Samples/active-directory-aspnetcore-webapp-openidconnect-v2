@@ -15,10 +15,8 @@ using System.Linq;
 
 namespace Microsoft.Identity.Web
 {
-    // TODO: rename to EnsureScopesAttribute ? or MsalAuthorizeForScopesAttribute  or AuthorizeForScopesAttribute
-
     /// <summary>
-    /// Filter used on a controller action to trigger an incremental consent.
+    /// Filter used on a controller action to trigger incremental consent.
     /// </summary>
     /// <example>
     /// The following controller action will trigger
@@ -42,7 +40,7 @@ namespace Microsoft.Identity.Web
         public string ScopeKeySection { get; set; }
 
         /// <summary>
-        /// Handles the MsaUiRequiredExeception
+        /// Handles the MsalUiRequiredException
         /// </summary>
         /// <param name="context">Context provided by ASP.NET Core</param>
         public override void OnException(ExceptionContext context)
@@ -55,7 +53,7 @@ namespace Microsoft.Identity.Web
 
             if (msalUiRequiredException != null)
             {
-                if (CanBeSolvedByReSignInUser(msalUiRequiredException))
+                if (CanBeSolvedByReSignInOfUser(msalUiRequiredException))
                 {
                     // the users cannot provide both scopes and ScopeKeySection at the same time
                     if (!string.IsNullOrWhiteSpace(ScopeKeySection) && Scopes != null && Scopes.Length > 0)
@@ -85,7 +83,7 @@ namespace Microsoft.Identity.Web
             base.OnException(context);
         }
 
-        private bool CanBeSolvedByReSignInUser(MsalUiRequiredException ex)
+        private bool CanBeSolvedByReSignInOfUser(MsalUiRequiredException ex)
         {
             // ex.ErrorCode != MsalUiRequiredException.UserNullError indicates a cache problem.
             // When calling an [Authenticate]-decorated controller we expect an authenticated
@@ -97,22 +95,26 @@ namespace Microsoft.Identity.Web
         }
 
         /// <summary>
-        /// Build Authentication properties needed for an incremental consent.
+        /// Build Authentication properties needed for incremental consent.
         /// </summary>
         /// <param name="scopes">Scopes to request</param>
         /// <param name="ex">MsalUiRequiredException instance</param>
         /// <param name="context">current http context in the pipeline</param>
         /// <returns>AuthenticationProperties</returns>
         private AuthenticationProperties BuildAuthenticationPropertiesForIncrementalConsent(
-            string[] scopes, MsalUiRequiredException ex, HttpContext context)
+            string[] scopes, 
+            MsalUiRequiredException ex, 
+            HttpContext context)
         {
             var properties = new AuthenticationProperties();
 
-            // Set the scopes, including the scopes that ADAL.NET / MASL.NET need for the Token cache
-            string[] additionalBuildInScopes =
-                {OidcConstants.ScopeOpenId, OidcConstants.ScopeOfflineAccess, OidcConstants.ScopeProfile};
+            // Set the scopes, including the scopes that ADAL.NET / MSAL.NET need for the token cache
+            string[] additionalBuiltInScopes =
+                {OidcConstants.ScopeOpenId, 
+                OidcConstants.ScopeOfflineAccess, 
+                OidcConstants.ScopeProfile};
             properties.SetParameter<ICollection<string>>(OpenIdConnectParameterNames.Scope,
-                                                         scopes.Union(additionalBuildInScopes).ToList());
+                                                         scopes.Union(additionalBuiltInScopes).ToList());
 
             // Attempts to set the login_hint to avoid the logged-in user to be presented with an account selection dialog
             var loginHint = context.User.GetLoginHint();

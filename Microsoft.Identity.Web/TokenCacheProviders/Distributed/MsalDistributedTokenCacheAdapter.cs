@@ -5,13 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Identity.Web.TokenCacheProviders.Distributed
 {
     /// <summary>
-    /// An implementation of token cache for both Confidential and Public clients backed by MemoryCache.
+    /// An implementation of the token cache for both Confidential and Public clients backed by MemoryCache.
     /// </summary>
     /// <seealso cref="https://aka.ms/msal-net-token-cache-serialization"/>
     public class MsalDistributedTokenCacheAdapter : MsalAbstractTokenCacheProvider

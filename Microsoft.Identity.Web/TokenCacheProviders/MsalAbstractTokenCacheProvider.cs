@@ -60,18 +60,18 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
             }
             else
             {
-                    // In the case of Web Apps, the cache key is the user account Id, and the expectation is that AcquireTokenSilent
-                    // should return a token otherwise this might require a challenge
-                    // In the case Web APIs, the token cache key is a hash of the access token used to call the Web API
-                    JwtSecurityToken jwtSecurityToken = _httpContextAccessor.HttpContext.GetTokenUsedToCallWebAPI();
-                    return (jwtSecurityToken != null) ? jwtSecurityToken.RawSignature
-                                                                      : _httpContextAccessor.HttpContext.User.GetMsalAccountId();
+                // In the case of Web Apps, the cache key is the user account Id, and the expectation is that AcquireTokenSilent
+                // should return a token otherwise this might require a challenge.
+                // In the case Web APIs, the token cache key is a hash of the access token used to call the Web API
+                JwtSecurityToken jwtSecurityToken = _httpContextAccessor.HttpContext.GetTokenUsedToCallWebAPI();
+                return (jwtSecurityToken != null) ? jwtSecurityToken.RawSignature
+                                                                  : _httpContextAccessor.HttpContext.User.GetMsalAccountId();
             }
         }
 
         /// <summary>
         /// Raised AFTER MSAL added the new token in its in-memory copy of the cache.
-        /// This notification is called every time MSAL accessed the cache, not just when a write took place:
+        /// This notification is called every time MSAL accesses the cache, not just when a write takes place:
         /// If MSAL's current operation resulted in a cache change, the property TokenCacheNotificationArgs.HasStateChanged will be set to true.
         /// If that is the case, we call the TokenCache.SerializeMsalV3() to get a binary blob representing the latest cache content – and persist it.
         /// </summary>
@@ -100,7 +100,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
             }
         }
 
-        // if you want to ensure that no concurrent write take place, use this notification to place a lock on the entry
+        // if you want to ensure that no concurrent write takes place, use this notification to place a lock on the entry
         protected virtual Task OnBeforeWriteAsync(TokenCacheNotificationArgs args)
         {
             return Task.CompletedTask;
@@ -108,7 +108,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
 
         public async Task ClearAsync()
         {
-            // This is here a user token cache
+            // This is a user token cache
             await RemoveKeyAsync(GetCacheKey(false)).ConfigureAwait(false);
 
             // TODO: Clear the cookie session if any

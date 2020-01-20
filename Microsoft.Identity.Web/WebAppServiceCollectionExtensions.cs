@@ -72,15 +72,15 @@ namespace Microsoft.Identity.Web
             services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
             {
                 // Per the code below, this application signs in users in any Work and School
-                // accounts and any Microsoft Personal Accounts.
+                // account and any Microsoft personal account.
                 // If you want to direct Azure AD to restrict the users that can sign-in, change
                 // the tenant value of the appsettings.json file in the following way:
                 // - only Work and School accounts => 'organizations'
-                // - only Microsoft Personal accounts => 'consumers'
-                // - Work and School and Personal accounts => 'common'
-                // If you want to restrict the users that can sign-in to only one tenant
+                // - only Microsoft personal accounts => 'consumers'
+                // - Work and School and personal accounts => 'common'
+                // If you want to restrict the users that can sign-in to only one tenant,
                 // set the tenant value in the appsettings.json file to the tenant ID
-                // or domain of this organization
+                // or domain of that organization
                 options.Authority = options.Authority + "/v2.0/";
 
                 // If you want to restrict the users that can sign-in to several organizations
@@ -89,7 +89,7 @@ namespace Microsoft.Identity.Web
                 options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).Validate;
 
                 // Set the nameClaimType to be preferred_username.
-                // This change is needed because certain token claims from Azure AD V1 endpoint
+                // This change is needed because certain token claims from the Azure AD V1 endpoint
                 // (on which the original .NET core template is based) are different than Microsoft identity platform endpoint.
                 // For more details see [ID Tokens](https://docs.microsoft.com/azure/active-directory/develop/id-tokens)
                 // and [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens)
@@ -139,10 +139,11 @@ namespace Microsoft.Identity.Web
         /// <param name="services">Service collection to which to add authentication</param>
         /// <param name="initialScopes">Initial scopes to request at sign-in</param>
         /// <returns></returns>
-        public static IServiceCollection AddWebAppCallsProtectedWebApi(this IServiceCollection services, 
-                                                                       IConfiguration configuration,
-                                                                       IEnumerable<string> initialScopes,
-                                                                       string configSectionName = "AzureAd")
+        public static IServiceCollection AddWebAppCallsProtectedWebApi(
+            this IServiceCollection services, 
+            IConfiguration configuration, 
+            IEnumerable<string> initialScopes, 
+            string configSectionName = "AzureAd")
         {
             // Ensure that configuration options for MSAL.NET, HttpContext accessor and the Token acquisition service
             // (encapsulating MSAL.NET) are available through dependency injection
@@ -156,7 +157,7 @@ namespace Microsoft.Identity.Web
                 options.ResponseType = OpenIdConnectResponseType.CodeIdToken;
 
                 // This scope is needed to get a refresh token when users sign-in with their Microsoft personal accounts
-                // (it's required by MSAL.NET and automatically provided when users sign-in with work or school accounts)
+                // It's required by MSAL.NET and automatically provided when users sign-in with work or school accounts
                 options.Scope.Add(OidcConstants.ScopeOfflineAccess);
                 if (initialScopes != null)
                 {
