@@ -111,7 +111,8 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
             // This is a user token cache
             await RemoveKeyAsync(GetCacheKey(false)).ConfigureAwait(false);
 
-            // TODO: Clear the cookie session if any
+            // TODO: Clear the cookie session if any. Get inspiration from
+            // https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/issues/240
         }
 
         /// <summary>
