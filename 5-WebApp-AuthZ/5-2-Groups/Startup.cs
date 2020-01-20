@@ -40,8 +40,8 @@ namespace WebApp_OpenIDConnect_DotNet
 
             services.AddMSGraphService(Configuration);
 
-            // Uncomment the following lines code instruct the asp.net core middleware to use the data in the "groups" claim in the Authorize attribute and User.IsInrole()
-            // See https://docs.microsoft.com/en-us/aspnet/core/security/authorization/roles?view=aspnetcore-2.2 for more info.
+            // Uncomment the following lines code instruct the asp.net core middleware to use the data in the "groups" claim in the [Authorize] attribute and for User.IsInrole()
+            // See https://docs.microsoft.com/en-us/aspnet/core/security/authorization/roles for more info.
             //services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
             //{
             //    // Use the groups claim for populating roles
