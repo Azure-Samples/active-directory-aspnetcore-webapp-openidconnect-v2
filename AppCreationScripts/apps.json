@@ -37,7 +37,16 @@
             }
           ]
         }
-      ]
+      ],
+      "codeConfigurations": [	
+        {
+		      "settingFile": "/appsettings.json", 
+		      "replaceTokens": {
+             "appId": "Enter_the_Application_Id_here",
+             "tenantId": "common"
+			    }
+        }
+      ]	
     }
   ]
 }
