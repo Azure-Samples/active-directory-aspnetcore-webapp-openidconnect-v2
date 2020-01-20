@@ -19,8 +19,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         private readonly ITokenAcquisition tokenAcquisition;
         private readonly WebOptions webOptions;
 
-        public HomeController(ITokenAcquisition tokenAcquisition,
-                              IOptions<WebOptions> webOptionValue)
+        public HomeController(ITokenAcquisition tokenAcquisition, IOptions<WebOptions> webOptionValue)
         {
             this.tokenAcquisition = tokenAcquisition;
             this.webOptions = webOptionValue.Value;
@@ -56,6 +55,23 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Fetches and displays all the users in this directory. This method requires the signed-in user to be assigned to the 'UserReaders' approle.
+        /// </summary>
+        /// <returns></returns>
+        [AuthorizeForScopes(Scopes = new[] { GraphScopes.UserReadBasicAll })]
+        [Authorize(Policy = AuthorizationPolicies.AssignmentToUserReaderRoleRequired)]
+        public async Task<IActionResult> Users()
+        {
+            // Initialize the GraphServiceClient.
+            Graph::GraphServiceClient graphClient = GetGraphServiceClient(new[] { GraphScopes.UserReadBasicAll });
+
+            var users = await graphClient.Users.Request().GetAsync();
+            ViewData["Users"] = users.CurrentPage;
+
+            return View();
+        }
+
         private Graph::GraphServiceClient GetGraphServiceClient(string[] scopes)
         {
             return GraphServiceClientFactory.GetAuthenticatedGraphClient(async () =>
@@ -72,17 +88,5 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        [AuthorizeForScopes(Scopes = new[] { GraphScopes.UserReadBasicAll })]
-        [Authorize(Policy = AppPolicies.UserReadersOnly)]
-        public async Task<IActionResult> Users()
-        {
-            // Initialize the GraphServiceClient.
-            Graph::GraphServiceClient graphClient = GetGraphServiceClient(new[] { GraphScopes.UserReadBasicAll });
-
-            var users = await graphClient.Users.Request().GetAsync();
-            ViewData["Users"] = users.CurrentPage;
-
-            return View();
-        }
     }
 }

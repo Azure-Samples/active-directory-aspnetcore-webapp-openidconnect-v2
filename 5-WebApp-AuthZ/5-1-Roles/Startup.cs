@@ -61,11 +61,11 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.TokenValidationParameters.RoleClaimType = "roles";
             });
 
-            // Creating policies that wraps the authorization requirements
+            // Adding authorization policies that enforce authorization using Azure AD roles.
             services.AddAuthorization(options => 
             {
-                options.AddPolicy(AppPolicies.UserReadersOnly, policy => policy.RequireRole(AppRoles.UserReaders));
-                options.AddPolicy(AppPolicies.DirectoryViewersOnly, policy => policy.RequireRole(AppRoles.DirectoryViewers));
+                options.AddPolicy(AuthorizationPolicies.AssignmentToUserReaderRoleRequired, policy => policy.RequireRole(AppRole.UserReaders));
+                options.AddPolicy(AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired, policy => policy.RequireRole(AppRole.DirectoryViewers));
             });
 
             services.AddControllersWithViews(options =>

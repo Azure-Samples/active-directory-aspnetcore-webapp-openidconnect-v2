@@ -100,7 +100,7 @@ There is one project in this sample. To register it, you can:
 1. In PowerShell run:
 
    ```PowerShell
-      cd .\AppCreationScripts\
+   cd .\AppCreationScripts\
    .\Configure.ps1
    ```
 
@@ -251,16 +251,20 @@ public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this
                 // Use the groups claim for populating roles
                 options.TokenValidationParameters.RoleClaimType = "roles";
             });
+
+            // Adding authorization policies that enforce authorization using Azure AD roles.
+            services.AddAuthorization(options => 
+            {
+                options.AddPolicy(AuthorizationPolicies.AssignmentToUserReaderRoleRequired, policy => policy.RequireRole(AppRole.UserReaders));
+                options.AddPolicy(AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired, policy => policy.RequireRole(AppRole.DirectoryViewers));
+            });
         // [removed for] brevity
 }
 
-/*
 // In code..(Controllers & elsewhere)
-    [Authorize(Policy = DirectoryViewersOnly")] // In controllers
+[Authorize(Policy = AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired)]
 // or
-    User.IsInRole("UserReaders"); // In methods
-*/
-
+User.IsInRole("UserReaders"); // In methods
 ```
 
 ## About the code
@@ -306,31 +310,28 @@ This project was created using the following command.
             // 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role' instead of 'roles'
             // This flag ensures that the ClaimsIdentity claims collection will be built from the claims in the token
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+
+            // Adding authorization policies that enforce authorization using Azure AD roles.
+            services.AddAuthorization(options => 
+            {
+                options.AddPolicy(AuthorizationPolicies.AssignmentToUserReaderRoleRequired, policy => policy.RequireRole(AppRole.UserReaders));
+                options.AddPolicy(AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired, policy => policy.RequireRole(AppRole.DirectoryViewers));
+            });
      ```
 
-1. Still in the `ConfigureServices` method of `Startup.cs`, we created the policies that wraps the authorization requirements in it. It is a good practice to wrap your authorization rules in policies, even if it is just one role, because policies are easily expandable, support unit tests, can have multiple requirements, can be code based and [more](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-3.1):
-
-    ```CSharp
-        services.AddAuthorization(options => 
-        {
-            options.AddPolicy(AppPolicies.UserReadersOnly, policy => policy.RequireRole(AppRoles.UserReaders));
-            options.AddPolicy(AppPolicies.DirectoryViewersOnly, policy => policy.RequireRole(AppRoles.DirectoryViewers));
-        });
-    ```
-
-1. In the `HomeController.cs`, the following method is added with the `Authorize` attribute with the name of the policy created to check the app role **UserReaders**, that permits listing of users in the tenant.
-
-    ```CSharp
-        [Authorize(Policy = AppPolicies.UserReadersOnly)]
-        public async Task<IActionResult> Users()
-        {
-     ```
-
-1. In the `ConfigureServices` method of `Startup.cs'`, the following line instructs the asp.net security middleware to use the **roles** claim to fetch roles for authorization:
+1. In the `ConfigureServices` method of `Startup.cs', the following line instructs the asp.net security middleware to use the **roles** claim to fetch roles for authorization:
 
      ```CSharp
-                // The claim in the Jwt token where App roles are available.
-                options.TokenValidationParameters.RoleClaimType = "roles";
+     // The claim in the Jwt token where App roles are available.
+     options.TokenValidationParameters.RoleClaimType = "roles";
+     ```
+
+1. In the `HomeController.cs`, the following method is added with the `Authorize` attribute with the name of the policy that enforces that the signed-in user is present in the app role **UserReaders**, that permits listing of users in the tenant.
+
+    ```CSharp
+        [Authorize(Policy = AuthorizationPolicies.AssignmentToUserReaderRoleRequired)]
+        public async Task<IActionResult> Users()
+        {
      ```
 
 1. A new class called `AccountController.cs` is introduced. This contains the code to intercept the default AccessDenied error's route and present the user with an option to sign-out and sign-back in with a different account that has access to the required role.
@@ -341,10 +342,10 @@ This project was created using the following command.
         {
      ```
 
-1. The following method is also added with the `Authorize` attribute with the name of the policy created to check the app role **DirectoryViewers**, that permits listing of roles and groups the signed-in user is assigned to.
+1. The following method is also added with the `Authorize` attribute with the name of the policy that enforces that the signed-in user is present in the app role **DirectoryViewers**, that permits listing of roles and groups the signed-in user is assigned to.
 
     ```CSharp
-        [Authorize(Policy = AppPolicies.DirectoryViewersOnly)]
+        [Authorize(Policy = AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired)]
         public async Task<IActionResult> Groups()
         {
      ```
@@ -384,7 +385,7 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
 
 ## Next steps
 
-- Learn how to use app groups. [Add authorization using security groups & groups claims to a Web app that signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-2-Groups/README.md).
+- Learn how to use app groups. [Add authorization using security groups & groups claims to a Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-2-Groups/README.md).
 
 ## Learn more
 
