@@ -27,7 +27,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             // Using group ids/names in the IsInRole method
             // var isinrole = User.IsInRole("8873daa2-17af-4e72-973e-930c94ef7549");
 
-            string accessToken = await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new[] { Constants.ScopeUserRead, Constants.ScopeDirectoryReadAll });
+            string accessToken = await tokenAcquisition.GetAccessTokenForUserAsync(new[] { Constants.ScopeUserRead, Constants.ScopeDirectoryReadAll });
 
             User me = await graphService.GetMeAsync(accessToken);
             ViewData["Me"] = me;

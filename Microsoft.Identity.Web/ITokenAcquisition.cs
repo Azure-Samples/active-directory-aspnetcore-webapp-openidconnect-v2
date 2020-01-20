@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Identity.Client;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -54,7 +55,20 @@ namespace Microsoft.Identity.Web
         /// <param name="tenantId">Enables to override the tenant/account for the same identity. This is useful in the 
         /// cases where a given account is guest in other tenants, and you want to acquire tokens for a specific tenant</param>
         /// <returns>An access token to call on behalf of the user, the downstream API characterized by its scopes</returns>
+        [Obsolete("Renamed to GetAccessTokenForUserAsync")]
         Task<string> GetAccessTokenOnBehalfOfUserAsync(IEnumerable<string> scopes, string tenantId = null);
+
+        /// <summary>
+        /// Typically used from an ASP.NET Core Web App or Web API controller, this method gets an access token 
+        /// for a downstream API on behalf of the user account which claims are provided in the <see cref="HttpContext.User"/>
+        /// member of the <paramref name="context"/> parameter
+        /// </summary>
+        /// <param name="context">HttpContext associated with the Controller or auth operation</param>
+        /// <param name="scopes">Scopes to request for the downstream API to call</param>
+        /// <param name="tenantId">Enables to override the tenant/account for the same identity. This is useful in the 
+        /// cases where a given account is guest in other tenants, and you want to acquire tokens for a specific tenant</param>
+        /// <returns>An access token to call on behalf of the user, the downstream API characterized by its scopes</returns>
+        Task<string> GetAccessTokenForUserAsync(IEnumerable<string> scopes, string tenantId = null);
 
         /// <summary>
         /// Removes the account associated with context.HttpContext.User from the MSAL.NET cache

@@ -110,6 +110,8 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
         {
             // This is here a user token cache
             await RemoveKeyAsync(GetCacheKey(false)).ConfigureAwait(false);
+
+            // TODO: Clear the cookie session if any
         }
 
         /// <summary>

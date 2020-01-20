@@ -61,7 +61,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         {
             return GraphServiceClientFactory.GetAuthenticatedGraphClient(async () =>
             {
-                string result = await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(scopes);
+                string result = await tokenAcquisition.GetAccessTokenForUserAsync(scopes);
                 return result;
             }, webOptions.GraphApiUrl);
         }

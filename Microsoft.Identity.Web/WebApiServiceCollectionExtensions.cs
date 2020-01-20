@@ -23,6 +23,8 @@ namespace Microsoft.Identity.Web
     /// </summary>
     public static class WebApiServiceCollectionExtensions
     {
+        #region Compatibility
+        #endregion
         /// <summary>
         /// Protects the Web API with Microsoft identity platform (formerly Azure AD v2.0)
         /// This method expects the configuration file will have a section named "AzureAd" with the necessary settings to initialize authentication options.
