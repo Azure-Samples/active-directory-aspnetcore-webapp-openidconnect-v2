@@ -15,7 +15,7 @@ namespace Microsoft.Identity.Web.Resource
         /// <summary>
         /// When applied to an <see cref="HttpContext"/>, verifies that the user authenticated in the
         /// web API has any of the accepted scopes. 
-        /// If the authentication user does not have any of these <paramref name="acceptedScopes"/>, the
+        /// If the authenticated user does not have any of these <paramref name="acceptedScopes"/>, the
         /// method throws an HTTP Unauthorized with the message telling which scopes are expected in the token
         /// </summary>
         /// <param name="acceptedScopes">Scopes accepted by this web API</param>
@@ -27,7 +27,9 @@ namespace Microsoft.Identity.Web.Resource
             {
                 throw new ArgumentNullException(nameof(acceptedScopes));
             }
+
             Claim scopeClaim = context?.User?.FindFirst("http://schemas.microsoft.com/identity/claims/scope");
+
             if (scopeClaim == null || !scopeClaim.Value.Split(' ').Intersect(acceptedScopes).Any())
             {
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
