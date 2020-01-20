@@ -46,7 +46,6 @@ namespace Microsoft.Identity.Web
                                                  initialScopes,
                                                  configSectionName);
         }
-
         #endregion
 
         /// <summary>
