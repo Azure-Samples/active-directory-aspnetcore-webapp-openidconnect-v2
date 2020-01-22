@@ -118,7 +118,8 @@ There is one project in this sample. To register it, you can:
 1. In PowerShell run:
 
    ```PowerShell
-   .\AppCreationScripts\Configure.ps1
+   cd .\AppCreationScripts\ 
+   .\Configure.ps1
    ```
 
    > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)

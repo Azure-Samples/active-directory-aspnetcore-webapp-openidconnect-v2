@@ -33,7 +33,9 @@ namespace WebApp_OpenIDConnect_DotNet
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
+                options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
+                // Handling SameSite cookie according to https://docs.microsoft.com/en-us/aspnet/core/security/samesite?view=aspnetcore-3.1
+                options.HandleSameSiteCookieCompatibility();
             });
 
             services.AddOptions();
@@ -59,6 +61,13 @@ namespace WebApp_OpenIDConnect_DotNet
             {
                 // The claim in the Jwt token where App roles are available.
                 options.TokenValidationParameters.RoleClaimType = "roles";
+            });
+
+            // Adding authorization policies that enforce authorization using Azure AD roles.
+            services.AddAuthorization(options => 
+            {
+                options.AddPolicy(AuthorizationPolicies.AssignmentToUserReaderRoleRequired, policy => policy.RequireRole(AppRole.UserReaders));
+                options.AddPolicy(AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired, policy => policy.RequireRole(AppRole.DirectoryViewers));
             });
 
             services.AddControllersWithViews(options =>

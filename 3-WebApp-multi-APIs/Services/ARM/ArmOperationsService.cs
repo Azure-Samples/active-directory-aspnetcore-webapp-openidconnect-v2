@@ -35,7 +35,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services.Arm
 
         // Use Azure Resource manager to get the list of a tenant accessible by a user
         // https://docs.microsoft.com/en-us/rest/api/resources/tenants/list
-        public static string ArmResource { get; } = "https://management.azure.com/";
+        public static string ArmResource { get; } = "https://management.core.windows.net/";
 
         protected string ArmListTenantUrl { get; } = "https://management.azure.com/tenants?api-version=2016-06-01";
     }

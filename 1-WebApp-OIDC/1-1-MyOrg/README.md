@@ -48,7 +48,8 @@ There is one project in this sample. To register it, you can:
     3. Run the script to create your Azure AD application and configure the code of the sample application accordingly
 
        ```PowerShell
-       .\AppCreationScripts\Configure.ps1
+       cd .\AppCreationScripts\ 
+   .\Configure.ps1
        ```
 
        > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
