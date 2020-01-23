@@ -41,24 +41,30 @@ namespace Microsoft.Identity.Web
         {
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer((options => configuration.Bind(configSectionName, options)));
-                  //  .AddAzureADBearer(options => configuration.Bind(configSectionName, options));
-            services.Configure<OpenIdConnectOptions>(options => configuration.Bind(configSectionName, options));
+                  
+            services.Configure<MicrosoftIdentityOptions>(options => configuration.Bind(configSectionName, options));
 
             services.AddHttpContextAccessor();
 
             // Change the authentication configuration to accommodate the Microsoft identity platform endpoint (v2.0).
             services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
             {
+                var microsoftIdentityOptions = configuration.GetSection(configSectionName).Get<MicrosoftIdentityOptions>();
+
                 // Reinitialize the options as this has changed to JwtBearerOptions to pick configuration values for attributes unique to JwtBearerOptions
                 configuration.Bind(configSectionName, options);
 
-                // This is an Microsoft identity platform Web API
-                options.Authority += "/v2.0";
+                if (string.IsNullOrWhiteSpace(options.Authority))
+                    options.Authority = AuthorityHelpers.BuildAuthority(microsoftIdentityOptions);
+
+                if (!AuthorityHelpers.IsV2Authority(options.Authority))
+                    options.Authority += "/v2.0";
 
                 // The valid audiences are both the Client ID (options.Audience) and api://{ClientID}
                 options.TokenValidationParameters.ValidAudiences = new string[]
                 {
-                    options.Audience, $"api://{options.Audience}"
+                    // If the developer doesnt set the Audience on JwtBearerOptions, use ClientId from MicrosoftIdentityOptions
+                    options.Audience, $"api://{options.Audience ?? microsoftIdentityOptions.ClientId}"
                 };
 
                 // Instead of using the default validation (validating against a single tenant, as we do in line of business apps),
@@ -114,7 +120,9 @@ namespace Microsoft.Identity.Web
             services.AddTokenAcquisition();
             services.AddHttpContextAccessor();
             services.Configure<ConfidentialClientApplicationOptions>(options => configuration.Bind(configSectionName, options));
-            services.Configure<OpenIdConnectOptions>(options => configuration.Bind(configSectionName, options));
+            services.Configure<MicrosoftIdentityOptions>(options => configuration.Bind(configSectionName, options));
+            
+            // TODO: Pass scheme as parameter?
             services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.Events.OnTokenValidated = async context =>

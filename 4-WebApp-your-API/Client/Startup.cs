@@ -10,6 +10,8 @@ using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using System.IdentityModel.Tokens.Jwt;
 using TodoListClient.Services;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Identity.Web.UI;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -38,6 +40,9 @@ namespace WebApp_OpenIDConnect_DotNet
 
             services.AddOptions();
 
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                .AddSignIn("AzureAd", Configuration, options => Configuration.Bind("AzureAd", options));
+
             // This is required to be instantiated before the OpenIdConnectOptions starts getting configured.
             // By default, the claims mapping will map claim names in the old format to accommodate older SAML applications.
             // 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role' instead of 'roles'
@@ -46,8 +51,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
-            services.AddSignIn(Configuration)
-                    .AddWebAppCallsProtectedWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] })
+            services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] })
                     .AddInMemoryTokenCaches();
 
             // Add APIs
@@ -59,7 +63,8 @@ namespace WebApp_OpenIDConnect_DotNet
                     .RequireAuthenticatedUser()
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
-            });
+            }).AddMicrosoftIdentityUI();
+
             services.AddRazorPages();
         }
 

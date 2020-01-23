@@ -25,7 +25,7 @@ namespace Microsoft.Identity.Web
     /// </summary>
     public class TokenAcquisition : ITokenAcquisition
     {
-        private readonly OpenIdConnectOptions _azureAdOptions;
+        private readonly MicrosoftIdentityOptions _azureAdOptions;
         private readonly ConfidentialClientApplicationOptions _applicationOptions;
 
         private readonly IMsalTokenCacheProvider _tokenCacheProvider;
@@ -45,7 +45,7 @@ namespace Microsoft.Identity.Web
         public TokenAcquisition(
             IMsalTokenCacheProvider tokenCacheProvider,
             IHttpContextAccessor httpContextAccessor,
-            IOptions<OpenIdConnectOptions> azureAdOptions,
+            IOptions<MicrosoftIdentityOptions> azureAdOptions,
             IOptions<ConfidentialClientApplicationOptions> applicationOptions)
         {
             _httpContextAccessor = httpContextAccessor;

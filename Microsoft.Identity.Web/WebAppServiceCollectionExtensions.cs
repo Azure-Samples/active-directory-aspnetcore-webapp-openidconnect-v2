@@ -249,25 +249,42 @@ namespace Microsoft.Identity.Web
             return false;
         }
         
-        public static AuthenticationBuilder AddSignIn(this AuthenticationBuilder builder, Action<OpenIdConnectOptions> configureOptions) =>
+        public static AuthenticationBuilder AddSignIn(this AuthenticationBuilder builder, IConfiguration configuration, Action<OpenIdConnectOptions> configureOptions) =>
             builder.AddSignIn(
+                "AzureAd",
+                configuration,
                 OpenIdConnectDefaults.AuthenticationScheme,
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                configureOptions);
+
+        public static AuthenticationBuilder AddSignIn(this AuthenticationBuilder builder, string configSectionName, IConfiguration configuration, Action<OpenIdConnectOptions> configureOptions) =>
+            builder.AddSignIn(
+                configSectionName,
+                configuration,
                 OpenIdConnectDefaults.AuthenticationScheme,
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 configureOptions);
 
         public static AuthenticationBuilder AddSignIn(
             this AuthenticationBuilder builder,
-            string scheme,
+            string configSectionName,
+            IConfiguration configuration,
             string openIdConnectScheme,
             string cookieScheme,
             Action<OpenIdConnectOptions> configureOptions)
         {
-            builder.Services.Configure(scheme, configureOptions);
+            builder.Services.Configure(openIdConnectScheme, configureOptions);
+            builder.Services.Configure<MicrosoftIdentityOptions>(options => configuration.Bind(configSectionName, options));
+
             builder.AddCookie(cookieScheme);
             builder.AddOpenIdConnect(openIdConnectScheme, options =>
             {
+                var microsoftIdentityOptions = configuration.GetSection(configSectionName).Get<MicrosoftIdentityOptions>();
+
                 options.SignInScheme = cookieScheme;
+
+                if (string.IsNullOrWhiteSpace(options.Authority))
+                    options.Authority = AuthorityHelpers.BuildAuthority(microsoftIdentityOptions);
 
                 if (!AuthorityHelpers.IsV2Authority(options.Authority))
                     options.Authority += "/v2.0";

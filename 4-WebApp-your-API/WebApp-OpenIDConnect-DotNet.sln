@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TodoListClient", "Client\To
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web", "..\Microsoft.Identity.Web\Microsoft.Identity.Web.csproj", "{2AED6B80-C6DF-4AA3-98F0-77338CC1449A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web.UI", "..\Microsoft.Identity.Web.UI\Microsoft.Identity.Web.UI.csproj", "{A2B0D2D4-6799-4B6F-AC51-F0F0A6CA1E89}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{2AED6B80-C6DF-4AA3-98F0-77338CC1449A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2AED6B80-C6DF-4AA3-98F0-77338CC1449A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2AED6B80-C6DF-4AA3-98F0-77338CC1449A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2B0D2D4-6799-4B6F-AC51-F0F0A6CA1E89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2B0D2D4-6799-4B6F-AC51-F0F0A6CA1E89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2B0D2D4-6799-4B6F-AC51-F0F0A6CA1E89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2B0D2D4-6799-4B6F-AC51-F0F0A6CA1E89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
