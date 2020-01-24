@@ -217,7 +217,16 @@ namespace Microsoft.Identity.Web
         {
             ClaimsPrincipal user = context.HttpContext.User;
             IConfidentialClientApplication app = GetOrBuildConfidentialClientApplication();
-            IAccount account = await app.GetAccountAsync(context.HttpContext.User.GetMsalAccountId()).ConfigureAwait(false);
+            IAccount account = null; 
+            
+            if(_azureAdOptions.IsB2C)
+            {
+                string currentPolicy = user.GetPolicyId();
+                account = GetAccountByPolicy(await app.GetAccountsAsync().ConfigureAwait(false), currentPolicy);
+            }
+
+            else 
+                account = await app.GetAccountAsync(context.HttpContext.User.GetMsalAccountId()).ConfigureAwait(false);
 
             // Workaround for the guest account
             if (account == null)
@@ -263,13 +272,30 @@ namespace Microsoft.Identity.Web
                 request.PathBase,
                 azureAdOptions.CallbackPath.Value ?? string.Empty);
 
-            string authority = $"{applicationOptions.Instance}{applicationOptions.TenantId}/";
+            string authority = string.Empty;
+            IConfidentialClientApplication app = null;
 
-            var app = ConfidentialClientApplicationBuilder
-                .CreateWithApplicationOptions(applicationOptions)
-                .WithRedirectUri(currentUri)
-                .WithAuthority(authority)
-                .Build();
+            if (azureAdOptions.IsB2C)
+            {
+                authority = $"{applicationOptions.Instance.TrimEnd('/')}/tfp/{azureAdOptions.Domain}/{azureAdOptions.DefaultPolicy}";
+                app = ConfidentialClientApplicationBuilder
+                    .CreateWithApplicationOptions(applicationOptions)
+                    .WithRedirectUri(currentUri)
+                    .WithB2CAuthority(authority)
+                    .Build();
+            }
+
+            else
+            {
+                authority = $"{applicationOptions.Instance.TrimEnd('/')}/{applicationOptions.TenantId}/";
+                app = ConfidentialClientApplicationBuilder
+                    .CreateWithApplicationOptions(applicationOptions)
+                    .WithRedirectUri(currentUri)
+                    .WithAuthority(authority)
+                    .Build();
+            }
+
+            
 
             // Initialize token cache providers
             _tokenCacheProvider?.InitializeAsync(app.AppTokenCache);
@@ -292,47 +318,54 @@ namespace Microsoft.Identity.Web
             IEnumerable<string> scopes,
             string tenant)
         {
+            // Gets MsalAccountId for AAD and B2C scenarios
             string accountIdentifier = claimsPrincipal.GetMsalAccountId();
             string loginHint = claimsPrincipal.GetLoginHint();
-            return await GetAccessTokenOnBehalfOfUserFromCacheAsync(application, accountIdentifier, scopes, loginHint, tenant).ConfigureAwait(false);
+            IAccount account = null;
+
+            if (accountIdentifier != null)
+            {
+                account = await application.GetAccountAsync(accountIdentifier).ConfigureAwait(false);
+
+                // Special case for guest users as the Guest oid / tenant id are not surfaced.
+                // B2C should not follow this logic since loginHint is not present
+                if (!_azureAdOptions.IsB2C && account == null)
+                {
+                    if (loginHint == null)
+                        throw new ArgumentNullException(nameof(loginHint));
+
+                    var accounts = await application.GetAccountsAsync().ConfigureAwait(false);
+                    account = accounts.FirstOrDefault(a => a.Username == loginHint);
+                }
+            }
+
+            // If is B2C and could not get an account (most likely because there is no tid claims), try to get it by policy
+            if (_azureAdOptions.IsB2C && account == null)
+            {
+                string currentPolicy = claimsPrincipal.GetPolicyId();
+                account = GetAccountByPolicy(await application.GetAccountsAsync().ConfigureAwait(false), currentPolicy);
+            }
+
+            return await GetAccessTokenOnBehalfOfUserFromCacheAsync(application, account, scopes, tenant).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Gets an access token for a downstream API on behalf of the user which account ID is passed as an argument
+        /// Gets an access token for a downstream API on behalf of the user which account is passed as an argument
         /// </summary>
         /// <param name="application"></param>
-        /// <param name="accountIdentifier">User account identifier for which to acquire a token.
+        /// <param name="account">User IAccount for which to acquire a token.
         /// See <see cref="Microsoft.Identity.Client.AccountId.Identifier"/></param>
         /// <param name="scopes">Scopes for the downstream API to call</param>
-        /// <param name="loginHint"></param>
         /// <param name="tenant"></param>
         private async Task<string> GetAccessTokenOnBehalfOfUserFromCacheAsync(
             IConfidentialClientApplication application,
-            string accountIdentifier,
+            IAccount account,
             IEnumerable<string> scopes,
-            string loginHint,
             string tenant)
         {
-            if (accountIdentifier == null)
-            {
-                throw new ArgumentNullException(nameof(accountIdentifier));
-            }
-
             if (scopes == null)
             {
                 throw new ArgumentNullException(nameof(scopes));
-            }
-
-            // Get the account
-            IAccount account = await application.GetAccountAsync(accountIdentifier).ConfigureAwait(false);
-
-            // Special case for guest users as the Guest oid / tenant id are not surfaced.
-            if (account == null)
-            {
-                if (loginHint == null)
-                    throw new ArgumentNullException(nameof(loginHint));
-                var accounts = await application.GetAccountsAsync().ConfigureAwait(false);
-                account = accounts.FirstOrDefault(a => a.Username == loginHint);
             }
 
             AuthenticationResult result;
@@ -345,12 +378,27 @@ namespace Microsoft.Identity.Web
             }
             else
             {
-                string authority = application.Authority.Replace(new Uri(application.Authority).PathAndQuery, $"/{tenant}/");
-                result = await application
-                    .AcquireTokenSilent(scopes.Except(_scopesRequestedByMsalNet), account)
-                    .WithAuthority(authority)
-                    .ExecuteAsync()
-                    .ConfigureAwait(false);
+                // Acquire an access token as another B2C authority
+                if (_azureAdOptions.IsB2C)
+                {
+                    string authority = application.Authority.Replace(new Uri(application.Authority).PathAndQuery, $"/tfp/{tenant}/{_azureAdOptions.DefaultPolicy}");
+                    result = await application
+                        .AcquireTokenSilent(scopes.Except(_scopesRequestedByMsalNet), account)
+                        .WithB2CAuthority(authority)
+                        .ExecuteAsync()
+                        .ConfigureAwait(false);
+                }
+
+                // Acquire an access token as another AAD authority
+                else
+                {
+                    string authority = application.Authority.Replace(new Uri(application.Authority).PathAndQuery, $"/{tenant}/");
+                    result = await application
+                        .AcquireTokenSilent(scopes.Except(_scopesRequestedByMsalNet), account)
+                        .WithAuthority(authority)
+                        .ExecuteAsync()
+                        .ConfigureAwait(false);
+                }
             }
 
             return result.AccessToken;
@@ -408,6 +456,24 @@ namespace Microsoft.Identity.Web
             // way to distinguish the case.
             // This is subject to change in the future
             return (msalSeviceException.Message.Contains("AADSTS50013"));
+        }
+
+        /// <summary>
+        /// Gets an IAccount for the current B2C policy in the user claims
+        /// </summary>
+        /// <param name="accounts"></param>
+        /// <param name="policy"></param>
+        /// <returns></returns>
+        private IAccount GetAccountByPolicy(IEnumerable<IAccount> accounts, string policy)
+        {
+            foreach (var account in accounts)
+            {
+                string accountIdentifier = account.HomeAccountId.ObjectId.Split('.')[0];
+                if (accountIdentifier.EndsWith(policy.ToLower()))
+                    return account;
+            }
+
+            return null;
         }
     }
 }

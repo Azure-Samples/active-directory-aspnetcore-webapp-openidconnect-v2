@@ -21,10 +21,18 @@ namespace Microsoft.Identity.Web
         public static string GetMsalAccountId(this ClaimsPrincipal claimsPrincipal)
         {
             string userObjectId = claimsPrincipal.GetObjectId();
+            string nameIdentifierId = claimsPrincipal.GetNameIdentifierId();
             string tenantId = claimsPrincipal.GetTenantId();
+            string policyId = claimsPrincipal.GetPolicyId();
 
-            if (!string.IsNullOrWhiteSpace(userObjectId) && !string.IsNullOrWhiteSpace(tenantId))
+            if (!string.IsNullOrWhiteSpace(nameIdentifierId) && !string.IsNullOrWhiteSpace(tenantId) && !string.IsNullOrWhiteSpace(policyId))
             {
+                // B2C pattern: {oid}-{tfp}.{tid}
+                return $"{nameIdentifierId}-{policyId}.{tenantId}";
+            }
+            else if (!string.IsNullOrWhiteSpace(userObjectId) && !string.IsNullOrWhiteSpace(tenantId))
+            {
+                // AAD pattern: {oid}.{tid}
                 return $"{userObjectId}.{tenantId}";
             }
 
@@ -117,5 +125,30 @@ namespace Microsoft.Identity.Web
             return displayName;
         }
 
+        /// <summary>
+        /// Gets the Policy Id associated with the <see cref="ClaimsPrincipal"/>
+        /// </summary>
+        /// <param name="claimsPrincipal">the <see cref="ClaimsPrincipal"/> from which to retrieve the policy id</param>
+        /// <returns>Policy Id of the identity, or <c>null</c> if it cannot be found</returns>
+        public static string GetPolicyId(this ClaimsPrincipal claimsPrincipal)
+        {
+            string policyId = claimsPrincipal.FindFirstValue(ClaimConstants.Tfp);
+            return policyId;
+        }
+
+        /// <summary>
+        /// Gets the NameIdentifierId associated with the <see cref="ClaimsPrincipal"/>
+        /// </summary>
+        /// <param name="claimsPrincipal">the <see cref="ClaimsPrincipal"/> from which to retrieve the sub claim</param>
+        /// <returns>Name identifier ID (sub) of the identity, or <c>null</c> if it cannot be found</returns>
+        public static string GetNameIdentifierId(this ClaimsPrincipal claimsPrincipal)
+        {
+            string sub = claimsPrincipal.FindFirstValue(ClaimConstants.Sub);
+            if (string.IsNullOrEmpty(sub))
+            {
+                sub = claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
+            }
+            return sub;
+        }
     }
 }

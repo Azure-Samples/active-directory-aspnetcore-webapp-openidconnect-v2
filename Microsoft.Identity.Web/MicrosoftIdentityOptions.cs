@@ -41,5 +41,7 @@ namespace Microsoft.Identity.Web
         /// Gets or sets the default policy.
         /// </summary>
         public string DefaultPolicy => SignUpSignInPolicyId;
+
+        internal bool IsB2C { get { return !string.IsNullOrWhiteSpace(DefaultPolicy); } }
     }
 }
