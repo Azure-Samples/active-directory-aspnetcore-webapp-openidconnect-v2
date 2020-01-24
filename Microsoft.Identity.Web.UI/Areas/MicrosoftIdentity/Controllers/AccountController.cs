@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Microsoft.Identity.Web.UI.Areas.MicrosoftIdentity.Controllers
 {
@@ -15,13 +17,20 @@ namespace Microsoft.Identity.Web.UI.Areas.MicrosoftIdentity.Controllers
     [Route("[area]/[controller]/[action]")]
     public class AccountController : Controller
     {
+        private readonly IOptionsMonitor<MicrosoftIdentityOptions> _options;
+
+        public AccountController(IOptionsMonitor<MicrosoftIdentityOptions> azureADOptions)
+        {
+            _options = azureADOptions;
+        }
+
         [HttpGet("{scheme?}")]
         public IActionResult SignIn([FromRoute] string scheme)
         {
             scheme = scheme ?? OpenIdConnectDefaults.AuthenticationScheme;
             var redirectUrl = Url.Content("~/");
             return Challenge(
-                new AuthenticationProperties { RedirectUri = redirectUrl }, 
+                new AuthenticationProperties { RedirectUri = redirectUrl },
                 scheme);
         }
 
@@ -37,6 +46,33 @@ namespace Microsoft.Identity.Web.UI.Areas.MicrosoftIdentity.Controllers
                  },
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 scheme);
+        }
+
+        [HttpGet("{scheme?}")]
+        public IActionResult ResetPassword([FromRoute] string scheme)
+        {
+            scheme = scheme ?? OpenIdConnectDefaults.AuthenticationScheme;
+
+            var redirectUrl = Url.Content("~/");
+            var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+            properties.Items["policy"] = _options.CurrentValue?.ResetPasswordPolicyId;
+            return Challenge(properties, scheme);
+        }
+
+        [HttpGet("{scheme?}")]
+        public async Task<IActionResult> EditProfile([FromRoute] string scheme)
+        {
+            scheme = scheme ?? OpenIdConnectDefaults.AuthenticationScheme;
+            var authenticated = await HttpContext.AuthenticateAsync(scheme);
+            if (!authenticated.Succeeded)
+            {
+                return Challenge(scheme);
+            }
+
+            var redirectUrl = Url.Content("~/");
+            var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+            properties.Items["policy"] = _options.CurrentValue?.EditProfilePolicyId;
+            return Challenge(properties, scheme);
         }
     }
 }

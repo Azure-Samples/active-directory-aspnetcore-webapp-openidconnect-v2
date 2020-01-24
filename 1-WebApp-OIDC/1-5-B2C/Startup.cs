@@ -58,7 +58,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
             // Configuration to sign-in users with Azure AD B2C
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddSignIn(options => Configuration.Bind("AzureAdB2C", options));
+                .AddSignIn("AzureAdB2C", Configuration, options => Configuration.Bind("AzureAdB2C", options));
 
             services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options => 
             {

@@ -127,6 +127,7 @@ namespace Microsoft.Identity.Web
             // Ensure that configuration options for MSAL.NET, HttpContext accessor and the Token acquisition service
             // (encapsulating MSAL.NET) are available through dependency injection
             services.Configure<ConfidentialClientApplicationOptions>(options => configuration.Bind(configSectionName, options));
+            services.Configure<MicrosoftIdentityOptions>(options => configuration.Bind(configSectionName, options));
             services.AddHttpContextAccessor();
             services.AddTokenAcquisition();
 
@@ -276,11 +277,12 @@ namespace Microsoft.Identity.Web
             builder.Services.Configure(openIdConnectScheme, configureOptions);
             builder.Services.Configure<MicrosoftIdentityOptions>(options => configuration.Bind(configSectionName, options));
 
+            var microsoftIdentityOptions = configuration.GetSection(configSectionName).Get<MicrosoftIdentityOptions>();
+            var b2COidcHandlers = new AzureADB2COpenIDConnectEventHandlers(openIdConnectScheme, microsoftIdentityOptions);
+
             builder.AddCookie(cookieScheme);
             builder.AddOpenIdConnect(openIdConnectScheme, options =>
             {
-                var microsoftIdentityOptions = configuration.GetSection(configSectionName).Get<MicrosoftIdentityOptions>();
-
                 options.SignInScheme = cookieScheme;
 
                 if (string.IsNullOrWhiteSpace(options.Authority))
@@ -321,8 +323,23 @@ namespace Microsoft.Identity.Web
                             context.Properties.Items[OidcConstants.AdditionalClaims]);
                     }
 
+                    if (microsoftIdentityOptions.IsB2C)
+                    {
+                        // When a new Challenge is returned using any B2C policy different than sisu, we must change
+                        // the ProtocolMessage.IssuerAddress to the desired policy otherwise the redirect would use the sisu policy
+                        b2COidcHandlers.OnRedirectToIdentityProvider(context);
+                    }
+
                     return Task.FromResult(0);
                 };
+
+                if (microsoftIdentityOptions.IsB2C)
+                {
+                    // Handles the error when a user cancels an action on the Azure Active Directory B2C UI.
+                    // Handle the error code that Azure Active Directory B2C throws when trying to reset a password from the login page 
+                    // because password reset is not supported by a "sign-up or sign-in policy".
+                    options.Events.OnRemoteFailure = b2COidcHandlers.OnRemoteFailure;
+                }
             });
 
             return builder;
