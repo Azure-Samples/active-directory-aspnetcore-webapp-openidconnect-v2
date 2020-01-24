@@ -33,8 +33,12 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Fetches all the groups a user is assigned to.  This method requires the signed-in user to be assigned to the 'DirectoryViewers' approle.
+        /// </summary>
+        /// <returns></returns>
         [AuthorizeForScopes(Scopes = new[] { GraphScopes.DirectoryReadAll })]
-        [Authorize(Roles = AppRoles.DirectoryViewers)]
+        [Authorize(Policy = AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired)]
         public async Task<IActionResult> Groups()
         {
             string[] scopes = new[] { GraphScopes.DirectoryReadAll };

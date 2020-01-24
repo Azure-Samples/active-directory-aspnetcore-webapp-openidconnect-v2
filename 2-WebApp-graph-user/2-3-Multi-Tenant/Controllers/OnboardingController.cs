@@ -104,7 +104,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         /// <param name="state">A value included in the request that also will be returned in the token response. It can be a string of any content you want. The state is used to encode information about the user's state in the app before the authentication request occurred, such as the page or view they were on..</param>
         /// <remarks>Refer to https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-admin-consent for details on the response</remarks>
         /// <returns></returns>
-        public async Task<IActionResult> ProcessCode(string tenant, string error, string error_description, string admin_consent, string state)
+        public async Task<IActionResult> ProcessCode(string tenant, string error, string error_description, bool admin_consent, string state)
         {
             if (error != null)
             {
@@ -112,7 +112,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                 return RedirectToAction("Error", "Home");
             }
 
-            if (admin_consent.ToUpper() != "TRUE")
+            if (!admin_consent)
             {
                 TempData["ErrorMessage"] = "The admin consent operation failed.";
                 return RedirectToAction("Error", "Home");

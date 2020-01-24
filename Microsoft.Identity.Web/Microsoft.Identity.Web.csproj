@@ -39,7 +39,7 @@
 
   
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   
@@ -56,6 +56,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureADB2C.UI" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.1" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.7.1" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.8.0" />
   </ItemGroup>
 </Project>

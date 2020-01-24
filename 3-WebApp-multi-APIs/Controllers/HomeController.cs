@@ -52,7 +52,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
         // Requires that the app has added the Azure Service Management / user_impersonation scope, and that
         // the admin tenant does not require admin consent for ARM.
-        [AuthorizeForScopes(Scopes = new[] { "https://management.azure.com/user_impersonation", "user.read", "directory.read.all" })]
+        [AuthorizeForScopes(Scopes = new[] { "https://management.core.windows.net/user_impersonation", "user.read", "directory.read.all" })]
         public async Task<IActionResult> Tenants()
         {
             var accessToken =
