@@ -15,15 +15,20 @@ namespace Microsoft.Identity.Web.UI.Areas.MicrosoftIdentity.Controllers
     [Route("[area]/[controller]/[action]")]
     public class AccountController : Controller
     {
-        public IActionResult SignIn()
+        [HttpGet("{scheme?}")]
+        public IActionResult SignIn([FromRoute] string scheme)
         {
+            scheme = scheme ?? OpenIdConnectDefaults.AuthenticationScheme;
             var redirectUrl = Url.Content("~/");
             return Challenge(
-                new AuthenticationProperties { RedirectUri = redirectUrl });
+                new AuthenticationProperties { RedirectUri = redirectUrl }, 
+                scheme);
         }
 
-        public IActionResult SignOut()
+        [HttpGet("{scheme?}")]
+        public IActionResult SignOut([FromRoute] string scheme)
         {
+            scheme = scheme ?? OpenIdConnectDefaults.AuthenticationScheme;
             var callbackUrl = Url.Page("/Account/SignedOut", pageHandler: null, values: null, protocol: Request.Scheme);
             return SignOut(
                  new AuthenticationProperties
@@ -31,7 +36,7 @@ namespace Microsoft.Identity.Web.UI.Areas.MicrosoftIdentity.Controllers
                      RedirectUri = callbackUrl
                  },
                 CookieAuthenticationDefaults.AuthenticationScheme,
-                OpenIdConnectDefaults.AuthenticationScheme);
+                scheme);
         }
     }
 }

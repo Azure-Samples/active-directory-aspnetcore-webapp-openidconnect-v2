@@ -32,7 +32,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.InMemory
         /// <param name="httpContextAccessor"></param>
         /// <param name="memoryCache"></param>
         /// <param name="cacheOptions"></param>
-        public MsalMemoryTokenCacheProvider(IOptions<OpenIdConnectOptions> azureAdOptions,
+        public MsalMemoryTokenCacheProvider(IOptions<MicrosoftIdentityOptions> azureAdOptions,
                                             IHttpContextAccessor httpContextAccessor,
                                             IMemoryCache memoryCache,
                                             IOptions<MsalMemoryTokenCacheOptions> cacheOptions) :

@@ -33,7 +33,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
     {
         private HttpContext CurrentHttpContext => _httpContextAccessor.HttpContext;
 
-        public MsalSessionTokenCacheProvider(IOptions<OpenIdConnectOptions> azureAdOptions,
+        public MsalSessionTokenCacheProvider(IOptions<MicrosoftIdentityOptions> azureAdOptions,
                             IHttpContextAccessor httpContextAccessor) :
               base(azureAdOptions, httpContextAccessor)
         {

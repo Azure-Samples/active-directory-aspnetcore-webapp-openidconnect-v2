@@ -33,7 +33,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Distributed
         /// <param name="httpContextAccessor"></param>
         /// <param name="memoryCache"></param>
         /// <param name="cacheOptions"></param>
-        public MsalDistributedTokenCacheAdapter(IOptions<OpenIdConnectOptions> azureAdOptions,
+        public MsalDistributedTokenCacheAdapter(IOptions<MicrosoftIdentityOptions> azureAdOptions,
                                             IHttpContextAccessor httpContextAccessor,
                                             IDistributedCache memoryCache,
                                             IOptions<DistributedCacheEntryOptions> cacheOptions) :
