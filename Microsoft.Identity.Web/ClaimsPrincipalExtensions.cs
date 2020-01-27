@@ -42,7 +42,7 @@ namespace Microsoft.Identity.Web
         /// <summary>
         /// Gets the unique object ID associated with the <see cref="ClaimsPrincipal"/>
         /// </summary>
-        /// <param name="claimsPrincipal">the <see cref="ClaimsPrincipal"/> from which to retrieve the unique object id</param>
+        /// <param name="claimsPrincipal">the <see cref="ClaimsPrincipal"/> from which to retrieve the unique object ID</param>
         /// <remarks>This method returns the object ID both in case the developer has enabled or not claims mapping</remarks>
         /// <returns>Unique object ID of the identity, or <c>null</c> if it cannot be found</returns>
         public static string GetObjectId(this ClaimsPrincipal claimsPrincipal)
@@ -58,9 +58,9 @@ namespace Microsoft.Identity.Web
         /// <summary>
         /// Gets the Tenant ID associated with the <see cref="ClaimsPrincipal"/>
         /// </summary>
-        /// <param name="claimsPrincipal">the <see cref="ClaimsPrincipal"/> from which to retrieve the tenant id</param>
+        /// <param name="claimsPrincipal">the <see cref="ClaimsPrincipal"/> from which to retrieve the tenant ID</param>
         /// <returns>Tenant ID of the identity, or <c>null</c> if it cannot be found</returns>
-        /// <remarks>This method returns the object ID both in case the developer has enabled or not claims mapping</remarks>
+        /// <remarks>This method returns the tenant ID both in case the developer has enabled or not claims mapping</remarks>
         public static string GetTenantId(this ClaimsPrincipal claimsPrincipal)
         {
             string tenantId = claimsPrincipal.FindFirstValue(ClaimConstants.Tid);
@@ -103,28 +103,31 @@ namespace Microsoft.Identity.Web
         /// Get the display name for the signed-in user, from the <see cref="ClaimsPrincipal"/>
         /// </summary>
         /// <param name="claimsPrincipal">Claims about the user/account</param>
-        /// <returns>A string containing the display name for the user, as brought by Azure AD (v1.0) and Microsoft identity platform (v2.0) tokens,
+        /// <returns>A string containing the display name for the user, as determined by Azure AD (v1.0) and Microsoft identity platform (v2.0) tokens,
         /// or <c>null</c> if the claims cannot be found</returns>
         /// <remarks>See https://docs.microsoft.com/azure/active-directory/develop/id-tokens#payload-claims </remarks>
         public static string GetDisplayName(this ClaimsPrincipal claimsPrincipal)
         {
-            // Use the claims in an Microsoft identity platform token first
+            // Use the claims in a Microsoft identity platform token first
             string displayName = claimsPrincipal.FindFirstValue(ClaimConstants.PreferredUserName);
 
-            // Otherwise fall back to the claims in an Azure AD v1.0 token
-            if (string.IsNullOrWhiteSpace(displayName))
+            if (!string.IsNullOrWhiteSpace(displayName))
             {
-                displayName = claimsPrincipal.FindFirstValue(ClaimsIdentity.DefaultNameClaimType);
+                return displayName;
+            }
+
+            // Otherwise fall back to the claims in an Azure AD v1.0 token
+            displayName = claimsPrincipal.FindFirstValue(ClaimsIdentity.DefaultNameClaimType);
+
+            if (!string.IsNullOrWhiteSpace(displayName))
+            {
+                return displayName;
             }
 
             // Finally falling back to name
-            if (string.IsNullOrWhiteSpace(displayName))
-            {
-                displayName = claimsPrincipal.FindFirstValue(ClaimConstants.Name);
-            }
-            return displayName;
+            return claimsPrincipal.FindFirstValue(ClaimConstants.Name);
         }
-
+        
         /// <summary>
         /// Gets the Policy Id associated with the <see cref="ClaimsPrincipal"/>
         /// </summary>

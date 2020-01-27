@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Identity.Client;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -46,6 +47,19 @@ namespace Microsoft.Identity.Web
 
         /// <summary>
         /// Typically used from an ASP.NET Core Web App or Web API controller, this method gets an access token 
+        /// for a downstream API on behalf of the user account in which claims are provided in the <see cref="HttpContext.User"/>
+        /// member of the <paramref name="context"/> parameter
+        /// </summary>
+        /// <param name="context">HttpContext associated with the Controller or auth operation</param>
+        /// <param name="scopes">Scopes to request for the downstream API to call</param>
+        /// <param name="tenantId">Enables to override the tenant/account for the same identity. This is useful in the 
+        /// cases where a given account is a guest in other tenants, and you want to acquire tokens for a specific tenant</param>
+        /// <returns>An access token to call on behalf of the user, the downstream API characterized by its scopes</returns>
+        [Obsolete("Renamed to GetAccessTokenForUserAsync")]
+        Task<string> GetAccessTokenOnBehalfOfUserAsync(IEnumerable<string> scopes, string tenantId = null);
+
+        /// <summary>
+        /// Typically used from an ASP.NET Core Web App or Web API controller, this method gets an access token 
         /// for a downstream API on behalf of the user account which claims are provided in the <see cref="HttpContext.User"/>
         /// member of the <paramref name="context"/> parameter
         /// </summary>
@@ -54,7 +68,7 @@ namespace Microsoft.Identity.Web
         /// <param name="tenantId">Enables to override the tenant/account for the same identity. This is useful in the 
         /// cases where a given account is guest in other tenants, and you want to acquire tokens for a specific tenant</param>
         /// <returns>An access token to call on behalf of the user, the downstream API characterized by its scopes</returns>
-        Task<string> GetAccessTokenOnBehalfOfUserAsync(IEnumerable<string> scopes, string tenantId = null);
+        Task<string> GetAccessTokenForUserAsync(IEnumerable<string> scopes, string tenantId = null);
 
         /// <summary>
         /// Removes the account associated with context.HttpContext.User from the MSAL.NET cache
@@ -66,8 +80,8 @@ namespace Microsoft.Identity.Web
 
         /// <summary>
         /// Used in Web APIs (which therefore cannot have an interaction with the user). 
-        /// Replies to the client through the HttpReponse by sending a 403 (forbidden) and populating wwwAuthenticateHeaders so that
-        /// the client can trigger an interaction with the user so that the user consents to more scopes
+        /// Replies to the client through the HttpResponse by sending a 403 (forbidden) and populating wwwAuthenticateHeaders so that
+        /// the client can trigger an interaction with the user so the user can consent to more scopes
         /// </summary>
         /// <param name="scopes">Scopes to consent to</param>
         /// <param name="msalSeviceException"><see cref="MsalUiRequiredException"/> triggering the challenge</param>

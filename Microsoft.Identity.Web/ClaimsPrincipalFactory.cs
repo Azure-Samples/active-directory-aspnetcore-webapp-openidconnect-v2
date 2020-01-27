@@ -30,7 +30,7 @@ namespace Microsoft.Identity.Web
         ///           subscriptionStore.GetSubscriptionInfo(notification.SubscriptionId);
         ///  HttpContext.User = ClaimsPrincipalExtension.FromTenantIdAndObjectId(subscription.TenantId,
         ///                                                                      subscription.UserId);
-        ///  string accessToken = await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(scopes);
+        ///  string accessToken = await tokenAcquisition.GetAccessTokenForUserAsync(scopes);
         /// </code>
         /// </example>
         public static ClaimsPrincipal FromTenantIdAndObjectId(string tenantId, string objectId)

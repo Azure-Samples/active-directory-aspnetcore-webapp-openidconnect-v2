@@ -319,10 +319,10 @@ If a multi-tenant app needs to acquire an access token for Microsoft Graph to be
 ```csharp
 var userTenant = User.GetTenantId();
 // Acquiring token for graph using the user's tenant, so it can return all the users from their tenant
-var graphAccessToken = await _tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new string[] { GraphScope.UserReadAll }, userTenant);
+var graphAccessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { GraphScope.UserReadAll }, userTenant);
 ```
 
-We are acquiring an access token for Graph with the scope `User.Read.All`, to list all the users from the tenant so you can assign a todo item to them. `GetAccessTokenOnBehalfOfUserAsync` is a helper method found on `Microsoft.Identity.Web` project, and it receives a **tenantId** as parameter to acquire a token for the desired authority. For that, we get the current authority from the built `IConfidentialClientApplication` and replace the tenantId. Below is an example of this logic.
+We are acquiring an access token for Graph with the scope `User.Read.All`, to list all the users from the tenant so you can assign a todo item to them. `GetAccessTokenForUserAsync` is a helper method found on `Microsoft.Identity.Web` project, and it receives a **tenantId** as parameter to acquire a token for the desired authority. For that, we get the current authority from the built `IConfidentialClientApplication` and replace the tenantId. Below is an example of this logic.
 
 ```csharp
 string signedUserAuthority = confidentialClientApplication.Authority.Replace(new Uri(confidentialClientApplication.Authority).PathAndQuery, $"/{tenant}/");

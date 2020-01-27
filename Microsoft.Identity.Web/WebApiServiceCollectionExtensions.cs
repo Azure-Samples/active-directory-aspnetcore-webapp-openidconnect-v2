@@ -22,6 +22,25 @@ namespace Microsoft.Identity.Web
     /// </summary>
     public static class WebApiServiceCollectionExtensions
     {
+        #region Compatibility
+        /// <summary>
+        /// Protects the Web API with Microsoft identity platform (formerly Azure AD v2.0)
+        /// This supposes that the configuration files have a section named configSectionName (typically "AzureAD")
+        /// </summary>
+        /// <param name="services">Service collection to which to add authentication</param>
+        /// <param name="configuration">Configuration</param>
+        /// <returns></returns>
+        public static IServiceCollection AddProtectedApiCallsWebApis(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            string configSectionName = "AzureAd")
+        {
+            return AddProtectedWebApiCallsProtectedWebApi(services,
+                                                          configuration,
+                                                          configSectionName);
+        }
+        #endregion
+
         /// <summary>
         /// Protects the Web API with Microsoft identity platform (formerly Azure AD v2.0)
         /// This method expects the configuration file will have a section named "AzureAd" with the necessary settings to initialize authentication options.
@@ -115,7 +134,8 @@ namespace Microsoft.Identity.Web
         public static IServiceCollection AddProtectedWebApiCallsProtectedWebApi(
             this IServiceCollection services,
             IConfiguration configuration,
-            string configSectionName = "AzureAd")
+            string configSectionName = "AzureAd",
+            string jwtBearerScheme = JwtBearerDefaults.AuthenticationScheme)
         {
             services.AddTokenAcquisition();
             services.AddHttpContextAccessor();
@@ -123,7 +143,7 @@ namespace Microsoft.Identity.Web
             services.Configure<MicrosoftIdentityOptions>(options => configuration.Bind(configSectionName, options));
             
             // TODO: Pass scheme as parameter?
-            services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+            services.Configure<JwtBearerOptions>(jwtBearerScheme, options =>
             {
                 options.Events.OnTokenValidated = async context =>
                 {
