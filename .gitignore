@@ -11,6 +11,9 @@
 /Microsoft.Identity.Web.UI/.vs
 /Microsoft.Identity.Web.UI/bin
 /Microsoft.Identity.Web.UI/obj
+/Microsoft.Identity.Web.Test/.vs
+/Microsoft.Identity.Web.Test/bin
+/Microsoft.Identity.Web.Test/obj
 /1-WebApp-OIDC/1-1-MyOrg/.vs
 /1-WebApp-OIDC/1-1-MyOrg/bin
 /1-WebApp-OIDC/1-1-MyOrg/obj
