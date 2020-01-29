@@ -14,6 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Services;
 using Constants = WebApp_OpenIDConnect_DotNet.Infrastructure.Constants;
+using Microsoft.Identity.Web.UI;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -46,25 +47,30 @@ namespace WebApp_OpenIDConnect_DotNet
             // This flag ensures that the ClaimsIdentity claims collection will be built from the claims in the token
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
+
+            // Sign-in users with the Microsoft identity platform
+            //services.AddSignIn(Configuration);
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                .AddSignIn("AzureAD", Configuration, options => Configuration.Bind("AzureAD", options));
+
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
-            services.AddSignIn(Configuration)
-                                .AddWebAppCallsProtectedWebApi(Configuration, new string[] { Constants.ScopeUserRead })
-                                .AddInMemoryTokenCaches();
+            services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { Constants.ScopeUserRead })
+                .AddInMemoryTokenCaches();
 
             // Add Graph
             services.AddGraphService(Configuration);
 
             // The following lines code instruct the asp.net core middleware to use the data in the "roles" claim in the Authorize attribute and User.IsInrole()
             // See https://docs.microsoft.com/aspnet/core/security/authorization/roles?view=aspnetcore-2.2 for more info.
-            services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
+            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
                 // The claim in the Jwt token where App roles are available.
                 options.TokenValidationParameters.RoleClaimType = "roles";
             });
 
             // Adding authorization policies that enforce authorization using Azure AD roles.
-            services.AddAuthorization(options => 
+            services.AddAuthorization(options =>
             {
                 options.AddPolicy(AuthorizationPolicies.AssignmentToUserReaderRoleRequired, policy => policy.RequireRole(AppRole.UserReaders));
                 options.AddPolicy(AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired, policy => policy.RequireRole(AppRole.DirectoryViewers));
@@ -76,7 +82,7 @@ namespace WebApp_OpenIDConnect_DotNet
                     .RequireAuthenticatedUser()
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
-            });
+            }).AddMicrosoftIdentityUI();
 
             services.AddRazorPages();
         }
