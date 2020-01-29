@@ -56,6 +56,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureADB2C.UI" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.1" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.8.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.8.1" />
   </ItemGroup>
 </Project>
