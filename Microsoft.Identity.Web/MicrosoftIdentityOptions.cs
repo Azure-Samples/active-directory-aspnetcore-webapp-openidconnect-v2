@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace Microsoft.Identity.Web
 {
