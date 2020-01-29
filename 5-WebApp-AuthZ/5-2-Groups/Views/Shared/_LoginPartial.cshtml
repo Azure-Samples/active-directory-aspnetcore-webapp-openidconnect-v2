@@ -3,12 +3,12 @@
 {
     <ul class="nav navbar-nav navbar-right">
         <li>@Html.ActionLink(User.Identity.Name + "!", "Index", "UserProfile", routeValues: null)</li>
-        <li><a asp-area="AzureAD" asp-controller="Account" asp-action="SignOut">Sign out</a></li>
+        <li><a asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign out</a></li>
     </ul>
 }
 else
 {
     <ul class="nav navbar-nav navbar-right">
-        <li><a asp-area="AzureAD" asp-controller="Account" asp-action="SignIn">Sign in</a></li>
+        <li><a asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">Sign in</a></li>
     </ul>
 }
