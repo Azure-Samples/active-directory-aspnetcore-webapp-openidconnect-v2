@@ -314,7 +314,7 @@ namespace Microsoft.Identity.Web
 
             if (microsoftIdentityOptions.IsB2C)
             {
-                authority = $"{applicationOptions.Instance.TrimEnd('/')}/tfp/{microsoftIdentityOptions.Domain}/{microsoftIdentityOptions.DefaultPolicy}";
+                authority = $"{applicationOptions.Instance.TrimEnd('/')}/tfp/{microsoftIdentityOptions.Domain}/{microsoftIdentityOptions.DefaultUserFlow}";
                 app = ConfidentialClientApplicationBuilder
                     .CreateWithApplicationOptions(applicationOptions)
                     .WithRedirectUri(currentUri)
@@ -418,7 +418,7 @@ namespace Microsoft.Identity.Web
                 // Acquire an access token as another B2C authority
                 if (_microsoftIdentityOptions.IsB2C)
                 {
-                    string authority = application.Authority.Replace(new Uri(application.Authority).PathAndQuery, $"/tfp/{tenant}/{_microsoftIdentityOptions.DefaultPolicy}");
+                    string authority = application.Authority.Replace(new Uri(application.Authority).PathAndQuery, $"/tfp/{tenant}/{_microsoftIdentityOptions.DefaultUserFlow}");
                     result = await application
                         .AcquireTokenSilent(scopes.Except(_scopesRequestedByMsal), account)
                         .WithB2CAuthority(authority)

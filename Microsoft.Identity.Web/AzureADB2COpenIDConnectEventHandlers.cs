@@ -27,29 +27,29 @@ namespace Microsoft.Identity.Web
 
         public Task OnRedirectToIdentityProvider(RedirectContext context)
         {
-            var defaultPolicy = Options.DefaultPolicy;
+            var defaultUserFlow = Options.DefaultUserFlow;
             if (context.Properties.Items.TryGetValue(OidcConstants.PolicyKey, out var policy) &&
                 !string.IsNullOrEmpty(policy) &&
-                !string.Equals(policy, defaultPolicy, StringComparison.OrdinalIgnoreCase))
+                !string.Equals(policy, defaultUserFlow, StringComparison.OrdinalIgnoreCase))
             {
                 context.ProtocolMessage.Scope = OpenIdConnectScope.OpenIdProfile;
                 context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.IdToken;
-                context.ProtocolMessage.IssuerAddress = BuildIssuerAddress(context, defaultPolicy, policy);
+                context.ProtocolMessage.IssuerAddress = BuildIssuerAddress(context, defaultUserFlow, policy);
                 context.Properties.Items.Remove(OidcConstants.PolicyKey);
             }
 
             return Task.CompletedTask;
         }
 
-        private string BuildIssuerAddress(RedirectContext context, string defaultPolicy, string policy)
+        private string BuildIssuerAddress(RedirectContext context, string defaultUserFlow, string userFlow)
         {
-            if (!_policyToIssuerAddress.TryGetValue(policy, out var issuerAddress))
+            if (!_policyToIssuerAddress.TryGetValue(userFlow, out var issuerAddress))
             {
-                _policyToIssuerAddress[policy] = context.ProtocolMessage.IssuerAddress.ToLowerInvariant()
-                    .Replace($"/{defaultPolicy.ToLowerInvariant()}/", $"/{policy.ToLowerInvariant()}/");
+                _policyToIssuerAddress[userFlow] = context.ProtocolMessage.IssuerAddress.ToLowerInvariant()
+                    .Replace($"/{defaultUserFlow.ToLowerInvariant()}/", $"/{userFlow.ToLowerInvariant()}/");
             }
 
-            return _policyToIssuerAddress[policy];
+            return _policyToIssuerAddress[userFlow];
         }
 
         public Task OnRemoteFailure(RemoteFailureContext context)
@@ -65,7 +65,7 @@ namespace Microsoft.Identity.Web
             if (context.Failure is OpenIdConnectProtocolException && context.Failure.Message.Contains("AADB2C90118"))
             {
                 // If the user clicked the reset password link, redirect to the reset password route
-                context.Response.Redirect($"{context.Request.PathBase}/AzureADB2C/Account/ResetPassword/{SchemeName}");
+                context.Response.Redirect($"{context.Request.PathBase}/MicrosoftIdentity/Account/ResetPassword/{SchemeName}");
             }
             // Access denied errors happen when a user cancels an action on the Azure Active Directory B2C UI. We just redirect back to
             // the main page in that case.
@@ -79,7 +79,7 @@ namespace Microsoft.Identity.Web
             }
             else
             {
-                context.Response.Redirect($"{context.Request.PathBase}/AzureADB2C/Account/Error");
+                context.Response.Redirect($"{context.Request.PathBase}/MicrosoftIdentity/Account/Error");
             }
 
             return Task.CompletedTask;

@@ -29,11 +29,11 @@ namespace Microsoft.Identity.Web
             var pathBase = baseUri.PathAndQuery.TrimEnd('/');
             var domain = options.Domain;
 
-            // If there are policies, then it must build a B2C authority 
-            if (!string.IsNullOrWhiteSpace(options.DefaultPolicy))
+            // If there are user flows, then it must build a B2C authority 
+            if (!string.IsNullOrWhiteSpace(options.DefaultUserFlow))
             {
-                var policy = options.DefaultPolicy;
-                return new Uri(baseUri, new PathString($"{pathBase}/{domain}/{policy}/v2.0")).ToString();
+                var userFlow = options.DefaultUserFlow;
+                return new Uri(baseUri, new PathString($"{pathBase}/{domain}/{userFlow}/v2.0")).ToString();
             }
 
             else

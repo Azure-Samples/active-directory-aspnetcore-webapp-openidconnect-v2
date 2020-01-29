@@ -38,10 +38,10 @@ namespace Microsoft.Identity.Web
         public string ResetPasswordPolicyId { get; set; }
 
         /// <summary>
-        /// Gets or sets the default policy.
+        /// Gets the default user flow (which is signUpsignIn).
         /// </summary>
-        public string DefaultPolicy => SignUpSignInPolicyId;
+        public string DefaultUserFlow => SignUpSignInPolicyId;
 
-        internal bool IsB2C { get { return !string.IsNullOrWhiteSpace(DefaultPolicy); } }
+        internal bool IsB2C { get { return !string.IsNullOrWhiteSpace(DefaultUserFlow); } }
     }
 }
