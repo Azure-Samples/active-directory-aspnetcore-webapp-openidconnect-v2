@@ -62,5 +62,110 @@ namespace Microsoft.Identity.Web.Test
             //Assert
             Assert.False(result);
         }
+
+        [Fact]
+        public void BuildAuthority_NullOptions_ReturnsNull()
+        {
+            //Arrange
+            MicrosoftIdentityOptions options = null;
+            string result = null;
+
+            //Act
+            result = AuthorityHelpers.BuildAuthority(options);
+
+            //Assert
+            Assert.Null(result);
+
+        }
+
+        [Fact]
+        public void BuildAuthority_EmptyInstance_ReturnsNull()
+        {
+            //Arrange
+            MicrosoftIdentityOptions options = new MicrosoftIdentityOptions();
+            options.Domain = "contoso.onmicrosoft.com";
+            options.Instance = "";
+            string result = null;
+
+            //Act
+            result = AuthorityHelpers.BuildAuthority(options);
+
+            //Assert
+            Assert.Null(result);
+
+        }
+
+        [Fact]
+        public void BuildAuthority_EmptyDomain_ReturnsNull()
+        {
+            //Arrange
+            MicrosoftIdentityOptions options = new MicrosoftIdentityOptions();
+            options.Domain = "";
+            options.Instance = "https://login.microsoftonline.com/";
+            string result = null;
+
+            //Act
+            result = AuthorityHelpers.BuildAuthority(options);
+
+            //Assert
+            Assert.Null(result);
+
+        }
+
+        [Fact]
+        public void BuildAuthority_AadInstanceAndDomain_BuildAadAuthority()
+        {
+            //Arrange
+            MicrosoftIdentityOptions options = new MicrosoftIdentityOptions();
+            options.Domain = "contoso.onmicrosoft.com";
+            options.Instance = "https://login.microsoftonline.com";
+            string result = null;
+            string expectedResult = $"{options.Instance}/{options.Domain}/v2.0";
+
+            //Act
+            result = AuthorityHelpers.BuildAuthority(options);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.Equal(result, expectedResult);
+        }
+
+        [Fact]
+        public void BuildAuthority_OptionsInstaceWithTrailing_BuildAadAuthorityWithoutExtraTrailing()
+        {
+            //Arrange
+            MicrosoftIdentityOptions options = new MicrosoftIdentityOptions();
+            options.Domain = "contoso.onmicrosoft.com";
+            options.Instance = "https://login.microsoftonline.com/";
+            string result = null;
+            string expectedResult = $"https://login.microsoftonline.com/{options.Domain}/v2.0";
+
+            //Act
+            result = AuthorityHelpers.BuildAuthority(options);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.Equal(result, expectedResult);
+        }
+
+        [Fact]
+        public void BuildAuthority_B2CInstanceDomainAndPolicy_BuildB2CAuthority()
+        {
+            //Arrange
+            MicrosoftIdentityOptions options = new MicrosoftIdentityOptions();
+            options.Domain = "fabrikamb2c.onmicrosoft.com";
+            options.Instance = "https://fabrikamb2c.b2clogin.com";
+            options.SignUpSignInPolicyId = "b2c_1_susi";
+
+            string result = null;
+            string expectedResult = $"{options.Instance}/{options.Domain}/{options.DefaultPolicy}/v2.0";
+
+            //Act
+            result = AuthorityHelpers.BuildAuthority(options);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.Equal(result, expectedResult);
+        }
     }
 }
