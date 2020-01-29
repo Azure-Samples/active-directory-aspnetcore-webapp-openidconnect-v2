@@ -28,15 +28,15 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Distributed
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="azureAdOptions"></param>
+        /// <param name="microsoftIdentityOptions"></param>
         /// <param name="httpContextAccessor"></param>
         /// <param name="memoryCache"></param>
         /// <param name="cacheOptions"></param>
-        public MsalDistributedTokenCacheAdapter(IOptions<MicrosoftIdentityOptions> azureAdOptions,
+        public MsalDistributedTokenCacheAdapter(IOptions<MicrosoftIdentityOptions> microsoftIdentityOptions,
                                             IHttpContextAccessor httpContextAccessor,
                                             IDistributedCache memoryCache,
                                             IOptions<DistributedCacheEntryOptions> cacheOptions) :
-            base(azureAdOptions, httpContextAccessor)
+            base(microsoftIdentityOptions, httpContextAccessor)
         {
             _distributedCache = memoryCache;
             _cacheOptions = cacheOptions.Value;

@@ -32,9 +32,9 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
     {
         private HttpContext CurrentHttpContext => _httpContextAccessor.HttpContext;
 
-        public MsalSessionTokenCacheProvider(IOptions<MicrosoftIdentityOptions> azureAdOptions,
+        public MsalSessionTokenCacheProvider(IOptions<MicrosoftIdentityOptions> microsoftIdentityOptions,
             IHttpContextAccessor httpContextAccessor) : 
-            base(azureAdOptions, httpContextAccessor)
+            base(microsoftIdentityOptions, httpContextAccessor)
         {
         }
 

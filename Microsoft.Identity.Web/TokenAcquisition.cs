@@ -25,7 +25,7 @@ namespace Microsoft.Identity.Web
     /// </summary>
     public class TokenAcquisition : ITokenAcquisition
     {
-        private readonly MicrosoftIdentityOptions _azureAdOptions;
+        private readonly MicrosoftIdentityOptions _microsoftIdentityOptions;
         private readonly ConfidentialClientApplicationOptions _applicationOptions;
 
         private readonly IMsalTokenCacheProvider _tokenCacheProvider;
@@ -45,11 +45,11 @@ namespace Microsoft.Identity.Web
         public TokenAcquisition(
             IMsalTokenCacheProvider tokenCacheProvider,
             IHttpContextAccessor httpContextAccessor,
-            IOptions<MicrosoftIdentityOptions> azureAdOptions,
+            IOptions<MicrosoftIdentityOptions> microsoftIdentityOptions,
             IOptions<ConfidentialClientApplicationOptions> applicationOptions)
         {
             _httpContextAccessor = httpContextAccessor;
-            _azureAdOptions = azureAdOptions.Value;
+            _microsoftIdentityOptions = microsoftIdentityOptions.Value;
             _applicationOptions = applicationOptions.Value;
             _tokenCacheProvider = tokenCacheProvider;
         }
@@ -247,8 +247,8 @@ namespace Microsoft.Identity.Web
             IConfidentialClientApplication app = GetOrBuildConfidentialClientApplication();
             IAccount account = null; 
             
-            // For B2C, we should remove all user accounts regardless the policy
-            if(_azureAdOptions.IsB2C)
+            // For B2C, we should remove all accounts of the user regardless the policy
+            if(_microsoftIdentityOptions.IsB2C)
             {
                 var b2cAccounts = await app.GetAccountsAsync().ConfigureAwait(false);
 
@@ -301,20 +301,20 @@ namespace Microsoft.Identity.Web
         private IConfidentialClientApplication BuildConfidentialClientApplication()
         {
             var request = CurrentHttpContext.Request;
-            var azureAdOptions = _azureAdOptions;
+            var microsoftIdentityOptions = _microsoftIdentityOptions;
             var applicationOptions = _applicationOptions;
             string currentUri = UriHelper.BuildAbsolute(
                 request.Scheme,
                 request.Host,
                 request.PathBase,
-                azureAdOptions.CallbackPath.Value ?? string.Empty);
+                microsoftIdentityOptions.CallbackPath.Value ?? string.Empty);
 
             string authority = string.Empty;
             IConfidentialClientApplication app = null;
 
-            if (azureAdOptions.IsB2C)
+            if (microsoftIdentityOptions.IsB2C)
             {
-                authority = $"{applicationOptions.Instance.TrimEnd('/')}/tfp/{azureAdOptions.Domain}/{azureAdOptions.DefaultPolicy}";
+                authority = $"{applicationOptions.Instance.TrimEnd('/')}/tfp/{microsoftIdentityOptions.Domain}/{microsoftIdentityOptions.DefaultPolicy}";
                 app = ConfidentialClientApplicationBuilder
                     .CreateWithApplicationOptions(applicationOptions)
                     .WithRedirectUri(currentUri)
@@ -366,7 +366,7 @@ namespace Microsoft.Identity.Web
 
                 // Special case for guest users as the Guest oid / tenant id are not surfaced.
                 // B2C should not follow this logic since loginHint is not present
-                if (!_azureAdOptions.IsB2C && account == null)
+                if (!_microsoftIdentityOptions.IsB2C && account == null)
                 {
                     if (loginHint == null)
                         throw new ArgumentNullException(nameof(loginHint));
@@ -377,7 +377,7 @@ namespace Microsoft.Identity.Web
             }
 
             // If is B2C and could not get an account (most likely because there is no tid claims), try to get it by policy
-            if (_azureAdOptions.IsB2C && account == null)
+            if (_microsoftIdentityOptions.IsB2C && account == null)
             {
                 string currentPolicy = claimsPrincipal.GetPolicyId();
                 account = GetAccountByPolicy(await application.GetAccountsAsync().ConfigureAwait(false), currentPolicy);
@@ -416,9 +416,9 @@ namespace Microsoft.Identity.Web
             else
             {
                 // Acquire an access token as another B2C authority
-                if (_azureAdOptions.IsB2C)
+                if (_microsoftIdentityOptions.IsB2C)
                 {
-                    string authority = application.Authority.Replace(new Uri(application.Authority).PathAndQuery, $"/tfp/{tenant}/{_azureAdOptions.DefaultPolicy}");
+                    string authority = application.Authority.Replace(new Uri(application.Authority).PathAndQuery, $"/tfp/{tenant}/{_microsoftIdentityOptions.DefaultPolicy}");
                     result = await application
                         .AcquireTokenSilent(scopes.Except(_scopesRequestedByMsal), account)
                         .WithB2CAuthority(authority)

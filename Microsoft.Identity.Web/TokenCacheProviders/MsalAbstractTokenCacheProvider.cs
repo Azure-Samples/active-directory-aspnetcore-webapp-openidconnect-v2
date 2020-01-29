@@ -17,7 +17,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
         /// <summary>
         /// Azure AD options
         /// </summary>
-        protected readonly IOptions<MicrosoftIdentityOptions> _azureAdOptions;
+        protected readonly IOptions<MicrosoftIdentityOptions> _microsoftIdentityOptions;
 
         /// <summary>
         /// Http accessor
@@ -29,9 +29,9 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
         /// </summary>
         /// <param name="azureAdOptions"></param>
         /// <param name="httpContextAccessor"></param>
-        protected MsalAbstractTokenCacheProvider(IOptions<MicrosoftIdentityOptions> azureAdOptions, IHttpContextAccessor httpContextAccessor)
+        protected MsalAbstractTokenCacheProvider(IOptions<MicrosoftIdentityOptions> microsoftIdentityOptions, IHttpContextAccessor httpContextAccessor)
         {
-            _azureAdOptions = azureAdOptions;
+            _microsoftIdentityOptions = microsoftIdentityOptions;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -56,7 +56,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders
         {
             if (isAppTokenCache)
             {
-                return $"{_azureAdOptions.Value.ClientId}_AppTokenCache";
+                return $"{_microsoftIdentityOptions.Value.ClientId}_AppTokenCache";
             }
             else
             {
