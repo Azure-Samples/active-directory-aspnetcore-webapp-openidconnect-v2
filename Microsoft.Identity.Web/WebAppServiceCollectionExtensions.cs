@@ -205,7 +205,11 @@ namespace Microsoft.Identity.Web
                 if (!AuthorityHelpers.IsV2Authority(options.Authority))
                     options.Authority += "/v2.0";
 
-                options.TokenValidationParameters.NameClaimType = "preferred_username";
+                // B2C doesn't have preferred_username claims
+                if (microsoftIdentityOptions.IsB2C)
+                    options.TokenValidationParameters.NameClaimType = "name";
+                else
+                    options.TokenValidationParameters.NameClaimType = "preferred_username";
 
                 // If the developer registered an IssuerValidator, do not overwrite it
                 if (options.TokenValidationParameters.IssuerValidator == null)
