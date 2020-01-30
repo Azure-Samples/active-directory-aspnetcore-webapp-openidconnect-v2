@@ -11,6 +11,8 @@ using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Identity.Web.UI;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -49,11 +51,13 @@ namespace WebApp_OpenIDConnect_DotNet
                 dotnet sql-cache create "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MsalTokenCacheDatabase;Integrated Security=True;" dbo TokenCache    
              */
 
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                .AddSignIn("AzureAD", Configuration, options => Configuration.Bind("AzureAD", options));
+
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
-            services.AddSignIn(Configuration)
-                    .AddWebAppCallsProtectedWebApi(Configuration, new string[] { Constants.ScopeUserRead })
-                    .AddDistributedTokenCaches();
+            services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { Constants.ScopeUserRead })
+                .AddDistributedTokenCaches();
 
             services.AddDistributedSqlServerCache(options =>
             {
@@ -72,7 +76,7 @@ namespace WebApp_OpenIDConnect_DotNet
                     .RequireAuthenticatedUser()
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
-            });
+            }).AddMicrosoftIdentityUI();
             services.AddRazorPages();
         }
 

@@ -10,6 +10,8 @@ using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Identity.Web.UI;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -36,11 +38,13 @@ namespace WebApp_OpenIDConnect_DotNet
 
             services.AddOptions();
 
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                .AddSignIn("AzureAD", Configuration, options => Configuration.Bind("AzureAD", options));
+
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
-            services.AddSignIn(Configuration)
-                    .AddWebAppCallsProtectedWebApi(Configuration, new string[] { Constants.ScopeUserRead })
-                    .AddInMemoryTokenCaches();
+            services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { Constants.ScopeUserRead })
+                .AddInMemoryTokenCaches();
 
             // Add Graph
             services.AddGraphService(Configuration);
@@ -51,7 +55,7 @@ namespace WebApp_OpenIDConnect_DotNet
                     .RequireAuthenticatedUser()
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
-            });
+            }).AddMicrosoftIdentityUI();
             services.AddRazorPages();
         }
 

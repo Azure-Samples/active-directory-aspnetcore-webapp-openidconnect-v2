@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -41,6 +40,7 @@ using WebApp_OpenIDConnect_DotNet.DAL;
 using WebApp_OpenIDConnect_DotNet.Services;
 using WebApp_OpenIDConnect_DotNet.Utils;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Identity.Web.UI;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -77,37 +77,39 @@ namespace WebApp_OpenIDConnect_DotNet
             services.AddScoped<IMSGraphService, MSGraphService>();
 
             // Sign-in users with the Microsoft identity platform
-            services.AddSignIn(Configuration)
-                    .AddWebAppCallsProtectedWebApi(Configuration, new string[] { GraphScope.UserReadAll })
-                    .AddInMemoryTokenCaches();
-
-            services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
-            {
-                options.Events.OnTokenValidated = async context =>
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                .AddSignIn("AzureAD", Configuration, options =>
                 {
-                    string tenantId = context.SecurityToken.Claims.FirstOrDefault(x => x.Type == "tid" || x.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
+                    Configuration.Bind("AzureAD", options);
 
-                    if (string.IsNullOrWhiteSpace(tenantId))
-                        throw new UnauthorizedAccessException("Unable to get tenantId from token.");
-
-                    var dbContext = context.HttpContext.RequestServices.GetRequiredService<SampleDbContext>();
-
-                    var authorizedTenant = await dbContext.AuthorizedTenants.FirstOrDefaultAsync(t => t.TenantId == tenantId);
-
-                    if (authorizedTenant == null)
-                        throw new UnauthorizedTenantException("This tenant is not authorized");
-                };
-                options.Events.OnAuthenticationFailed = (context) =>
-                {
-                    if (context.Exception != null && context.Exception is UnauthorizedTenantException)
+                    options.Events.OnTokenValidated = async context =>
                     {
-                        context.Response.Redirect("/Home/UnauthorizedTenant");
-                        context.HandleResponse(); // Suppress the exception
-                    }
+                        string tenantId = context.SecurityToken.Claims.FirstOrDefault(x => x.Type == "tid" || x.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
 
-                    return Task.FromResult(0);
-                };
-            });
+                        if (string.IsNullOrWhiteSpace(tenantId))
+                            throw new UnauthorizedAccessException("Unable to get tenantId from token.");
+
+                        var dbContext = context.HttpContext.RequestServices.GetRequiredService<SampleDbContext>();
+
+                        var authorizedTenant = await dbContext.AuthorizedTenants.FirstOrDefaultAsync(t => t.TenantId == tenantId);
+
+                        if (authorizedTenant == null)
+                            throw new UnauthorizedTenantException("This tenant is not authorized");
+                    };
+                    options.Events.OnAuthenticationFailed = (context) =>
+                    {
+                        if (context.Exception != null && context.Exception is UnauthorizedTenantException)
+                        {
+                            context.Response.Redirect("/Home/UnauthorizedTenant");
+                            context.HandleResponse(); // Suppress the exception
+                        }
+
+                        return Task.FromResult(0);
+                    };
+                });
+
+            services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { GraphScope.UserReadAll })
+                .AddInMemoryTokenCaches();
 
             services.AddControllersWithViews(options =>
             {
@@ -115,7 +117,7 @@ namespace WebApp_OpenIDConnect_DotNet
                     .RequireAuthenticatedUser()
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
-            });
+            }).AddMicrosoftIdentityUI();
             services.AddRazorPages();
         }
 
