@@ -24,7 +24,7 @@ namespace Microsoft.Identity.Web
     public static class WebAppServiceCollectionExtensions
     {
         #region
-        [Obsolete("Use AddSignIn")]
+        [Obsolete("This method has been deprecated, please use the AddSignIn() method instead.")]
         public static IServiceCollection AddMicrosoftIdentityPlatform(
                 this IServiceCollection services,
                 IConfiguration configuration,
@@ -40,7 +40,7 @@ namespace Microsoft.Identity.Web
             return services;
         }
 
-        [Obsolete("Use AddWebAppCallsProtectedWebApi")]
+        [Obsolete("This method has been deprecated, please use the AddWebAppCallsProtectedWebApi() method instead.")]
         public static IServiceCollection AddMsal(this IServiceCollection services,
                                                                IConfiguration configuration,
                                                                IEnumerable<string> initialScopes,
@@ -60,9 +60,9 @@ namespace Microsoft.Identity.Web
         /// <param name="initialScopes">Initial scopes to request at sign-in</param>
         /// <returns></returns>
         public static IServiceCollection AddWebAppCallsProtectedWebApi(
-            this IServiceCollection services, 
-            IConfiguration configuration, 
-            IEnumerable<string> initialScopes, 
+            this IServiceCollection services,
+            IConfiguration configuration,
+            IEnumerable<string> initialScopes,
             string configSectionName = "AzureAd",
             string openIdConnectScheme = OpenIdConnectDefaults.AuthenticationScheme)
         {
@@ -125,8 +125,8 @@ namespace Microsoft.Identity.Web
         /// </param>
         /// <returns></returns>
         public static AuthenticationBuilder AddSignIn(
-            this AuthenticationBuilder builder, 
-            IConfiguration configuration, 
+            this AuthenticationBuilder builder,
+            IConfiguration configuration,
             Action<OpenIdConnectOptions> configureOptions,
             bool subscribeToOpenIdConnectMiddlewareDiagnosticsEvents = false) =>
                 builder.AddSignIn(
@@ -150,9 +150,9 @@ namespace Microsoft.Identity.Web
         /// </param>
         /// <returns></returns>
         public static AuthenticationBuilder AddSignIn(
-            this AuthenticationBuilder builder, 
-            string configSectionName, 
-            IConfiguration configuration, 
+            this AuthenticationBuilder builder,
+            string configSectionName,
+            IConfiguration configuration,
             Action<OpenIdConnectOptions> configureOptions,
             bool subscribeToOpenIdConnectMiddlewareDiagnosticsEvents = false) =>
                 builder.AddSignIn(
@@ -202,13 +202,16 @@ namespace Microsoft.Identity.Web
 
                 if (!AuthorityHelpers.IsV2Authority(options.Authority))
                     options.Authority += "/v2.0";
-                
+
                 options.TokenValidationParameters.NameClaimType = "preferred_username";
 
-                // If you want to restrict the users that can sign-in to several organizations
-                // Set the tenant value in the appsettings.json file to 'organizations', and add the
-                // issuers you want to accept to options.TokenValidationParameters.ValidIssuers collection
-                options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).Validate;
+                if (options.TokenValidationParameters.IssuerValidator == null)
+                {
+                    // If you want to restrict the users that can sign-in to several organizations
+                    // Set the tenant value in the appsettings.json file to 'organizations', and add the
+                    // issuers you want to accept to options.TokenValidationParameters.ValidIssuers collection
+                    options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).Validate;
+                }
 
                 // Avoids having users being presented the select account dialog when they are already signed-in
                 // for instance when going through incremental consent

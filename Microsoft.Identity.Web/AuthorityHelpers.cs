@@ -21,7 +21,7 @@ namespace Microsoft.Identity.Web
             if (options == null)
                 return null;
 
-            // Cannot build authority without AAD Intance or Domain
+            // Cannot build authority without AAD Instance or Domain
             if (string.IsNullOrWhiteSpace(options.Instance) || string.IsNullOrWhiteSpace(options.Domain))
                 return null;
 

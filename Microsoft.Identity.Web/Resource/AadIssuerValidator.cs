@@ -165,7 +165,7 @@ namespace Microsoft.Identity.Web.Resource
                 if (jwtSecurityToken.Payload.TryGetValue(ClaimConstants.Tid, out object tenantId))
                     return tenantId as string;
 
-                // Since B2C doesnt have TID as default, try to get it from iss claims
+                // Since B2C doesn't have TID as default, try to get it from iss claims
                 if (jwtSecurityToken.Claims.Any(c => c.Type == ClaimConstants.Acr || c.Type == ClaimConstants.Tfp))
                     return GetTenantIdFromIss(jwtSecurityToken.Issuer);
             }

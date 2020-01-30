@@ -157,7 +157,7 @@ namespace Microsoft.Identity.Web
         /// passing the validated token (as a JwtSecurityToken). Calling it from a Web App supposes that
         /// you have previously called AddAccountToCacheFromAuthorizationCodeAsync from a method called by
         /// OpenIdConnectOptions.Events.OnAuthorizationCodeReceived</remarks>
-        [Obsolete("Renamed to GetAccessTokenForUserAsync. Please use that method")]
+        [Obsolete("This method has been deprecated, please use the GetAccessTokenForUserAsync() method instead.")]
         public async Task<string> GetAccessTokenOnBehalfOfUserAsync(
             IEnumerable<string> scopes,
             string tenant = null)
@@ -224,7 +224,7 @@ namespace Microsoft.Identity.Web
                     accessToken = result.AccessToken;
                 }
 
-                // Case of the Web App: we let the the MsalUiRequiredException be caught by the 
+                // Case of the Web App: we let the MsalUiRequiredException be caught by the 
                 // AuthorizeForScopesAttribute exception filter so that the user can consent, do 2FA, etc ...
                 else
                 {

@@ -69,7 +69,7 @@ namespace Microsoft.Identity.Web
             }
             // Access denied errors happen when a user cancels an action on the Azure Active Directory B2C UI. We just redirect back to
             // the main page in that case.
-            // Message contains error: 'access_denied', error_description: 'AADB2C90091: The user has cancelled entering self-asserted information.
+            // Message contains error: 'access_denied', error_description: 'AADB2C90091: The user has canceled entering self-asserted information.
             // Correlation ID: d01c8878-0732-4eb2-beb8-da82a57432e0
             // Timestamp: 2018-03-05 02:56:49Z
             // ', error_uri: 'error_uri is null'.
