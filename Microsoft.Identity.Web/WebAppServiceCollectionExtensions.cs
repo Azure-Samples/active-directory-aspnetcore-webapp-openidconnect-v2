@@ -94,20 +94,22 @@ namespace Microsoft.Identity.Web
 
                 // Handling the auth redemption by MSAL.NET so that a token is available in the token cache
                 // where it will be usable from Controllers later (through the TokenAcquisition service)
-                var handler = options.Events.OnAuthorizationCodeReceived;
+                var codeReceivedHandler = options.Events.OnAuthorizationCodeReceived;
                 options.Events.OnAuthorizationCodeReceived = async context =>
                 {
                     var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
                     await tokenAcquisition.AddAccountToCacheFromAuthorizationCodeAsync(context, options.Scope).ConfigureAwait(false);
-                    await handler(context).ConfigureAwait(false);
+                    await codeReceivedHandler(context).ConfigureAwait(false);
                 };
 
                 // Handling the sign-out: removing the account from MSAL.NET cache
+                var signOutHandler = options.Events.OnRedirectToIdentityProviderForSignOut;
                 options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
                 {
                     // Remove the account from MSAL.NET token cache
                     var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
                     await tokenAcquisition.RemoveAccountAsync(context).ConfigureAwait(false);
+                    await signOutHandler(context).ConfigureAwait(false);
                 };
             });
             return services;
@@ -205,6 +207,7 @@ namespace Microsoft.Identity.Web
 
                 options.TokenValidationParameters.NameClaimType = "preferred_username";
 
+                // If the developer registered an IssuerValidator, do not overwrite it
                 if (options.TokenValidationParameters.IssuerValidator == null)
                 {
                     // If you want to restrict the users that can sign-in to several organizations
@@ -215,7 +218,8 @@ namespace Microsoft.Identity.Web
 
                 // Avoids having users being presented the select account dialog when they are already signed-in
                 // for instance when going through incremental consent
-                options.Events.OnRedirectToIdentityProvider = context =>
+                var redirectToIdpHandler = options.Events.OnRedirectToIdentityProvider;
+                options.Events.OnRedirectToIdentityProvider = async context =>
                 {
                     var login = context.Properties.GetParameter<string>(OpenIdConnectParameterNames.LoginHint);
                     if (!string.IsNullOrWhiteSpace(login))
@@ -242,18 +246,24 @@ namespace Microsoft.Identity.Web
                     {
                         // When a new Challenge is returned using any B2C policy different than sisu, we must change
                         // the ProtocolMessage.IssuerAddress to the desired policy otherwise the redirect would use the sisu policy
-                        b2COidcHandlers.OnRedirectToIdentityProvider(context);
+                        await b2COidcHandlers.OnRedirectToIdentityProvider(context);
                     }
 
-                    return Task.FromResult(0);
+                    await redirectToIdpHandler(context).ConfigureAwait(false);
                 };
 
                 if (microsoftIdentityOptions.IsB2C)
                 {
-                    // Handles the error when a user cancels an action on the Azure Active Directory B2C UI.
-                    // Handle the error code that Azure Active Directory B2C throws when trying to reset a password from the login page 
-                    // because password reset is not supported by a "sign-up or sign-in policy".
-                    options.Events.OnRemoteFailure = b2COidcHandlers.OnRemoteFailure;
+                    var remoteFailureHandler = options.Events.OnRemoteFailure;
+                    options.Events.OnRemoteFailure = async context =>
+                    {
+                        // Handles the error when a user cancels an action on the Azure Active Directory B2C UI.
+                        // Handle the error code that Azure Active Directory B2C throws when trying to reset a password from the login page 
+                        // because password reset is not supported by a "sign-up or sign-in policy".
+                        await b2COidcHandlers.OnRemoteFailure(context);
+
+                        await remoteFailureHandler(context).ConfigureAwait(false);
+                    };
                 }
 
                 if (subscribeToOpenIdConnectMiddlewareDiagnosticsEvents)
