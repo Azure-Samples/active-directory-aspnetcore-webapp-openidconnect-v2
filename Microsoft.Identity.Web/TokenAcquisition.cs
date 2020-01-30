@@ -247,7 +247,7 @@ namespace Microsoft.Identity.Web
             IConfidentialClientApplication app = GetOrBuildConfidentialClientApplication();
             IAccount account = null; 
             
-            // For B2C, we should remove all accounts of the user regardless the policy
+            // For B2C, we should remove all accounts of the user regardless the user flow
             if(_microsoftIdentityOptions.IsB2C)
             {
                 var b2cAccounts = await app.GetAccountsAsync().ConfigureAwait(false);
@@ -376,11 +376,11 @@ namespace Microsoft.Identity.Web
                 }
             }
 
-            // If is B2C and could not get an account (most likely because there is no tid claims), try to get it by policy
+            // If is B2C and could not get an account (most likely because there is no tid claims), try to get it by user flow
             if (_microsoftIdentityOptions.IsB2C && account == null)
             {
-                string currentPolicy = claimsPrincipal.GetPolicyId();
-                account = GetAccountByPolicy(await application.GetAccountsAsync().ConfigureAwait(false), currentPolicy);
+                string currentUserFlow = claimsPrincipal.GetUserFlowId();
+                account = GetAccountByUserFlow(await application.GetAccountsAsync().ConfigureAwait(false), currentUserFlow);
             }
 
             return await GetAccessTokenOnBehalfOfUserFromCacheAsync(application, account, scopes, tenant).ConfigureAwait(false);
@@ -496,17 +496,17 @@ namespace Microsoft.Identity.Web
         }
 
         /// <summary>
-        /// Gets an IAccount for the current B2C policy in the user claims
+        /// Gets an IAccount for the current B2C user flow in the user claims
         /// </summary>
         /// <param name="accounts"></param>
-        /// <param name="policy"></param>
+        /// <param name="userFlow"></param>
         /// <returns></returns>
-        private IAccount GetAccountByPolicy(IEnumerable<IAccount> accounts, string policy)
+        private IAccount GetAccountByUserFlow(IEnumerable<IAccount> accounts, string userFlow)
         {
             foreach (var account in accounts)
             {
                 string accountIdentifier = account.HomeAccountId.ObjectId.Split('.')[0];
-                if (accountIdentifier.EndsWith(policy.ToLower()))
+                if (accountIdentifier.EndsWith(userFlow.ToLower()))
                     return account;
             }
 

@@ -11,8 +11,6 @@ namespace Microsoft.Identity.Web
     /// </summary>
     public static class ClaimsPrincipalExtensions
     {
-        // TODO: how to make this work with B2C, given that there is no tenant ID with B2C?
-
         /// <summary>
         /// Gets the Account identifier for an MSAL.NET account from a <see cref="ClaimsPrincipal"/>
         /// </summary>
@@ -23,12 +21,12 @@ namespace Microsoft.Identity.Web
             string userObjectId = claimsPrincipal.GetObjectId();
             string nameIdentifierId = claimsPrincipal.GetNameIdentifierId();
             string tenantId = claimsPrincipal.GetTenantId();
-            string policyId = claimsPrincipal.GetPolicyId();
+            string userFlowId = claimsPrincipal.GetUserFlowId();
 
-            if (!string.IsNullOrWhiteSpace(nameIdentifierId) && !string.IsNullOrWhiteSpace(tenantId) && !string.IsNullOrWhiteSpace(policyId))
+            if (!string.IsNullOrWhiteSpace(nameIdentifierId) && !string.IsNullOrWhiteSpace(tenantId) && !string.IsNullOrWhiteSpace(userFlowId))
             {
                 // B2C pattern: {oid}-{tfp}.{tid}
-                return $"{nameIdentifierId}-{policyId}.{tenantId}";
+                return $"{nameIdentifierId}-{userFlowId}.{tenantId}";
             }
             else if (!string.IsNullOrWhiteSpace(userObjectId) && !string.IsNullOrWhiteSpace(tenantId))
             {
@@ -129,14 +127,14 @@ namespace Microsoft.Identity.Web
         }
         
         /// <summary>
-        /// Gets the Policy Id associated with the <see cref="ClaimsPrincipal"/>
+        /// Gets the user flow id associated with the <see cref="ClaimsPrincipal"/>
         /// </summary>
-        /// <param name="claimsPrincipal">the <see cref="ClaimsPrincipal"/> from which to retrieve the policy id</param>
-        /// <returns>Policy Id of the identity, or <c>null</c> if it cannot be found</returns>
-        public static string GetPolicyId(this ClaimsPrincipal claimsPrincipal)
+        /// <param name="claimsPrincipal">the <see cref="ClaimsPrincipal"/> from which to retrieve the user flow id</param>
+        /// <returns>User Flow Id of the identity, or <c>null</c> if it cannot be found</returns>
+        public static string GetUserFlowId(this ClaimsPrincipal claimsPrincipal)
         {
-            string policyId = claimsPrincipal.FindFirstValue(ClaimConstants.Tfp);
-            return policyId;
+            string userFlowId = claimsPrincipal.FindFirstValue(ClaimConstants.Tfp);
+            return userFlowId;
         }
 
         /// <summary>

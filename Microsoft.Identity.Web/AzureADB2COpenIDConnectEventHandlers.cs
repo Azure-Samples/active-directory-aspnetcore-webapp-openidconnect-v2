@@ -12,7 +12,7 @@ namespace Microsoft.Identity.Web
 {
     internal class AzureADB2COpenIDConnectEventHandlers
     {
-        private IDictionary<string, string> _policyToIssuerAddress =
+        private IDictionary<string, string> _userFlowToIssuerAddress =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         public AzureADB2COpenIDConnectEventHandlers(string schemeName, MicrosoftIdentityOptions options)
@@ -28,13 +28,13 @@ namespace Microsoft.Identity.Web
         public Task OnRedirectToIdentityProvider(RedirectContext context)
         {
             var defaultUserFlow = Options.DefaultUserFlow;
-            if (context.Properties.Items.TryGetValue(OidcConstants.PolicyKey, out var policy) &&
-                !string.IsNullOrEmpty(policy) &&
-                !string.Equals(policy, defaultUserFlow, StringComparison.OrdinalIgnoreCase))
+            if (context.Properties.Items.TryGetValue(OidcConstants.PolicyKey, out var userFlow) &&
+                !string.IsNullOrEmpty(userFlow) &&
+                !string.Equals(userFlow, defaultUserFlow, StringComparison.OrdinalIgnoreCase))
             {
                 context.ProtocolMessage.Scope = OpenIdConnectScope.OpenIdProfile;
                 context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.IdToken;
-                context.ProtocolMessage.IssuerAddress = BuildIssuerAddress(context, defaultUserFlow, policy);
+                context.ProtocolMessage.IssuerAddress = BuildIssuerAddress(context, defaultUserFlow, userFlow);
                 context.Properties.Items.Remove(OidcConstants.PolicyKey);
             }
 
@@ -43,20 +43,20 @@ namespace Microsoft.Identity.Web
 
         private string BuildIssuerAddress(RedirectContext context, string defaultUserFlow, string userFlow)
         {
-            if (!_policyToIssuerAddress.TryGetValue(userFlow, out var issuerAddress))
+            if (!_userFlowToIssuerAddress.TryGetValue(userFlow, out var issuerAddress))
             {
-                _policyToIssuerAddress[userFlow] = context.ProtocolMessage.IssuerAddress.ToLowerInvariant()
+                _userFlowToIssuerAddress[userFlow] = context.ProtocolMessage.IssuerAddress.ToLowerInvariant()
                     .Replace($"/{defaultUserFlow.ToLowerInvariant()}/", $"/{userFlow.ToLowerInvariant()}/");
             }
 
-            return _policyToIssuerAddress[userFlow];
+            return _userFlowToIssuerAddress[userFlow];
         }
 
         public Task OnRemoteFailure(RemoteFailureContext context)
         {
             context.HandleResponse();
             // Handle the error code that Azure Active Directory B2C throws when trying to reset a password from the login page 
-            // because password reset is not supported by a "sign-up or sign-in policy".
+            // because password reset is not supported by a "sign-up or sign-in user flow".
             // Below is a sample error message:
             // 'access_denied', error_description: 'AADB2C90118: The user has forgotten their password.
             // Correlation ID: f99deff4-f43b-43cc-b4e7-36141dbaf0a0
