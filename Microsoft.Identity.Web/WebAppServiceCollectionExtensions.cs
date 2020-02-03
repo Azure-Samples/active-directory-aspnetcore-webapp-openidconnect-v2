@@ -76,7 +76,7 @@ namespace Microsoft.Identity.Web
             services.Configure<OpenIdConnectOptions>(openIdConnectScheme, options =>
             {
                 // Response type
-                options.ResponseType = OpenIdConnectResponseType.CodeIdToken;
+                //options.ResponseType = OpenIdConnectResponseType.CodeIdToken;
 
                 // This scope is needed to get a refresh token when users sign-in with their Microsoft personal accounts
                 // It's required by MSAL.NET and automatically provided when users sign-in with work or school accounts

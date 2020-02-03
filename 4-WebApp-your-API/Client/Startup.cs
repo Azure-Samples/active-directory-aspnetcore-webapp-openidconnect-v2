@@ -41,7 +41,7 @@ namespace WebApp_OpenIDConnect_DotNet
             services.AddOptions();
 
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddSignIn("AzureAd", Configuration, options => Configuration.Bind("AzureAd", options));
+                .AddSignIn("AzureAdB2C", Configuration, options => Configuration.Bind("AzureAdB2C", options));
 
             // This is required to be instantiated before the OpenIdConnectOptions starts getting configured.
             // By default, the claims mapping will map claim names in the old format to accommodate older SAML applications.
@@ -51,7 +51,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
-            services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] })
+            services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] }, configSectionName: "AzureAdB2C")
                     .AddInMemoryTokenCaches();
 
             // Add APIs
@@ -66,6 +66,10 @@ namespace WebApp_OpenIDConnect_DotNet
             }).AddMicrosoftIdentityUI();
 
             services.AddRazorPages();
+
+            //Configuring appsettings section AzureAdB2C, into IOptions
+            services.AddOptions();
+            services.Configure<OpenIdConnectOptions>(Configuration.GetSection("AzureAdB2C"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
