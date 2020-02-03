@@ -53,7 +53,10 @@ namespace Microsoft.Identity.Web
                 configuration.Bind(configSectionName, options);
 
                 // This is an Microsoft identity platform Web API
-                options.Authority += "/v2.0";
+                var authority = options.Authority.Trim().TrimEnd('/');
+                if (!authority.EndsWith("v2.0"))
+                    authority += "/v2.0";
+                options.Authority = authority;
 
                 // The valid audiences are both the Client ID (options.Audience) and api://{ClientID}
                 options.TokenValidationParameters.ValidAudiences = new string[]
