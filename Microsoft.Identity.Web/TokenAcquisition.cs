@@ -264,6 +264,9 @@ namespace Microsoft.Identity.Web
                 request.PathBase,
                 azureAdOptions.CallbackPath ?? string.Empty);
 
+            if (!applicationOptions.Instance.EndsWith("/"))
+                applicationOptions.Instance += "/";
+
             string authority = $"{applicationOptions.Instance}{applicationOptions.TenantId}/";
 
             var app = ConfidentialClientApplicationBuilder
