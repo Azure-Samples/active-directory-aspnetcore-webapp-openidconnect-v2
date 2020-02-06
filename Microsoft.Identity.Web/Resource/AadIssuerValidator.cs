@@ -95,7 +95,7 @@ namespace Microsoft.Identity.Web.Resource
         /// <exception cref="SecurityTokenInvalidIssuerException">if the issuer </exception>
         public string Validate(string actualIssuer, SecurityToken securityToken, TokenValidationParameters validationParameters)
         {
-            if (String.IsNullOrEmpty(actualIssuer))
+            if (string.IsNullOrEmpty(actualIssuer))
                 throw new ArgumentNullException(nameof(actualIssuer));
 
             if (securityToken == null)
@@ -165,21 +165,18 @@ namespace Microsoft.Identity.Web.Resource
                 if (jwtSecurityToken.Payload.TryGetValue(ClaimConstants.Tid, out object tenantId))
                     return tenantId as string;
 
-                // Since B2C doesn't have TID as default, try to get it from iss claims
-                if (jwtSecurityToken.Claims.Any(c => c.Type == ClaimConstants.Acr || c.Type == ClaimConstants.Tfp))
-                    return GetTenantIdFromIss(jwtSecurityToken.Issuer);
+                // Since B2C doesn't have TID as default, get it from issuer
+                return GetTenantIdFromIss(jwtSecurityToken.Issuer);
             }
 
-            // brentsch - todo, TryGetPayloadValue is available in 5.5.0
             if (securityToken is JsonWebToken jsonWebToken)
             {
-                var tid = jsonWebToken.GetPayloadValue<string>(ClaimConstants.Tid);
+                jsonWebToken.TryGetPayloadValue(ClaimConstants.Tid, out string tid);
                 if (tid != null)
                     return tid;
 
-                // Since B2C doesnt have TID as default, try to get it from iss claims
-                if (jsonWebToken.Claims.Any(c => c.Type == ClaimConstants.Acr || c.Type == ClaimConstants.Tfp))
-                    return GetTenantIdFromIss(jsonWebToken.Issuer);
+                // Since B2C doesn't have TID as default, get it from issuer
+                return GetTenantIdFromIss(jsonWebToken.Issuer);
             }
 
             return string.Empty;

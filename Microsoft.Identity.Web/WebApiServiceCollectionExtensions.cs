@@ -167,15 +167,10 @@ namespace Microsoft.Identity.Web
                     options.Authority = AuthorityHelpers.BuildAuthority(microsoftIdentityOptions);
 
                 if (!AuthorityHelpers.IsV2Authority(options.Authority))
-                    options.Authority += "/v2.0";
+                    options.Authority += "/v2.0";               
 
-                // The valid audiences are both the Client ID (options.Audience) and api://{ClientID}
-                options.TokenValidationParameters.ValidAudiences = new string[]
-                {
-                    // If the developer doesn't set the Audience on JwtBearerOptions, use ClientId from MicrosoftIdentityOptions
-                    options.Audience, $"api://{options.Audience ?? microsoftIdentityOptions.ClientId}"
-                };
-
+                options.TokenValidationParameters.ValidAudiences = GetValidAudiences(options, microsoftIdentityOptions);
+                
                 // If the developer registered an IssuerValidator, do not overwrite it
                 if (options.TokenValidationParameters.IssuerValidator == null)
                 {
@@ -247,6 +242,28 @@ namespace Microsoft.Identity.Web
             });
 
             return services;
+        }
+
+        internal static List<string> GetValidAudiences(
+            JwtBearerOptions options,
+            MicrosoftIdentityOptions msIdentityOptions)
+        {
+            var validAudiences = new List<string>();
+
+            // The valid audiences are both the Client ID (options.Audience) and api://{ClientID}
+            // If the developer doesn't set the Audience on JwtBearerOptions, use ClientId from MicrosoftIdentityOptions
+            if (!string.IsNullOrEmpty(options.Audience))
+            {
+                validAudiences.Add(options.Audience);
+                validAudiences.Add($"api://{options.Audience}");
+            }
+            else
+            {
+                validAudiences.Add(msIdentityOptions.ClientId);
+                validAudiences.Add($"api://{msIdentityOptions.ClientId}");
+            }
+
+            return validAudiences;
         }
     }
 }

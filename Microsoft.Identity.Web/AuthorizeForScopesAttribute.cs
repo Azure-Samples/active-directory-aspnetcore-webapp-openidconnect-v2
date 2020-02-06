@@ -45,6 +45,7 @@ namespace Microsoft.Identity.Web
         /// <param name="context">Context provided by ASP.NET Core</param>
         public override void OnException(ExceptionContext context)
         {
+            string[] incrementalConsentScopes = new string[] { };
             MsalUiRequiredException msalUiRequiredException = context.Exception as MsalUiRequiredException;
             if (msalUiRequiredException == null)
             {
@@ -72,10 +73,15 @@ namespace Microsoft.Identity.Web
                             throw new InvalidOperationException($"The {nameof(ScopeKeySection)} is provided but the IConfiguration instance is not present in the services collection");
                         }
 
-                        Scopes = new string[] { configuration.GetValue<string>(ScopeKeySection) };
+                        incrementalConsentScopes = new string[] { configuration.GetValue<string>(ScopeKeySection) };
                     }
 
-                    var properties = BuildAuthenticationPropertiesForIncrementalConsent(Scopes, msalUiRequiredException, context.HttpContext);
+                    if (Scopes != null && Scopes.Length > 0 && incrementalConsentScopes != null && incrementalConsentScopes.Length > 0)
+                    {
+                        throw new InvalidOperationException("no scopes provided here...");
+                    }
+
+                    var properties = BuildAuthenticationPropertiesForIncrementalConsent(incrementalConsentScopes, msalUiRequiredException, context.HttpContext);
                     context.Result = new ChallengeResult(properties);
                 }
             }
@@ -91,7 +97,7 @@ namespace Microsoft.Identity.Web
             // InMemoryCache, the cache could be empty if the server was restarted. This is why
             // the null_user exception is thrown.
 
-            return ex.ErrorCode.ContainsAny(new [] { MsalError.UserNullError, MsalError.InvalidGrantError });
+            return ex.ErrorCode.ContainsAny(new[] { MsalError.UserNullError, MsalError.InvalidGrantError });
         }
 
         /// <summary>
@@ -102,16 +108,16 @@ namespace Microsoft.Identity.Web
         /// <param name="context">current http context in the pipeline</param>
         /// <returns>AuthenticationProperties</returns>
         private AuthenticationProperties BuildAuthenticationPropertiesForIncrementalConsent(
-            string[] scopes, 
-            MsalUiRequiredException ex, 
+            string[] scopes,
+            MsalUiRequiredException ex,
             HttpContext context)
         {
             var properties = new AuthenticationProperties();
 
             // Set the scopes, including the scopes that ADAL.NET / MSAL.NET need for the token cache
             string[] additionalBuiltInScopes =
-                {OidcConstants.ScopeOpenId, 
-                OidcConstants.ScopeOfflineAccess, 
+                {OidcConstants.ScopeOpenId,
+                OidcConstants.ScopeOfflineAccess,
                 OidcConstants.ScopeProfile};
             properties.SetParameter<ICollection<string>>(OpenIdConnectParameterNames.Scope,
                                                          scopes.Union(additionalBuiltInScopes).ToList());
