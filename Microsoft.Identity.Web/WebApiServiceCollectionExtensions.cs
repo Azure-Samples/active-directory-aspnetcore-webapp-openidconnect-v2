@@ -53,13 +53,17 @@ namespace Microsoft.Identity.Web
                 configuration.Bind(configSectionName, options);
 
                 // This is an Microsoft identity platform Web API
-                options.Authority += "/v2.0";
+                var authority = options.Authority.Trim().TrimEnd('/');
+                if (!authority.EndsWith("v2.0"))
+                    authority += "/v2.0";
+                options.Authority = authority;
 
-                // The valid audiences are both the Client ID (options.Audience) and api://{ClientID}
-                options.TokenValidationParameters.ValidAudiences = new string[]
-                {
-                    options.Audience, $"api://{options.Audience}"
-                };
+                // The valid audience could be given as Client Id or as Uri. If it does not start with 'api://', this variant is added to the list of valid audiences.
+                var validAudiences = new List<string> { options.Audience };
+                if (!options.Audience.StartsWith("api://", StringComparison.OrdinalIgnoreCase))
+                    validAudiences.Add($"api://{options.Audience}");
+
+                options.TokenValidationParameters.ValidAudiences = validAudiences;
 
                 // Instead of using the default validation (validating against a single tenant, as we do in line of business apps),
                 // we inject our own multi-tenant validation logic (which even accepts both v1.0 and v2.0 tokens)
