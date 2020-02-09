@@ -47,7 +47,7 @@ namespace Microsoft.Identity.Web
             services.AddHttpContextAccessor();
 
             // Change the authentication configuration to accommodate the Microsoft identity platform endpoint (v2.0).
-            services.Configure(AzureADDefaults.JwtBearerAuthenticationScheme, (Action<JwtBearerOptions>)(options =>
+            services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
             {
                 // Reinitialize the options as this has changed to JwtBearerOptions to pick configuration values for attributes unique to JwtBearerOptions
                 configuration.Bind(configSectionName, options);
@@ -90,7 +90,7 @@ namespace Microsoft.Identity.Web
                 {
                     options.Events = JwtBearerMiddlewareDiagnostics.Subscribe(options.Events);
                 }
-            }));
+            });
 
             return services;
         }
