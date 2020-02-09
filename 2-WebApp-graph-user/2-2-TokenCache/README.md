@@ -175,6 +175,10 @@ Note: if you had used the automation to setup your application mentioned in [Ste
 
 Starting from the [previous phase of the tutorial](../../2-WebApp-graph-user/2-1-Call-MSGraph), the code was incrementally updated with the following steps:
 
+### Reference Microsoft.Extensions.Caching.SqlServer
+
+This sample proposes a distributed SQL token cache. To use it, you'll need to add a reference to the `Microsoft.Extensions.Caching.SqlServer` NuGet package
+
 ### Update the `Startup.cs` file to enable Token caching using Sql database.
 
 ```CSharp
@@ -205,6 +209,7 @@ The files `MSALAppSqlTokenCacheProvider.cs` and `MSALPerUserSqlTokenCacheProvide
 ## Next steps
 
 - Learn how to enable distributed caches in [token cache serialization](../2.2.%20token%20cache%20serialization)
+- Learn more about the [Distributed SQL Server Cache](https://docs.microsoft.com/aspnet/core/performance/caching/distributed#distributed-sql-server-cache)
 - Learn how the same principle you've just learnt can be used to call:
   - [several Microsoft APIs](../../3-WebApp-multi-APIs), which will enable you to learn how incremental consent and conditional access is managed in your Web App
   - 3rd party, or even [your own Web API](../../4-WebApp-your-API), which will enable you to learn about custom scopes
