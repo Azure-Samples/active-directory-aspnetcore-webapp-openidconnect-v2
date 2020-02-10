@@ -166,15 +166,12 @@ namespace Microsoft.Identity.Web
                 if (string.IsNullOrWhiteSpace(options.Authority))
                     options.Authority = AuthorityHelpers.BuildAuthority(microsoftIdentityOptions);
 
-                if (!AuthorityHelpers.IsV2Authority(options.Authority))
-                    options.Authority += "/v2.0";
+                // This is an Microsoft identity platform Web API
+                EnsureAuthorityIsV2_0(options);
 
-                // The valid audiences are both the Client ID (options.Audience) and api://{ClientID}
-                options.TokenValidationParameters.ValidAudiences = new string[]
-                {
-                    // If the developer doesn't set the Audience on JwtBearerOptions, use ClientId from MicrosoftIdentityOptions
-                    options.Audience, $"api://{options.Audience ?? microsoftIdentityOptions.ClientId}"
-                };
+                // The valid audience could be given as Client Id or as Uri. 
+                // If it does not start with 'api://', this variant is added to the list of valid audiences.
+                EnsureValidAudiencesContainsApiGuidIfGuidProvided(options);
 
                 // If the developer registered an IssuerValidator, do not overwrite it
                 if (options.TokenValidationParameters.IssuerValidator == null)
@@ -247,6 +244,38 @@ namespace Microsoft.Identity.Web
             });
 
             return services;
+        }
+
+        /// <summary>
+        /// Ensures that the authority is a v2.0 authority
+        /// </summary>
+        /// <param name="options">Jwt bearer options read from the config file
+        /// or set by the developper, for which we want to ensure the authority
+        /// is a v2.0 authority</param>
+        internal static void EnsureAuthorityIsV2_0(JwtBearerOptions options)
+        {
+            var authority = options.Authority.Trim().TrimEnd('/');
+            if (!authority.EndsWith("v2.0"))
+                authority += "/v2.0";
+            options.Authority = authority;
+        }
+
+
+        /// <summary>
+        /// Ensure that if the audience is a GUID, api://{audience} is also added
+        /// as a valid audience (this is the default App ID URL in the app registration
+        /// portal)
+        /// </summary>
+        /// <param name="options">Jwt bearer options for which to ensure that
+        /// api://GUID is a valid audience</param>
+        internal static void EnsureValidAudiencesContainsApiGuidIfGuidProvided(JwtBearerOptions options)
+        {
+            var validAudiences = new List<string> { options.Audience };
+            if (!options.Audience.StartsWith("api://", StringComparison.OrdinalIgnoreCase)
+                                             && Guid.TryParse(options.Audience, out _))
+                validAudiences.Add($"api://{options.Audience}");
+
+            options.TokenValidationParameters.ValidAudiences = validAudiences;
         }
     }
 }
