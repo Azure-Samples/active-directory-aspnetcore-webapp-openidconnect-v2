@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApp-OpenIDConnect-DotNet
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web", "..\..\Microsoft.Identity.Web\Microsoft.Identity.Web.csproj", "{E0CEF26A-6CE6-4505-851B-6580D5564752}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web.Test", "..\..\Microsoft.Identity.Web.Test\Microsoft.Identity.Web.Test.csproj", "{0EEC3E2E-69D0-4A7F-98D6-4386330F4965}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CD0BB564-6C1E-4FCE-B9AB-7C637FDEE569}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web.Test", "..\..\Microsoft.Identity.Web.Test\Microsoft.Identity.Web.Test.csproj", "{8CCEAE2A-BDF6-470C-B6DE-7FC81A74DBD7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +28,10 @@ Global
 		{E0CEF26A-6CE6-4505-851B-6580D5564752}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0CEF26A-6CE6-4505-851B-6580D5564752}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0CEF26A-6CE6-4505-851B-6580D5564752}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0EEC3E2E-69D0-4A7F-98D6-4386330F4965}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0EEC3E2E-69D0-4A7F-98D6-4386330F4965}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0EEC3E2E-69D0-4A7F-98D6-4386330F4965}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0EEC3E2E-69D0-4A7F-98D6-4386330F4965}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CCEAE2A-BDF6-470C-B6DE-7FC81A74DBD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CCEAE2A-BDF6-470C-B6DE-7FC81A74DBD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CCEAE2A-BDF6-470C-B6DE-7FC81A74DBD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CCEAE2A-BDF6-470C-B6DE-7FC81A74DBD7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

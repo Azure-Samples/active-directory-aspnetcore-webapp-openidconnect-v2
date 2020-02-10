@@ -8,6 +8,8 @@
 /Microsoft.Identity.Web/.vs
 /Microsoft.Identity.Web/bin
 /Microsoft.Identity.Web/obj
+/Microsoft.Identity.Web.Test/bin
+/Microsoft.Identity.Web.Test/obj
 /1-WebApp-OIDC/1-1-MyOrg/.vs
 /1-WebApp-OIDC/1-1-MyOrg/bin
 /1-WebApp-OIDC/1-1-MyOrg/obj
@@ -105,8 +107,6 @@
 /4-WebApp-your-API/Client/bin/Release/netcoreapp2.2
 /4-WebApp-your-API/Client/obj/Debug/netcoreapp2.2
 /4-WebApp-your-API/Client/obj/Release/netcoreapp2.2
-/Microsoft.Identity.Web.Test/obj
-/Microsoft.Identity.Web.Test/bin
 /5-WebApp-AuthZ/5-2-Groups/bin
 /5-WebApp-AuthZ/5-1-Roles/bin
 /4-WebApp-your-API/TodoListService/obj
@@ -114,12 +114,7 @@
 /4-WebApp-your-API/Client/obj
 /2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph/bin
 /2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph/obj
-/Microsoft.Identity.Web.Test/bin/Release/netcoreapp2.2
 /Microsoft.Identity.Web.Test/obj
 /4-WebApp-your-API/4-2-B2C/.vs
 /4-WebApp-your-API/4-2-B2C/Client/obj
 /4-WebApp-your-API/4-2-B2C/TodoListService/obj
-/2-WebApp-graph-user/2-3-Multi-Tenant/.vs/WebApp-OpenIDConnect-DotNet
-/2-WebApp-graph-user/2-3-Multi-Tenant/bin/Debug/netcoreapp2.2
-/2-WebApp-graph-user/2-3-Multi-Tenant/obj
-/Microsoft.Identity.Web.Test/bin/Release/netcoreapp3.0

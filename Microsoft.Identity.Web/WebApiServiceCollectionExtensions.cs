@@ -72,17 +72,11 @@ namespace Microsoft.Identity.Web
                 configuration.Bind(configSectionName, options);
 
                 // This is an Microsoft identity platform Web API
-                var authority = options.Authority.Trim().TrimEnd('/');
-                if (!authority.EndsWith("v2.0"))
-                    authority += "/v2.0";
-                options.Authority = authority;
+                EnsureAuthorityIsV2_0(options);
 
-                // The valid audience could be given as Client Id or as Uri. If it does not start with 'api://', this variant is added to the list of valid audiences.
-                var validAudiences = new List<string> { options.Audience };
-                if (!options.Audience.StartsWith("api://", StringComparison.OrdinalIgnoreCase))
-                    validAudiences.Add($"api://{options.Audience}");
-
-                options.TokenValidationParameters.ValidAudiences = validAudiences;
+                // The valid audience could be given as Client Id or as Uri. 
+                // If it does not start with 'api://', this variant is added to the list of valid audiences.
+                EnsureValidAudiencesContainsApiGuidIfGuidProvided(options);
 
                 // Instead of using the default validation (validating against a single tenant, as we do in line of business apps),
                 // we inject our own multi-tenant validation logic (which even accepts both v1.0 and v2.0 tokens)
@@ -99,17 +93,17 @@ namespace Microsoft.Identity.Web
                 options.Events = new JwtBearerEvents();
 
                 options.Events.OnTokenValidated = async context =>
-                   {
-                       // This check is required to ensure that the Web API only accepts tokens from tenants where it has been consented and provisioned.
-                       if (!context.Principal.Claims.Any(x => x.Type == ClaimConstants.Scope)
-                        && !context.Principal.Claims.Any(y => y.Type == ClaimConstants.Scp)
-                        && !context.Principal.Claims.Any(y => y.Type == ClaimConstants.Roles))
-                       {
-                           throw new UnauthorizedAccessException("Neither scope or roles claim was found in the bearer token.");
-                       }
+                {
+                    // This check is required to ensure that the Web API only accepts tokens from tenants where it has been consented and provisioned.
+                    if (!context.Principal.Claims.Any(x => x.Type == ClaimConstants.Scope)
+                     && !context.Principal.Claims.Any(y => y.Type == ClaimConstants.Scp)
+                     && !context.Principal.Claims.Any(y => y.Type == ClaimConstants.Roles))
+                    {
+                        throw new UnauthorizedAccessException("Neither scope or roles claim was found in the bearer token.");
+                    }
 
-                       await Task.FromResult(0);
-                   };
+                    await Task.FromResult(0);
+                };
 
                 if (subscribeToJwtBearerMiddlewareDiagnosticsEvents)
                 {
@@ -148,6 +142,38 @@ namespace Microsoft.Identity.Web
             });
 
             return services;
+        }
+
+        /// <summary>
+        /// Ensures that the authority is a v2.0 authority
+        /// </summary>
+        /// <param name="options">Jwt bearer options read from the config file
+        /// or set by the developper, for which we want to ensure the authority
+        /// is a v2.0 authority</param>
+        internal static void EnsureAuthorityIsV2_0(JwtBearerOptions options)
+        {
+            var authority = options.Authority.Trim().TrimEnd('/');
+            if (!authority.EndsWith("v2.0"))
+                authority += "/v2.0";
+            options.Authority = authority;
+        }
+
+
+        /// <summary>
+        /// Ensure that if the audience is a GUID, api://{audience} is also added
+        /// as a valid audience (this is the default App ID URL in the app registration
+        /// portal)
+        /// </summary>
+        /// <param name="options">Jwt bearer options for which to ensure that
+        /// api://GUID is a valid audience</param>
+        internal static void EnsureValidAudiencesContainsApiGuidIfGuidProvided(JwtBearerOptions options)
+        {
+            var validAudiences = new List<string> { options.Audience };
+            if (!options.Audience.StartsWith("api://", StringComparison.OrdinalIgnoreCase)
+                                             && Guid.TryParse(options.Audience, out _))
+                validAudiences.Add($"api://{options.Audience}");
+
+            options.TokenValidationParameters.ValidAudiences = validAudiences;
         }
     }
 }
