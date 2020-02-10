@@ -45,6 +45,7 @@ namespace Microsoft.Identity.Web
         /// <param name="context">Context provided by ASP.NET Core</param>
         public override void OnException(ExceptionContext context)
         {
+            string[] incrementalConsentScopes = new string[] { };
             MsalUiRequiredException msalUiRequiredException = context.Exception as MsalUiRequiredException;
 
             if (msalUiRequiredException == null)
@@ -77,8 +78,12 @@ namespace Microsoft.Identity.Web
                         }
 
                         scopes = new string[] { configuration.GetValue<string>(ScopeKeySection) };
+                        
+                        if (Scopes != null && Scopes.Length > 0 && scopes != null && scopes.Length > 0)
+                        {
+                           throw new InvalidOperationException("no scopes provided in scopes...");
+                        }
                     }
-
                     else
                         scopes = Scopes;
 

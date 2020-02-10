@@ -173,6 +173,8 @@ namespace Microsoft.Identity.Web
                 // If it does not start with 'api://', this variant is added to the list of valid audiences.
                 EnsureValidAudiencesContainsApiGuidIfGuidProvided(options);
 
+                options.TokenValidationParameters.ValidAudiences = GetValidAudiences(options, microsoftIdentityOptions);
+                
                 // If the developer registered an IssuerValidator, do not overwrite it
                 if (options.TokenValidationParameters.IssuerValidator == null)
                 {
