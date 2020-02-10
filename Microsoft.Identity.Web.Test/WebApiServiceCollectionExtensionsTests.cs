@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,17 +19,27 @@ namespace Microsoft.Identity.Web.Test
             JwtBearerOptions options = new JwtBearerOptions();
 
             // Act and Assert
-            options.Authority = "https://login.onmicrosoft.com/common";
+            options.Authority = "https://login.microsoftonline.com/common";
             WebApiServiceCollectionExtensions.EnsureAuthorityIsV2_0(options);
-            Assert.Equal("https://login.onmicrosoft.com/common/v2.0", options.Authority);
+            Assert.Equal("https://login.microsoftonline.com/common/v2.0", options.Authority);
 
-            options.Authority = "https://login.onmicrosoft.com/common/";
+            options.Authority = "https://login.microsoftonline.us/organizations";
             WebApiServiceCollectionExtensions.EnsureAuthorityIsV2_0(options);
-            Assert.Equal("https://login.onmicrosoft.com/common/v2.0", options.Authority);
+            Assert.Equal("https://login.microsoftonline.us/organizations/v2.0", options.Authority);
 
-            options.Authority = "https://login.onmicrosoft.com/common/v2.0";
+            options.Authority = "https://login.microsoftonline.com/common/";
             WebApiServiceCollectionExtensions.EnsureAuthorityIsV2_0(options);
-            Assert.Equal("https://login.onmicrosoft.com/common/v2.0", options.Authority);
+            Assert.Equal("https://login.microsoftonline.com/common/v2.0", options.Authority);
+
+            options.Authority = "https://login.microsoftonline.com/common/v2.0";
+            WebApiServiceCollectionExtensions.EnsureAuthorityIsV2_0(options);
+            Assert.Equal("https://login.microsoftonline.com/common/v2.0", options.Authority);
+
+
+            options.Authority = "https://login.microsoftonline.com/common/v2.0";
+            WebApiServiceCollectionExtensions.EnsureAuthorityIsV2_0(options);
+            Assert.Equal("https://login.microsoftonline.com/common/v2.0", options.Authority);
+
         }
 
         [Fact]
