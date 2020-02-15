@@ -129,3 +129,4 @@
 /2-WebApp-graph-user/2-3-Multi-Tenant/bin/Debug/netcoreapp2.2
 /2-WebApp-graph-user/2-3-Multi-Tenant/obj
 /Microsoft.Identity.Web.Test/bin/Release/netcoreapp3.0
+/2-WebApp-graph-user/2-1-Call-MSGraph/TestResults
