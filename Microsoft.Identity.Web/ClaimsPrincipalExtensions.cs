@@ -28,7 +28,7 @@ namespace Microsoft.Identity.Web
                 !string.IsNullOrWhiteSpace(userFlowId))
             {
                 // B2C pattern: {oid}-{userFlow}.{tid}
-                return $"{nameIdentifierId}-{userFlowId}.{tenantId}";
+                return $"{nameIdentifierId}.{tenantId}";
             }
             else if (!string.IsNullOrWhiteSpace(userObjectId) && !string.IsNullOrWhiteSpace(tenantId))
             {
@@ -152,12 +152,7 @@ namespace Microsoft.Identity.Web
         /// <returns>Name identifier ID (sub) of the identity, or <c>null</c> if it cannot be found</returns>
         public static string GetNameIdentifierId(this ClaimsPrincipal claimsPrincipal)
         {
-            string sub = claimsPrincipal.FindFirstValue(ClaimConstants.Sub);
-            if (string.IsNullOrEmpty(sub))
-            {
-                sub = claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
-            }
-            return sub;
+            return claimsPrincipal.FindFirstValue(ClaimConstants.UniqueObjectIdentifier);
         }
     }
 }

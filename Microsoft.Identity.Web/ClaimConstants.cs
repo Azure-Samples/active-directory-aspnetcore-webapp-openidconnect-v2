@@ -15,6 +15,7 @@ namespace Microsoft.Identity.Web
         public const string TenantId = "http://schemas.microsoft.com/identity/claims/tenantid";
         public const string Tid = "tid";
         public const string ClientInfo = "client_info";
+        public const string UniqueObjectIdentifier = "utid";
         // Older scope claim
         public const string Scope = "http://schemas.microsoft.com/identity/claims/scope";
         // Newer scope claim

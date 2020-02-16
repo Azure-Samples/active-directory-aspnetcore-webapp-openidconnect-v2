@@ -122,6 +122,7 @@ namespace Microsoft.Identity.Web
                                 if (clientInfoFromServer != null)
                                 {
                                     context.Principal.Identities.FirstOrDefault().AddClaim(new Claim(ClaimConstants.Tid, clientInfoFromServer.UniqueTenantIdentifier));
+                                    context.Principal.Identities.FirstOrDefault().AddClaim(new Claim(ClaimConstants.UniqueObjectIdentifier, clientInfoFromServer.UniqueObjectIdentifier));
                                 }
                             }
                         }
