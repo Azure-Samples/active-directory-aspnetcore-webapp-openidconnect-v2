@@ -46,23 +46,30 @@ namespace Microsoft.Identity.Web.Test
         public void TestAudience()
         {
             JwtBearerOptions options = new JwtBearerOptions();
+            MicrosoftIdentityOptions microsoftIdentityOptions = new MicrosoftIdentityOptions() { ClientId = Guid.NewGuid().ToString() };
 
             // Act and Assert
             options.Audience = "https://localhost";
-            WebApiServiceCollectionExtensions.EnsureValidAudiencesContainsApiGuidIfGuidProvided(options);
+            WebApiServiceCollectionExtensions.EnsureValidAudiencesContainsApiGuidIfGuidProvided(options, microsoftIdentityOptions);
             Assert.True(options.TokenValidationParameters.ValidAudiences.Count() == 1);
             Assert.True(options.TokenValidationParameters.ValidAudiences.First() == "https://localhost");
 
             options.Audience = "api://1EE5A092-0DFD-42B6-88E5-C517C0141321";
-            WebApiServiceCollectionExtensions.EnsureValidAudiencesContainsApiGuidIfGuidProvided(options);
+            WebApiServiceCollectionExtensions.EnsureValidAudiencesContainsApiGuidIfGuidProvided(options, microsoftIdentityOptions);
             Assert.True(options.TokenValidationParameters.ValidAudiences.Count() == 1);
             Assert.True(options.TokenValidationParameters.ValidAudiences.First() == "api://1EE5A092-0DFD-42B6-88E5-C517C0141321");
 
             options.Audience = "1EE5A092-0DFD-42B6-88E5-C517C0141321";
-            WebApiServiceCollectionExtensions.EnsureValidAudiencesContainsApiGuidIfGuidProvided(options);
+            WebApiServiceCollectionExtensions.EnsureValidAudiencesContainsApiGuidIfGuidProvided(options, microsoftIdentityOptions);
             Assert.True(options.TokenValidationParameters.ValidAudiences.Count() == 2);
             Assert.Contains("api://1EE5A092-0DFD-42B6-88E5-C517C0141321", options.TokenValidationParameters.ValidAudiences);
             Assert.Contains("1EE5A092-0DFD-42B6-88E5-C517C0141321", options.TokenValidationParameters.ValidAudiences);
+
+            options.Audience = null;
+            WebApiServiceCollectionExtensions.EnsureValidAudiencesContainsApiGuidIfGuidProvided(options, microsoftIdentityOptions);
+            Assert.True(options.TokenValidationParameters.ValidAudiences.Count() == 2);
+            Assert.Contains($"api://{microsoftIdentityOptions.ClientId}", options.TokenValidationParameters.ValidAudiences);
+            Assert.Contains($"{microsoftIdentityOptions.ClientId}", options.TokenValidationParameters.ValidAudiences);
 
         }
     }
