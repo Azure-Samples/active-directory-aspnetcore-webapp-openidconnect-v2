@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web", ".
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web.UI", "..\Microsoft.Identity.Web.UI\Microsoft.Identity.Web.UI.csproj", "{A2B0D2D4-6799-4B6F-AC51-F0F0A6CA1E89}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web.Test", "..\Microsoft.Identity.Web.Test\Microsoft.Identity.Web.Test.csproj", "{C4827ACC-3765-46C2-8D86-ACFCEB175A11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{A2B0D2D4-6799-4B6F-AC51-F0F0A6CA1E89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2B0D2D4-6799-4B6F-AC51-F0F0A6CA1E89}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2B0D2D4-6799-4B6F-AC51-F0F0A6CA1E89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4827ACC-3765-46C2-8D86-ACFCEB175A11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4827ACC-3765-46C2-8D86-ACFCEB175A11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4827ACC-3765-46C2-8D86-ACFCEB175A11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4827ACC-3765-46C2-8D86-ACFCEB175A11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

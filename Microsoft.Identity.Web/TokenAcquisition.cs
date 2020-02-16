@@ -310,22 +310,24 @@ namespace Microsoft.Identity.Web
                 request.PathBase,
                 microsoftIdentityOptions.CallbackPath.Value ?? string.Empty);
 
-            string authority = string.Empty;
+            if (!applicationOptions.Instance.EndsWith("/"))
+                applicationOptions.Instance += "/";
+
+            string authority ;
             IConfidentialClientApplication app = null;
 
             if (microsoftIdentityOptions.IsB2C)
             {
-                authority = $"{applicationOptions.Instance.TrimEnd('/')}/tfp/{microsoftIdentityOptions.Domain}/{microsoftIdentityOptions.DefaultUserFlow}";
+                authority = $"{applicationOptions.Instance}tfp/{microsoftIdentityOptions.Domain}/{microsoftIdentityOptions.DefaultUserFlow}";
                 app = ConfidentialClientApplicationBuilder
                     .CreateWithApplicationOptions(applicationOptions)
                     .WithRedirectUri(currentUri)
                     .WithB2CAuthority(authority)
                     .Build();
             }
-
             else
             {
-                authority = $"{applicationOptions.Instance.TrimEnd('/')}/{applicationOptions.TenantId}/";
+                authority = $"{applicationOptions.Instance}{applicationOptions.TenantId}/";
                 app = ConfidentialClientApplicationBuilder
                     .CreateWithApplicationOptions(applicationOptions)
                     .WithRedirectUri(currentUri)
