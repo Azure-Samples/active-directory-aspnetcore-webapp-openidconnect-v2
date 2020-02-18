@@ -1,14 +1,14 @@
 ---
 services: active-directory
 platforms: dotnet
-author: kalyankrishna1
+author: jennyf69
 level: 200
 client: ASP.NET Core Web App
 service: ASP.NET Core Web API
 endpoint: Microsoft identity platform
 ---
 
-# How to secure a Web API built with ASP.NET Core using the Microsoft identity platform (formerly Azure Active Directory for developers)
+# How to secure a Web API built with ASP.NET Core using the Azure AD B2C
 
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
@@ -18,7 +18,7 @@ endpoint: Microsoft identity platform
 
 ## About this sample
 
-This sample is essentially a guide for developers who want to secure their Web APIs using the Microsoft identity platform (formerly Azure Active Directory for developers). This sample lays down the all the steps developers need to take to secure their web api with the Microsoft identity platform. Additionally it also explains the steps and processes for a client to obtain the necessary permissions and tokens to make successful calls to this secured web api.  
+This sample is essentially a guide for developers who want to secure their Web APIs using the Microsoft identity platform (formerly Azure Active Directory for developers) using Azure AD B2C. This sample lays down the all the steps developers need to take to secure their web api with the Microsoft identity platform. Additionally it also explains the steps and processes for a client to obtain the necessary permissions and tokens to make successful calls to this secured web api.  
 
 ### Scenario
 
@@ -26,11 +26,11 @@ This sample has a web api and a client web app, both built using the asp.net cor
 
 ### Overview
 
-This sample presents a Web API running on ASP.NET Core, protected by [Azure AD OAuth Bearer](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-protocols) Authentication. The client application uses [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) library to obtain a JWT access token through using the [OAuth 2.0](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow) protocol flow. 
+This sample presents a Web API running on ASP.NET Core, protected by [Azure AD OAuth Bearer](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-protocols) Authentication. The client application uses [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) library to obtain a JWT access token through using the [OAuth 2.0](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow) protocol flow.
 
 The client web application essentially takes the following steps to sign-in the user and obtain a bearer token for the Web API:
 
-1. Signs-in the user. When the user signs-in for the first time , a consent screen is presented. This consent screen lets the user consent for the application to access the web API( TodoListService).
+1. Signs-in the user with local or social identities. When the user signs-in for the first time , a consent screen is presented. This consent screen lets the user consent for the application to access the web API( TodoListService).
 1. Acquires an access token for the Web API.
 1. Calls the Web API using the access token as a bearer token in the authentication header of the Http request. The Web API validates the caller using the ASP.NET JWT Bearer Authentication middleware.
 
@@ -62,139 +62,73 @@ From your shell or command line:
 ```Shell
 git clone https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2.git
 
-cd "4-WebApp-your-API\4-1-Your-API"
+cd "4-WebApp-your-API\4-2-B2C"
 ```
 
 or download and exact the repository .zip file.
 
 > Given that the name of the sample is pretty long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
-### Step 2:  Register the sample application with your Azure Active Directory tenant
+### Step 2:  Register the sample application with your Azure Active B2C Directory tenant
 
-There are two projects in this sample. Each needs to be separately registered in your Azure AD tenant. To register these projects, you can:
 
-- either follow the steps [Step 2: Register the sample with your Azure Active Directory tenant](#step-2-register-the-sample-with-your-azure-active-directory-tenant) and [Step 3:  Configure the sample to use your Azure AD tenant](#choose-the-azure-ad-tenant-where-you-want-to-create-your-applications)
-- or use PowerShell scripts that:
-  - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you
-  - modify the Visual Studio projects' configuration files.
+## Option 1 - Run the pre-configured sample
 
-If you want to use this automation:
+1. Build the solution and run it.
+1. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. Click on **SignIn/Up** button.
+1. Click on Sign-In
 
-1. On Windows run PowerShell and navigate to the root of the cloned directory
+## Option 2 - Configure the sample with your own B2C app
 
-1. In PowerShell run:
+### Step 2: Get your own Azure AD B2C tenant
 
-   ```PowerShell
-   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
-   ```
+If you don't have an Azure AD B2C tenant yet, you'll need to create an Azure AD B2C tenant by following the [Tutorial: Create an Azure Active Directory B2C tenant](https://azure.microsoft.com/documentation/articles/active-directory-b2c-get-started).
 
-1. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
+### Step 3: Create your own user flow (policy)
 
-   ```PowerShell
-   cd .\AppCreationScripts\ 
-   .\Configure.ps1
-   ```
+This sample uses a unified sign-up/sign-in user flow (policy). Create this policy by following [these instructions on creating an AAD B2C tenant](https://azure.microsoft.com/documentation/articles/active-directory-b2c-reference-policies). You may choose to include as many or as few identity providers as you wish, but make sure **DisplayName** is checked in `User attributes` and `Application claims`.
 
-   > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
+If you already have an existing unified sign-up/sign-in user flow (policy) in your Azure AD B2C tenant, feel free to re-use it. The is no need to create a new one just for this sample.
 
-1. Open the Visual Studio solution and click start
+Copy this policy name, so you can use it in step 5.
 
-If you don't want to use this automation, follow the steps below.
+### Step 4: Create your own Web app
 
-#### Choose the Azure AD tenant where you want to create your applications
+Now you need to [register your web app in your B2C tenant](https://docs.microsoft.com/azure/active-directory-b2c/active-directory-b2c-app-registration#register-a-web-application), so that it has its own Application ID.
 
-As a first step you'll need to:
+Your web application registration should include the following information:
 
-1. Sign in to the [Azure portal](https://portal.azure.com) using either a work or school account or a personal Microsoft account.
-1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory**.
-   Change your portal session to the desired Azure AD tenant.
+- Enable the **Web App/Web API** setting for your application.
+- Set the **Reply URL** to `https://localhost:44316/signin/B2C_1_sign_up_in` and `https://localhost:44316/signout/B2C_1_sign_up_in`.
+- Copy the Application ID generated for your application, so you can use it in the next step.
 
-#### Register the service app (TodoListService-aspnetcore-webapi)
+### Step 5: Configure the sample with your app coordinates
 
-1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
-1. Select **New registration**.
-1. When the **Register an application page** appears, enter your application's registration information:
-   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `TodoListService-aspnetcore-webapi`.
-   - Leave **Supported account types** on the default setting of **Accounts in this organizational directory only**.
-1. Select **Register** to create the application.
-1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the Visual Studio configuration file for this project.
+1. Open the solution in Visual Studio.
+1. Open the `appsettings.json` file.
+1. Find the assignment for `Instance` and replace the value with your tenant name. For example, `https://fabrikam.b2clogin.com`
+1. Find the assignment for `Domain` and replace the value with your Azure AD B2C domain name. For example, `fabrikam.onmicrosoft.com`
+1. Find the assignment for `ClientID` and replace the value with the Application ID from Step 4.
+1. Find the assignment for `SignUpSignInPolicyId` and replace with the name of the `Sign up and sign in` policy you created in Step 3.
 
-1. Select the **Expose an API** section, and:
-   - Select **Add a scope**
-   - accept the proposed Application ID URI (api://{clientId}) by selecting **Save and Continue**
-   - Enter the following parameters
-     - for **Scope name** use `user_impersonation`
-     - Keep **Admins and users** for **Who can consent**
-     - in **Admin consent display name** type `Access TodoListService-aspnetcore-webapi as a user`
-     - in **Admin consent description** type `Accesses the TodoListService-aspnetcore-webapi Web API as a user`
-     - in **User consent display name** type `Access TodoListService-aspnetcore-webapi as a user`
-     - in **User consent description** type `Accesses the TodoListService-aspnetcore-webapi Web API as a user`
-     - Keep **State** as **Enabled**
-     - Select **Add scope**
+```JSon
+{
+  "AzureAdB2C": {
+    "Instance": "https://<your-tenant-name>.b2clogin.com",
+    "ClientId": "<web-app-application-id>",
+    "Domain": "<your-b2c-domain>",
+    "CallbackPath": "/signin/B2C_1_sign_up_in",
+    "SignedOutCallbackPath": "/signout/B2C_1_sign_up_in",
+    "SignUpSignInPolicyId": "<your-sign-up-in-policy>"
+  }
+}
+```
 
-#### Register the client app (TodoListClient-aspnetcore-webapi)
+### Step 6: Run the sample
 
-1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
-1. Select **New registration**.
-1. When the **Register an application page** appears, enter your application's registration information:
-   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `TodoListClient-aspnetcore-webapi`.
-   - Leave **Supported account types** on the default setting of **Accounts in this organizational directory only**.
-     > Note that there are more than one redirect URIs. You'll need to add them from the **Authentication** tab later after the app has been created successfully.
-1. Select **Register** to create the application.
-1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the Visual Studio configuration file for this project.
-1. From the app's Overview page, select the **Authentication** section.
-   - In the Redirect URIs section, select **Web** in the combo-box and enter the following redirect URIs.
-       - `https://localhost:44321/`
-       - `https://localhost:44321/signin-oidc`
-   - In the **Advanced settings** section set **Logout URL** to `https://localhost:44321/signout-oidc`
-   - In the **Advanced settings** | **Implicit grant** section, check **ID tokens** as this sample requires
-     the [Implicit grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to
-     sign-in the user, and call an API.
-1. Select **Save**.
-1. From the **Certificates & secrets** page, in the **Client secrets** section, choose **New client secret**:
-
-   - Type a key description (of instance `app secret`),
-   - Select a key duration of either **In 1 year**, **In 2 years**, or **Never Expires**.
-   - When you press the **Add** button, the key value will be displayed, copy, and save the value in a safe location.
-   - You'll need this key later to configure the project in Visual Studio. This key value will not be displayed again, nor retrievable by any other means,
-     so record it as soon as it is visible from the Azure portal.
-1. Select the **API permissions** section
-   - Click the **Add a permission** button and then,
-   - Ensure that the **My APIs** tab is selected
-   - In the list of APIs, select the API `TodoListService-aspnetcore-webapi`.
-   - In the **Delegated permissions** section, ensure that the right permissions are checked: **Access 'TodoListService-aspnetcore-webapi'**. Use the search box if necessary.
-   - Select the **Add permissions** button
-
-### Step 3:  Configure the sample to use your Azure AD tenant
-
-In the steps below, "ClientID" is the same as "Application ID" or "AppId".
-
-Open the solution in Visual Studio to configure the projects
-
-#### Configure the service project
-
-Note: if you had used the automation to setup your application mentioned in [Step 2:  Register the sample application with your Azure Active Directory tenant](#step-2-register-the-sample-application-with-your-azure-active-directory-tenant), the changes below would have been applied by the scripts.
-
-1. Open the `TodoListService\appsettings.json` file
-1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
-1. Find the app key `TenantId` and replace the existing value with your Azure AD tenant ID.
-1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `TodoListService-aspnetcore-webapi` application copied from the Azure portal.
-
-#### Configure the client project
-
-Note: if you had used the automation to setup your application mentioned in [Step 2:  Register the sample application with your Azure Active Directory tenant](#step-2-register-the-sample-application-with-your-azure-active-directory-tenant), the changes below would have been applied by the scripts.
-
-1. Open the `Client\appsettings.json` file
-1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
-1. Find the app key `TenantId` and replace the existing value with your Azure AD tenant ID.
-1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `TodoListClient-aspnetcore-webapi` application copied from the Azure portal.
-1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `TodoListClient-aspnetcore-webapi` app, in the Azure portal.
-1. Find the app key `TodoListScope` and replace the existing value with Scope if you changed the name from `api://<client id>/user_impersonation`.
-1. Find the app key `TodoListBaseAddress` and replace the existing value with the base address of the TodoListService-aspnetcore-webapi project (or use the default `https://localhost:44351`).
-
-### Step 4: Run the sample
-
-Clean the solution, rebuild the solution, and run it.  You will have to go into the solution properties and set both projects as startup projects, with the service project starting first.
+1. Build the solution and run it.
+1. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. Click on **SignIn/Up** button.
+1. If you don't have an account registered on the **Azure AD B2C** used in this sample, follow the sign up process. Otherwise, input the email and password for your account and click on **Sign in**.
 
 When you start the Web API from Visual Studio, depending on the browser you use, you'll get:
 

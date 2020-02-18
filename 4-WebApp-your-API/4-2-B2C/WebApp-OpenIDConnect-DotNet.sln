@@ -13,11 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TodoListService", "TodoList
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TodoListClient", "Client\TodoListClient.csproj", "{79AF134C-0F4A-43F8-8C47-75039ED87CE7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web", "..\Microsoft.Identity.Web\Microsoft.Identity.Web.csproj", "{2AED6B80-C6DF-4AA3-98F0-77338CC1449A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web", "..\..\Microsoft.Identity.Web\Microsoft.Identity.Web.csproj", "{2AED6B80-C6DF-4AA3-98F0-77338CC1449A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web.UI", "..\Microsoft.Identity.Web.UI\Microsoft.Identity.Web.UI.csproj", "{A2B0D2D4-6799-4B6F-AC51-F0F0A6CA1E89}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web.UI", "..\..\Microsoft.Identity.Web.UI\Microsoft.Identity.Web.UI.csproj", "{A2B0D2D4-6799-4B6F-AC51-F0F0A6CA1E89}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web.Test", "..\Microsoft.Identity.Web.Test\Microsoft.Identity.Web.Test.csproj", "{C4827ACC-3765-46C2-8D86-ACFCEB175A11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web.Test", "..\..\Microsoft.Identity.Web.Test\Microsoft.Identity.Web.Test.csproj", "{C4827ACC-3765-46C2-8D86-ACFCEB175A11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

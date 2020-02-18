@@ -28,8 +28,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Microsoft.Identity.Web.UI\Microsoft.Identity.Web.UI.csproj" />
-    <ProjectReference Include="..\..\Microsoft.Identity.Web\Microsoft.Identity.Web.csproj" />
+    <ProjectReference Include="..\..\..\Microsoft.Identity.Web.UI\Microsoft.Identity.Web.UI.csproj" />
+    <ProjectReference Include="..\..\..\Microsoft.Identity.Web\Microsoft.Identity.Web.csproj" />
   </ItemGroup>
 
 </Project>
