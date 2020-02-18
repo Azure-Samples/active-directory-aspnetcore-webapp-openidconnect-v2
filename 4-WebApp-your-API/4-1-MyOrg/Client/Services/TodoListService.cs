@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using Microsoft.AspNetCore.Http;
@@ -51,7 +51,6 @@ namespace TodoListClient.Services
 
             var jsonRequest = JsonConvert.SerializeObject(todo);
             var jsoncontent = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
             var response = await this._httpClient.PostAsync($"{ _TodoListBaseAddress}/api/todolist", jsoncontent);
 
             if (response.StatusCode == HttpStatusCode.OK)
@@ -69,7 +68,7 @@ namespace TodoListClient.Services
         {
             await PrepareAuthenticatedClient();
 
-            var response = await this._httpClient.DeleteAsync($"{ _TodoListBaseAddress}/api/todolist/{id}");
+            var response = await _httpClient.DeleteAsync($"{ _TodoListBaseAddress}/api/todolist/{id}");
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -85,7 +84,6 @@ namespace TodoListClient.Services
 
             var jsonRequest = JsonConvert.SerializeObject(todo);
             var jsoncontent = new StringContent(jsonRequest, Encoding.UTF8, "application/json-patch+json");
-
             var response = await _httpClient.PatchAsync($"{ _TodoListBaseAddress}/api/todolist/{todo.Id}", jsoncontent);
 
             if (response.StatusCode == HttpStatusCode.OK)
@@ -102,7 +100,6 @@ namespace TodoListClient.Services
         public async Task<IEnumerable<Todo>> GetAsync()
         {
             await PrepareAuthenticatedClient();
-
             var response = await _httpClient.GetAsync($"{ _TodoListBaseAddress}/api/todolist");
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -126,7 +123,6 @@ namespace TodoListClient.Services
         public async Task<Todo> GetAsync(int id)
         {
             await PrepareAuthenticatedClient();
-
             var response = await _httpClient.GetAsync($"{ _TodoListBaseAddress}/api/todolist/{id}");
             if (response.StatusCode == HttpStatusCode.OK)
             {
