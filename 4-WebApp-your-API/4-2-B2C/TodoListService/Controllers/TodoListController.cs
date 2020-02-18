@@ -54,6 +54,7 @@ namespace TodoListService.Controllers
 
         // GET: api/values
         [HttpGet]
+        [Authorize(Policy = "ReadScope")]
         public IEnumerable<Todo> Get()
         {
             string owner = User.Identity.Name;
@@ -62,6 +63,7 @@ namespace TodoListService.Controllers
 
         // GET: api/values
         [HttpGet("{id}", Name = "Get")]
+        [Authorize(Policy = "ReadScope")]
         public Todo Get(int id)
         {
             return TodoStore.Values.FirstOrDefault(t => t.Id == id);

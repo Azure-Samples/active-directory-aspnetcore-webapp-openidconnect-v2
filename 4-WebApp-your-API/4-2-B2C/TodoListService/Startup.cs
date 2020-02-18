@@ -8,6 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using TodoListService.AuthorizationPolicies;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 
 namespace TodoListService
 {
@@ -39,6 +42,15 @@ namespace TodoListService
                 });
 
             services.AddControllers();
+            services.AddAuthorization(options =>
+            {
+                // Create policy to check for the scope 'read'
+                options.AddPolicy("ReadScope", 
+                    policy => policy.Requirements.Add(new OperationAuthorizationRequirement { Name = "read" }));
+            });
+
+            // Registering an authorization handler that will check if the scope claim has the requirement specified by the policy
+            services.AddSingleton<IAuthorizationHandler, OperationScopeHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
