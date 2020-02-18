@@ -118,6 +118,11 @@
 /2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph/bin
 /2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph/obj
 /Microsoft.Identity.Web.Test/obj
+/4-WebApp-your-API/4-1-MyOrg/.vs
+/4-WebApp-your-API/4-1-MyOrg/Client/bin
+/4-WebApp-your-API/4-1-MyOrg/Client/obj
+/4-WebApp-your-API/4-1-MyOrg/TodoListService/bin
+/4-WebApp-your-API/4-1-MyOrg/TodoListService/obj
 /4-WebApp-your-API/4-2-B2C/.vs
 /4-WebApp-your-API/4-2-B2C/Client/obj
 /4-WebApp-your-API/4-2-B2C/TodoListService/obj
