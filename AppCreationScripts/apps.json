@@ -40,11 +40,12 @@
       ],
       "codeConfigurations": [	
         {
-		      "settingFile": "/appsettings.json", 
-		      "replaceTokens": {
-             "appId": "Enter_the_Application_Id_here",
-             "tenantId": "common"
-			    }
+		      "settingFile": "/appsettings.json",
+          "replaceTokens": {
+            "appId": "Enter_the_Application_Id_here",
+            "tenantId": "common",
+            "authorityEndpointHost": "https://login.microsoftonline.com/"
+          }
         }
       ]	
     }
