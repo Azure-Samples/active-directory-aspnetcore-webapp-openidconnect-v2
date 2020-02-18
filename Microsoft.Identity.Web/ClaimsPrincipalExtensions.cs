@@ -23,10 +23,12 @@ namespace Microsoft.Identity.Web
             string tenantId = claimsPrincipal.GetTenantId();
             string userFlowId = claimsPrincipal.GetUserFlowId();
 
-            if (!string.IsNullOrWhiteSpace(nameIdentifierId) && !string.IsNullOrWhiteSpace(tenantId) && !string.IsNullOrWhiteSpace(userFlowId))
+            if (!string.IsNullOrWhiteSpace(nameIdentifierId) &&
+                !string.IsNullOrWhiteSpace(tenantId) &&
+                !string.IsNullOrWhiteSpace(userFlowId))
             {
-                // B2C pattern: {oid}-{tfp}.{tid}
-                return $"{nameIdentifierId}-{userFlowId}.{tenantId}";
+                // B2C pattern: {oid}-{userFlow}.{tid}
+                return $"{nameIdentifierId}.{tenantId}";
             }
             else if (!string.IsNullOrWhiteSpace(userObjectId) && !string.IsNullOrWhiteSpace(tenantId))
             {
@@ -64,8 +66,9 @@ namespace Microsoft.Identity.Web
             string tenantId = claimsPrincipal.FindFirstValue(ClaimConstants.Tid);
             if (string.IsNullOrEmpty(tenantId))
             {
-                tenantId = claimsPrincipal.FindFirstValue(ClaimConstants.TenantId);
+                return claimsPrincipal.FindFirstValue(ClaimConstants.TenantId);
             }
+
             return tenantId;
         }
 
@@ -125,7 +128,7 @@ namespace Microsoft.Identity.Web
             // Finally falling back to name
             return claimsPrincipal.FindFirstValue(ClaimConstants.Name);
         }
-        
+
         /// <summary>
         /// Gets the user flow id associated with the <see cref="ClaimsPrincipal"/>
         /// </summary>
@@ -134,6 +137,11 @@ namespace Microsoft.Identity.Web
         public static string GetUserFlowId(this ClaimsPrincipal claimsPrincipal)
         {
             string userFlowId = claimsPrincipal.FindFirstValue(ClaimConstants.Tfp);
+            if (string.IsNullOrEmpty(userFlowId))
+            {
+                return claimsPrincipal.FindFirstValue(ClaimConstants.UserFlow);
+            }
+
             return userFlowId;
         }
 
@@ -144,12 +152,7 @@ namespace Microsoft.Identity.Web
         /// <returns>Name identifier ID (sub) of the identity, or <c>null</c> if it cannot be found</returns>
         public static string GetNameIdentifierId(this ClaimsPrincipal claimsPrincipal)
         {
-            string sub = claimsPrincipal.FindFirstValue(ClaimConstants.Sub);
-            if (string.IsNullOrEmpty(sub))
-            {
-                sub = claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
-            }
-            return sub;
+            return claimsPrincipal.FindFirstValue(ClaimConstants.UniqueObjectIdentifier);
         }
     }
 }

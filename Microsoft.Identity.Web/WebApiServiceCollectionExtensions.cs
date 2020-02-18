@@ -171,7 +171,7 @@ namespace Microsoft.Identity.Web
 
                 // The valid audience could be given as Client Id or as Uri. 
                 // If it does not start with 'api://', this variant is added to the list of valid audiences.
-                EnsureValidAudiencesContainsApiGuidIfGuidProvided(options);
+                EnsureValidAudiencesContainsApiGuidIfGuidProvided(options, microsoftIdentityOptions);
 
                 // If the developer registered an IssuerValidator, do not overwrite it
                 if (options.TokenValidationParameters.IssuerValidator == null)
@@ -268,13 +268,21 @@ namespace Microsoft.Identity.Web
         /// </summary>
         /// <param name="options">Jwt bearer options for which to ensure that
         /// api://GUID is a valid audience</param>
-        internal static void EnsureValidAudiencesContainsApiGuidIfGuidProvided(JwtBearerOptions options)
+        internal static void EnsureValidAudiencesContainsApiGuidIfGuidProvided(JwtBearerOptions options, MicrosoftIdentityOptions msIdentityOptions)
         {
-            var validAudiences = new List<string> { options.Audience };
-            if (!options.Audience.StartsWith("api://", StringComparison.OrdinalIgnoreCase)
-                                             && Guid.TryParse(options.Audience, out _))
-                validAudiences.Add($"api://{options.Audience}");
-
+            var validAudiences = new List<string>();
+            if (!string.IsNullOrWhiteSpace(options.Audience))
+            {
+                validAudiences.Add(options.Audience);
+                if (!options.Audience.StartsWith("api://", StringComparison.OrdinalIgnoreCase)
+                                                 && Guid.TryParse(options.Audience, out _))
+                    validAudiences.Add($"api://{options.Audience}");
+            }
+            else
+            {
+                validAudiences.Add(msIdentityOptions.ClientId);
+                validAudiences.Add($"api://{msIdentityOptions.ClientId}");
+            }
             options.TokenValidationParameters.ValidAudiences = validAudiences;
         }
     }

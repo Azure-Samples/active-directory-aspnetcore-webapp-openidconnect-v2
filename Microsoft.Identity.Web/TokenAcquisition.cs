@@ -65,7 +65,7 @@ namespace Microsoft.Identity.Web
         };
 
         /// <summary>
-        /// This handler is executed after authorization code is received (once the user signs-in and consents) during the
+        /// This handler is executed after the authorization code is received (once the user signs-in and consents) during the
         /// <a href='https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow'>Authorization code flow grant flow</a> in a web app.
         /// It uses the code to request an access token from the Microsoft Identity platform and caches the tokens and an entry about the signed-in user's account in the MSAL's token cache.
         /// The access token (and refresh token) provided in the <see cref="AuthorizationCodeReceivedContext"/>, once added to the cache, are then used to acquire more tokens using the
@@ -94,7 +94,9 @@ namespace Microsoft.Identity.Web
         /// }
         /// </code>
         /// </example>
-        public async Task AddAccountToCacheFromAuthorizationCodeAsync(AuthorizationCodeReceivedContext context, IEnumerable<string> scopes)
+        public async Task AddAccountToCacheFromAuthorizationCodeAsync(
+            AuthorizationCodeReceivedContext context,
+            IEnumerable<string> scopes)
         {
             if (context == null)
             {
@@ -129,7 +131,6 @@ namespace Microsoft.Identity.Web
                     .AcquireTokenByAuthorizationCode(scopes.Except(_scopesRequestedByMsal), context.ProtocolMessage.Code)
                     .ExecuteAsync()
                     .ConfigureAwait(false);
-
                 context.HandleCodeRedemption(null, result.IdToken);
             }
             catch (MsalException ex)
@@ -245,10 +246,10 @@ namespace Microsoft.Identity.Web
         {
             ClaimsPrincipal user = context.HttpContext.User;
             IConfidentialClientApplication app = GetOrBuildConfidentialClientApplication();
-            IAccount account = null; 
-            
+            IAccount account = null;
+
             // For B2C, we should remove all accounts of the user regardless the user flow
-            if(_microsoftIdentityOptions.IsB2C)
+            if (_microsoftIdentityOptions.IsB2C)
             {
                 var b2cAccounts = await app.GetAccountsAsync().ConfigureAwait(false);
 
@@ -376,7 +377,7 @@ namespace Microsoft.Identity.Web
                 }
             }
 
-            // If is B2C and could not get an account (most likely because there is no tid claims), try to get it by user flow
+            // If it is B2C and could not get an account (most likely because there is no tid claims), try to get it by user flow
             if (_microsoftIdentityOptions.IsB2C && account == null)
             {
                 string currentUserFlow = claimsPrincipal.GetUserFlowId();
@@ -406,39 +407,41 @@ namespace Microsoft.Identity.Web
             }
 
             AuthenticationResult result;
-            if (string.IsNullOrWhiteSpace(tenant))
+            // Acquire an access token as a B2C authority
+            if (_microsoftIdentityOptions.IsB2C)
             {
+                string authority = application.Authority.Replace(
+                    new Uri(application.Authority).PathAndQuery,
+                    $"/tfp/{_microsoftIdentityOptions.Domain}/{_microsoftIdentityOptions.DefaultUserFlow}");
+
                 result = await application
                     .AcquireTokenSilent(scopes.Except(_scopesRequestedByMsal), account)
+                    .WithB2CAuthority(authority)
                     .ExecuteAsync()
                     .ConfigureAwait(false);
+
+                return result.AccessToken;
+            }
+
+            else if (!string.IsNullOrWhiteSpace(tenant))
+            {
+                // Acquire an access token as another AAD authority
+                string authority = application.Authority.Replace(new Uri(application.Authority).PathAndQuery, $"/{tenant}/");
+                result = await application
+                    .AcquireTokenSilent(scopes.Except(_scopesRequestedByMsal), account)
+                    .WithAuthority(authority)
+                    .ExecuteAsync()
+                    .ConfigureAwait(false);
+                return result.AccessToken;
             }
             else
             {
-                // Acquire an access token as another B2C authority
-                if (_microsoftIdentityOptions.IsB2C)
-                {
-                    string authority = application.Authority.Replace(new Uri(application.Authority).PathAndQuery, $"/tfp/{tenant}/{_microsoftIdentityOptions.DefaultUserFlow}");
-                    result = await application
-                        .AcquireTokenSilent(scopes.Except(_scopesRequestedByMsal), account)
-                        .WithB2CAuthority(authority)
-                        .ExecuteAsync()
-                        .ConfigureAwait(false);
-                }
-
-                // Acquire an access token as another AAD authority
-                else
-                {
-                    string authority = application.Authority.Replace(new Uri(application.Authority).PathAndQuery, $"/{tenant}/");
-                    result = await application
-                        .AcquireTokenSilent(scopes.Except(_scopesRequestedByMsal), account)
-                        .WithAuthority(authority)
-                        .ExecuteAsync()
-                        .ConfigureAwait(false);
-                }
+                result = await application
+                   .AcquireTokenSilent(scopes.Except(_scopesRequestedByMsal), account)
+                   .ExecuteAsync()
+                   .ConfigureAwait(false);
+                return result.AccessToken;
             }
-
-            return result.AccessToken;
         }
 
         /// <summary>

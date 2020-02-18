@@ -1,26 +1,5 @@
-﻿/*
- The MIT License (MIT)
-
-Copyright (c) 2018 Microsoft Corporation
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
- */
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -59,11 +38,11 @@ namespace TodoListClient.Services
 
         public TodoListService(ITokenAcquisition tokenAcquisition, HttpClient httpClient, IConfiguration configuration, IHttpContextAccessor contextAccessor)
         {
-            this._httpClient = httpClient;
-            this._tokenAcquisition = tokenAcquisition;
-            this._contextAccessor = contextAccessor;
-            this._TodoListScope = configuration["TodoList:TodoListScope"];
-            this._TodoListBaseAddress = configuration["TodoList:TodoListBaseAddress"];
+            _httpClient = httpClient;
+            _tokenAcquisition = tokenAcquisition;
+            _contextAccessor = contextAccessor;
+            _TodoListScope = configuration["TodoList:TodoListScope"];
+            _TodoListBaseAddress = configuration["TodoList:TodoListBaseAddress"];
         }
 
         public async Task<Todo> AddAsync(Todo todo)
@@ -72,8 +51,7 @@ namespace TodoListClient.Services
 
             var jsonRequest = JsonConvert.SerializeObject(todo);
             var jsoncontent = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-            var response = await this._httpClient.PostAsync($"{this._TodoListBaseAddress}/api/todolist", jsoncontent);
+            var response = await this._httpClient.PostAsync($"{ _TodoListBaseAddress}/api/todolist", jsoncontent);
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -90,7 +68,7 @@ namespace TodoListClient.Services
         {
             await PrepareAuthenticatedClient();
 
-            var response = await this._httpClient.DeleteAsync($"{this._TodoListBaseAddress}/api/todolist/{id}");
+            var response = await _httpClient.DeleteAsync($"{ _TodoListBaseAddress}/api/todolist/{id}");
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -106,8 +84,7 @@ namespace TodoListClient.Services
 
             var jsonRequest = JsonConvert.SerializeObject(todo);
             var jsoncontent = new StringContent(jsonRequest, Encoding.UTF8, "application/json-patch+json");
-
-            var response = await this._httpClient.PatchAsync($"{this._TodoListBaseAddress}/api/todolist/{todo.Id}", jsoncontent);
+            var response = await _httpClient.PatchAsync($"{ _TodoListBaseAddress}/api/todolist/{todo.Id}", jsoncontent);
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -123,8 +100,7 @@ namespace TodoListClient.Services
         public async Task<IEnumerable<Todo>> GetAsync()
         {
             await PrepareAuthenticatedClient();
-
-            var response = await this._httpClient.GetAsync($"{this._TodoListBaseAddress}/api/todolist");
+            var response = await _httpClient.GetAsync($"{ _TodoListBaseAddress}/api/todolist");
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -138,17 +114,16 @@ namespace TodoListClient.Services
 
         private async Task PrepareAuthenticatedClient()
         {
-            var accessToken = await this._tokenAcquisition.GetAccessTokenForUserAsync(new[] { this._TodoListScope });
+            var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new[] { _TodoListScope });
             Debug.WriteLine($"access token-{accessToken}");
-            this._httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            this._httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
         public async Task<Todo> GetAsync(int id)
         {
             await PrepareAuthenticatedClient();
-
-            var response = await this._httpClient.GetAsync($"{this._TodoListBaseAddress}/api/todolist/{id}");
+            var response = await _httpClient.GetAsync($"{ _TodoListBaseAddress}/api/todolist/{id}");
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var content = await response.Content.ReadAsStringAsync();

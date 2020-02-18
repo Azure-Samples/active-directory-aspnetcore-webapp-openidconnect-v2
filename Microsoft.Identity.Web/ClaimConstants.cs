@@ -14,6 +14,8 @@ namespace Microsoft.Identity.Web
         public const string PreferredUserName = "preferred_username";
         public const string TenantId = "http://schemas.microsoft.com/identity/claims/tenantid";
         public const string Tid = "tid";
+        public const string ClientInfo = "client_info";
+        public const string UniqueObjectIdentifier = "utid";
         // Older scope claim
         public const string Scope = "http://schemas.microsoft.com/identity/claims/scope";
         // Newer scope claim
@@ -23,6 +25,7 @@ namespace Microsoft.Identity.Web
 
         // Policy claims
         public const string Acr = "acr";
+        public const string UserFlow = "http://schemas.microsoft.com/claims/authnclassreference";
         public const string Tfp = "tfp";
     }
 }

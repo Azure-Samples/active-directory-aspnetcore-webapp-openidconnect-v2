@@ -14,6 +14,8 @@ using Microsoft.Identity.Web.Resource;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Microsoft.Identity.Web
@@ -100,6 +102,33 @@ namespace Microsoft.Identity.Web
                     var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
                     await tokenAcquisition.AddAccountToCacheFromAuthorizationCodeAsync(context, options.Scope).ConfigureAwait(false);
                     await codeReceivedHandler(context).ConfigureAwait(false);
+                };
+
+                // Handling the token validated to get the client_info for cases where tenantId is not present (example: B2C)
+                var onTokenValidatedHandler = options.Events.OnTokenValidated;
+                options.Events.OnTokenValidated = async context =>
+                {
+                    if (!context.Principal.HasClaim(c => c.Type == ClaimConstants.Tid || c.Type == ClaimConstants.TenantId))
+                    {
+                        ClientInfo clientInfoFromServer;
+                        if (context.Request.Form.ContainsKey(ClaimConstants.ClientInfo))
+                        {
+                            context.Request.Form.TryGetValue(ClaimConstants.ClientInfo, out Microsoft.Extensions.Primitives.StringValues value);
+
+                            if (!string.IsNullOrEmpty(value))
+                            {
+                                clientInfoFromServer = ClientInfo.CreateFromJson(value);
+
+                                if (clientInfoFromServer != null)
+                                {
+                                    context.Principal.Identities.FirstOrDefault().AddClaim(new Claim(ClaimConstants.Tid, clientInfoFromServer.UniqueTenantIdentifier));
+                                    context.Principal.Identities.FirstOrDefault().AddClaim(new Claim(ClaimConstants.UniqueObjectIdentifier, clientInfoFromServer.UniqueObjectIdentifier));
+                                }
+                            }
+                        }
+                    }                   
+
+                    await onTokenValidatedHandler(context).ConfigureAwait(false);
                 };
 
                 // Handling the sign-out: removing the account from MSAL.NET cache
@@ -248,6 +277,7 @@ namespace Microsoft.Identity.Web
 
                     if (microsoftIdentityOptions.IsB2C)
                     {
+                        context.ProtocolMessage.SetParameter("client_info", "1");
                         // When a new Challenge is returned using any B2C user flow different than susi, we must change
                         // the ProtocolMessage.IssuerAddress to the desired user flow otherwise the redirect would use the susi user flow
                         await b2COidcHandlers.OnRedirectToIdentityProvider(context);
