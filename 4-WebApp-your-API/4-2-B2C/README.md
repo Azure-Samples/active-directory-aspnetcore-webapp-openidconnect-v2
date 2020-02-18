@@ -1,7 +1,7 @@
 ---
 services: active-directory
 platforms: dotnet
-author: jennyf69
+author: jennyf19
 level: 200
 client: ASP.NET Core Web App
 service: ASP.NET Core Web API
