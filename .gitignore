@@ -12,6 +12,8 @@
 /Microsoft.Identity.Web.UI/bin
 /Microsoft.Identity.Web.UI/obj
 /Microsoft.Identity.Web.Test/.vs
+/Microsoft.Identity.Web.UI/bin
+/Microsoft.Identity.Web.UI/obj
 /Microsoft.Identity.Web.Test/bin
 /Microsoft.Identity.Web.Test/obj
 /1-WebApp-OIDC/1-1-MyOrg/.vs
@@ -117,7 +119,6 @@
 /4-WebApp-your-API/Client/obj
 /2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph/bin
 /2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph/obj
-/Microsoft.Identity.Web.Test/obj
 /4-WebApp-your-API/4-1-MyOrg/.vs
 /4-WebApp-your-API/4-1-MyOrg/Client/bin
 /4-WebApp-your-API/4-1-MyOrg/Client/obj
