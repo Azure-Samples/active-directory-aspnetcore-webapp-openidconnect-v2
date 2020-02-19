@@ -21,6 +21,7 @@ namespace Microsoft.Identity.Web
         // Newer scope claim
         public const string Scp = "scp";
         public const string Roles = "roles";
+        public const string Role = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
         public const string Sub = "sub";
 
         // Policy claims

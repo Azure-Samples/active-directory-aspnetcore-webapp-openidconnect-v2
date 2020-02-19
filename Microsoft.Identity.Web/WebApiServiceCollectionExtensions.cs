@@ -198,7 +198,8 @@ namespace Microsoft.Identity.Web
                     // This check is required to ensure that the Web API only accepts tokens from tenants where it has been consented and provisioned.
                     if (!context.Principal.Claims.Any(x => x.Type == ClaimConstants.Scope)
                     && !context.Principal.Claims.Any(y => y.Type == ClaimConstants.Scp)
-                    && !context.Principal.Claims.Any(y => y.Type == ClaimConstants.Roles))
+                    && !context.Principal.Claims.Any(y => y.Type == ClaimConstants.Roles)
+                    && !context.Principal.Claims.Any(y => y.Type == ClaimConstants.Role))
                     {
                         throw new UnauthorizedAccessException("Neither scope or roles claim was found in the bearer token.");
                     }
