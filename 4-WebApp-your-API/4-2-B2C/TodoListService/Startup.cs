@@ -48,9 +48,6 @@ namespace TodoListService
                 options.AddPolicy("ReadScope", 
                     policy => policy.Requirements.Add(new ScopesRequirement("read")));
             });
-
-            // Registering an authorization handler that will check if the scope claim has the requirement specified by the policy
-            //services.AddSingleton<IAuthorizationHandler, ScopesRequirement>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

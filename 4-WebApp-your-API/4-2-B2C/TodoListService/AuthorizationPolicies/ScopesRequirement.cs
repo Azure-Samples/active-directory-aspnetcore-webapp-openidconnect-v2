@@ -8,17 +8,21 @@ using System.Threading.Tasks;
 
 namespace TodoListService.AuthorizationPolicies
 {
+    /// <summary>
+    /// Requirement used in authorization policies, to check if the scope claim has at least one of the requirement values.
+    /// Since the class also extends AuthorizationHandler, its dependency injection is done out of the box.
+    /// </summary>
     public class ScopesRequirement : AuthorizationHandler<ScopesRequirement>, IAuthorizationRequirement
     {
-        string[] _scopes;
+        string[] _acceptedScopes;
 
-        public ScopesRequirement(params string[] scopes)
+        public ScopesRequirement(params string[] acceptedScopes)
         {
-            _scopes = scopes;
+            _acceptedScopes = acceptedScopes;
         }
 
         /// <summary>
-        /// AuthorizationHandler that will check if the scope claim has the requirement value
+        /// AuthorizationHandler that will check if the scope claim has at least one of the requirement values
         /// </summary>
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
                                                         ScopesRequirement requirement)
@@ -35,7 +39,7 @@ namespace TodoListService.AuthorizationPolicies
             if (scopeClaim == null)
                 scopeClaim = context?.User?.FindFirst(ClaimConstants.Scope);
 
-            if (scopeClaim != null && scopeClaim.Value.Split(' ').Intersect(requirement._scopes).Any())
+            if (scopeClaim != null && scopeClaim.Value.Split(' ').Intersect(requirement._acceptedScopes).Any())
             {
                 context.Succeed(requirement);
             }
