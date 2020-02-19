@@ -1,9 +1,5 @@
 {
-  /*
-  This section describes the Azure AD Applications to configure, and their dependencies
-  */
-
-  "Sample": {
+    "Sample": {
     "Title": "Signing users to an ASP.NET Core Web App",
     "Level": 200,
     "Client": "ASP.NET Core 2.2"
