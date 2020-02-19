@@ -74,7 +74,8 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
 
    ![Web apps calls Microsoft APIs](ReadmeFiles/web-app-calls-your-api.svg)
 
-   Learn how to update your Web App to [call your own web api](./4-WebApp-your-API/README-incremental-instructions.md)
+   - Learn how to update your Web App to [call your own web API](./4-WebApp-your-API/4-1-MyOrg/README-incremental-instructions.md)
+   - Learn how to update you B2C Web App to [call you own B2C web API](./4-WebApp-your-API/4-2-B2C/README.md)
 
 5. Once you know how to sign-in users and call Web APIs from your Web App, you might want to restrict part of the application depending on the user having a role in the application or belonging to a group. So far you've learnt how to add and process authentication. Now learn how to [add authorization to your Web application](./5-WebApp-AuthZ), restricting part of it to users
 
