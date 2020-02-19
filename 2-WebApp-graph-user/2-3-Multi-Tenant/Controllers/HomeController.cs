@@ -65,7 +65,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
             // If the user deletes its own tenant from the list, they would also be signed-out
             if (id == signedUsersTenant)
-                return RedirectToAction("SignOut", "Account", new { area = "AzureAD" });
+                return RedirectToAction("SignOut", "Account", new { area = "MicrosoftIdentity" });
             else
                 return RedirectToAction("Index");
         }

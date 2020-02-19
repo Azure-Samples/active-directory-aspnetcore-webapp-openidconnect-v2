@@ -50,7 +50,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
                 });
             }
 
-            services.AddHttpContextAccessor();;
+            services.AddHttpContextAccessor();
             services.AddScoped<IMsalTokenCacheProvider, MsalSessionTokenCacheProvider>();
 
             return services;

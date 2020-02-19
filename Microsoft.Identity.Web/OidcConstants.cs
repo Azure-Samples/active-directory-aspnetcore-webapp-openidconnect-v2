@@ -9,5 +9,6 @@ namespace Microsoft.Identity.Web
         public const string ScopeOfflineAccess = "offline_access";
         public const string ScopeProfile = "profile";
         public const string ScopeOpenId = "openid";
+        public const string PolicyKey = "policy";
     }
 }

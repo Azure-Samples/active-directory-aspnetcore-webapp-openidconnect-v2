@@ -31,7 +31,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         public async Task<IActionResult> Profile()
         {
             var accessToken =
-                await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(new[] {Constants.ScopeUserRead});
+                await tokenAcquisition.GetAccessTokenForUserAsync(new[] {Constants.ScopeUserRead});
 
             var me = await graphApiOperations.GetUserInformation(accessToken);
             var photo = await graphApiOperations.GetPhotoAsBase64Async(accessToken);

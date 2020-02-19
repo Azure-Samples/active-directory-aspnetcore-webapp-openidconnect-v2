@@ -2,16 +2,15 @@
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Identity.Web.TokenCacheProviders.Distributed
 {
     /// <summary>
-    /// An implementation of token cache for both Confidential and Public clients backed by MemoryCache.
+    /// An implementation of the token cache for both Confidential and Public clients backed by MemoryCache.
     /// </summary>
     /// <seealso cref="https://aka.ms/msal-net-token-cache-serialization"/>
     public class MsalDistributedTokenCacheAdapter : MsalAbstractTokenCacheProvider
@@ -29,15 +28,15 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Distributed
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="azureAdOptions"></param>
+        /// <param name="microsoftIdentityOptions"></param>
         /// <param name="httpContextAccessor"></param>
         /// <param name="memoryCache"></param>
         /// <param name="cacheOptions"></param>
-        public MsalDistributedTokenCacheAdapter(IOptions<AzureADOptions> azureAdOptions,
+        public MsalDistributedTokenCacheAdapter(IOptions<MicrosoftIdentityOptions> microsoftIdentityOptions,
                                             IHttpContextAccessor httpContextAccessor,
                                             IDistributedCache memoryCache,
                                             IOptions<DistributedCacheEntryOptions> cacheOptions) :
-            base(azureAdOptions, httpContextAccessor)
+            base(microsoftIdentityOptions, httpContextAccessor)
         {
             _distributedCache = memoryCache;
             _cacheOptions = cacheOptions.Value;

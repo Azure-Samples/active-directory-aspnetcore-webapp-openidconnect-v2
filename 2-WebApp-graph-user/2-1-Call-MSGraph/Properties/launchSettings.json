@@ -8,13 +8,13 @@
     }
   },
     "profiles": {
-        "WebApp_OpenIDConnect_DotNet": {
-            "commandName": "Project",
-            "launchBrowser": true,
-            "environmentVariables": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            },
+      "WebApp_OpenIDConnect_DotNet": {
+        "commandName": "Project",
+        "launchBrowser": true,
+        "environmentVariables": {
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        },
             "applicationUrl": "https://localhost:44321;http://localhost:3110"
-        }
+      }
     }
 }

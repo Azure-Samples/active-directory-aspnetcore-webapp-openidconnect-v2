@@ -23,7 +23,7 @@ SOFTWARE.
 ***********************************************************************************************/
 
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.AzureADB2C.UI;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -31,6 +31,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.UI;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -56,15 +57,17 @@ namespace WebApp_OpenIDConnect_DotNet
             });
 
             // Configuration to sign-in users with Azure AD B2C
-            services.AddAuthentication(AzureADB2CDefaults.AuthenticationScheme)
-                .AddAzureADB2C(options => Configuration.Bind("AzureAdB2C", options));
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                .AddSignIn("AzureAdB2C", Configuration, options => Configuration.Bind("AzureAdB2C", options));
 
-            services.AddControllersWithViews();
+            services.AddControllersWithViews()
+                .AddMicrosoftIdentityUI();
+
             services.AddRazorPages();
 
-            //Configuring appsettings section AzureADB2C, into IOptions
+            //Configuring appsettings section AzureAdB2C, into IOptions
             services.AddOptions();
-            services.Configure<AzureADB2COptions>(Configuration.GetSection("AzureAdB2C"));
+            services.Configure<OpenIdConnectOptions>(Configuration.GetSection("AzureAdB2C"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

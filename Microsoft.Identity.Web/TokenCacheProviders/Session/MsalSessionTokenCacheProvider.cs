@@ -2,18 +2,17 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using Microsoft.Identity.Client;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace Microsoft.Identity.Web.TokenCacheProviders.Session
 {
     /// <summary>
-    /// An implementation of token cache for Confidential clients backed by Http session.
+    /// An implementation of token cache for Confidential clients backed by an Http session.
     /// </summary>
     /// For this session cache to work effectively the aspnetcore session has to be configured properly.
     /// The latest guidance is provided at https://docs.microsoft.com/aspnet/core/fundamentals/app-state
@@ -33,9 +32,9 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
     {
         private HttpContext CurrentHttpContext => _httpContextAccessor.HttpContext;
 
-        public MsalSessionTokenCacheProvider(IOptions<AzureADOptions> azureAdOptions,
-                            IHttpContextAccessor httpContextAccessor) :
-              base(azureAdOptions, httpContextAccessor)
+        public MsalSessionTokenCacheProvider(IOptions<MicrosoftIdentityOptions> microsoftIdentityOptions,
+            IHttpContextAccessor httpContextAccessor) : 
+            base(microsoftIdentityOptions, httpContextAccessor)
         {
         }
 
@@ -46,8 +45,7 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
             s_sessionLock.EnterReadLock();
             try
             {
-                byte[] blob;
-                if (CurrentHttpContext.Session.TryGetValue(cacheKey, out blob))
+                if (CurrentHttpContext.Session.TryGetValue(cacheKey, out byte[] blob))
                 {
                     Debug.WriteLine($"INFO: Deserializing session {CurrentHttpContext.Session.Id}, cacheId {cacheKey}");
                 }
@@ -96,11 +94,6 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.Session
                 s_sessionLock.ExitWriteLock();
             }
         }
-
-        /// <summary>
-        /// The duration till the tokens are kept in memory cache. In production, a higher value , upto 90 days is recommended.
-        /// </summary>
-        private readonly DateTimeOffset cacheDuration = DateTimeOffset.Now.AddHours(12);
 
         private static readonly ReaderWriterLockSlim s_sessionLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
 

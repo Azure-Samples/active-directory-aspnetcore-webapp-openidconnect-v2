@@ -24,8 +24,8 @@ namespace Microsoft.Identity.Web
                 return new ClaimsPrincipal(
                     new ClaimsIdentity(new Claim[]
                     {
-                        new Claim(ClaimConstants.Oid, account.HomeAccountId.ObjectId),
-                        new Claim(ClaimConstants.Tid, account.HomeAccountId.TenantId),
+                        new Claim(ClaimConstants.Oid, account.HomeAccountId?.ObjectId),
+                        new Claim(ClaimConstants.Tid, account.HomeAccountId?.TenantId),
                         new Claim(ClaimTypes.Upn, account.Username)
                     })
                 );

@@ -1,0 +1,31 @@
+﻿@model TodoListService.Models.Todo
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>ToDo Details</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayFor(model => model.Id)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                @Html.DisplayFor(model => model.Owner)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Title)
+            </td>
+        </tr>
+    </tbody>
+</table>

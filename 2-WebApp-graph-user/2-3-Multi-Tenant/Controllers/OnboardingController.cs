@@ -23,12 +23,13 @@ SOFTWARE.
  */
 
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Web;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -41,13 +42,13 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
     public class OnboardingController : Controller
     {
         private readonly SampleDbContext dbContext;
-        private readonly AzureADOptions azureADOptions;
+        private readonly MicrosoftIdentityOptions microsoftIdentityOptions;
         private readonly IConfiguration configuration;
 
-        public OnboardingController(SampleDbContext dbContext, IOptions<AzureADOptions> azureADOptions, IConfiguration configuration)
+        public OnboardingController(SampleDbContext dbContext, IOptions<MicrosoftIdentityOptions> microsoftIdentityOptions, IConfiguration configuration)
         {
             this.dbContext = dbContext;
-            this.azureADOptions = azureADOptions.Value;
+            this.microsoftIdentityOptions = microsoftIdentityOptions.Value;
             this.configuration = configuration;
         }
 
@@ -85,8 +86,8 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             // Refer to https://docs.microsoft.com/azure/active-directory/develop/v2-admin-consent for details about the Url format being constructed below
             string authorizationRequest = string.Format(
                 "{0}organizations/v2.0/adminconsent?client_id={1}&redirect_uri={2}&state={3}&scope={4}",
-                azureADOptions.Instance,
-                Uri.EscapeDataString(azureADOptions.ClientId),                  // The application Id as obtained from the Azure Portal
+                microsoftIdentityOptions.Instance,
+                Uri.EscapeDataString(microsoftIdentityOptions.ClientId),                  // The application Id as obtained from the Azure Portal
                 Uri.EscapeDataString(currentUri + "Onboarding/ProcessCode"),    // Uri that the admin will be redirected to after the consent
                 Uri.EscapeDataString(stateMarker),                              // The state parameter is used to validate the response, preventing a man-in-the-middle attack, and it will also be used to identify this request in the ProcessCode action.
                 Uri.EscapeDataString(configuration.GetValue<string>("GraphAPI:StaticScope")));  // The scopes to be presented to the admin to consent. Here we are using the static scope '/.default' (https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent#the-default-scope).
@@ -125,7 +126,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             {
                 // Create a Sign-in challenge to re-authenticate the user again as we need claims from the user's id_token.
                 // Since the user will have a session on AAD already, they wont need to select an account again.
-                return Challenge(authenticationProperties, AzureADDefaults.OpenIdScheme);
+                return Challenge(authenticationProperties, OpenIdConnectDefaults.AuthenticationScheme);
             }
 
             // Find a tenant record matching the TempAuthorizationCode that we previously saved in the Onboard()
@@ -147,7 +148,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
                 // Create a Sign-in challenge to re-authenticate the user again as we need claims from the user's id_token.
                 // Since the user will have a session on AAD already, they wont need to select an account again
-                return Challenge(authenticationProperties, AzureADDefaults.OpenIdScheme);
+                return Challenge(authenticationProperties, OpenIdConnectDefaults.AuthenticationScheme);
             }
         }
     }

@@ -62,7 +62,7 @@ namespace Microsoft.Identity.Web.Test
         }
 
         [Fact]
-        public void ValidationFails_NoTidClaimInJwt()
+        public void ValidationSucceeds_NoTidClaimInJwt_TidCreatedFromIssuerInstead()
         {
             // Arrange
             AadIssuerValidator validator = new AadIssuerValidator(s_aliases);
@@ -71,11 +71,10 @@ namespace Microsoft.Identity.Web.Test
             JwtSecurityToken noTidJwt = new JwtSecurityToken(issuer: Iss, claims: new[] { issClaim });
 
             // Act & Assert
-            Assert.Throws<SecurityTokenInvalidIssuerException>(() =>
                 validator.Validate(
                     Iss,
                     noTidJwt,
-                    new TokenValidationParameters() { ValidIssuers = new[] { "https://login.microsoftonline.com/{tenantid}/v2.0" } }));
+                    new TokenValidationParameters() { ValidIssuers = new[] { "https://login.microsoftonline.com/{tenantid}/v2.0" } });
         }
 
         [Fact]
@@ -138,6 +137,127 @@ namespace Microsoft.Identity.Web.Test
                     iss,
                     noTidJwt,
                     new TokenValidationParameters() { ValidIssuers = new[] { "https://login.microsoftonline.com/{tenantid}/v2.0" } }));
+        }
+
+        [Fact]
+        public void Validate_FromB2CAuthority_WithNoTidClaim_ValidateSuccessfully()
+        {
+            //Arrange
+            string b2cAuthority = "https://fabrikamb2c.b2clogin.com/fabrikamb2c.onmicrosoft.com/b2c_1_susi/v2.0";
+            string issuer = "https://fabrikamb2c.b2clogin.com/775527ff-9a37-4307-8b3d-cc311f58d925/v2.0/";
+            Claim issClaim = new Claim("iss", issuer);
+            Claim tfpClaim = new Claim("tfp", "b2c_1_susi");
+            JwtSecurityToken jwtSecurityToken = new JwtSecurityToken(issuer: issuer, claims: new[] { issClaim, tfpClaim });
+
+            //Act
+            AadIssuerValidator validator = AadIssuerValidator.GetIssuerValidator(b2cAuthority);
+
+            //Assert
+            validator.Validate(
+                issuer,
+                jwtSecurityToken,
+                new TokenValidationParameters()
+                {
+                    ValidIssuers = new[] { "https://fabrikamb2c.b2clogin.com/775527ff-9a37-4307-8b3d-cc311f58d925/v2.0/" }
+                });
+        }
+
+        [Fact]
+        public void Validate_FromB2CAuthority_WithTidClaim_ValidateSuccessfully()
+        {
+            //Arrange
+            string b2cAuthority = "https://fabrikamb2c.b2clogin.com/fabrikamb2c.onmicrosoft.com/b2c_1_susi/v2.0";
+            string issuer = "https://fabrikamb2c.b2clogin.com/775527ff-9a37-4307-8b3d-cc311f58d925/v2.0/";
+            Claim issClaim = new Claim("iss", issuer);
+            Claim tidClaim = new Claim("tid", "775527ff-9a37-4307-8b3d-cc311f58d925");
+            Claim tfpClaim = new Claim("tfp", "b2c_1_susi");
+            JwtSecurityToken jwtSecurityToken = new JwtSecurityToken(issuer: issuer, claims: new[] { issClaim, tfpClaim, tidClaim });
+
+            //Act
+            AadIssuerValidator validator = AadIssuerValidator.GetIssuerValidator(b2cAuthority);
+
+            //Assert
+            validator.Validate(
+                issuer,
+                jwtSecurityToken,
+                new TokenValidationParameters()
+                {
+                    ValidIssuers = new[] { "https://fabrikamb2c.b2clogin.com/775527ff-9a37-4307-8b3d-cc311f58d925/v2.0/" }
+                });
+        }
+
+        [Fact]
+        public void Validate_FromB2CAuthority_InvalidIssuer_Fails ()
+        {
+            //Arrange
+            string b2cAuthority = "https://fabrikamb2c.b2clogin.com/fabrikamb2c.onmicrosoft.com/b2c_1_susi/v2.0";
+            string badIssuer = "https://badIssuer.b2clogin.com/775527ff-9a37-4307-8b3d-cc311f58d925/v2.0/";
+            Claim issClaim = new Claim("iss", badIssuer);
+            Claim tfpClaim = new Claim("tfp", "b2c_1_susi");
+            JwtSecurityToken jwtSecurityToken = new JwtSecurityToken(issuer: badIssuer, claims: new[] { issClaim, tfpClaim });
+
+            //Act
+            AadIssuerValidator validator = AadIssuerValidator.GetIssuerValidator(b2cAuthority);
+
+            //Assert
+            Assert.Throws<SecurityTokenInvalidIssuerException>(() =>
+                validator.Validate(
+                    badIssuer,
+                    jwtSecurityToken,
+                    new TokenValidationParameters()
+                    {
+                        ValidIssuers = new[] { "https://fabrikamb2c.b2clogin.com/775527ff-9a37-4307-8b3d-cc311f58d925/v2.0/" }
+                    })
+                );
+        }
+
+        [Fact]
+        public void Validate_FromB2CAuthority_InvalidIssuerTid_Fails()
+        {
+            //Arrange
+            string wrongTid = "9188040d-6c67-4c5b-b112-36a304b66dad";
+            string b2cAuthority = "https://fabrikamb2c.b2clogin.com/fabrikamb2c.onmicrosoft.com/b2c_1_susi/v2.0";
+            string badIssuer = $"https://fabrikamb2c.b2clogin.com/{wrongTid}/v2.0/";
+            Claim issClaim = new Claim("iss", badIssuer);
+            Claim tfpClaim = new Claim("tfp", "b2c_1_susi");
+            JwtSecurityToken jwtSecurityToken = new JwtSecurityToken(issuer: badIssuer, claims: new[] { issClaim, tfpClaim });
+
+            //Act
+            AadIssuerValidator validator = AadIssuerValidator.GetIssuerValidator(b2cAuthority);
+
+            //Assert
+            Assert.Throws<SecurityTokenInvalidIssuerException>(() =>
+                validator.Validate(
+                    badIssuer,
+                    jwtSecurityToken,
+                    new TokenValidationParameters()
+                    {
+                        ValidIssuers = new[] { "https://fabrikamb2c.b2clogin.com/775527ff-9a37-4307-8b3d-cc311f58d925/v2.0/" }
+                    })
+                );
+        }
+
+        [Fact]
+        public void Validate_FromCustomB2CAuthority_ValidateSuccessfully()
+        {
+            //Arrange
+            string b2cAuthority = "https://myCustomDomain.com/fabrikamb2c.onmicrosoft.com/b2c_1_susi/v2.0";
+            string issuer = "https://myCustomDomain.com/775527ff-9a37-4307-8b3d-cc311f58d925/v2.0/";
+            Claim issClaim = new Claim("iss", issuer);
+            Claim tfpClaim = new Claim("tfp", "b2c_1_susi");
+            JwtSecurityToken jwtSecurityToken = new JwtSecurityToken(issuer: issuer, claims: new[] { issClaim, tfpClaim });
+
+            //Act
+            AadIssuerValidator validator = AadIssuerValidator.GetIssuerValidator(b2cAuthority);
+
+            //Assert
+            validator.Validate(
+                issuer,
+                jwtSecurityToken,
+                new TokenValidationParameters()
+                {
+                    ValidIssuers = new[] { "https://myCustomDomain.com/775527ff-9a37-4307-8b3d-cc311f58d925/v2.0/" }
+                });
         }
     }
 }

@@ -154,7 +154,6 @@ namespace Microsoft.Identity.Web.Resource
             Debug.WriteLine($"5. Begin {nameof(OnTokenResponseReceivedAsync)}");
             await s_onTokenResponseReceived(context).ConfigureAwait(false);
             Debug.WriteLine($"5. End - {nameof(OnTokenResponseReceivedAsync)}");
-
         }
 
         private static async Task OnTokenValidatedAsync(TokenValidatedContext context)

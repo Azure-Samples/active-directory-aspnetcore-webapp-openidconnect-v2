@@ -56,7 +56,7 @@ from <https://github.com/aspnet/AspNetCore/blob/master/src/Azure/AzureAD/Authent
 The ASP.NET Core OpenIdConnect middleware enables your app to intercept the call to the Microsoft identity platform logout endpoint by providing an OpenIdConnect event named `OnRedirectToIdentityProviderForSignOut`.
 
 ```CSharp
-public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this IServiceCollection services,
+public static IServiceCollection AddSignIn(this IServiceCollection services,
                                                             IConfiguration configuration)
 {
     services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
@@ -73,10 +73,10 @@ public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this
 
 ### Clearing the token cache
 
-Your application can also intercept the logout event, for instance to clear the entry of the token cache associated with the account that signed out. We'll see in the second part of this tutorial (about the Web app calling a Web API), that the web app will store access tokens for the user in a cache. Intercepting the logout callback enables your web application to remove the user from the token cache. This is illustrated in the `AddMsal()` method of [StartupHelper.cs L137-143](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/b87a1d859ff9f9a4a98eb7b701e6a1128d802ec5/Microsoft.Identity.Web/StartupHelpers.cs#L137-L143)
+Your application can also intercept the logout event, for instance to clear the entry of the token cache associated with the account that signed out. We'll see in the second part of this tutorial (about the Web app calling a Web API), that the web app will store access tokens for the user in a cache. Intercepting the logout callback enables your web application to remove the user from the token cache. This is illustrated in the `AddWebAppCallsProtectedWebApi()` method of [StartupHelper.cs L137-143](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/b87a1d859ff9f9a4a98eb7b701e6a1128d802ec5/Microsoft.Identity.Web/StartupHelpers.cs#L137-L143)
 
 ```CSharp
-public static IServiceCollection AddMsal(this IServiceCollection services, IEnumerable<string> initialScopes)
+public static IServiceCollection AddWebAppCallsProtectedWebApi(this IServiceCollection services, IEnumerable<string> initialScopes)
 {
     services.AddTokenAcquisition();
 

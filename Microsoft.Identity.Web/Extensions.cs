@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 namespace Microsoft.Identity.Web
 {
     /// <summary>
-    /// Extension methods that don't fit in any other class
+    /// Extension methods
     /// </summary>
     public static class Extensions
     {

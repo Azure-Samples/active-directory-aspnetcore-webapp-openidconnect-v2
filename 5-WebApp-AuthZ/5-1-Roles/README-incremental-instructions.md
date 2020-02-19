@@ -159,9 +159,9 @@ The asp.net middleware supports roles populated from claims by specifying the cl
 ```CSharp
 
 // Startup.cs
-public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this IServiceCollection services, IConfiguration configuration, X509Certificate2 tokenDecryptionCertificate = null)
+public static IServiceCollection AddSignIn(this IServiceCollection services, IConfiguration configuration, X509Certificate2 tokenDecryptionCertificate = null)
 {
-            // [removed for] brevity
+            // [removed for brevity]
 
             // This is required to be instantiated before the OpenIdConnectOptions starts getting configured.
             // By default, the claims mapping will map claim names in the old format to accommodate older SAML applications.
@@ -183,7 +183,7 @@ public static IServiceCollection AddMicrosoftIdentityPlatformAuthentication(this
                 options.AddPolicy(AuthorizationPolicies.AssignmentToUserReaderRoleRequired, policy => policy.RequireRole(AppRole.UserReaders));
                 options.AddPolicy(AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired, policy => policy.RequireRole(AppRole.DirectoryViewers));
             });
-        // [removed for] brevity
+        // [removed for brevity]
 }
 
 // In code..(Controllers & elsewhere)
@@ -207,20 +207,30 @@ The following files have the code that would be of interest to you.
 
 1. In the `ConfigureServices` method of `Startup.cs', add the following lines:
 
-     ```CSharp
-            // This is required to be instantiated before the OpenIdConnectOptions starts getting configured.
-            // By default, the claims mapping will map claim names in the old format to accommodate older SAML applications.
-            // 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role' instead of 'roles'
-            // This flag ensures that the ClaimsIdentity claims collection will be built from the claims in the token
-            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-     ```
+    ```CSharp
+    services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
+                  .AddAzureAD(options => Configuration.Bind("AzureAd", options));
+    
+    //This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
+    services.AddSignIn(Configuration)
+                .AddWebAppCallsProtectedWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" }) // Adds support for the MSAL library with the permissions necessary to retrieve the signed-in user's group info in case of a token overage
+                .AddInMemoryTokenCaches(); // Adds aspnetcore MemoryCache as Token cache provider for MSAL.
+    
+    services.AddMSGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.
+    
+    // This is required to be instantiated before the OpenIdConnectOptions starts getting configured.
+    // By default, the claims mapping will map claim names in the old format to accommodate older SAML applications.
+    // 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role' instead of 'roles'
+    // This flag ensures that the ClaimsIdentity claims collection will be built from the claims in the token
+    JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+    ```
 
 1. In the `HomeController.cs`, the following method is added with the `Authorize` attribute with the name of the app role **UserReaders**, that permits listing of users in the tenant.
 
     ```CSharp
-        [Authorize(Policy = AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired)]
-        public async Task<IActionResult> Users()
-        {
+    [Authorize(Policy = AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired)]
+    public async Task<IActionResult> Users()
+    {
      ```
 
 1. In the `ConfigureServices` method of `Startup.cs', the following line instructs the asp.net security middleware to use the **roles** claim to fetch roles for authorization:
@@ -240,17 +250,17 @@ The following files have the code that would be of interest to you.
 1. A new class called `AccountController.cs` is introduced. This contains the code to intercept the default AccessDenied error's route and present the user with an option to sign-out and sign-back in with a different account that has access to the required role.
 
     ```CSharp
-        [AllowAnonymous]
-        public IActionResult AccessDenied()
-        {
+    [AllowAnonymous]
+    public IActionResult AccessDenied()
+    {
      ```
 
 1. The following method is also added with the `Authorize` attribute with the name of the app role **DirectoryViewers**, that permits listing of roles and groups the signed-in user is assigned to.
 
     ```CSharp
-        [Authorize(Policy = AuthorizationPolicies.AssignmentToUserReaderRoleRequired)]
-        public async Task<IActionResult> Groups()
-        {
+    [Authorize(Policy = AuthorizationPolicies.AssignmentToUserReaderRoleRequired)]
+    public async Task<IActionResult> Groups()
+    {
      ```
 
 1. The views, `Users.cshtml` and `Groups.cshtml` have the code to display the users in a tenant and roles and groups the signed-in user is assigned to respectively.

@@ -45,6 +45,8 @@ namespace Microsoft.Identity.Web
         /// <param name="context">Context provided by ASP.NET Core</param>
         public override void OnException(ExceptionContext context)
         {
+            // Do not re-use the attribute param Scopes. For more info: https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/issues/273
+            string[] incrementalConsentScopes = new string[] { };
             MsalUiRequiredException msalUiRequiredException = context.Exception as MsalUiRequiredException;
 
             if (msalUiRequiredException == null)
@@ -56,9 +58,6 @@ namespace Microsoft.Identity.Web
             {
                 if (CanBeSolvedByReSignInOfUser(msalUiRequiredException))
                 {
-                    // Do not re-use the attribute param Scopes. For more info: https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/issues/273
-                    string[] scopes = null;
-
                     // the users cannot provide both scopes and ScopeKeySection at the same time
                     if (!string.IsNullOrWhiteSpace(ScopeKeySection) && Scopes != null && Scopes.Length > 0)
                     {
@@ -76,13 +75,17 @@ namespace Microsoft.Identity.Web
                             throw new InvalidOperationException($"The {nameof(ScopeKeySection)} is provided but the IConfiguration instance is not present in the services collection");
                         }
 
-                        scopes = new string[] { configuration.GetValue<string>(ScopeKeySection) };
+                        incrementalConsentScopes = new string[] { configuration.GetValue<string>(ScopeKeySection) };
+                        
+                        if (Scopes != null && Scopes.Length > 0 && incrementalConsentScopes != null && incrementalConsentScopes.Length > 0)
+                        {
+                           throw new InvalidOperationException("no scopes provided in scopes...");
+                        }
                     }
-
                     else
-                        scopes = Scopes;
+                        incrementalConsentScopes = Scopes;
 
-                    var properties = BuildAuthenticationPropertiesForIncrementalConsent(scopes, msalUiRequiredException, context.HttpContext);
+                    var properties = BuildAuthenticationPropertiesForIncrementalConsent(incrementalConsentScopes, msalUiRequiredException, context.HttpContext);
                     context.Result = new ChallengeResult(properties);
                 }
             }

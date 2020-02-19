@@ -11,8 +11,6 @@ namespace Microsoft.Identity.Web
     /// </summary>
     public static class ClaimsPrincipalExtensions
     {
-        // TODO: how to make this work with B2C, given that there is no tenant ID with B2C?
-
         /// <summary>
         /// Gets the Account identifier for an MSAL.NET account from a <see cref="ClaimsPrincipal"/>
         /// </summary>
@@ -21,10 +19,20 @@ namespace Microsoft.Identity.Web
         public static string GetMsalAccountId(this ClaimsPrincipal claimsPrincipal)
         {
             string userObjectId = claimsPrincipal.GetObjectId();
+            string nameIdentifierId = claimsPrincipal.GetNameIdentifierId();
             string tenantId = claimsPrincipal.GetTenantId();
+            string userFlowId = claimsPrincipal.GetUserFlowId();
 
-            if (!string.IsNullOrWhiteSpace(userObjectId) && !string.IsNullOrWhiteSpace(tenantId))
+            if (!string.IsNullOrWhiteSpace(nameIdentifierId) &&
+                !string.IsNullOrWhiteSpace(tenantId) &&
+                !string.IsNullOrWhiteSpace(userFlowId))
             {
+                // B2C pattern: {oid}-{userFlow}.{tid}
+                return $"{nameIdentifierId}.{tenantId}";
+            }
+            else if (!string.IsNullOrWhiteSpace(userObjectId) && !string.IsNullOrWhiteSpace(tenantId))
+            {
+                // AAD pattern: {oid}.{tid}
                 return $"{userObjectId}.{tenantId}";
             }
 
@@ -34,7 +42,7 @@ namespace Microsoft.Identity.Web
         /// <summary>
         /// Gets the unique object ID associated with the <see cref="ClaimsPrincipal"/>
         /// </summary>
-        /// <param name="claimsPrincipal">the <see cref="ClaimsPrincipal"/> from which to retrieve the unique object id</param>
+        /// <param name="claimsPrincipal">the <see cref="ClaimsPrincipal"/> from which to retrieve the unique object ID</param>
         /// <remarks>This method returns the object ID both in case the developer has enabled or not claims mapping</remarks>
         /// <returns>Unique object ID of the identity, or <c>null</c> if it cannot be found</returns>
         public static string GetObjectId(this ClaimsPrincipal claimsPrincipal)
@@ -50,16 +58,17 @@ namespace Microsoft.Identity.Web
         /// <summary>
         /// Gets the Tenant ID associated with the <see cref="ClaimsPrincipal"/>
         /// </summary>
-        /// <param name="claimsPrincipal">the <see cref="ClaimsPrincipal"/> from which to retrieve the tenant id</param>
+        /// <param name="claimsPrincipal">the <see cref="ClaimsPrincipal"/> from which to retrieve the tenant ID</param>
         /// <returns>Tenant ID of the identity, or <c>null</c> if it cannot be found</returns>
-        /// <remarks>This method returns the object ID both in case the developer has enabled or not claims mapping</remarks>
+        /// <remarks>This method returns the tenant ID both in case the developer has enabled or not claims mapping</remarks>
         public static string GetTenantId(this ClaimsPrincipal claimsPrincipal)
         {
             string tenantId = claimsPrincipal.FindFirstValue(ClaimConstants.Tid);
             if (string.IsNullOrEmpty(tenantId))
             {
-                tenantId = claimsPrincipal.FindFirstValue(ClaimConstants.TenantId);
+                return claimsPrincipal.FindFirstValue(ClaimConstants.TenantId);
             }
+
             return tenantId;
         }
 
@@ -95,27 +104,55 @@ namespace Microsoft.Identity.Web
         /// Get the display name for the signed-in user, from the <see cref="ClaimsPrincipal"/>
         /// </summary>
         /// <param name="claimsPrincipal">Claims about the user/account</param>
-        /// <returns>A string containing the display name for the user, as brought by Azure AD (v1.0) and Microsoft identity platform (v2.0) tokens,
+        /// <returns>A string containing the display name for the user, as determined by Azure AD (v1.0) and Microsoft identity platform (v2.0) tokens,
         /// or <c>null</c> if the claims cannot be found</returns>
         /// <remarks>See https://docs.microsoft.com/azure/active-directory/develop/id-tokens#payload-claims </remarks>
         public static string GetDisplayName(this ClaimsPrincipal claimsPrincipal)
         {
-            // Use the claims in an Microsoft identity platform token first
+            // Use the claims in a Microsoft identity platform token first
             string displayName = claimsPrincipal.FindFirstValue(ClaimConstants.PreferredUserName);
 
-            // Otherwise fall back to the claims in an Azure AD v1.0 token
-            if (string.IsNullOrWhiteSpace(displayName))
+            if (!string.IsNullOrWhiteSpace(displayName))
             {
-                displayName = claimsPrincipal.FindFirstValue(ClaimsIdentity.DefaultNameClaimType);
+                return displayName;
+            }
+
+            // Otherwise fall back to the claims in an Azure AD v1.0 token
+            displayName = claimsPrincipal.FindFirstValue(ClaimsIdentity.DefaultNameClaimType);
+
+            if (!string.IsNullOrWhiteSpace(displayName))
+            {
+                return displayName;
             }
 
             // Finally falling back to name
-            if (string.IsNullOrWhiteSpace(displayName))
-            {
-                displayName = claimsPrincipal.FindFirstValue(ClaimConstants.Name);
-            }
-            return displayName;
+            return claimsPrincipal.FindFirstValue(ClaimConstants.Name);
         }
 
+        /// <summary>
+        /// Gets the user flow id associated with the <see cref="ClaimsPrincipal"/>
+        /// </summary>
+        /// <param name="claimsPrincipal">the <see cref="ClaimsPrincipal"/> from which to retrieve the user flow id</param>
+        /// <returns>User Flow Id of the identity, or <c>null</c> if it cannot be found</returns>
+        public static string GetUserFlowId(this ClaimsPrincipal claimsPrincipal)
+        {
+            string userFlowId = claimsPrincipal.FindFirstValue(ClaimConstants.Tfp);
+            if (string.IsNullOrEmpty(userFlowId))
+            {
+                return claimsPrincipal.FindFirstValue(ClaimConstants.UserFlow);
+            }
+
+            return userFlowId;
+        }
+
+        /// <summary>
+        /// Gets the NameIdentifierId associated with the <see cref="ClaimsPrincipal"/>
+        /// </summary>
+        /// <param name="claimsPrincipal">the <see cref="ClaimsPrincipal"/> from which to retrieve the sub claim</param>
+        /// <returns>Name identifier ID (sub) of the identity, or <c>null</c> if it cannot be found</returns>
+        public static string GetNameIdentifierId(this ClaimsPrincipal claimsPrincipal)
+        {
+            return claimsPrincipal.FindFirstValue(ClaimConstants.UniqueObjectIdentifier);
+        }
     }
 }
