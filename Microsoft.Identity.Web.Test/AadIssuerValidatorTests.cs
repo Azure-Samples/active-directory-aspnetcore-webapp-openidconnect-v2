@@ -62,7 +62,7 @@ namespace Microsoft.Identity.Web.Test
         }
 
         [Fact]
-        public void ValidationFails_NoTidClaimInJwt()
+        public void ValidationSucceeds_NoTidClaimInJwt_TidCreatedFromIssuerInstead()
         {
             // Arrange
             AadIssuerValidator validator = new AadIssuerValidator(s_aliases);
@@ -71,11 +71,10 @@ namespace Microsoft.Identity.Web.Test
             JwtSecurityToken noTidJwt = new JwtSecurityToken(issuer: Iss, claims: new[] { issClaim });
 
             // Act & Assert
-            Assert.Throws<SecurityTokenInvalidIssuerException>(() =>
                 validator.Validate(
                     Iss,
                     noTidJwt,
-                    new TokenValidationParameters() { ValidIssuers = new[] { "https://login.microsoftonline.com/{tenantid}/v2.0" } }));
+                    new TokenValidationParameters() { ValidIssuers = new[] { "https://login.microsoftonline.com/{tenantid}/v2.0" } });
         }
 
         [Fact]
