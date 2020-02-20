@@ -218,7 +218,7 @@ services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
 
 #### Implications of signing-in guest users on /common endpoint
 
-Please note that if you sign-in guest users at the `/common` endpoint, they will be directed to their home tenant for signing-in. So, if your multi-tenant app cares about applying a tenant specific CA policies, group assignments or app roles to be applied to the guest users, the app should sign the guest user on the **tenanted endpoint** (https://login.microsoftonline.com/{tenantId}) instead of the `/common` endpoint.
+Please note that if you sign-in guest users at the `/common` endpoint, they will be directed to their home tenant for signing-in. So, if your multi-tenant app cares about applying a tenant specific conditional access policies, group assignments or app roles to be applied to the guest users, the app should sign the guest user on the **tenanted endpoint** (https://login.microsoftonline.com/{tenantId}) instead of the `/common` endpoint.
 
 ### Service principal provisioning for new tenants (onboarding process)
 
