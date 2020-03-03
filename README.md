@@ -36,34 +36,35 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
 
 ### Details of the chapters
 
-1. The first phase is to [add sign-in users to your Web App](1-WebApp-OIDC) leveraging the Microsoft identity platform for developers (formerly Azure AD v2.0). You'll learn how to use  the ASP.NET Core OpenID Connect (OIDC) middleware itself leveraging [Microsoft Identity Model extensions for .NET](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki) to protect your Web App.
+1. The first phase is to [add sign-in users to your Web App](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC) leveraging the Microsoft identity platform for developers (formerly Azure AD v2.0). You'll learn how to use  the ASP.NET Core OpenID Connect (OIDC) middleware itself leveraging [Microsoft Identity Model extensions for .NET](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki) to protect your Web App.
 
    ![Web apps signs-in users](ReadmeFiles/Web-app-signs-in-users.svg)
 
    Depending on your business needs, you have the flexibility to decide which audience to sign-in to your application:
-   1. If you are a Line of Business (LOB) developer, you'll want to [sign-in users in your organization](./1-WebApp-OIDC/1-1-MyOrg) with their work or school accounts.
-   1. If you are an ISV, you'll want to [sign-in users in any organization](./1-WebApp-OIDC/1-2-AnyOrg), still  with their work or school accounts.
-   1. If you are an ISV targeting both organizations and individuals, you'll want to [sign-in users with their work and school accounts or Microsoft personal accounts](./1-WebApp-OIDC/1-3-AnyOrgOrPersonal).
-   1. LOB developer or ISV, if you target organizations (work or school accounts), you can also enable your application to sign-in users in [national and sovereign clouds](./1-WebApp-OIDC/1-4-Sovereign).
-   1. If you are a business wanting to connect with your customers, or with small business partners, you might also want to [sign-in users with their social identities](./1-WebApp-OIDC/1-5-B2C) using Microsoft Azure AD B2C.
-   1. Finally, you'll want to let users [sign-out](./1-WebApp-OIDC/1-6-SignOut) of our application, or globally from their browser session.
+   1. If you are a Line of Business (LOB) developer, you'll want to [sign-in users in your organization](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-1-MyOrg) with their work or school accounts.
+   1. If you are an ISV, you'll want to [sign-in users in any organization](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-2-AnyOrg), still  with their work or school accounts.
+   1. If you are an ISV targeting both organizations and individuals, you'll want to [sign-in users with their work and school accounts or Microsoft personal accounts](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-3-AnyOrgOrPersonal).
+   1. LOB developer or ISV, if you target organizations (work or school accounts), you can also enable your application to sign-in users in [national and sovereign clouds](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-4-Sovereign).
+   1. If you are a business wanting to connect with your customers, or with small business partners, you might also want to [sign-in users with their social identities](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-5-B2C) using Microsoft Azure AD B2C.
+   1. Finally, you'll want to let users [sign-out](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-6-SignOut) of our application, or globally from their browser session.
 
-2. Your Web App might only ned to sign-in users, in that case you have all you need, but if your app needs to call APIs that you've developed or Microsoft APIs, then the following chapters will be of help.
+2. Your Web App might only need to sign-in users, in that case you have all you need, but if your app needs to call APIs that you've developed or Microsoft APIs, then the following chapters will be of help.
 
    ![Web apps calls Microsoft Graph](ReadmeFiles/Web-app-calls-Microsoft-Graph.svg)
 
-   Learn how to update your Web App to [call Microsoft Graph](2-WebApp-graph-user):
+   Learn how to update your Web App to [call Microsoft Graph](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/2-WebApp-graph-user):
 
-   1. Using the [authorization code flow](2-WebApp-graph-user/2-1-Call-MSGraph), initiated by ASP.NET Core, but completed by Microsoft Authentication Library for .NET (MSAL.NET)
-   2. Learn how to [customize the token cache serialization](2-WebApp-graph-user/2-2-TokenCache/README-incremental-instructions.md)
+   1. Using the [authorization code flow](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/2-WebApp-graph-user/2-1-Call-MSGraph), initiated by ASP.NET Core, but completed by Microsoft Authentication Library for .NET (MSAL.NET)
+   2. Learn how to [customize the token cache serialization](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/2-WebApp-graph-user/2-2-TokenCache/README-incremental-instructions.md)
  with different technologies depending on your needs (in memory cache, Session token cache, SQL Cache, Redis Cache)
-   3. Learn the [**Planned**]  [best practices and practices to avoid](./2-WebApp-graph-user/2-3-Best-Practices) when calling an API.
+   3. Learn how to [build a multi-tenant SaaS application](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/2-WebApp-graph-user/2-3-Multi-Tenant)
+   4. Using [national and sovereign clouds](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph) when calling an Microsoft Graph.
 
 3. Your Web App might also want to call other Web APIs than Microsoft Graph.
 
    ![Web apps calls Microsoft APIs](ReadmeFiles/web-app-calls-microsoft-apis.svg)
 
-   Learn how to [call several Microsoft APIS](./3-WebApp-multi-APIs). This also explains how to handle conditional access, incremental consent and claims challenge:
+   Learn how to [call several Microsoft APIS](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/3-WebApp-multi-APIs). This also explains how to handle conditional access, incremental consent and claims challenge:
 
    1. the Azure Storage API. This is the opportunity to learn about incremental consent, and conditional access, and how to process them.
    2. the Azure ARM API. This is the opportunity to learn about admin consent.
@@ -74,15 +75,15 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
 
    ![Web apps calls Microsoft APIs](ReadmeFiles/web-app-calls-your-api.svg)
 
-   - Learn how to update your Web App to [call your own web API](./4-WebApp-your-API/4-1-MyOrg/README-incremental-instructions.md)
-   - Learn how to update you B2C Web App to [call you own B2C web API](./4-WebApp-your-API/4-2-B2C/README.md)
+   - Learn how to update your Web App to [call your own web API](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/4-WebApp-your-API/4-1-MyOrg/README-incremental-instructions.md)
+   - Learn how to update you B2C Web App to [call you own B2C web API](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/4-WebApp-your-API/4-2-B2C/README.md)
 
-5. Once you know how to sign-in users and call Web APIs from your Web App, you might want to restrict part of the application depending on the user having a role in the application or belonging to a group. So far you've learnt how to add and process authentication. Now learn how to [add authorization to your Web application](./5-WebApp-AuthZ), restricting part of it to users
+5. Once you know how to sign-in users and call Web APIs from your Web App, you might want to restrict part of the application depending on the user having a role in the application or belonging to a group. So far you've learnt how to add and process authentication. Now learn how to [add authorization to your Web application](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/5-WebApp-AuthZ), restricting part of it to users
 
-   1. [based on their application roles](./5-WebApp-AuthZ/5-1-Roles/README-incremental-instructions.md)
-   2. [based on their belonging to Azure AD groups](./5-WebApp-AuthZ/5-2-Groups/README-incremental-instructions.md)
+   1. [based on their application roles](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/5-WebApp-AuthZ/5-1-Roles/README-incremental-instructions.md)
+   2. [based on their belonging to Azure AD groups](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/5-WebApp-AuthZ/5-2-Groups/README-incremental-instructions.md)
 
-6. Chances are that you want to [deploy your complete app to Azure](./6-Deploy-to-Azure). Learn how to do that, applying best practices:
+6. Chances are that you want to [deploy your complete app to Azure](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/6-Deploy-to-Azure). Learn how to do that, applying best practices:
 
    1. Changing the app registration to add more ReplyUris
    2. Using certificates instead of client secrets
@@ -90,7 +91,7 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
 
 ### Reusable code for your Web Apps and Web APIs
 
-In this tutorial, the complexities of ASP.NET Core OpenID connect middleware and MSAL.NET are encapsulated into a library project that you can reuse in your own code, to make it easier to build your Web Apps on top of Microsoft identity platform for developers: [Microsoft.Identity.Web](Microsoft.Identity.Web)
+In this tutorial, the complexities of ASP.NET Core OpenID connect middleware and MSAL.NET are encapsulated into a library project that you can reuse in your own code, to make it easier to build your Web Apps on top of Microsoft identity platform for developers: [Microsoft.Identity.Web](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/Microsoft.Identity.Web)
 
 ### Daemon apps  - Out of scope
 
@@ -115,7 +116,7 @@ cd webapp
 
 > Given that the name of the sample is pretty long, that it has sub-folders and so are the name of the referenced NuGet pacakges, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
-- We recommend that you start by the first part [1. WebApp signs-in users with Microsoft identity (OIDC)](1-WebApp-OIDC) where you will learn how to sign-in users within your own organization
+- We recommend that you start by the first part [1. WebApp signs-in users with Microsoft identity (OIDC)](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC) where you will learn how to sign-in users within your own organization
 - It's however possible to start at any phase of the tutorial as the full code is provided in each folder.
 
 ## Community Help and Support
@@ -124,13 +125,13 @@ Use [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) to get supp
 Ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
 Make sure that your questions or comments are tagged with [`msal` `dotnet`].
 
-If you find a bug in the sample, please raise the issue on [GitHub Issues](../../issues).
+If you find a bug in the sample, please raise the issue on [GitHub Issues](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/issues).
 
 To provide a recommendation, visit the following [User Voice page](https://feedback.azure.com/forums/169401-azure-active-directory).
 
 ## Contributing
 
-If you'd like to contribute to this sample, see [CONTRIBUTING.MD](/CONTRIBUTING.md).
+If you'd like to contribute to this sample, see [CONTRIBUTING.MD](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/master/CONTRIBUTING.md).
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information, see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
