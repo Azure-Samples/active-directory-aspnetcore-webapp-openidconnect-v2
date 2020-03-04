@@ -32,8 +32,6 @@ Note that enabling your application for sovereign clouds requires you to:
 
 More details in [Authentication in National Clouds](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-national-cloud)
 
-
-
 ## How to run this sample
 
 To run this sample:
@@ -124,7 +122,8 @@ cd "1-WebApp-OIDC\1-4-Sovereign"
      by this line:
 
      ```CSharp
-            services.AddSignIn(Configuration);
+      services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+              .AddSignIn("AzureAd", Configuration, options => Configuration.Bind("AzureAd", options));
      ```
 
      This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.

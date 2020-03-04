@@ -126,13 +126,13 @@ You can trigger the middleware to send an OpenID Connect sign-in request by deco
 Here is the middleware example:
 
 ```csharp
-services.AddAuthentication(AzureADB2CDefaults.AuthenticationScheme)
-            .AddAzureADB2C(options => Configuration.Bind("AzureAdB2C", options));
+      services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+              .AddSignIn("AzureAdB2C", Configuration, options => Configuration.Bind("AzureAdB2C", options));
 ```
 
 Important things to notice:
 
-- The method `AddAzureADB2C` will configure the authentication based on the `AzureADB2COptions.cs` options. Feel free to bind more properties on ``AzureAdB2C`` section on ``appsettings.json`` if you need to set more options.
+- The method `AddSignIn` will configure the authentication based on the `MicrosoftIdentityOptions.cs` options. Feel free to bind more properties on `AzureAdB2C` section on `appsettings.json` if you need to set more options.
 - The urls you set for `CallbackPath` and `SignedOutCallbackPath` should be registered on the **Reply Urls** of your application, in [Azure Portal](https://portal.azure.com).
 
 ## Next steps
