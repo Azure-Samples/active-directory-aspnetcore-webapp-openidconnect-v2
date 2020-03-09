@@ -18,7 +18,7 @@ endpoint: Microsoft identity platform
 
 ## About this sample
 
-This sample is essentially a guide for developers who want to secure their Web APIs using the Microsoft identity platform (formerly Azure Active Directory for developers). This sample lays down the all the steps developers need to take to secure their web api with the Microsoft identity platform. Additionally it also explains the steps and processes for a client to obtain the necessary permissions and tokens to make successful calls to this secured web api.  
+This sample is essentially a guide for developers who want to secure their Web APIs using the Microsoft identity platform (formerly Azure Active Directory for developers). This sample lays down all the steps developers need to take to secure their web api with the Microsoft identity platform. Additionally it also explains the steps and processes for a client to obtain the necessary permissions and tokens to make successful calls to this secured web api.  
 
 ### Scenario
 
