@@ -19,7 +19,7 @@ to enable them to work with the Microsoft identity platform (formerly named Azur
 
 ## Web apps
 
-As of today, ASP.NET Core web apps templates (`dot net new mvc -auth`) create web apps that sign in users with the Azure AD v1.0 endpoint (allowing to sign in users with their organizational accounts, also named *Work or school accounts*). This library brings `ServiceCollection` extension methods to be used in the ASP.NET Core web app **Startup.cs** file to enable the web app to sign in users with the Microsoft identity platform (formerly Azure AD v2.0 endpoint), and, optionally enable the web app to call APIs on behalf of the signed-in user.
+As of today, ASP.NET Core web apps templates (`dotnet new mvc -auth`) create web apps that sign in users with the Azure AD v1.0 endpoint (allowing to sign in users with their organizational accounts, also named *Work or school accounts*). This library brings `ServiceCollection` extension methods to be used in the ASP.NET Core web app **Startup.cs** file to enable the web app to sign in users with the Microsoft identity platform (formerly Azure AD v2.0 endpoint), and, optionally enable the web app to call APIs on behalf of the signed-in user.
 
 ![WebAppServiceCollectionExtensions](https://user-images.githubusercontent.com/13203188/64252959-82ae3680-cf1c-11e9-8a01-0a0be728a78e.png)
 
