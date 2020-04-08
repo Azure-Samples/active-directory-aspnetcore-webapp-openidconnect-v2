@@ -115,14 +115,11 @@ These instructions only list the additional set of steps needed over the previou
 
 1. Select the **Expose an API** section, and:
    - Select **Add a scope**
-   - accept the proposed Application ID URI (api://{clientId}) by selecting **Save and Continue**
+   - Accept the proposed Application ID URI (api://{clientId}) by selecting **Save and Continue**
    - Enter the following parameters
      - for **Scope name** use `user_impersonation`
-     - Keep **Admins and users** for **Who can consent**
      - in **Admin consent display name** type `Access TodoListService-aspnetcore-webapi as a user`
      - in **Admin consent description** type `Accesses the TodoListService-aspnetcore-webapi Web API as a user`
-     - in **User consent display name** type `Access TodoListService-aspnetcore-webapi as a user`
-     - in **User consent description** type `Accesses the TodoListService-aspnetcore-webapi Web API as a user`
      - Keep **State** as **Enabled**
      - Select **Add scope**
 
@@ -237,21 +234,26 @@ Update `Startup.cs` file :
 
 ```CSharp
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.Client.TokenCacheProviders;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 ```
 
 - In the `ConfigureServices` method, replace the following code:
 
   ```CSharp
   services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
-          .AddAzureADBearer(options => Configuration.Bind("AzureAd", options));
+          .AddAzureADBearer(options => Configuration.Bind("AzureAdB2C", options));
    ```
 
   with
 
   ```Csharp
-    services.AddProtectedWebApi(Configuration)
-         .AddInMemoryTokenCaches();
+  services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddProtectedWebApi("AzureAdB2C", Configuration, options =>
+    {
+        Configuration.Bind("AzureAdB2C", options);
+
+        options.TokenValidationParameters.NameClaimType = "name";
+    });
   ```
   
   - Add the method **app.UseAuthentication()** before **app.UseMvc()** in the `Configure` method
