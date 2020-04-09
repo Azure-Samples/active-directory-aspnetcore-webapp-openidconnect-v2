@@ -126,8 +126,7 @@ You can trigger the middleware to send an OpenID Connect sign-in request by deco
 Here is the middleware example:
 
 ```csharp
-      services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-              .AddSignIn("AzureAdB2C", Configuration, options => Configuration.Bind("AzureAdB2C", options));
+      services.AddSignIn(Configuration, "AzureAdB2C");
 ```
 
 Important things to notice:

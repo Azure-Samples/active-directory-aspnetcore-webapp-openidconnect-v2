@@ -40,8 +40,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
             services.AddOptions();
             
-            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddSignIn("AzureAd", Configuration, options => Configuration.Bind("AzureAd", options));
+            services.AddSignIn(Configuration);
 
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation

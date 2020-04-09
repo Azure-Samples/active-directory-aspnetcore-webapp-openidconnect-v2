@@ -27,17 +27,19 @@ namespace TodoListService.AuthorizationPolicies
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
                                                         ScopesRequirement requirement)
         {
+             string scope = "http://schemas.microsoft.com/identity/claims/scope";
+             string scp = "scp";
             // If there are no scopes, do not process
-            if (!context.User.Claims.Any(x => x.Type == ClaimConstants.Scope)
-               && !context.User.Claims.Any(y => y.Type == ClaimConstants.Scp))
+            if (!context.User.Claims.Any(x => x.Type == scope)
+               && !context.User.Claims.Any(y => y.Type == scp))
             {
                 return Task.CompletedTask;
             }
 
-            Claim scopeClaim = context?.User?.FindFirst(ClaimConstants.Scp);
+            Claim scopeClaim = context?.User?.FindFirst(scp);
 
             if (scopeClaim == null)
-                scopeClaim = context?.User?.FindFirst(ClaimConstants.Scope);
+                scopeClaim = context?.User?.FindFirst(scope);
 
             if (scopeClaim != null && scopeClaim.Value.Split(' ').Intersect(requirement._acceptedScopes).Any())
             {

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using TodoListService.AuthorizationPolicies;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
+using Microsoft.Extensions.Options;
 
 namespace TodoListService
 {
@@ -33,19 +34,19 @@ namespace TodoListService
             // JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
             // Adds Microsoft Identity platform (AAD v2.0) support to protect this Api
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddProtectedWebApi("AzureAdB2C", Configuration, options =>
-                {
-                    Configuration.Bind("AzureAdB2C", options);
+            services.AddProtectedWebApi(options =>
+            {
+                Configuration.Bind("AzureAdB2C", options);
 
-                    options.TokenValidationParameters.NameClaimType = "name";
-                });
+                options.TokenValidationParameters.NameClaimType = "name";
+            },
+                options => { Configuration.Bind("AzureAdB2C", options); });
 
             services.AddControllers();
             services.AddAuthorization(options =>
             {
                 // Create policy to check for the scope 'read'
-                options.AddPolicy("ReadScope", 
+                options.AddPolicy("ReadScope",
                     policy => policy.Requirements.Add(new ScopesRequirement("read")));
             });
         }
@@ -67,7 +68,7 @@ namespace TodoListService
             }
 
             app.UseHttpsRedirection();
-            
+
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
