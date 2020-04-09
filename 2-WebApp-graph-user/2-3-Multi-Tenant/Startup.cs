@@ -56,11 +56,8 @@ namespace WebApp_OpenIDConnect_DotNet
             services.AddScoped<IMSGraphService, MSGraphService>();
 
             // Sign-in users with the Microsoft identity platform
-            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddSignIn(options =>
+            services.AddSignIn(options =>
                 {
-                    Configuration.Bind("AzureAD", options);
-
                     options.Events.OnTokenValidated = async context =>
                     {
                         string tenantId = context.SecurityToken.Claims.FirstOrDefault(x => x.Type == "tid" || x.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
