@@ -42,7 +42,10 @@ namespace WebApp_OpenIDConnect_DotNet
                     // See https://docs.microsoft.com/en-us/aspnet/core/security/authorization/roles for more info.
                     //    // Use the groups claim for populating roles
                     //    options.TokenValidationParameters.RoleClaimType = "groups";
-                }, options => { });
+                }, options => 
+                {
+                    Configuration.Bind("AzureAD", options);
+                });
 
             services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" })
                 .AddInMemoryTokenCaches();

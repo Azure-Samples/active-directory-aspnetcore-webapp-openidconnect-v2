@@ -82,7 +82,10 @@ namespace WebApp_OpenIDConnect_DotNet
 
                         return Task.FromResult(0);
                     };
-                }, option => { });
+                }, options =>
+                {
+                    Configuration.Bind("AzureAD", options);
+                });
 
             services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { GraphScope.UserReadAll })
                 .AddInMemoryTokenCaches();
