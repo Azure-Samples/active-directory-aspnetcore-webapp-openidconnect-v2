@@ -156,21 +156,15 @@ The asp.net middleware supports roles populated from claims by specifying the cl
 Since the `groups` claim contains the object ids of the security groups than actual names by default, you'd use the group id's instead of group names. See [Role-based authorization in ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authorization/roles) for more info.
 
 ```CSharp
-
 // Startup.cs
-public static IServiceCollection AddSignIn(this IServiceCollection services, IConfiguration configuration, X509Certificate2 tokenDecryptionCertificate = null)
-{
-        // [removed for] brevity
 
-            // The following lines code instruct the asp.net core middleware to use the data in the "groups" claim in the [Authorize] attribute and for User.IsInrole()
-            // See https://docs.microsoft.com/aspnet/core/security/authorization/roles
-            services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
-            {
-                // Use the groups claim for populating roles
-                options.TokenValidationParameters.RoleClaimType = "groups";
-            });
-        // [removed for] brevity
-}
+// The following lines code instruct the asp.net core middleware to use the data in the "groups" claim in the [Authorize] attribute and for User.IsInrole()
+// See https://docs.microsoft.com/aspnet/core/security/authorization/roles
+services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+{
+    // Use the groups claim for populating roles
+    options.TokenValidationParameters.RoleClaimType = "groups";
+});
 
 // In code..(Controllers & elsewhere)
 [Authorize(Roles = "Group-object-id")] // In controllers
@@ -195,10 +189,10 @@ The following files have the code that would be of interest to you..
     1. Has some client code that prints the signed-in user's information obtained from the [/me](https://docs.microsoft.com/graph/api/user-get?view=graph-rest-1.0), [/me/photo](https://docs.microsoft.com/graph/api/profilephoto-get) and [/memberOf](https://docs.microsoft.com/graph/api/user-list-memberof) endpoints.
 1. Startup.cs
 
-     ```CSharp
-   - at the top of the file, add the following using directive:
+    - at the top of the file, add the following using directive:
 
-      using Microsoft.Identity.Web;
+      ```CSharp
+         using Microsoft.Identity.Web;
       ```
 
    - in the `ConfigureServices` method, the following lines have been replaced :
@@ -206,16 +200,17 @@ The following files have the code that would be of interest to you..
      ```CSharp
       services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
               .AddAzureAD(options => Configuration.Bind("AzureAd", options));
-
-     // by these lines:
-
-     //This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
-            services.AddSignIn(Configuration)
-                    .AddWebAppCallsProtectedWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" }) // Adds support for the MSAL library with the permissions necessary to retrieve the signed-in user's group info in case of a token overage
-                    .AddInMemoryTokenCaches(); // Adds aspnetcore MemoryCache as Token cache provider for MSAL.
-
-        services.AddMSGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.
      ```
+    - by these lines:
+
+      ```CSharp
+      services.AddSignIn(Configuration);
+
+      services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" })
+          .AddInMemoryTokenCaches();
+
+      services.AddMSGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.
+      ```
 
 1. if you used the Powershell scripts provided in the [AppCreationScripts](.\AppCreationScripts) folder, then note the extra parameter `-GroupMembershipClaims` in the  `Configure.ps1` script.
 
@@ -237,7 +232,7 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
 
 ## Next steps
 
-- Learn how to use app roles. [Add authorization using app roles & roles claims to a Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-1-Roles/README.md).
+- Learn how to use app roles. [Add authorization using app roles & roles claims to a Web app that signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-1-Roles/README.md).
 
 ## Learn more
 

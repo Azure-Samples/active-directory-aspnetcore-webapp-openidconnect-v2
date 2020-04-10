@@ -28,22 +28,21 @@ The sign out button is exposed in `Views\Shared\_LoginPartial.cshtml` and only d
 {
     <ul class="nav navbar-nav navbar-right">
         <li class="navbar-text">Hello @User.GetDisplayName()!</li>
-        <li><a asp-area="AzureAD" asp-controller="Account" asp-action="SignOut">Sign out</a></li>
+        <li><a asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign out</a></li>
     </ul>
 }
 else
 {
     <ul class="nav navbar-nav navbar-right">
-        <li><a asp-area="AzureAD" asp-controller="Account" asp-action="SignIn">Sign in</a></li>
+        <li><a asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">Sign in</a></li>
     </ul>
 }
 ```
 
 ### `Signout()` action of the `AccountController`
 
-Pressing the **Sign out** button on the web app, triggers the `SignOut` action on the `Account` controller. In previous versions of the ASP.NET core templates, this controller
-was embedded with the Web App, but this is no longer the case as it's now part of the ASP.NET Core framework itself. The code for the `AccountController` is available from the ASP.NET core repository at
-from <https://github.com/aspnet/AspNetCore/blob/master/src/Azure/AzureAD/Authentication.AzureAD.UI/src/Areas/AzureAD/Controllers/AccountController.cs>, and what it does is:
+Pressing the **Sign out** button on the web app, triggers the `SignOut` action on the `Account` controller. The code for the `AccountController` is available at [Microsoft.Identity.Web repository]
+(https://github.com/AzureAD/microsoft-identity-web/blob/master/src/Microsoft.Identity.Web.UI/Areas/MicrosoftIdentity/Controllers/AccountController.cs), and what it does is:
 
 - set an openid redirect URI to `/Account/SignedOut` so that the controller is called back when Azure AD has performed the sign out
 - call `Signout()`, which lets the OpenId connect middleware contact the Microsoft identity platform `logout` endpoint which:
@@ -56,44 +55,18 @@ from <https://github.com/aspnet/AspNetCore/blob/master/src/Azure/AzureAD/Authent
 The ASP.NET Core OpenIdConnect middleware enables your app to intercept the call to the Microsoft identity platform logout endpoint by providing an OpenIdConnect event named `OnRedirectToIdentityProviderForSignOut`.
 
 ```CSharp
-public static IServiceCollection AddSignIn(this IServiceCollection services,
-                                                            IConfiguration configuration)
+services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
 {
-    services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
+    options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
     {
-        options.Authority = options.Authority + "/v2.0/";
-        
-        options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
-        {
-            //Your logic here
-        };
-    }
-}
+        //Your logic here
+    };
+});
 ```
 
 ### Clearing the token cache
 
-Your application can also intercept the logout event, for instance to clear the entry of the token cache associated with the account that signed out. We'll see in the second part of this tutorial (about the Web app calling a Web API), that the web app will store access tokens for the user in a cache. Intercepting the logout callback enables your web application to remove the user from the token cache. This is illustrated in the `AddWebAppCallsProtectedWebApi()` method of [StartupHelper.cs L137-143](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/b87a1d859ff9f9a4a98eb7b701e6a1128d802ec5/Microsoft.Identity.Web/StartupHelpers.cs#L137-L143)
-
-```CSharp
-public static IServiceCollection AddWebAppCallsProtectedWebApi(this IServiceCollection services, IEnumerable<string> initialScopes)
-{
-    services.AddTokenAcquisition();
-
-    services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
-    {
-     ...
-        // Handling the sign-out: removing the account from MSAL.NET cache
-        options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
-        {
-            // Remove the account from MSAL.NET token cache
-            var _tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
-            await _tokenAcquisition.RemoveAccount(context);
-        };
-    });
-    return services;
-}
-```
+Your application can also intercept the logout event, for instance to clear the entry of the token cache associated with the account that signed out. We'll see in the second part of this tutorial (about the Web app calling a Web API), that the web app will store access tokens for the user in a cache. Intercepting the logout callback enables your web application to remove the user from the token cache. This is illustrated in the `AddWebAppCallsProtectedWebApi()` method of [WebAppServiceCollectionExtensions.cs](https://github.com/AzureAD/microsoft-identity-web/blob/master/src/Microsoft.Identity.Web/WebAppServiceCollectionExtensions.cs#L202-L208)
 
 ### Single Sign-Out
 
