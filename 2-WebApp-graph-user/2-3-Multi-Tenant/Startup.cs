@@ -58,6 +58,7 @@ namespace WebApp_OpenIDConnect_DotNet
             // Sign-in users with the Microsoft identity platform
             services.AddSignIn(options =>
                 {
+                    Configuration.Bind("AzureAd", options);
                     options.Events.OnTokenValidated = async context =>
                     {
                         string tenantId = context.SecurityToken.Claims.FirstOrDefault(x => x.Type == "tid" || x.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
