@@ -123,7 +123,7 @@ As a first step you'll need to:
    - Select **Add a scope**
    - accept the proposed Application ID URI (api://{clientId}) by selecting **Save and Continue**
    - Enter the following parameters
-     - for **Scope name** use `user_impersonation`
+     - for **Scope name** use `access_as_user`
      - Keep **Admins and users** for **Who can consent**
      - in **Admin consent display name** type `Access TodoListService-aspnetcore-webapi as a user`
      - in **Admin consent description** type `Accesses the TodoListService-aspnetcore-webapi Web API as a user`
@@ -189,7 +189,7 @@ Note: if you had used the automation to setup your application mentioned in [Ste
 1. Find the app key `TenantId` and replace the existing value with your Azure AD tenant ID.
 1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `TodoListClient-aspnetcore-webapi` application copied from the Azure portal.
 1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `TodoListClient-aspnetcore-webapi` app, in the Azure portal.
-1. Find the app key `TodoListScope` and replace the existing value with Scope if you changed the name from `api://<client id>/user_impersonation`.
+1. Find the app key `TodoListScope` and replace the existing value with Scope if you changed the name from `api://<client id>/access_as_user`.
 1. Find the app key `TodoListBaseAddress` and replace the existing value with the base address of the TodoListService-aspnetcore-webapi project (or use the default `https://localhost:44351`).
 
 ### Step 4: Run the sample
@@ -205,7 +205,7 @@ This behavior is expected as you are not authenticated. The client application w
 
 Explore the sample by signing in into the TodoList client, adding items to the To Do list. If you stop the application without signing out, the next time you run the application, you won't be prompted to sign in again.
 
-NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app. Each time you run the projects, your To-Do list will get emptied.
+> NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app. Each time you run the projects, your To-Do list will get emptied.
 
 > Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../issues) page.
 

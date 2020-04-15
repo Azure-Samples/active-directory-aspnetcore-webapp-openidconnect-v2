@@ -36,15 +36,15 @@ namespace WebApp_OpenIDConnect_DotNet
             });
 
             // Sign-in users with the Microsoft identity platform
-            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddSignIn("AzureAD", Configuration, options =>
+            services.AddSignIn(options =>
                 {
-                    Configuration.Bind("AzureAD", options);
-
                     // Uncomment the following lines code instruct the asp.net core middleware to use the data in the "groups" claim in the [Authorize] attribute and for User.IsInrole()
                     // See https://docs.microsoft.com/en-us/aspnet/core/security/authorization/roles for more info.
                     //    // Use the groups claim for populating roles
                     //    options.TokenValidationParameters.RoleClaimType = "groups";
+                }, options => 
+                {
+                    Configuration.Bind("AzureAD", options);
                 });
 
             services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" })

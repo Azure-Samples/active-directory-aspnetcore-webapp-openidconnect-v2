@@ -34,9 +34,7 @@ namespace WebApp_OpenIDConnect_DotNet
             });
 
             // Sign-in users with the Microsoft identity platform
-            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddSignIn("AzureAD", Configuration, options => Configuration.Bind("AzureAD", options));
-
+            services.AddSignIn(Configuration);
 
             services.AddControllersWithViews(options =>
             {

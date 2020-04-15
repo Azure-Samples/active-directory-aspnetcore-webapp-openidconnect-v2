@@ -51,8 +51,7 @@ namespace WebApp_OpenIDConnect_DotNet
                 dotnet sql-cache create "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MsalTokenCacheDatabase;Integrated Security=True;" dbo TokenCache    
              */
 
-            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddSignIn("AzureAD", Configuration, options => Configuration.Bind("AzureAD", options));
+            services.AddSignIn(Configuration);
 
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation

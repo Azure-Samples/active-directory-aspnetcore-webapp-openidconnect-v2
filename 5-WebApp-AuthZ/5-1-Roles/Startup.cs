@@ -48,9 +48,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
 
             // Sign-in users with the Microsoft identity platform
-            //services.AddSignIn(Configuration);
-            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddSignIn("AzureAD", Configuration, options => Configuration.Bind("AzureAD", options));
+            services.AddSignIn(Configuration);
 
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation

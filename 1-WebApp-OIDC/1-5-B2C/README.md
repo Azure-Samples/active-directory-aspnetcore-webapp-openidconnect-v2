@@ -83,8 +83,7 @@ Your web application registration should include the following information:
     "Instance": "https://<your-tenant-name>.b2clogin.com",
     "ClientId": "<web-app-application-id>",
     "Domain": "<your-b2c-domain>",
-    "CallbackPath": "/signin/B2C_1_sign_up_in",
-    "SignedOutCallbackPath": "/signout/B2C_1_sign_up_in",
+    "SignedOutCallbackPath": "/signout/<your-sign-up-in-policy>",
     "SignUpSignInPolicyId": "<your-sign-up-in-policy>"
   }
 }
@@ -112,22 +111,21 @@ If your web site needs to be accessed from users using iOS 12, you probably want
 This sample does NOT use MSAL as it only signs-in users (it does not call a Web API). It uses the built-in ASP.NET Core middleware. MSAL is used for fetching access  for accessing protected APIs (not shown here), as well as ID tokens. For logging-in purposes, it is sufficient to obtain an ID Token, and the middleware is capable of doing this on its own.
 
 #### Where is the Account controller?
-The `AccountController.cs` used in this sample is part of the built-in .NET Core authentication controllers found in the NuGet package `Microsoft.AspNetCore.Authentication.AzureADB2C.UI`, and you can find its implementation [here](https://github.com/aspnet/AspNetCore/blob/master/src/Azure/AzureAD/Authentication.AzureADB2C.UI/src/Areas/AzureADB2C/Controllers/AccountController.cs). If you want to customize the **Sign-in**, **Sign-up** or **Sign-out** actions, you are encouraged to create your own controller.
+The `AccountController.cs` used in this sample is part of `Microsoft.Identity.Web.UI` NuGet package, and you can find its implementation [here](https://github.com/AzureAD/microsoft-identity-web/blob/master/src/Microsoft.Identity.Web.UI/Areas/MicrosoftIdentity/Controllers/AccountController.cs). If you want to customize the **Sign-in**, **Sign-up** or **Sign-out** actions, you are encouraged to create your own controller.
 
 #### B2C middlerware
-This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Azure AD B2C tenant. The middleware is initialized in the `Startup.cs` file by passing the default authentication scheme and `AzureADB2COptions.cs` options. The options are read from the `appsettings.json` file. The middleware takes care of:
+This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Azure AD B2C tenant. The middleware is initialized in the `Startup.cs` file by passing the default authentication scheme and `OpenIdConnectOptions.cs` options. The options are read from the `appsettings.json` file. The middleware takes care of:
 
 - Requesting OpenID Connect sign-in using the policy from the `appsettings.json` file.
 - Processing OpenID Connect sign-in responses by validating the signature and issuer in an incoming JWT, extracting the user's claims, and putting the claims in `ClaimsPrincipal.Current`.
 - Integrating with the session cookie ASP.NET Core middleware to establish a session for the user.
 
-You can trigger the middleware to send an OpenID Connect sign-in request by decorating a class or method with the `[Authorize]` attribute or by issuing a challenge (see the [AccountController.cs](https://github.com/aspnet/AspNetCore/blob/master/src/Azure/AzureAD/Authentication.AzureADB2C.UI/src/Areas/AzureADB2C/Controllers/AccountController.cs) file which is part of ASP.NET Core).
+You can trigger the middleware to send an OpenID Connect sign-in request by decorating a class or method with the `[Authorize]` attribute or by issuing a challenge (see the [AccountController.cs](https://github.com/AzureAD/microsoft-identity-web/blob/master/src/Microsoft.Identity.Web.UI/Areas/MicrosoftIdentity/Controllers/AccountController.cs) file).
 
 Here is the middleware example:
 
 ```csharp
-      services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-              .AddSignIn("AzureAdB2C", Configuration, options => Configuration.Bind("AzureAdB2C", options));
+      services.AddSignIn(Configuration, "AzureAdB2C");
 ```
 
 Important things to notice:
