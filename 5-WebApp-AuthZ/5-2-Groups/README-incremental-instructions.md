@@ -16,6 +16,7 @@ products:
   - office-ms-graph
 description: "Add authorization using groups & group claims to an ASP.NET Core Web app that signs-in users with the Microsoft identity platform"
 ---
+
 # Add authorization using groups & group claims to an ASP.NET Core Web app that signs-in users with the Microsoft identity platform
 
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
@@ -24,9 +25,9 @@ description: "Add authorization using groups & group claims to an ASP.NET Core W
 
 ### Overview
 
-This sample shows how a .NET Core MVC Web app that uses [OpenID Connect](https://docs.microsoft.com/azure/active-directory/develop/v1-protocols-openid-connect-code) to sign in users. It also obtains the security groups the signed-in user is assigned to as a claim in their token. Security groups are a popular means to implement authorization.
+This sample shows how a .NET Core MVC Web app that uses [OpenID Connect](https://docs.microsoft.com/azure/active-directory/develop/v1-protocols-openid-connect-code) to sign in users also obtains the security groups the signed-in user is assigned to as a claim in their token. Security groups are a popular means to implement authorization.
 
-Authorization in Azure AD can also be done with Application Roles, as shown in [WebApp-RoleClaims](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/5-WebApp-AuthZ/5-1-Roles/README.md). Azure AD Groups and Application Roles are by no means mutually exclusive - they can be used in tandem to provide even finer grained access control.
+Authorization in Azure AD can also be done with `Application Roles` as well, as shown in [WebApp-RoleClaims](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/5-WebApp-AuthZ/5-1-Roles/README.md). `Groups` and `Application Roles` in Azure AD are by no means mutually exclusive - they can be used in tandem to provide even finer grained access control.
 
 ## Scenario
 
@@ -34,7 +35,7 @@ This sample first leverages the ASP.NET Core OpenID Connect middleware to sign i
 
 ![Sign in with the Microsoft identity platform](ReadmeFiles/sign-in.png)
 
-> This is the fifth chapter of our [tutorial](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/master/README.md). Once you understand how to receive the group memberships in a user's claims, you can also try the sample [Add authorization using app roles & roles claims to an ASP.NET Core Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-1-Roles/README-incremental-instructions.md) to learn about how to use the App roles in an app using the Microsoft Identity Platform to authenticate users.
+> An Identity Office Hours session covered Azure AD App roles and security groups, featuring this scenario and how to handle the overage claim. Watch the video [Using Security Groups and Application Roles in your apps](https://www.youtube.com/watch?v=V8VUPixLSiM)
 
 > Pre-requisites:
 >
@@ -42,13 +43,15 @@ This sample first leverages the ASP.NET Core OpenID Connect middleware to sign i
 
 To run this sample, you'll need:
 
-- [Visual Studio 2017](https://aka.ms/vsdownload) or just the [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
+- [Visual Studio 2019](https://aka.ms/vsdownload) or just the [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
 - An Internet connection
 - A Windows machine (necessary if you want to run the app on Windows)
 - An OS X machine (necessary if you want to run the app on Mac)
 - A Linux machine (necessary if you want to run the app on Linux)
 - An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/)
 - A user account in your Azure AD tenant. This sample will not work with a Microsoft account (formerly Windows Live account). Therefore, if you signed in to the [Azure portal](https://portal.azure.com) with a Microsoft account and have never created a user account in your directory before, you need to do that now.
+
+ > One or more user accounts that are also assigned to a few security groups in your tenant. Please follow the instructions in [Create a basic group and add members using Azure Active Directory](https://docs.microsoft.com/azure/active-directory/fundamentals/active-directory-groups-create-azure-portal) to create a few groups and assign users to them if not already done.
 
 ### Step 1:  Clone or download this repository
 
@@ -57,35 +60,65 @@ From your shell or command line:
 Navigate to the `"5-WebApp-AuthZ"` folder
 
  ```Sh
-  cd "5-2-Groups"
+  cd 5-WebApp-AuthZ\5-2-Groups
   ```
 
-### Step 3: Configure your application to receive the **groups** claims
+### Step 3: Configure your application to receive the **groups** claim
 
-1. In your application settings page on the Application Registration Portal, click on "Manifest" to open the inline manifest editor.
-1. Edit the manifest by locating the "groupMembershipClaims" setting, and setting its value to "SecurityGroup".
-1. Save the manifest.
+Now you have two different options available to you on how you can further configure your application to receive the `groups` claim.
 
-```JSON
-{
-  ...
-  "errorUrl": null,
-  "groupMembershipClaims": "SecurityGroup",
-  ...
-}
-```
+1. [Receive **all the groups** that the signed-in user is assigned to in an Azure AD tenant, included nested groups](#configure-your-application-to-receive-all-the-groups-a-user-is-assigned-to-included-nested-groups).
+1. [Receive the `groups` claim values only from a  **filtered set of groups** provided by your application to which a user is assigned to in an Azure AD tenant](#configure-your-application-to-receive-the-groups-claim-values-from-a-filtered-set-of-groups-a-user-may-be-assigned-to). (Not available in the [Azure AD Free edition](https://azure.microsoft.com/pricing/details/active-directory/)).
 
-1. To receive the `groups` claim with the object id of the security groups, make sure that the user accounts you plan to sign-in to this app is assigned to a few security groups in this AAD tenant.
+    > To get the on-premise group's `samAccountName` or `On Premises Group Security Identifier` instead of Group id, check out the document [Configure group claims for applications with Azure Active Directory](https://docs.microsoft.com/azure/active-directory/hybrid/how-to-connect-fed-group-claims#prerequisites-for-using-group-attributes-synchronized-from-active-directory).
 
-> To get the on-premise group's `samAccountName/mailNickName' instead of Group Ids, check out the [Configure group claims for applications with Azure Active Directory (Public Preview)](https://docs.microsoft.com/azure/active-directory/hybrid/how-to-connect-fed-group-claims#configure-the-azure-ad-application-registration-for-group-attributes) feature.
+> To receive the `groups` claim with the object id of the security groups, please ensure that the user accounts you plan to sign-in to this app is assigned to a few security groups in this AAD tenant.
+
+##### Configure your application to receive **all the groups** a user is assigned to, included nested groups
+
+1. In the app's registration screen, click on the **Token Configuration** blade in the left to open the page where you can configure the claims provided tokens issued to your application.
+1. Click on the **Add groups claim** button on top to open the **Edit Groups Claim** screen.
+1. Select `Security groups` **or** the `All groups (includes distribution lists but not groups assigned to the application)` option. Choosing both negates the effect of `Security Groups` option.
+1. Under the **ID** section, select `Group ID`. This will result in Azure AD sending the object [id](https://docs.microsoft.com/graph/api/resources/group?view=graph-rest-1.0) of the groups the user is assigned to in the `groups` claim of the [ID Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) that your app receives after signing-in a user.
+1. If you are exposing a Web API using the **Expose an API** option, then you can also choose the `Group ID` option under the **Access** section. This will result in Azure AD sending the object [id](https://docs.microsoft.com/graph/api/resources/group?view=graph-rest-1.0) of the groups the user is assigned to in the `groups` claim of the [Access Token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) issued to the client applications of your API.
+
+##### Configure your application to receive the `groups` claim values from a **filtered set of groups** a user may be assigned to
+
+##### Prerequisites, benefits and limitations of using this option
+
+1. This option is useful when your application is interested in a selected set of groups that a signing-in user may be assigned to and not every security group this user is assigned to in the tenant.  This option also saves your application from running into the [overage](#groups-overage-claim) issue.
+1. This feature is not available in the [Azure AD Free edition](https://azure.microsoft.com/pricing/details/active-directory/).
+1. **Nested group assignments** are not available when this option is utilized.
+
+##### Steps to enable this option in your app
+
+1. In the app's registration screen, click on the **Token Configuration** blade in the left to open the page where you can configure the claims provided tokens issued to your application.
+1. Click on the **Add groups claim** button on top to open the **Edit Groups Claim** screen.
+1. Select `Groups assigned to the application`.
+    1. Choosing additional options like `Security Groups` or `All groups (includes distribution lists but not groups assigned to the application)` will negate the benefits your app derives from choosing to use this option.
+1. Under the **ID** section, select `Group ID`. This will result in Azure AD sending the object [id](https://docs.microsoft.com/graph/api/resources/group?view=graph-rest-1.0) of the groups the user is assigned to in the `groups` claim of the [ID Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) that your app receives after signing-in a user.
+1. If you are exposing a Web API using the **Expose an API** option, then you can also choose the `Group ID` option under the **Access** section. This will result in Azure AD sending the object [id](https://docs.microsoft.com/graph/api/resources/group?view=graph-rest-1.0) of the groups the user is assigned to in the `groups` claim of the [Access Token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) issued to the client applications of your API.
+1. In the app's registration screen, click on the **Overview** blade in the left to open the Application overview screen. Select the hyperlink with the name of your application in **Managed application in local directory** (note this field title can be truncated for instance `Managed application in ...`). When you select this link you will navigate to the **Enterprise Application Overview** page associated with the service principal for your application in the tenant where you created it. You can navigate back to the app registration page by using the back button of your browser.
+1. Select the **Users and groups** blade in the left to open the page where you can assign users and groups to your application.
+    1. Click on the **Add user** button on the top row.
+    1. Select **User and Groups** from the resultant screen.
+    1. Choose the groups that you want to assign to this application.
+    1. Click **Select** in the bottom to finish selecting the groups.
+    1. Click **Assign** to finish the group assignment process.  
+    1. Your application will now receive these selected groups in the `groups` claim when a user signing in to your app is a member of  one or more these **assigned** groups.
+1. Select the **Properties** blade in the left to open the page that lists the basic properties of your application.Set the **User assignment required?** flag to **Yes**.
+
+   > **Important security tip**
+   >
+   > when you set **User assignment required?** to **Yes**, Azure AD will check that only users assigned to your application in the **Users and groups** blade are able to sign-in to your app. You can assign users directly or by assigning security groups they belong to.
 
 ### Step 4: Run the sample
 
-1. Clean the solution, rebuild the solution, and run it.
+1. Clean and rebuild the solution, and run it.
 
-1. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in with a work or school account from the tenant where you created this app.	
-1. On the home page, the app lists the various claims it obtained from your ID token. You'd notice one more claims named `groups`. If **Overage** occurred, then you'd see a different claim by the name `_claim_names`. The **Overage** scenario is discussed in detail below.
-1. On the top menu, click on the signed-in user's name **user@domain.com**, you should now see all kind of information about yourself including your picture. Beneath that, a list of all the security groups that the signed-in user is assigned to are listed as well. All of this was obtained by making calls to Microsoft Graph. This list is useful, if an **Overage** occurs with this signed-in user. The **overage** scenario is discussed later in this article.
+1. Open your web browser and make a request to the app. The app immediately attempts to authenticate you to the Microsoft identity platform. Sign in with a *work or school account* from the tenant where you created this app.
+1. On the home page, the app lists the various claims it obtained from your ID token. You'd notice one more claims named `groups`. 
+1. On the top menu, click on the signed-in user's name **user@domain.com**, you should now see all kind of information about yourself including their picture. Beneath that, a list of all the security groups that the signed-in user is assigned to are listed as well. All of this was obtained by making calls to Microsoft Graph. This list is useful if the **Overage** scenario occurs with this signed-in user. The [overage](#groups-overage-claim) scenario is discussed later in this article.
 
 > Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
 
@@ -104,51 +137,6 @@ The object id of the security groups the signed in user is member of is returned
   ...
 }
 ```
-
-#### Groups overage claim
-
-To ensure that the token size doesn’t exceed HTTP header size limits, the Microsoft Identity Platform limits the number of object Ids that it includes in the **groups** claim.
-
-If a user is member of more groups than the overage limit (**150 for SAML tokens, 200 for JWT tokens**), then the Microsoft Identity Platform does not emit the groups claim in the token. Instead, it includes an **overage** claim in the token that indicates to the application to query the [Graph API](https://graph.microsoft.com) to retrieve the user’s group membership.
-
-```JSON
-{
-  ...
-  "_claim_names": {
-    "groups": "src1"
-    },
-    {
-   "_claim_sources": {
-    "src1": {
-        "endpoint":"[Graph Url to get this user's group membership from]"
-        }
-    }
-  ...
-}
-```
-
-> An Identity Office Hours session covered Azure AD App roles and security groups, featuring this scenario and how to handle the overage claim. Watch the video [Using Security Groups and Application Roles in your apps](https://www.youtube.com/watch?v=V8VUPixLSiM)
-
-> You can use the `BulkCreateGroups.ps1` provided in the [App Creation Scripts](./AppCreationScripts/) folder to create a large number of groups and assign users to them. This will help test overage scenarios during development. Remember to change the user's objectId provided in the `BulkCreateGroups.ps1` script.
-
-##### Order of processing the overage claim
-
-1. Check for the claim `_claim_names` with one of the values being `groups`. This indicates overage.
-
-1. If found, make a call to the endpoint specified in `_claim_sources` to fetch user’s groups.
-
-1. If none found, look into the `groups`  claim for user’s groups.
-
-> When attending to overage scenarios, which requires a call to [Microsoft Graph](https://graph.microsoft.com) to read the signed-in user's group memberships, your app will need to have the [Directory.Read.All](https://docs.microsoft.com/graph/permissions-reference#group-permissions) for the [getMemberObjects](https://docs.microsoft.com/graph/api/user-getmemberobjects?view=graph-rest-1.0) function to execute successfully.
-
-- Developers who wish to gain good familiarity of programming for Microsoft Graph are advised to go through the [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A) recorded session.
-
-#### When using the implicit_grant flow to authenticate
-
-In case, you are authenticating using the [implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v1-oauth2-implicit-grant-flow), the **overage** indication and limits are different than the apps using other flows.
-
-1. A claim named `hasgroups` with a value of true will be present in the token instead of the `groups` claim .
-1. The maximum number of groups provided in the `groups` claim is limited to 6. This is done to prevent  the URI fragment beyond the URL length limits.
 
 ### Support in ASP.NET Core middleware libraries
 
@@ -173,9 +161,61 @@ User.IsInRole("Group-object-id"); // In methods
 
 ```
 
+### The groups overage claim
+
+To ensure that the token size doesn’t exceed HTTP header size limits, the Microsoft Identity Platform limits the number of object Ids that it includes in the **groups** claim.
+
+If a user is member of more groups than the overage limit (**150 for SAML tokens, 200 for JWT tokens, 6 for Single Page applications**, ), then the Microsoft Identity Platform does not emit the group ids in the `groups` claim in the token. Instead, it includes an **overage** claim in the token that indicates to the application to query the [Graph API](https://graph.microsoft.com) to retrieve the user’s group membership.
+
+```JSON
+{
+  ...
+  "_claim_names": {
+    "groups": "src1"
+    },
+    {
+   "_claim_sources": {
+    "src1": {
+        "endpoint":"[Graph Url to get this user's group membership from]"
+        }
+    }
+  ...
+}
+```
+
+##### Create the overage scenario in this sample for testing
+
+1. You can use the `BulkCreateGroups.ps1` provided in the [App Creation Scripts](./AppCreationScripts/) folder to create a large number of groups and assign users to them. This will help test overage scenarios during development. Remember to change the user's objectId provided in the `BulkCreateGroups.ps1` script.
+1. When you run this sample and an overage occurred, then you'd see the  `_claim_names` in the home page after the user signs-in.
+1. We strongly advise you use the [group filtering feature](#configure-your-application-to-receive-the-groups-claim-values-from-a-filtered-set-of-groups-a-user-may-be-assigned-to) (if possible) to avoid running into group overages.
+1. In case you cannot avoid running into group overage, we suggest you use the following logic to process groups claim in your token.  
+    1. Check for the claim `_claim_names` with one of the values being `groups`. This indicates overage.
+    1. If found, make a call to the endpoint specified in `_claim_sources` to fetch user’s groups.
+    1. If none found, look into the `groups`  claim for user’s groups.
+
+> When attending to overage scenarios, which requires a call to [Microsoft Graph](https://graph.microsoft.com) to read the signed-in user's group memberships, your app will need to have the [Directory.Read.All](https://docs.microsoft.com/graph/permissions-reference#group-permissions) for the [getMemberObjects](https://docs.microsoft.com/graph/api/user-getmemberobjects?view=graph-rest-1.0) function to execute successfully.
+
+- Developers who wish to gain good familiarity of programming for Microsoft Graph are advised to go through the [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A) recorded session.
+
+##### When you are a single page application and using the implicit_grant flow to authenticate
+
+In case, you are authenticating using the [implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v1-oauth2-implicit-grant-flow), the **overage** indication and limits are different than the apps using other flows.
+
+1. A claim named `hasgroups` with a value of true will be present in the token instead of the `groups` claim .
+1. The maximum number of groups provided in the `groups` claim is limited to 6. This is done to prevent  the URI fragment beyond the URL length limits.
+
 ## About the code
 
-The following files have the code that would be of interest to you..
+### Create the sample from the command line
+
+> The following code used an older version of `[Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) library and would be updated when the library becomes Generally Available.
+
+This project was created using the following command.
+
+
+## About the code
+
+The following files have the code that would be of interest to you:
 
 1. HomeController.cs
     1. Passes the **HttpContext.User** (the signed-in user) to the view.
@@ -201,6 +241,7 @@ The following files have the code that would be of interest to you..
       services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
               .AddAzureAD(options => Configuration.Bind("AzureAd", options));
      ```
+
     - by these lines:
 
       ```CSharp
