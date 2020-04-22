@@ -172,7 +172,7 @@ cd "1-WebApp-OIDC\1-1-MyOrg"
     - update the `sslPort` of the `iisSettings` section to be `44321`
     - in the `applicationUrl` property of use `https://localhost:44321`
 
-1. (Optional) If you don't have a custom `AccountController` to handle the *sign-in* and *sign-out* requests, you can use `Microsoft.Identity.Web.UI` built-in one. For that, please include this change on **Startup.cs**:
+1. (Optional) If you don't have a custom `AccountController` to handle the *sign-in* and *sign-out* requests, you can use the `Microsoft.Identity.Web.UI` built-in one. For that, please include this change on **Startup.cs**:
 
     - at the top of the file, add the following using directive:
 
