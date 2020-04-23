@@ -39,5 +39,7 @@ In the **appsettings.json** file, replace the `TenantId` value with `"common"`
 
 ## Next steps
 
+- A recording of a Microsoft Identity Platform developer session that covered this topic of developing a multi-tenant app with Azure Active Directory is available at [Develop multi-tenant applications with Microsoft identity platform](https://www.youtube.com/watch?v=B416AxHoMJ4).
+
 - Learn how to enable users from [National clouds](../1-4-Sovereign) to sign-in to your application
 - Learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user)

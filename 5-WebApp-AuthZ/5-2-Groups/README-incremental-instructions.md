@@ -35,7 +35,7 @@ This sample first leverages the ASP.NET Core OpenID Connect middleware to sign i
 
 ![Sign in with the Microsoft identity platform](ReadmeFiles/sign-in.png)
 
-> An Identity Office Hours session covered Azure AD App roles and security groups, featuring this scenario and how to handle the overage claim. Watch the video [Using Security Groups and Application Roles in your apps](https://www.youtube.com/watch?v=V8VUPixLSiM)
+> An Identity Developer session covered Azure AD App roles and security groups, featuring this scenario and how to handle the overage claim. Watch the video [Using Security Groups and Application Roles in your apps](https://www.youtube.com/watch?v=V8VUPixLSiM)
 
 > Pre-requisites:
 >

@@ -170,6 +170,8 @@ cd "1-WebApp-OIDC\1-2-AnyOrg"
 
 2. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in with your personal account or with work or school account.
 
+> A recording of a Microsoft Identity Platform developer session that covered this topic of developing a multi-tenant app with Azure Active Directory is available at [Develop multi-tenant applications with Microsoft identity platform](https://www.youtube.com/watch?v=B416AxHoMJ4).
+
 ## Troubleshooting
 
 ### known issue on iOS 12

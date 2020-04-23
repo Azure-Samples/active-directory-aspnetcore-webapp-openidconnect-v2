@@ -44,6 +44,8 @@ In addition to the public cloud​, Azure Active Directory is deployed in th
 - Microsoft Cloud Germany
 - Azure and Office 365 operated by 21Vianet in China
 
+> A recording of a Microsoft Identity Platform developer session that covered this topic of developing a multi-tenant app with Azure Active Directory is available at [Develop multi-tenant applications with Microsoft identity platform](https://www.youtube.com/watch?v=B416AxHoMJ4).
+
 ### Overview
 
 When it comes to developing apps, developers can choose to configure their app to be either single-tenant or multi-tenant during app registration in the [Azure portal](https://portal.azure.com).
