@@ -7,6 +7,9 @@ param(
     [string] $azureEnvironmentName
 )
 
+#Requires -Modules AzureAD
+
+
 if ($null -eq (Get-Module -ListAvailable -Name "AzureAD")) { 
     Install-Module "AzureAD" -Scope CurrentUser 
 } 

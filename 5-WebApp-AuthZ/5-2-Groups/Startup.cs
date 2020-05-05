@@ -44,7 +44,7 @@ namespace WebApp_OpenIDConnect_DotNet
                     //    options.TokenValidationParameters.RoleClaimType = "groups";
                 }, options => 
                 {
-                    Configuration.Bind("AzureAD", options);
+                    Configuration.Bind("AzureAd", options);
                 });
 
             services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" })
