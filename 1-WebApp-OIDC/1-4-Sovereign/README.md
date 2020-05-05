@@ -130,6 +130,27 @@ cd "1-WebApp-OIDC\1-4-Sovereign"
     - update the `sslPort` of the `iisSettings` section to be `44321`
     - in the `applicationUrl` property of use `https://localhost:44321`
 
+1. (Optional) If you don't have a custom `AccountController` to handle the *sign-in* and *sign-out* requests, you can use the `Microsoft.Identity.Web.UI` built-in one. For that, please include this change in **Startup.cs**:
+
+    - at the top of the file, add the following using directive:
+
+      ```CSharp
+        using Microsoft.Identity.Web.UI;
+      ```
+    - in the `ConfigureServices` method, change the **AddControllersWithView** code snippet to this:
+
+      ```CSharp
+        services.AddControllersWithViews(options =>
+        {
+            var policy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+            options.Filters.Add(new AuthorizeFilter(policy));
+        }).AddMicrosoftIdentityUI();
+      ```
+
+    - in **Views/Shared/_LoginPartial.cshtml**, change the **asp-area** tag to: `asp-area="MicrosoftIdentity"`
+
 ### Step 3: Run the sample
 
 1. Build the solution and run it.
