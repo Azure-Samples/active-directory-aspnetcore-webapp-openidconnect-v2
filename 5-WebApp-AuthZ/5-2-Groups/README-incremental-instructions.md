@@ -66,14 +66,14 @@ Navigate to the `"5-WebApp-AuthZ"` folder
 
 Now you have two different options available to you on how you can further configure your application to receive the `groups` claim.
 
-1. [Receive **all the groups** that the signed-in user is assigned to in an Azure AD tenant, included nested groups](#configure-your-application-to-receive-all-the-groups-a-user-is-assigned-to-included-nested-groups).
-1. [Receive the **groups** claim values from a **filtered set of groups** that your application is programmed to work with.](#configure-your-application-to-receive-the-groups-claim-values-from-a-filtered-set-of-groups-a-user-may-be-assigned-to). (Not available in the [Azure AD Free edition](https://azure.microsoft.com/pricing/details/active-directory/)).
+1. [Receive **all the groups** that the signed-in user is assigned to in an Azure AD tenant, included nested groups](#configure-your-application-to-receive-all-the-groups-the-signed-in-user-is-assigned-to-included-nested-groups).
+1. [Receive the **groups** claim values from a **filtered set of groups** that your application is programmed to work with](#configure-your-application-to-receive-the-groups-claim-values-from-a-filtered-set-of-groups-a-user-may-be-assigned-to). (Not available in the [Azure AD Free edition](https://azure.microsoft.com/pricing/details/active-directory/)).
 
     > To get the on-premise group's `samAccountName` or `On Premises Group Security Identifier` instead of Group id, check out the document [Configure group claims for applications with Azure Active Directory](https://docs.microsoft.com/azure/active-directory/hybrid/how-to-connect-fed-group-claims#prerequisites-for-using-group-attributes-synchronized-from-active-directory).
 
 > To receive the `groups` claim with the object id of the security groups, please ensure that the user accounts you plan to sign-in to this app is assigned to a few security groups in this AAD tenant.
 
-##### Configure your application to receive **all the groups** the signed-in user is assigned to, included nested groups
+#### Configure your application to receive **all the groups** the signed-in user is assigned to, included nested groups
 
 1. In the app's registration screen, click on the **Token Configuration** blade in the left to open the page where you can configure the claims provided tokens issued to your application.
 1. Click on the **Add groups claim** button on top to open the **Edit Groups Claim** screen.
@@ -81,15 +81,15 @@ Now you have two different options available to you on how you can further confi
 1. Under the **ID** section, select `Group ID`. This will result in Azure AD sending the [object id](https://docs.microsoft.com/graph/api/resources/group?view=graph-rest-1.0) of the groups the user is assigned to in the **groups** claim of the [ID Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) that your app receives after signing-in a user.
 1. If you are exposing a Web API using the **Expose an API** option, then you can also choose the `Group ID` option under the **Access** section. This will result in Azure AD sending the [object id](https://docs.microsoft.com/graph/api/resources/group?view=graph-rest-1.0) of the groups the user is assigned to in the `groups` claim of the [Access Token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) issued to the client applications of your API.
 
-##### Configure your application to receive the `groups` claim values from a **filtered set of groups** a user may be assigned to
+#### Configure your application to receive the `groups` claim values from a **filtered set of groups** a user may be assigned to
 
-###### Prerequisites, benefits and limitations of using this option
+##### Prerequisites, benefits and limitations of using this option
 
 1. This option is useful when your application is interested in a selected set of groups that a signing-in user may be assigned to and not every security group this user is assigned to in the tenant.  This option also saves your application from running into the [overage](#groups-overage-claim) issue.
 1. This feature is not available in the [Azure AD Free edition](https://azure.microsoft.com/pricing/details/active-directory/).
 1. **Nested group assignments** are not available when this option is utilized.
 
-###### Steps to enable this option in your app
+##### Steps to enable this option in your app
 
 1. In the app's registration screen, click on the **Token Configuration** blade in the left to open the page where you can configure the claims provided tokens issued to your application.
 1. Click on the **Add groups claim** button on top to open the **Edit Groups Claim** screen.

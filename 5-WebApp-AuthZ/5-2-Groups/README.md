@@ -127,7 +127,6 @@ As a first step you'll need to:
    - If you don't have a platform added, select **Add a platform** and select the **Web** option.
    - In the **Redirect URIs** section, enter the following redirect URIs.
       - `https://localhost:44321/signin-oidc`
-      - `https://localhost:44321/Account/EndSession`
    - In the **Logout URL** section, set it to `https://localhost:44321/signout-oidc`.
    - In the **Implicit grant** section, check the **ID tokens** option as this sample requires
      the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to
@@ -137,22 +136,22 @@ As a first step you'll need to:
 1. In the app's registration screen, click on the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
 1. In the **Client secrets** section, click on **New client secret**:
    - Type a key description (for instance `app secret`),
-   - Select one of the available key durations (**In 1 year**, **In 2 years**, or **Never Expires**) as per your security concerns.
+   - Select one of the available key durations (**In 1 year**, **In 2 years**, or **Never Expires**) as per your security posture.
    - The generated key value will be displayed when you click the **Add** button. Copy the generated value for use in the steps later.
    - You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
 1. In the app's registration screen, click on the **API permissions** blade in the left to open the page where we add access to the Apis that your application needs.
    - Click the **Add a permission** button and then,
    - Ensure that the **Microsoft APIs** tab is selected.
    - In the *Commonly used Microsoft APIs* section, click on **Microsoft Graph**
-   - In the **Delegated permissions** section, select the **GroupMember.Read.All** in the list. Use the search box if necessary.
+   - In the **Delegated permissions** section, select the **Directory.Read.All** in the list. Use the search box if necessary.
    - Click on the **Add permissions** button at the bottom.
 
 #### Configure your application to receive the **groups** claim
 
 Now you have two different options available to you on how you can further configure your application to receive the `groups` claim.
 
-1. [Receive **all the groups** that the signed-in user is assigned to in an Azure AD tenant, included nested groups](#configure-your-application-to-receive-all-the-groups-a-user-is-assigned-to-included-nested-groups).
-1. [Receive the **groups** claim values from a **filtered set of groups** that your application is programmed to work with.](#configure-your-application-to-receive-the-groups-claim-values-from-a-filtered-set-of-groups-a-user-may-be-assigned-to). (Not available in the [Azure AD Free edition](https://azure.microsoft.com/pricing/details/active-directory/)).
+1. [Receive **all the groups** that the signed-in user is assigned to in an Azure AD tenant, included nested groups](#configure-your-application-to-receive-all-the-groups-the-signed-in-user-is-assigned-to-included-nested-groups).
+1. [Receive the **groups** claim values from a **filtered set of groups** that your application is programmed to work with](#configure-your-application-to-receive-the-groups-claim-values-from-a-filtered-set-of-groups-a-user-may-be-assigned-to). (Not available in the [Azure AD Free edition](https://azure.microsoft.com/pricing/details/active-directory/)).
 
     > To get the on-premise group's `samAccountName` or `On Premises Group Security Identifier` instead of Group id, check out the document [Configure group claims for applications with Azure Active Directory](https://docs.microsoft.com/azure/active-directory/hybrid/how-to-connect-fed-group-claims#prerequisites-for-using-group-attributes-synchronized-from-active-directory).
 
@@ -278,7 +277,7 @@ If a user is member of more groups than the overage limit (**150 for SAML tokens
 }
 ```
 
-##### Create the overage scenario in this sample for testing
+#### Create the overage scenario in this sample for testing
 
 1. You can use the `BulkCreateGroups.ps1` provided in the [App Creation Scripts](./AppCreationScripts/) folder to create a large number of groups and assign users to them. This will help test overage scenarios during development. Remember to change the user's objectId provided in the `BulkCreateGroups.ps1` script.
 1. When you run this sample and an overage occurred, then you'd see the  `_claim_names` in the home page after the user signs-in.
@@ -324,7 +323,6 @@ This project was created using the following command.
      ```CSharp
       using Microsoft.Identity.Web;
      ```
-
 
 The following files have the code that would be of interest to you:
 

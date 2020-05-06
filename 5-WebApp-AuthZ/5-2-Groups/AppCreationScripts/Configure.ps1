@@ -202,7 +202,7 @@ Function ConfigureApplications
    $webAppAadApplication = New-AzureADApplication -DisplayName "WebApp-GroupClaims" `
                                                   -HomePage "https://localhost:44321/" `
                                                   -LogoutUrl "https://localhost:44321/signout-oidc" `
-                                                  -ReplyUrls "https://localhost:44321/", "https://localhost:44321/signin-oidc", "https://localhost:44321/Account/EndSession" `
+                                                  -ReplyUrls "https://localhost:44321/", "https://localhost:44321/signin-oidc" `
                                                   -IdentifierUris "https://$tenantName/WebApp-GroupClaims" `
                                                   -PasswordCredentials $key `
                                                   -GroupMembershipClaims "SecurityGroup" `
@@ -234,7 +234,7 @@ Function ConfigureApplications
    # Add Required Resources Access (from 'webApp' to 'Microsoft Graph')
    Write-Host "Getting access from 'webApp' to 'Microsoft Graph'"
    $requiredPermissions = GetRequiredPermissions -applicationDisplayName "Microsoft Graph" `
-                                                -requiredDelegatedPermissions "GroupMember.Read.All" `
+                                                -requiredDelegatedPermissions "Directory.Read.All" `
 
    $requiredResourcesAccess.Add($requiredPermissions)
 
