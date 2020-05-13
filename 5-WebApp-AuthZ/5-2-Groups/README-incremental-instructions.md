@@ -2,7 +2,7 @@
 services: active-directory
 platforms: dotnet
 author: kalyankrishna1
-level: 400
+level: 300
 client: ASP.NET Core Web App
 service: Microsoft Graph
 endpoint: Microsoft identity platform
@@ -69,9 +69,7 @@ Now you have two different options available to you on how you can further confi
 1. [Receive **all the groups** that the signed-in user is assigned to in an Azure AD tenant, included nested groups](#configure-your-application-to-receive-all-the-groups-the-signed-in-user-is-assigned-to-included-nested-groups).
 1. [Receive the **groups** claim values from a **filtered set of groups** that your application is programmed to work with](#configure-your-application-to-receive-the-groups-claim-values-from-a-filtered-set-of-groups-a-user-may-be-assigned-to). (Not available in the [Azure AD Free edition](https://azure.microsoft.com/pricing/details/active-directory/)).
 
-    > To get the on-premise group's `samAccountName` or `On Premises Group Security Identifier` instead of Group id, check out the document [Configure group claims for applications with Azure Active Directory](https://docs.microsoft.com/azure/active-directory/hybrid/how-to-connect-fed-group-claims#prerequisites-for-using-group-attributes-synchronized-from-active-directory).
-
-> To receive the `groups` claim with the object id of the security groups, please ensure that the user accounts you plan to sign-in to this app is assigned to a few security groups in this AAD tenant.
+> To get the on-premise group's `samAccountName` or `On Premises Group Security Identifier` instead of Group id, please refer to the document [Configure group claims for applications with Azure Active Directory](https://docs.microsoft.com/azure/active-directory/hybrid/how-to-connect-fed-group-claims#prerequisites-for-using-group-attributes-synchronized-from-active-directory).
 
 #### Configure your application to receive **all the groups** the signed-in user is assigned to, included nested groups
 
@@ -109,7 +107,7 @@ Now you have two different options available to you on how you can further confi
 
    > **Important security tip**
    >
-   > Wwhen you set **User assignment required?** to **Yes**, Azure AD will check that only users assigned to your application in the **Users and groups** blade are able to sign-in to your app. You can assign users directly or by assigning security groups they belong to.
+   > When you set **User assignment required?** to **Yes**, Azure AD will check that only users assigned to your application in the **Users and groups** blade are able to sign-in to your app. You can assign users directly or by assigning security groups they belong to.
 
 ### Step 4: Run the sample
 
