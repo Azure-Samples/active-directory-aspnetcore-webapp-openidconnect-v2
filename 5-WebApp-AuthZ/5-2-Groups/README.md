@@ -407,7 +407,7 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
 
 ## Learn more
 
-- Learn how [Microsoft.Identity.Web](../../Microsoft.Identity.Web) works, in particular hooks-up to the ASP.NET Core ODIC events
+- Learn how [Microsoft.Identity.Web](https://aka.ms/idweblib) works, in particular hooks-up to the ASP.NET Core ODIC events
 
 - To understand more about groups roles and the various claims in tokens, see:
   - [Configure group claims for applications with Azure Active Directory (Public Preview)](https://docs.microsoft.com/azure/active-directory/hybrid/how-to-connect-fed-group-claims#configure-the-azure-ad-application-registration-for-group-attributes)
