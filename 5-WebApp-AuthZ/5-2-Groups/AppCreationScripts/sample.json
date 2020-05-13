@@ -1,7 +1,7 @@
 {
   "Sample": {
     "Title": "Add authorization using groups & group claims to an ASP.NET Core Web app that signs-in users with the Microsoft identity platform",
-    "Level": 400,
+    "Level": 300,
     "Client": "ASP.NET Core Web App",
     "Service": "Microsoft Graph",
     "RepositoryUrl": "microsoft-identity-platform-aspnetcore-webapp-tutorial",
@@ -18,14 +18,14 @@
       "Kind": "WebApp",
       "Audience": "AzureADMyOrg",
       "HomePage": "https://localhost:44321/",
-      "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc, https://localhost:44321/Account/EndSession",
+      "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc",
       "LogoutUrl": "https://localhost:44321/signout-oidc",
       "PasswordCredentials": "Auto",
       "GroupMembershipClaims": "SecurityGroup",
       "RequiredResourcesAccess": [
         {
           "Resource": "Microsoft Graph",
-          "DelegatedPermissions": [ "User.Read", "Directory.Read.All" ]
+          "DelegatedPermissions": [ "Directory.Read.All" ]
         }
       ]
     }

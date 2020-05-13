@@ -37,6 +37,8 @@ When it comes to developing apps, developers can choose to configure their app t
 
 For more information about apps and tenancy, see [Tenancy in Azure Active Directory](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps)
 
+> A recording of a Microsoft Identity Platform developer session that covered this topic of developing a multi-tenant app with Azure Active Directory is available at [Develop multi-tenant applications with Microsoft identity platform](https://www.youtube.com/watch?v=B416AxHoMJ4).
+
 ![Sign in with Azure AD](ReadmeFiles/topology.png)
 
 ## Scenario

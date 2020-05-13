@@ -2,8 +2,12 @@
 param(
     [PSCredential] $Credential,
     [Parameter(Mandatory=$False, HelpMessage='Tenant ID (This is a GUID which represents the "Directory ID" of the AzureAD tenant into which you want to create the apps')]
-    [string] $tenantId
+    [string] $tenantId,
+    [Parameter(Mandatory=$False, HelpMessage='Azure environment to use while running the script (it defaults to AzureCloud)')]
+    [string] $azureEnvironmentName
 )
+
+#Requires -Modules AzureAD
 
 <#
  This script creates the Azure AD applications needed for this sample and updates the configuration files
@@ -147,6 +151,11 @@ Function ConfigureApplications
    so that they are consistent with the Applications parameters
 #> 
     $commonendpoint = "common"
+    
+    if (!$azureEnvironmentName)
+    {
+        $azureEnvironmentName = "AzureCloud"
+    }
 
     # $tenantId is the Active Directory Tenant. This is a GUID which represents the "Directory ID" of the AzureAD tenant
     # into which you want to create the apps. Look it up in the Azure portal in the "Properties" of the Azure AD.
@@ -155,17 +164,17 @@ Function ConfigureApplications
     # you'll need to sign-in with creds enabling your to create apps in the tenant)
     if (!$Credential -and $TenantId)
     {
-        $creds = Connect-AzureAD -TenantId $tenantId
+        $creds = Connect-AzureAD -TenantId $tenantId -AzureEnvironmentName $azureEnvironmentName
     }
     else
     {
         if (!$TenantId)
         {
-            $creds = Connect-AzureAD -Credential $Credential
+            $creds = Connect-AzureAD -Credential $Credential -AzureEnvironmentName $azureEnvironmentName
         }
         else
         {
-            $creds = Connect-AzureAD -TenantId $tenantId -Credential $Credential
+            $creds = Connect-AzureAD -TenantId $tenantId -Credential $Credential -AzureEnvironmentName $azureEnvironmentName
         }
     }
 
@@ -173,6 +182,8 @@ Function ConfigureApplications
     {
         $tenantId = $creds.Tenant.Id
     }
+
+    
 
     $tenant = Get-AzureADTenantDetail
     $tenantName =  ($tenant.VerifiedDomains | Where { $_._Default -eq $True }).Name
@@ -191,7 +202,7 @@ Function ConfigureApplications
    $webAppAadApplication = New-AzureADApplication -DisplayName "WebApp-GroupClaims" `
                                                   -HomePage "https://localhost:44321/" `
                                                   -LogoutUrl "https://localhost:44321/signout-oidc" `
-                                                  -ReplyUrls "https://localhost:44321/", "https://localhost:44321/signin-oidc", "https://localhost:44321/Account/EndSession" `
+                                                  -ReplyUrls "https://localhost:44321/", "https://localhost:44321/signin-oidc" `
                                                   -IdentifierUris "https://$tenantName/WebApp-GroupClaims" `
                                                   -PasswordCredentials $key `
                                                   -GroupMembershipClaims "SecurityGroup" `
@@ -223,7 +234,7 @@ Function ConfigureApplications
    # Add Required Resources Access (from 'webApp' to 'Microsoft Graph')
    Write-Host "Getting access from 'webApp' to 'Microsoft Graph'"
    $requiredPermissions = GetRequiredPermissions -applicationDisplayName "Microsoft Graph" `
-                                                -requiredDelegatedPermissions "User.Read|Directory.Read.All" `
+                                                -requiredDelegatedPermissions "Directory.Read.All" `
 
    $requiredResourcesAccess.Add($requiredPermissions)
 

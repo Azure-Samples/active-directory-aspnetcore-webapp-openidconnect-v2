@@ -11,7 +11,7 @@
    ```
 1. Run the script to create your Azure AD application and configure the code of the sample application accordingly. (Other ways of running the scripts are described below)
    ```PowerShell
-   cd .\AppCreationScripts\ 
+   cd .\AppCreationScripts\
    .\Configure.ps1
    ```
 1. Open the Visual Studio solution and click start
@@ -27,6 +27,7 @@ The following paragraphs:
   - [Passing credentials](#option-2-non-interactive) to create the app in your home tenant
   - [Interactively in a specific tenant](#option-3-interactive-but-create-apps-in-a-specified-tenant)
   - [Passing credentials in a specific tenant](#option-4-non-interactive-and-create-apps-in-a-specified-tenant)
+  - [Passing environment name, for Sovereign clouds](#running-the-script-on-azure-sovereign-clouds)
 
 ## Goal of the scripts
 
@@ -50,7 +51,7 @@ These scripts are:
 
 The `Configure.ps1` will stop if it tries to create an Azure AD application which already exists in the tenant. For this, if you are using the script to try/test the sample, or in DevOps scenarios, you might want to run `Cleanup.ps1` just before `Configure.ps1`. This is what is shown in the steps below.
 
-## How to use the app creation scripts ?
+## How to use the app creation scripts?
 
 ### Pre-requisites
 
@@ -108,7 +109,7 @@ Note that the script will choose the tenant in which to create the applications,
 
 #### Option 2 (non-interactive)
 
-When you know the indentity and credentials of the user in the name of whom you want to create the applications, you can use the non-interactive approach. It's more adapted to DevOps. Here is an example of script you'd want to run in a PowerShell Window
+When you know the identity and credentials of the user in the name of whom you want to create the applications, you can use the non-interactive approach. It's more adapted to DevOps. Here is an example of script you'd want to run in a PowerShell Window
 
 ```PowerShell
 $secpasswd = ConvertTo-SecureString "[Password here]" -AsPlainText -Force
@@ -145,3 +146,21 @@ $tenantId = "yourTenantIdGuid"
 . .\Cleanup.ps1 -Credential $mycreds -TenantId $tenantId
 . .\Configure.ps1 -Credential $mycreds -TenantId $tenantId
 ```
+
+### Running the script on Azure Sovereign clouds
+
+All the four options listed above, can be used on any Azure Sovereign clouds. By default, the script targets `AzureCloud`, but it can be changed using the parameter `-AzureEnvironmentName`.
+
+The acceptable values for this parameter are:
+
+- AzureCloud
+- AzureChinaCloud
+- AzureUSGovernment
+- AzureGermanyCloud
+
+Example:
+
+ ```PowerShell
+ . .\Cleanup.ps1 -AzureEnvironmentName "AzureGermanyCloud"
+ . .\Configure.ps1 -AzureEnvironmentName "AzureGermanyCloud"
+ ```

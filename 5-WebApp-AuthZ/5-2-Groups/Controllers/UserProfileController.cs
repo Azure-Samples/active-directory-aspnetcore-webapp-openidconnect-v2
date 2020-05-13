@@ -9,7 +9,8 @@ using Constants = WebApp_OpenIDConnect_DotNet.Infrastructure.Constants;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
-    // [Authorize(Roles = "8873daa2-17af-4e72-973e-930c94ef7549")] // Using groups ids in the Authorize attribute
+    // This is how groups ids/names are used in the Authorize attribute
+    //[Authorize(Roles = "8873daa2-17af-4e72-973e-930c94ef7549")] 
     public class UserProfileController : Controller
     {
         private readonly ITokenAcquisition tokenAcquisition;
@@ -24,7 +25,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead, Constants.ScopeDirectoryReadAll })]        
         public async Task<IActionResult> Index()
         {
-            // Using group ids/names in the IsInRole method
+            // This is how group ids/names are used in the IsInRole method
             // var isinrole = User.IsInRole("8873daa2-17af-4e72-973e-930c94ef7549");
 
             string accessToken = await tokenAcquisition.GetAccessTokenForUserAsync(new[] { Constants.ScopeUserRead, Constants.ScopeDirectoryReadAll });
