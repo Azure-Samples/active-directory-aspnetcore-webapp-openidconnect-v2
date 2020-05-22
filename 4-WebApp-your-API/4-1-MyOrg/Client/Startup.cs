@@ -15,6 +15,11 @@ using TodoListClient.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Identity.Web.UI;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.Identity.Client;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -43,21 +48,43 @@ namespace WebApp_OpenIDConnect_DotNet
 
             services.AddOptions();
 
-            services.AddSignIn(Configuration);
+            services.AddSignIn(options =>
+            {
+                Configuration.Bind("AzureAd", options);
+                options.MetadataAddress = "https://sts.cxpaadtenant.com/adfs/.well-known/openid-configuration";
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 
-            // This is required to be instantiated before the OpenIdConnectOptions starts getting configured.
-            // By default, the claims mapping will map claim names in the old format to accommodate older SAML applications.
-            // 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role' instead of 'roles'
-            // This flag ensures that the ClaimsIdentity claims collection will be built from the claims in the token
-            // JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+                options.TokenValidationParameters.ValidIssuer = "https://sts.cxpaadtenant.com/adfs";
+                options.TokenValidationParameters.IssuerValidator = ValidateAFDSIssuer;
+                options.TokenValidationParameters.NameClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name";
 
-            // Token acquisition service based on MSAL.NET
-            // and chosen token cache implementation
-            services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] })
-                    .AddInMemoryTokenCaches();
 
-            // Add APIs
-            services.AddTodoListService(Configuration);
+            }, options =>
+            {
+                Configuration.Bind("AzureAd", options);
+            });
+
+            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+            {
+                options.ResponseType = OpenIdConnectResponseType.CodeIdToken;
+
+                var codeReceivedHandler = options.Events.OnAuthorizationCodeReceived;
+                options.Events.OnAuthorizationCodeReceived = async context =>
+                {
+                    var builder = ConfidentialClientApplicationBuilder
+                        .Create("71426af8-76ba-4bfa-a060-b9cd3975f18f")
+                        .WithRedirectUri("https://localhost:44321/signin-oidc")
+                        .WithAdfsAuthority("https://sts.cxpaadtenant.com/adfs")
+                        .WithClientSecret("YJcQffupUbiKs8rnMV7uPPMj53xR6DbLSjTZHys4");
+
+                    var app = builder.Build();
+                    var token = await app.AcquireTokenByAuthorizationCode(new string[] { "openid" }, context.ProtocolMessage.Code)
+                    .ExecuteAsync().ConfigureAwait(false);
+                    await codeReceivedHandler(context).ConfigureAwait(false);
+                };
+            });
+
+                services.AddTodoListService(Configuration);
 
             services.AddControllersWithViews(options =>
             {
@@ -99,6 +126,25 @@ namespace WebApp_OpenIDConnect_DotNet
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+        }
+
+        private string ValidateAFDSIssuer(string actualIssuer, SecurityToken securityToken, TokenValidationParameters validationParameters)
+        {
+            if (string.IsNullOrEmpty(actualIssuer))
+                throw new ArgumentNullException(nameof(actualIssuer));
+
+            if (securityToken == null)
+                throw new ArgumentNullException(nameof(securityToken));
+
+            if (validationParameters == null)
+                throw new ArgumentNullException(nameof(validationParameters));
+
+            if (validationParameters.ValidIssuer == actualIssuer)
+                return actualIssuer;
+
+            // If a valid issuer is not found, throw
+            // brentsch - todo, create a list of all the possible valid issuers in TokenValidationParameters
+            throw new SecurityTokenInvalidIssuerException($"Issuer: '{actualIssuer}', does not match any of the valid issuers provided for this application.");
         }
     }
 }
