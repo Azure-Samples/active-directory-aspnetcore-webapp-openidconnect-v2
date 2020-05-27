@@ -228,10 +228,10 @@ In the `Startup.cs` file, in the `ConfigureServices` method, after `services.Add
     {
     ...
     // Sign-in users with the Microsoft identity platform
-    services.AddMicrosoftIdentityPlatformAuthentication(Configuration);
+    services.AddSignIn(Configuration);
 
     // Restrict users to specific belonging to specific tenants
-    services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
+    services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
     {
         options.TokenValidationParameters.IssuerValidator = ValidateSpecificIssuers;
     });
