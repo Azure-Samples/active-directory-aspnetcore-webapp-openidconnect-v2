@@ -71,6 +71,8 @@ namespace WebApp_OpenIDConnect_DotNet
                 var codeReceivedHandler = options.Events.OnAuthorizationCodeReceived;
                 options.Events.OnAuthorizationCodeReceived = async context =>
                 {
+                    context.HandleCodeRedemption();
+
                     var builder = ConfidentialClientApplicationBuilder
                         .Create("71426af8-76ba-4bfa-a060-b9cd3975f18f")
                         .WithRedirectUri("https://localhost:44321/signin-oidc")
@@ -80,6 +82,8 @@ namespace WebApp_OpenIDConnect_DotNet
                     var app = builder.Build();
                     var token = await app.AcquireTokenByAuthorizationCode(new string[] { "openid" }, context.ProtocolMessage.Code)
                     .ExecuteAsync().ConfigureAwait(false);
+
+                    //context.HandleCodeRedemption(token.AccessToken, context.ProtocolMessage.IdToken);
                     await codeReceivedHandler(context).ConfigureAwait(false);
                 };
             });
