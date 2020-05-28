@@ -81,7 +81,7 @@ As a first step you'll need to:
        ![Register app](../../ReadmeFiles/screenshot-register-app.png)
 
      </details>
-     > Note that there are more than one redirect URIs. You'll need to add them from the **Authentication** tab later after the app has been created succesfully.
+     > Note that there are more than one redirect URIs. You'll need to add them from the **Authentication** tab later after the app has been created successfully.
      
 1. Select **Register** to create the application.
 1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the Visual Studio configuration file for this project.
