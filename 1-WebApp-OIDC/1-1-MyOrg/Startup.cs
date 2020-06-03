@@ -46,8 +46,10 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.MetadataAddress = "https://sts.cxpaadtenant.com/adfs/.well-known/openid-configuration";
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 
-                options.TokenValidationParameters.ValidIssuer = "https://sts.cxpaadtenant.com/adfs";
-                options.TokenValidationParameters.IssuerValidator = ValidateAFDSIssuer;
+                options.Authority = "https://sts.cxpaadtenant.com/adfs";
+
+                //options.TokenValidationParameters.ValidIssuer = "https://sts.cxpaadtenant.com/adfs";
+                //options.TokenValidationParameters.IssuerValidator = ValidateAFDSIssuer;
                 options.TokenValidationParameters.NameClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name";
             }, options => 
             {

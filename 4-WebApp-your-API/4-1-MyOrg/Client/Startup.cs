@@ -54,6 +54,7 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.MetadataAddress = "https://sts.cxpaadtenant.com/adfs/.well-known/openid-configuration";
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 
+
                 options.TokenValidationParameters.ValidIssuer = "https://sts.cxpaadtenant.com/adfs";
                 options.TokenValidationParameters.IssuerValidator = ValidateAFDSIssuer;
                 options.TokenValidationParameters.NameClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name";
@@ -83,7 +84,7 @@ namespace WebApp_OpenIDConnect_DotNet
                     var token = await app.AcquireTokenByAuthorizationCode(new string[] { "openid" }, context.ProtocolMessage.Code)
                     .ExecuteAsync().ConfigureAwait(false);
 
-                    //context.HandleCodeRedemption(token.AccessToken, context.ProtocolMessage.IdToken);
+                    context.HandleCodeRedemption(token.AccessToken, context.ProtocolMessage.IdToken);
                     await codeReceivedHandler(context).ConfigureAwait(false);
                 };
             });

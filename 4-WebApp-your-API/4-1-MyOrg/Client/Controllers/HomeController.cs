@@ -20,6 +20,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
         public IActionResult Index()
         {
+            var user = User.Identity;
             return View();
         }
 
