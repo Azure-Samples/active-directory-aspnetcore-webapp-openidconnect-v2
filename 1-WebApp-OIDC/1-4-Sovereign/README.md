@@ -77,7 +77,7 @@ cd "1-WebApp-OIDC\1-4-Sovereign"
 1. In the list of pages for the app, select **Authentication**.
    - In the **Redirect URIs**, add a redirect URL of type Web and valued  `https://localhost:44321/signin-oidc`
    - In the **Advanced settings** section set **Logout URL** to `https://localhost:44321/signout-oidc`
-   - In the **Advanced settings** | **Implicit grant** section, check **ID tokens** as this sample requires the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to sign in the user.
+   - In the **Advanced settings** | **Implicit grant** section, check **ID tokens** as this sample requires the [ID Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) to be enabled to sign in the user.
    - Select **Save**.
 
 > Note that unless the Web App calls a Web API no certificate or secret is needed.

@@ -93,7 +93,7 @@ As a first step you'll need to:
        - `https://localhost:44321/signin-oidc`
    - In the **Advanced settings** section set **Logout URL** to `https://localhost:44321/signout-oidc`
    - In the **Advanced settings** | **Implicit grant** section, check **ID tokens** as this sample requires
-     the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to
+     the [ID Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) to be enabled to
      sign-in the user.
 1. Select **Save**.
 

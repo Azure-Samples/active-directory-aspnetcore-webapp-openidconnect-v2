@@ -137,8 +137,8 @@ As a first step you'll need to:
        - `https://localhost:44321/`
        - `https://localhost:44321/signin-oidc`
    - In the **Advanced settings** section, set **Logout URL** to `https://localhost:44321/signout-oidc`.
-   - In the **Advanced settings** | **Implicit grant** section, check the **ID tokens** option as this sample requires
-     the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to
+   - In the **Advanced settings** | **Implicit grant** section, check **ID tokens** as this sample requires
+     the [ID Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) to be enabled to
      sign-in the user, and call an API.
 
 1. Click the **Save** button on top to save the changes.
