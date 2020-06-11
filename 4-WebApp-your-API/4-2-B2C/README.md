@@ -266,8 +266,13 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
   with
 
   ```Csharp
-    services.AddProtectedWebApi(Configuration)
-         .AddInMemoryTokenCaches();
+    services.AddProtectedWebApi(options =>
+    {
+        Configuration.Bind("AzureAdB2C", options);
+
+        options.TokenValidationParameters.NameClaimType = "name";
+    },
+        options => { Configuration.Bind("AzureAdB2C", options); });
   ```
 - Add the method **app.UseAuthentication()** before **app.UseMvc()** in the `Configure` method
 
