@@ -54,19 +54,11 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.MetadataAddress = "https://sts.cxpaadtenant.com/adfs/.well-known/openid-configuration";
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 
-
-                options.TokenValidationParameters.ValidIssuer = "https://sts.cxpaadtenant.com/adfs";
-                options.TokenValidationParameters.IssuerValidator = ValidateAFDSIssuer;
+                options.Authority = "https://sts.cxpaadtenant.com/adfs";
+                //options.TokenValidationParameters.ValidIssuer = "https://sts.cxpaadtenant.com/adfs";
+                //options.TokenValidationParameters.IssuerValidator = ValidateAFDSIssuer;
                 options.TokenValidationParameters.NameClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name";
 
-
-            }, options =>
-            {
-                Configuration.Bind("AzureAd", options);
-            });
-
-            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
-            {
                 options.ResponseType = OpenIdConnectResponseType.CodeIdToken;
 
                 var codeReceivedHandler = options.Events.OnAuthorizationCodeReceived;
@@ -87,9 +79,18 @@ namespace WebApp_OpenIDConnect_DotNet
                     context.HandleCodeRedemption(token.AccessToken, context.ProtocolMessage.IdToken);
                     await codeReceivedHandler(context).ConfigureAwait(false);
                 };
+
+            }, options =>
+            {
+                Configuration.Bind("AzureAd", options);
             });
 
-                services.AddTodoListService(Configuration);
+            //services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+            //{
+
+            //});
+
+            services.AddTodoListService(Configuration);
 
             services.AddControllersWithViews(options =>
             {
