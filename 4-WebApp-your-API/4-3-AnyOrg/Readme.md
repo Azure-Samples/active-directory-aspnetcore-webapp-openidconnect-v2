@@ -223,7 +223,7 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 1. Find the app key `TenantId` and replace the existing value with 'common'.
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
 1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp-MultiTenant-v2` app, in the Azure portal.
-2. Find the app key `TodoListScope` and replace the existing value with Scope you created earlier api://{clientId}/access_as-user
+2. Find the app key `TodoListScope` and replace the existing value with scope created earlier and replace "access_as_user" to ".default" as shown here: api://{clientId}/.default
 
 #### Configure Known Client Applications for service (WebApi-MultiTenant-v2)
 

@@ -8,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using TodoListAPI.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Linq;
+using System;
 
 namespace TodoListAPI
 {
