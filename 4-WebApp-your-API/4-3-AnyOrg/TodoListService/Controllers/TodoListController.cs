@@ -65,7 +65,7 @@ namespace TodoListAPI.Controllers
 
             return todoItem;
         }
-        [HttpGet("/api/todolist/getallusers")]
+        [HttpGet("getallusers")]
         public async Task<ActionResult<IEnumerable<string>>> GetAllTodoItem()
         {
             HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
@@ -169,7 +169,7 @@ namespace TodoListAPI.Controllers
             catch (MsalUiRequiredException ex)
             {
                 _tokenAcquisition.ReplyForbiddenWithWwwAuthenticateHeader(scopes, ex);
-                return null;
+                throw (ex);
             }
         }
         private static async Task<IEnumerable<User>> CallGraphApiOnBehalfOfUser(string accessToken)

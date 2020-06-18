@@ -15,6 +15,7 @@ using ToDoListClient.Services;
 
 namespace ToDoListClient.Controllers
 {
+    [Authorize]
     public class ToDoListController : Controller
     {
         private IToDoListService _todoListService;
@@ -24,7 +25,6 @@ namespace ToDoListClient.Controllers
             _todoListService = todoListService;
         }
         // GET: TodoList
-        [AuthorizeForScopes(ScopeKeySection = "TodoList:TodoListScope")]
         public async Task<ActionResult> Index()
         {
             

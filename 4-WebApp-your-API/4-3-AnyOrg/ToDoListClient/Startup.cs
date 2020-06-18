@@ -33,9 +33,9 @@ namespace ToDoListClient
                 // Handling SameSite cookie according to https://docs.microsoft.com/en-us/aspnet/core/security/samesite?view=aspnetcore-3.1
                 options.HandleSameSiteCookieCompatibility();
             });
-            services.AddSignIn(Configuration).
-                AddWebAppCallsProtectedWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] }).
-               AddInMemoryTokenCaches();
+            services.AddSignIn(Configuration)
+                .AddWebAppCallsProtectedWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] })
+               .AddInMemoryTokenCaches();
             services.AddTodoListService(Configuration);
             services.AddControllersWithViews(options =>
             {
