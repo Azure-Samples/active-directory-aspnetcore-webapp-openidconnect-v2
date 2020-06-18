@@ -1,0 +1,28 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+@model List<System.Security.Claims.Claim>
+
+<div>
+    <h1>SAML Application Playground</h1>
+</div>
+<div>
+    <h2>User Claims</h2>
+</div>
+<table class="table table-striped table-condensed" style="font-family: monospace">
+    <tr>
+        <th>Claim Name</th>
+        <th>Value</th>
+    </tr>
+    @{
+        foreach (System.Security.Claims.Claim claim in Model)
+        {
+            <tr>
+                <td> @claim.Type </td>
+                <td> @claim.Value</td>
+            </tr>
+        }
+
+    }
+</table>
+

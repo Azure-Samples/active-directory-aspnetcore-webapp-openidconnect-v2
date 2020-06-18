@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Security.Claims;
 
 namespace WebApp_SAML.Controllers
 {
@@ -11,8 +12,8 @@ namespace WebApp_SAML.Controllers
     {
         public ActionResult Index()
         {
-            var user = HttpContext.User;
-            return View();
+            var userClaims = ClaimsPrincipal.Current.Claims.ToList();
+            return View(userClaims);
         }
 
         public ActionResult About()
