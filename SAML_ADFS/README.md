@@ -142,10 +142,3 @@ To test the migration, you can access [Graph Explorer](https://aka.ms/ge), sign-
 Once signed-in and accepted the consent screen, run the query for the URL: `https://graph.microsoft.com/beta/me`, and the attributes will be listed in the result.
 
 >Note: When you sync directory attributes via Azure AD Connect tool, their name on Microsoft Graph will have an auto-generated prefix that cannot be edited. For instance, if you have an attribute called `genderAttribute` and use the tool so sync it with Azure AD, its name will be transformed to something like: `extension_90f5761cbd854b259d47fde20b522087_genderAttribute`
-
-### Step 1: 
-
-- Azure AD Sync
-- Register Application
-- Config SAML
-- Update code
