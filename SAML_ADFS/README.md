@@ -18,6 +18,11 @@ This sample is a .NET MVC Web application, configured to use SAML single-sign-on
 - An ADFS environment
 - An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/en-us/documentation/articles/active-directory-howto-tenant/)
 
+### Useful resources
+
+- [Moving application authentication from ADFS to Azure Active Directory](https://docs.microsoft.com/azure/active-directory/manage-apps/migrate-adfs-apps-to-azure)
+- [Configure SAML-based single sign-on to non-gallery applications](https://docs.microsoft.com/azure/active-directory/manage-apps/configure-single-sign-on-non-gallery-applications)
+
 ## Setup Azure AD Connect
 
 On your ADFS machine, [download and install Azure AD Connect](https://www.microsoft.com/download/details.aspx?id=47594).
@@ -29,15 +34,15 @@ Configure the [Azure AD Connect](https://docs.microsoft.com/azure/active-directo
 ### Step 1: Adding a Relying Party Trust
 
 1. Log into the server where AD is installed
-1. Open the Server Manager Dashboard. Under Tools choose ADFS Management
-1. Select Add Relying Party Trust
-1. Click Start
+1. Open the Server Manager Dashboard. Under Tools choose **ADFS Management**
+1. Select **Add Relying Party Trust**
+1. Click **Start**
 1. Choose the option **Enter data about relying party manually** and click **Next**
 1. Add a display name, for instance `AD FS Migration Playground`, and click **Next**
 1. Choose the **AD FS profile** option and click **Next**
 1. Click **Next** on the Configure Certificate step
 1. Click **Next** on the Configure URL step
-1. Under Relying party trust identifier add your application’s website 
+1. Under Relying party trust identifier add your application’s website (this sample uses `https://localhost:44347`)
 1. Click **Add** and then click **Next**
     - >Note: The website needs to have an SSL certificate and https as the navigation path. The AD FS will only communicate through https context. For demo purposes, we have an IIS Express development certificate.
 1. Click **Next** on the Configure Multi-factor Authentication step
@@ -48,7 +53,7 @@ Configure the [Azure AD Connect](https://docs.microsoft.com/azure/active-directo
 ### Step 2: Adding Claim Policy
 
 1. On ADFS Management window, select *Relying Party Trust*
-1. Select the name that you chose on the previous step and click **Edit Claim Issuance Policy** on the right menu
+1. Select the application name that you have chosen on the previous step and click **Edit Claim Issuance Policy** on the right menu
 1. In the new popup window, click **Add Rule**
 1. Choose the Claim rule template as **Send LDAP Attributes as Claims** and click **Next**
 1. Add a Claim rule name, for instance `Basic Claims`
@@ -58,8 +63,8 @@ Configure the [Azure AD Connect](https://docs.microsoft.com/azure/active-directo
     - User-Principal-Name -> UPN
     - Given-Name -> Given Name
     - Display-Name -> Name
-
-3. Click **Finish**
+1. [Optional] Feel free to map other claims that are relevant in your scenario
+1. Click **Finish**
 
 ### Step 3: Configuring the .NET MVC application
 
@@ -72,7 +77,7 @@ This sample is using the NuGet package **Microsoft.Owin.Security.WsFederation** 
     ```
 1. The key `ida:Wtrealm` is the current website URL. Since this sample is running on *localhost*, there is no need to update it. 
 
-Run the **WebApp_SAML** application and sign-in using a ADFS user.
+Run the **WebApp_SAML** application and sign-in using an ADFS user.
 
 ## How to migrate this sample to AAD?
 
@@ -103,15 +108,15 @@ For detailed information about the configuration, please follow [this doc](https
 #### [Optional] User Attributes and Claims
 
 1. In the **User Attributes and Claims** section, select the **Edit** icon (a pencil) in the upper-right corner.
-1. Add additional claims that you would like to use in the WebApp project.
+1. Add additional claims that you would like to use in the Web App project.
 1. To add a claim, select **Add new claim** at the top of the page. Enter the Name and select the appropriate source.
 1. Select **Save**. The new claim appears in the table.
 
 #### SAML Signing Certificate
 
-1. In the **SAML Signing Certificate** section, copy the value for `App Federation Metadata Url`. We will use it on the MVC project.
+1. In the **SAML Signing Certificate** section, copy the value for `App Federation Metadata Url`. We will use it on the Web App project.
 
-## Configuring the MVC project
+## Configuring the Web App project
 
 Open the project `Web.config` file and:
 
@@ -137,7 +142,7 @@ While groups and claims will get sync to Azure AD automatically using Azure AD C
 
 ### Testing the directory extensions migration
 
-To test the migration, you can access [Graph Explorer](https://aka.ms/ge), sign-in using a ADFS user that has those attributes set. 
+To test the migration, you can access [Graph Explorer](https://aka.ms/ge), sign-in using an ADFS user that has those attributes set. 
 
 Once signed-in and accepted the consent screen, run the query for the URL: `https://graph.microsoft.com/beta/me`, and the attributes will be listed in the result.
 
