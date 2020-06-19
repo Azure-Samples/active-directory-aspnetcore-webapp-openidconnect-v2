@@ -12,6 +12,7 @@ using Microsoft.Identity.Web;
 using Microsoft.Identity.Client;
 using System.Net.Http.Headers;
 using Microsoft.Graph;
+using System.Net;
 
 namespace TodoListAPI.Controllers
 {
@@ -66,11 +67,11 @@ namespace TodoListAPI.Controllers
             return todoItem;
         }
         [HttpGet("getallusers")]
-        public async Task<ActionResult<IEnumerable<string>>> GetAllTodoItem()
+        public async Task<ActionResult<IEnumerable<string>>> GetAllUsers()
         {
             HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
 
-            List<string> Users= await CallGraphApiOnBehalfOfUser();
+            List<string> Users = await CallGraphApiOnBehalfOfUser();
             if (Users == null)
             {
                 return NotFound();
