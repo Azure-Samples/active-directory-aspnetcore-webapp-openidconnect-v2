@@ -18,6 +18,5 @@ namespace ToDoListClient.Services
         Task<ToDoItem> AddAsync(ToDoItem todo);
 
         Task<ToDoItem> EditAsync(ToDoItem todo);
-        string GetAdminConsentEndpoint(string tenantId, string redirectUrl);
     }
 }

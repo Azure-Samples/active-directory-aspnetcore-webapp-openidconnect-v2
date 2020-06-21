@@ -256,7 +256,7 @@ When you start the Web API from Visual Studio, depending on the browser you use,
 
 This behavior is expected as you are not authenticated. The client application will be authenticated, so it will be able to access the Web API.
 
-Explore the sample by signing in into the TodoList client, adding items to the To Do list and assigning them to users. If you stop the application without signing out, the next time you run the application, you won't be prompted to sign in again.
+Explore the sample by signing in into the TodoList client, adding items to the To Do list and assigning them to users. After sign-in, you will see a link for `Admin Consent` that can be used to provide consent for by admin of a tenant to other users of the same tenant. If you stop the application without signing out, the next time you run the application, you won't be prompted to sign in again.
 
 > NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app. Each time you run the projects, your To-Do list will get emptied.
 
@@ -266,7 +266,9 @@ Explore the sample by signing in into the TodoList client, adding items to the T
 
 ### Code for the Web app (TodoListClient)
 
-In Startup.cs, below lines of code enables Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
+#### 
+
+In `Startup.cs`, below lines of code enables Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
 ```csharp
 services.AddSignIn(Configuration).
          AddWebAppCallsProtectedWebApi(Configuration, new string[] 
@@ -275,9 +277,81 @@ services.AddSignIn(Configuration).
 ```
 
 The following code injects the ToDoList service implementation in the client
+
 ```CSharp
 services.AddTodoListService(Configuration);
 ```
+
+#### Admin Consent
+
+In `TodoListController.cs`, the below method redirects to admin consent URI and an admin can consent on behalf of organization.
+
+```csharp
+public IActionResult AdminConsent()
+{
+
+    var tenantId = User.GetTenantId();
+
+    string adminConsent = "https://login.microsoftonline.com/" +
+               tenantId + "/v2.0/adminconsent?client_id=" + _ClientId
+               + "&redirect_uri=" + _RedirectUri + "&scope=" + _TodoListScope;
+    return Redirect(adminConsent);
+}
+```
+#### Handle MsalUiRequiredException from Web API
+
+ In `ToDoListService.cs`, below method is called when `MsalUiRequiredException` is thrown from Web API in the on-behalf of flow. It creates consent URI and throws `WebApiMsalUiRequiredException`.
+
+```csharp
+private void HandleChallengeFromWebApi(HttpResponseMessage response)
+{
+    //proposedAction="consent"
+    List<string> result = new List<string>(); 
+    AuthenticationHeaderValue bearer = response.Headers.WwwAuthenticate.First(v => v.Scheme == "Bearer");
+    IEnumerable<string> parameters = bearer.Parameter.Split(',').Select(v => v.Trim()).ToList();
+    string proposedAction = GetParameter(parameters, "proposedAction");
+
+    if (proposedAction == "consent")
+    {
+        string consentUri = GetParameter(parameters, "consentUri");
+
+        var uri = new Uri(consentUri);
+
+        var queryString = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        queryString.Set("client_id", _ClientId);
+        queryString.Set("redirect_uri", _RedirectUri);
+        queryString.Set("scope", _TodoListScope);
+        queryString.Add("prompt", "consent");
+
+        var uriBuilder = new UriBuilder(uri);
+        uriBuilder.Query = queryString.ToString();
+        var updateConsentUri = uriBuilder.Uri.ToString();
+        result.Add("consentUri");
+        result.Add(updateConsentUri);
+
+        throw new WebApiMsalUiRequiredException(updateConsentUri);
+    }
+}
+```
+
+The following code in `ToDoListController.cs` catches the `WebApiMsalUiRequiredException` exception and redirects to consent Uri.
+
+```csharp
+public async Task<IActionResult> Create()
+{
+    ToDoItem todo = new ToDoItem();
+    try
+    {
+        ...
+    }
+    catch (WebApiMsalUiRequiredException ex)
+    {
+        var a = ex.Message;
+        return Redirect(ex.Message);
+    }
+}
+```
+
 ### Code for the Web API (TodoListService)
 
 #### Choosing which scopes to expose

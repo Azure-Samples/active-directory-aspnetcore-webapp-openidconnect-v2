@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Web;
 using ToDoListClient.Models;
 using ToDoListClient.Services;
+using ToDoListClient.Utils;
 
 namespace ToDoListClient.Controllers
 {
@@ -19,11 +20,19 @@ namespace ToDoListClient.Controllers
     public class ToDoListController : Controller
     {
         private IToDoListService _todoListService;
+        private readonly string _TodoListScope = string.Empty;
+        private readonly string _ClientId = string.Empty;
+        private readonly string _RedirectUri = string.Empty;
 
-        public ToDoListController(IToDoListService todoListService)
+        public ToDoListController(IToDoListService todoListService, IConfiguration configuration)
         {
             _todoListService = todoListService;
+            _TodoListScope = configuration["TodoList:TodoListScope"];
+            _ClientId = configuration["AzureAd:ClientId"];
+            _RedirectUri = configuration["RedirectUri"];
         }
+
+        [AuthorizeForScopes(ScopeKeySection = "TodoList:TodoListScope")]
         // GET: TodoList
         public async Task<ActionResult> Index()
         {
@@ -35,14 +44,23 @@ namespace ToDoListClient.Controllers
         public async Task<IActionResult> Create()
         {
             ToDoItem todo = new ToDoItem();
-            TempData["UsersDropDown"] = (await _todoListService.GetAllUsersAsync())
+            try
+            {
+                List<string> result = (await _todoListService.GetAllUsersAsync()).ToList();
+
+                TempData["UsersDropDown"] = result
                 .Select(u => new SelectListItem
                 {
                     Text = u
                 }).ToList();
-            return View(todo);
+                return View(todo);
+            }
+            catch (WebApiMsalUiRequiredException ex)
+            {
+                var a = ex.Message;
+                return Redirect(ex.Message);
+            }
         }
-
         // POST: TodoList/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -98,11 +116,11 @@ namespace ToDoListClient.Controllers
 
         public IActionResult AdminConsent()
         {
-            string redirectUrl = Request.Scheme + Uri.SchemeDelimiter + Request.Host.Value;
-            var tenantId = User.Claims.First(x => x.Type == "http://schemas.microsoft.com/identity/claims/tenantid" || x.Type=="tid").Value;
-          
-            string adminConsent = _todoListService.GetAdminConsentEndpoint(tenantId, redirectUrl);
-            
+            var tenantId = User.GetTenantId();
+
+            string adminConsent = "https://login.microsoftonline.com/" +
+                       tenantId + "/v2.0/adminconsent?client_id=" + _ClientId
+                       + "&redirect_uri=" + _RedirectUri + "&scope=" + _TodoListScope;
             return Redirect(adminConsent);
         }
     }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Graph;
 using Microsoft.Identity.Web;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -15,6 +16,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using ToDoListClient.Models;
+using ToDoListClient.Utils;
 
 namespace ToDoListClient.Services
 {
@@ -33,8 +35,8 @@ namespace ToDoListClient.Services
         private readonly string _TodoListScope = string.Empty;
         private readonly string _TodoListBaseAddress = string.Empty;
         private readonly string _ClientId = string.Empty;
+        private readonly string _RedirectUri = string.Empty;
         private readonly ITokenAcquisition _tokenAcquisition;
-        //private readonly IConfiguration _configuration;
 
         public ToDoListService(ITokenAcquisition tokenAcquisition, HttpClient httpClient, IConfiguration configuration, IHttpContextAccessor contextAccessor)
         {
@@ -44,6 +46,7 @@ namespace ToDoListClient.Services
             _TodoListScope = configuration["TodoList:TodoListScope"];
             _TodoListBaseAddress = configuration["TodoList:TodoListBaseAddress"];
             _ClientId = configuration["AzureAd:ClientId"];
+            _RedirectUri = configuration["RedirectUri"];
         }
         public async Task<ToDoItem> AddAsync(ToDoItem todo)
         {
@@ -122,14 +125,12 @@ namespace ToDoListClient.Services
 
                 return Users;
             }
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                 HandleChallengeFromWebApi(response);
+            }
+
             throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
-        }
-        private async Task PrepareAuthenticatedClient()
-        {
-            var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new[] { _TodoListScope });
-            Debug.WriteLine($"access token-{accessToken}");
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
         public async Task<ToDoItem> GetAsync(int id)
@@ -146,12 +147,52 @@ namespace ToDoListClient.Services
 
             throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
         }
-        public string GetAdminConsentEndpoint(string tenantId, string redirectUrl)
+
+        private async Task PrepareAuthenticatedClient()
         {
-            string adminConsent = "https://login.microsoftonline.com/" +
-                       tenantId + "/v2.0/adminconsent?client_id="+ _ClientId
-                       + "&redirect_uri="+ redirectUrl + "&scope="+_TodoListScope;
-            return adminConsent;
+            var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new[] { _TodoListScope });
+            Debug.WriteLine($"access token-{accessToken}");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        }
+
+        private void HandleChallengeFromWebApi(HttpResponseMessage response)
+        {
+            //proposedAction="consent"
+            List<string> result = new List<string>();
+            AuthenticationHeaderValue bearer = response.Headers.WwwAuthenticate.First(v => v.Scheme == "Bearer");
+            IEnumerable<string> parameters = bearer.Parameter.Split(',').Select(v => v.Trim()).ToList();
+            string proposedAction = GetParameter(parameters, "proposedAction");
+
+            if (proposedAction == "consent")
+            {
+                string consentUri = GetParameter(parameters, "consentUri");
+
+                var uri = new Uri(consentUri);
+
+                //Set values of query string parameters
+                var queryString = System.Web.HttpUtility.ParseQueryString(uri.Query);
+                queryString.Set("client_id", _ClientId);
+                queryString.Set("redirect_uri", _RedirectUri);
+                queryString.Set("scope", _TodoListScope);
+                queryString.Add("prompt", "consent");
+
+                //Update values in consent Uri
+                var uriBuilder = new UriBuilder(uri);
+                uriBuilder.Query = queryString.ToString();
+                var updateConsentUri = uriBuilder.Uri.ToString();
+                result.Add("consentUri");
+                result.Add(updateConsentUri);
+
+                //throw custom exception
+                throw new WebApiMsalUiRequiredException(updateConsentUri);
+            }
+        }
+
+        private static string GetParameter(IEnumerable<string> parameters, string parameterName)
+        {
+            int offset = parameterName.Length + 1;
+            return parameters.FirstOrDefault(p => p.StartsWith($"{parameterName}="))?.Substring(offset)?.Trim('"');
         }
     }
 }

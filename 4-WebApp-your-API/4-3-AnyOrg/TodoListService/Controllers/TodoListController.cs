@@ -70,14 +70,19 @@ namespace TodoListAPI.Controllers
         public async Task<ActionResult<IEnumerable<string>>> GetAllUsers()
         {
             HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
-
-            List<string> Users = await CallGraphApiOnBehalfOfUser();
-            if (Users == null)
+            try
             {
-                return NotFound();
+                List<string> Users = await CallGraphApiOnBehalfOfUser();
+                return Users;
+            }
+            catch (MsalUiRequiredException ex)
+            {
+                HttpContext.Response.ContentType = "text/plain";
+                HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                await HttpContext.Response.WriteAsync("An authentication error occurred while acquiring a token for downstream API\n" + ex.ErrorCode + "\n" + ex.Message);
             }
 
-            return Users;
+            return null;
         }
         // PUT: api/TodoItems/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
