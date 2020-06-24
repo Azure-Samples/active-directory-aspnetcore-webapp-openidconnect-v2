@@ -100,10 +100,10 @@ After the following lines in the ConfigureServices(IServiceCollection services) 
  public void ConfigureServices(IServiceCollection services)
 {
     . . .
-    services.AddSignIn(Configuration);
+    services.AddMicrosoftWebApp(Configuration);
     // Token acquisition service based on MSAL.NET 
     // and chosen token cache implementation
-    services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { Constants.ScopeUserRead })
+    services.AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead })
         .AddInMemoryTokenCache();
 ```
 

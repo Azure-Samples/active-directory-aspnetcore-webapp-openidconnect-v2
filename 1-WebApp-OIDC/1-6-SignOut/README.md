@@ -66,7 +66,7 @@ services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationSch
 
 ### Clearing the token cache
 
-Your application can also intercept the logout event, for instance to clear the entry of the token cache associated with the account that signed out. We'll see in the second part of this tutorial (about the Web app calling a Web API), that the web app will store access tokens for the user in a cache. Intercepting the logout callback enables your web application to remove the user from the token cache. This is illustrated in the `AddWebAppCallsProtectedWebApi()` method of [WebAppServiceCollectionExtensions.cs](https://github.com/AzureAD/microsoft-identity-web/blob/master/src/Microsoft.Identity.Web/WebAppServiceCollectionExtensions.cs#L202-L208)
+Your application can also intercept the logout event, for instance to clear the entry of the token cache associated with the account that signed out. We'll see in the second part of this tutorial (about the Web app calling a Web API), that the web app will store access tokens for the user in a cache. Intercepting the logout callback enables your web application to remove the user from the token cache. This is illustrated in the `AddMicrosoftWebAppCallsWebApi()` method of [WebAppServiceCollectionExtensions.cs](https://github.com/AzureAD/microsoft-identity-web/blob/master/src/Microsoft.Identity.Web/WebAppServiceCollectionExtensions.cs#L202-L208)
 
 ### Single Sign-Out
 

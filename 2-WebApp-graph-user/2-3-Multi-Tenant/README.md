@@ -212,7 +212,7 @@ These steps are encapsulated in the [Microsoft.Identity.Web](..\..\Microsoft.Ide
 In order to be able to sign-in users from multiple tenants, the [/common endpoint](https://docs.microsoft.com/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant#update-your-code-to-send-requests-to-common) must be used. In the sample, this endpoint is used as a result of setting the value for `TenantId` as `organizations` on the `appsettings.json` file, and configuring the middleware to read the values from it.
 
 ```csharp
-services.AddSignIn(Configuration);
+services.AddMicrosoftWebApp(Configuration);
 ```
 
  You can read about the various endpoints of the Microsoft Identity Platform [here](https://docs.microsoft.com/azure/active-directory/develop/active-directory-v2-protocols#endpoints).
@@ -248,7 +248,7 @@ The `https://graph.microsoft.com/.default` is a static scope that allows the ten
 
 ### Custom token validation allowing only registered tenants
 
-On the `Startup.cs` we are calling `AddSignIn` to configure the authentication, and within that method, we validates that the token issuer is from AAD.
+On the `Startup.cs` we are calling `AddMicrosoftWebApp` to configure the authentication, and within that method, we validates that the token issuer is from AAD.
 
 ```csharp
 options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).Validate;

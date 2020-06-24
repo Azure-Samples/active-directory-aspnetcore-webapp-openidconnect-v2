@@ -36,7 +36,7 @@ namespace WebApp_OpenIDConnect_DotNet
             });
 
             // Sign-in users with the Microsoft identity platform
-            services.AddSignIn(Configuration);
+            services.AddMicrosoftWebApp(Configuration);
 
             // If you want to use group ids/names in the Authorize attribute then uncomment the following lines:
             //services.Configure<OpenIdConnectOptions>(options => 
@@ -47,7 +47,7 @@ namespace WebApp_OpenIDConnect_DotNet
             //    options.TokenValidationParameters.RoleClaimType = "groups";
             //});
 
-            services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" })
+            services.AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" })
                 .AddInMemoryTokenCaches();
 
             services.AddMSGraphService(Configuration);

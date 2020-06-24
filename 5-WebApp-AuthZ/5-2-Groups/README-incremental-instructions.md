@@ -242,9 +242,9 @@ The following files have the code that would be of interest to you:
     - by these lines:
 
       ```CSharp
-      services.AddSignIn(Configuration);
+      services.AddMicrosoftWebApp(Configuration);
 
-      services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" })
+      services.AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" })
           .AddInMemoryTokenCaches();
 
       services.AddMSGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.

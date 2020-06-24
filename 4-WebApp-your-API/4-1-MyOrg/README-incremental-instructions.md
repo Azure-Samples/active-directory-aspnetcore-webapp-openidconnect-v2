@@ -208,8 +208,8 @@ Add a reference to the `Microsoft.Identity.Web` library if not already present. 
 1. Update the `configureServices` method in `startup.cs` to add the MSAL library and a token cache.
 
 ```CSharp
-    services.AddSignIn(Configuration)
-            .AddWebAppCallsProtectedWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
+    services.AddMicrosoftWebApp(Configuration)
+            .AddMicrosoftWebAppCallsWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
             .AddInMemoryTokenCaches();
  ```
 
@@ -250,7 +250,7 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
   with
 
   ```Csharp
-    services.AddProtectedWebApi(Configuration)
+    services.AddMicrosoftWebApi(Configuration)
          .AddInMemoryTokenCaches();
   ```
   
@@ -260,7 +260,7 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
      app.UseAuthentication();
      app.UseMvc();
   ```
-  `AddProtectedWebApi` does the following:
+  `AddMicrosoftWebApi` does the following:
   - add the **Jwt**BearerAuthenticationScheme (Note the replacement of **BearerAuthenticationScheme** by **Jwt**BearerAuthenticationScheme)
   - set the authority to be the Microsoft identity platform 
   - sets the audiences to validate

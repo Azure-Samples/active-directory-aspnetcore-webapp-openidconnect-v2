@@ -155,7 +155,7 @@ cd "1-WebApp-OIDC\1-2-AnyOrg"
      by this line:
 
      ```CSharp
-      services.AddSignIn(Configuration);
+      services.AddMicrosoftWebApp(Configuration);
      ```
 
      This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
@@ -228,7 +228,7 @@ In the `Startup.cs` file, in the `ConfigureServices` method, after `services.Add
     {
     ...
     // Sign-in users with the Microsoft identity platform
-    services.AddSignIn(Configuration);
+    services.AddMicrosoftWebApp(Configuration);
 
     // Restrict users to specific belonging to specific tenants
     services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>

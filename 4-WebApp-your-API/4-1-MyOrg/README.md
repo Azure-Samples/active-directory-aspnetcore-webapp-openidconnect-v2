@@ -249,8 +249,8 @@ Explore the sample by signing in into the TodoList client, adding items to the T
      by this line:
 
      ```CSharp
-     services.AddSignIn(Configuration)
-          .AddWebAppCallsProtectedWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
+     services.AddMicrosoftWebApp(Configuration)
+          .AddMicrosoftWebAppCallsWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
           .AddInMemoryTokenCaches();
      ```
 
@@ -280,8 +280,8 @@ Explore the sample by signing in into the TodoList client, adding items to the T
 1. Update the `configureServices` method in `startup.cs` to add the MSAL library and a token cache.
 
     ```CSharp
-     services.AddSignIn(Configuration)
-          .AddWebAppCallsProtectedWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
+     services.AddMicrosoftWebApp(Configuration)
+          .AddMicrosoftWebAppCallsWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
           .AddInMemoryTokenCaches();
     ```
 1. Update the `Configure` method to include **app.UseAuthentication();** before **app.UseMvc();**  
@@ -332,7 +332,7 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
   with
 
   ```Csharp
-    services.AddProtectedWebApi(Configuration)
+    services.AddMicrosoftWebApi(Configuration)
          .AddInMemoryTokenCaches();
   ```
 - Add the method **app.UseAuthentication()** before **app.UseMvc()** in the `Configure` method
@@ -342,7 +342,7 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
      app.UseMvc();
   ```
 
-  `AddProtectedWebApi` does the following:
+  `AddMicrosoftWebApi` does the following:
   - add the **Jwt**BearerAuthenticationScheme (Note the replacement of **BearerAuthenticationScheme** by **Jwt**BearerAuthenticationScheme)
   - set the authority to be the Microsoft identity platform identity
   - sets the audiences to validate

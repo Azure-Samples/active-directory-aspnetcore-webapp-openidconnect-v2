@@ -42,7 +42,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
             services.AddOptions();
 
-            services.AddSignIn(Configuration, "AzureAdB2C");
+            services.AddMicrosoftWebApp(Configuration, "AzureAdB2C");
 
             // This is required to be instantiated before the OpenIdConnectOptions starts getting configured.
             // By default, the claims mapping will map claim names in the old format to accommodate older SAML applications.
@@ -52,7 +52,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
-            services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] }, configSectionName: "AzureAdB2C")
+            services.AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] }, configSectionName: "AzureAdB2C")
                     .AddInMemoryTokenCaches();
 
             // Add APIs
