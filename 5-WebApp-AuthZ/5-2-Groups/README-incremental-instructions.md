@@ -35,7 +35,7 @@ This sample first leverages the ASP.NET Core OpenID Connect middleware to sign i
 
 ![Sign in with the Microsoft identity platform](ReadmeFiles/sign-in.png)
 
-> An Identity Developer session covered Azure AD App roles and security groups, featuring this scenario and how to handle the overage claim. Watch the video [Using Security Groups and Application Roles in your apps](https://www.youtube.com/watch?v=V8VUPixLSiM)
+> An Identity Developer session covered Azure AD App roles and security groups, featuring this scenario and how to handle the overage claim. Watch the video [Using Security Groups and Application Roles in your apps](https://www.youtube.com/watch?v=LRoc-na27l0)
 > Prerequisites:
 >
 > This guide assumes that you've already went through the previous chapter of the tutorial [Using the Microsoft identity platform to call the Microsoft Graph API from an An ASP.NET Core Web App](../../2-WebApp-graph-user/2-1-Call-MSGraph). This page shows the incremental change needed to set up group membership claims and retrieve them in your app when a user signs in.
