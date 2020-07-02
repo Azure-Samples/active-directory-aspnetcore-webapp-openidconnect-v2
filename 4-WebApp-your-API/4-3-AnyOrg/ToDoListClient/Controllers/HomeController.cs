@@ -51,7 +51,7 @@ namespace ToDoListClient.Controllers
         /// <returns></returns>
         public IActionResult AdminConsentApi()
         {
-            string adminConsent1 = "https://login.microsoftonline.com/common/v2.0/adminconsent?client_id=" + _ApiClientId
+            string adminConsent1 = "https://login.microsoftonline.com/organizations/v2.0/adminconsent?client_id=" + _ApiClientId
                 + "&redirect_uri=" + _ApiRedirectUri
                 + "&state=" + _RedirectUri + "Home/AdminConsentClient" + "&scope=" + _ApiScope;
 
@@ -64,7 +64,7 @@ namespace ToDoListClient.Controllers
         /// <returns></returns>
         public IActionResult AdminConsentClient()
         {
-            string adminConsent2 = "https://login.microsoftonline.com/common/v2.0/adminconsent?client_id=" + _ClientId
+            string adminConsent2 = "https://login.microsoftonline.com/organizations/v2.0/adminconsent?client_id=" + _ClientId
                 + "&redirect_uri=" + _RedirectUri
                 + "&state=123&scope=" + _TodoListScope;
 

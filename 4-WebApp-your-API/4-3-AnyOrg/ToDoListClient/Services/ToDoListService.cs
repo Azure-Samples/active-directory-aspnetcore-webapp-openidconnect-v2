@@ -54,7 +54,7 @@ namespace ToDoListClient.Services
 
             var jsonRequest = JsonConvert.SerializeObject(todo);
             var jsoncontent = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-            var response = await this._httpClient.PostAsync($"{ _TodoListBaseAddress}/api/todolist", jsoncontent);
+            var response = await this._httpClient.PostAsync($"{ _TodoListBaseAddress}api/todolist", jsoncontent);
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -71,7 +71,7 @@ namespace ToDoListClient.Services
         {
             await PrepareAuthenticatedClient();
 
-            var response = await _httpClient.DeleteAsync($"{ _TodoListBaseAddress}/api/todolist/{id}");
+            var response = await _httpClient.DeleteAsync($"{ _TodoListBaseAddress}api/todolist/{id}");
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -87,7 +87,7 @@ namespace ToDoListClient.Services
 
             var jsonRequest = JsonConvert.SerializeObject(todo);
             var jsoncontent = new StringContent(jsonRequest, Encoding.UTF8, "application/json-patch+json");
-            var response = await _httpClient.PutAsync($"{ _TodoListBaseAddress}/api/todolist/{todo.Id}", jsoncontent);
+            var response = await _httpClient.PutAsync($"{ _TodoListBaseAddress}api/todolist/{todo.Id}", jsoncontent);
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -103,7 +103,7 @@ namespace ToDoListClient.Services
         public async Task<IEnumerable<ToDoItem>> GetAsync()
         {
             await PrepareAuthenticatedClient();
-            var response = await _httpClient.GetAsync($"{ _TodoListBaseAddress}/api/todolist");
+            var response = await _httpClient.GetAsync($"{ _TodoListBaseAddress}api/todolist");
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -117,7 +117,7 @@ namespace ToDoListClient.Services
         public async Task<IEnumerable<string>> GetAllUsersAsync()
         {
             await PrepareAuthenticatedClient();
-            var response = await _httpClient.GetAsync($"{ _TodoListBaseAddress}/api/todolist/getallusers");
+            var response = await _httpClient.GetAsync($"{ _TodoListBaseAddress}api/todolist/getallusers");
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -136,7 +136,7 @@ namespace ToDoListClient.Services
         public async Task<ToDoItem> GetAsync(int id)
         {
             await PrepareAuthenticatedClient();
-            var response = await _httpClient.GetAsync($"{ _TodoListBaseAddress}/api/todolist/{id}");
+            var response = await _httpClient.GetAsync($"{ _TodoListBaseAddress}api/todolist/{id}");
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var content = await response.Content.ReadAsStringAsync();

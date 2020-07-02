@@ -290,7 +290,7 @@ In `TodoListController.cs`, the below method `AdminConsentApi` redirects to admi
 ```csharp
 public IActionResult AdminConsentApi()
 {
-    string adminConsent1 = "https://login.microsoftonline.com/common/v2.0/adminconsent?client_id="+ _ApiClientId 
+    string adminConsent1 = "https://login.microsoftonline.com/organizations/v2.0/adminconsent?client_id="+ _ApiClientId 
         + "&redirect_uri=" + _ApiRedirectUri
         + "&state=" + _RedirectUri + "Home/AdminConsentClient" + "&scope=" + _ApiScope;
 
@@ -302,7 +302,7 @@ The method `AdminConsentClient` redirects to admin consent URI for the Web App a
 ```csharp
 public IActionResult AdminConsentClient()
 {
-    string adminConsent2 = "https://login.microsoftonline.com/common/v2.0/adminconsent?client_id=" + _ClientId
+    string adminConsent2 = "https://login.microsoftonline.com/organizations/v2.0/adminconsent?client_id=" + _ClientId
         + "&redirect_uri=" + _RedirectUri
         + "&state=123&scope=" + _TodoListScope;
 
