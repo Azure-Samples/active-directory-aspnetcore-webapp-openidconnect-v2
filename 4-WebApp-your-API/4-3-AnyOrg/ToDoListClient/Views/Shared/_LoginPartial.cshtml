@@ -1,7 +1,6 @@
 ﻿@using Microsoft.Identity.Web;
 @if (User.Identity.IsAuthenticated)
 {
-   <a asp-area="" asp-controller="ToDoList" asp-action="AdminConsent">Admin Consent</a>
     <ul class="nav navbar-nav navbar-right">
         <li class="nav-item">Hello @User.GetDisplayName()!</li>
         <li class="nav-item"><a asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign Out</a></li>

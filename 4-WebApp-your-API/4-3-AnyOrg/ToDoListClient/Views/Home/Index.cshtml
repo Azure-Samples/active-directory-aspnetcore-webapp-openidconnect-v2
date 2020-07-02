@@ -2,8 +2,14 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1>
-        An ASP.NET Core Web App accessing Web API that calls Microsoft Graph
-    </h1>
-</div>
+    <div>
+        <h3>
+            An ASP.NET Core Web App accessing Web API that calls Microsoft Graph
+        </h3>
+        <br />
+        <p>
+            To enable the users on your tenant to access this application and the web API,
+            you need to sign-in and consent for the required permissions.
+        </p>
+        <a class="btn btn-primary" asp-area="" asp-controller="Home" asp-action="AdminConsentApi">Consent as Admin</a>
+    </div>

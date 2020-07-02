@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Web;
 using ToDoListClient.Models;
 using ToDoListClient.Services;
@@ -20,16 +19,11 @@ namespace ToDoListClient.Controllers
     public class ToDoListController : Controller
     {
         private IToDoListService _todoListService;
-        private readonly string _TodoListScope = string.Empty;
-        private readonly string _ClientId = string.Empty;
-        private readonly string _RedirectUri = string.Empty;
 
-        public ToDoListController(IToDoListService todoListService, IConfiguration configuration)
+        public ToDoListController(IToDoListService todoListService)
         {
             _todoListService = todoListService;
-            _TodoListScope = configuration["TodoList:TodoListScope"];
-            _ClientId = configuration["AzureAd:ClientId"];
-            _RedirectUri = configuration["RedirectUri"];
+
         }
 
         [AuthorizeForScopes(ScopeKeySection = "TodoList:TodoListScope")]
@@ -112,16 +106,6 @@ namespace ToDoListClient.Controllers
         {
             await _todoListService.DeleteAsync(id);
             return RedirectToAction("Index");
-        }
-
-        public IActionResult AdminConsent()
-        {
-            var tenantId = User.GetTenantId();
-
-            string adminConsent = "https://login.microsoftonline.com/" +
-                       tenantId + "/v2.0/adminconsent?client_id=" + _ClientId
-                       + "&redirect_uri=" + _RedirectUri + "&scope=" + _TodoListScope;
-            return Redirect(adminConsent);
         }
     }
 }

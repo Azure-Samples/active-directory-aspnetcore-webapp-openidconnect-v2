@@ -17,6 +17,7 @@
       "Kind": "WebApi",
       "Audience": "AzureADMultipleOrgs",
       "HomePage": "https://localhost:44351/",
+      "ReplyUrls": "https://localhost:44351/api/Home",
       "PasswordCredentials": "Auto",
       "RequiredResourcesAccess": [
         {
@@ -39,7 +40,7 @@
       "Kind": "WebApp",
       "Audience": "AzureADMultipleOrgs",
       "HomePage": "https://localhost:44321/",
-      "ReplyUrls": "https://localhost:44321/signin-oidc",
+      "ReplyUrls": "https://localhost:44321/,https://localhost:44321/signin-oidc",
       "LogoutUrl": "https://localhost:44321/signout-oidc",
       "PasswordCredentials": "Auto",
       "RequiredResourcesAccess": [
@@ -113,8 +114,24 @@
           "value": ".AppKey"
         },
         {
+          "Key": "RedirectUri",
+          "value": "client.HomePage"
+        },
+        {
           "key": "TodoListScope",
-          "value": "service.Scope"
+          "value": "service.ScopeDefault"
+        },
+        {
+          "Key": "TodoListAppId",
+          "value": "service.AppId"
+        },
+        {
+          "Key": "TodoListBaseAddress",
+          "value": "service.HomePage"
+        },
+        {
+          "Key": "AdminConsentRedirectApi",
+          "value": "service.ReplyUrls"
         }
       ]
     }

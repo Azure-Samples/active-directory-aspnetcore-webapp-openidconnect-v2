@@ -237,6 +237,7 @@ Function ConfigureApplications
    # create the application 
    $serviceAadApplication = New-AzureADApplication -DisplayName "WebApi-MultiTenant-v2" `
                                                    -HomePage "https://localhost:44351/" `
+                                                   -ReplyUrls "https://localhost:44351/api/Home" `
                                                    -AvailableToOtherTenants $True `
                                                    -PasswordCredentials $key `
                                                    -PublicClient $False
@@ -316,7 +317,7 @@ Function ConfigureApplications
    $clientAadApplication = New-AzureADApplication -DisplayName "WebApp-MultiTenant-v2" `
                                                   -HomePage "https://localhost:44321/" `
                                                   -LogoutUrl "https://localhost:44321/signout-oidc" `
-                                                  -ReplyUrls "https://localhost:44321/signin-oidc" `
+                                                  -ReplyUrls "https://localhost:44321/", "https://localhost:44321/signin-oidc" `
                                                   -IdentifierUris "https://$tenantName/WebApp-MultiTenant-v2" `
                                                   -AvailableToOtherTenants $True `
                                                   -PasswordCredentials $key `
@@ -373,7 +374,7 @@ Function ConfigureApplications
    # Update config file for 'client'
    $configFile = $pwd.Path + "\..\ToDoListClient\appsettings.json"
    Write-Host "Updating the sample code ($configFile)"
-   $dictionary = @{ "ClientId" = $clientAadApplication.AppId;"TenantId" = 'common';"Domain" = $tenantName;"ClientSecret" = $clientAppKey;"TodoListScope" = ("api://"+$serviceAadApplication.AppId+"/access_as_user") };
+   $dictionary = @{ "ClientId" = $clientAadApplication.AppId;"TenantId" = 'common';"Domain" = $tenantName;"ClientSecret" = $clientAppKey;"RedirectUri" = $clientAadApplication.HomePage;"TodoListScope" = ("api://"+$serviceAadApplication.AppId+"/.default");"TodoListAppId" = $serviceAadApplication.AppId;"TodoListBaseAddress" = $serviceAadApplication.HomePage;"AdminConsentRedirectApi" = $serviceAadApplication.ReplyUrls };
    UpdateTextFile -configFilePath $configFile -dictionary $dictionary
    Write-Host ""
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
