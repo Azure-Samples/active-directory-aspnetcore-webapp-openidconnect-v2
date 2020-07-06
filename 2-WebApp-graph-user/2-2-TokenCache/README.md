@@ -185,11 +185,12 @@ This sample proposes a distributed SQL token cache. To use it, you'll need to ad
 public void ConfigureServices(IServiceCollection services)
 {
     . . .
-    // Token acquisition service based on MSAL.NET 
-    // and the Sql server based token cache implementation
-    services.AddMicrosoftWebApp(Configuration)
-                    .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead })
-                    .AddDistributedTokenCaches();
+    services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+            .AddMicrosoftWebApp(Configuration)
+            // Token acquisition service based on MSAL.NET
+            // and chosen token cache implementation
+            .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead });
+    services.AddDistributedTokenCaches();
 
     services.AddDistributedSqlServerCache(options =>
     {

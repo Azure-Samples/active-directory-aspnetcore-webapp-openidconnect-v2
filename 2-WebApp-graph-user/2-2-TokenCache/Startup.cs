@@ -51,12 +51,13 @@ namespace WebApp_OpenIDConnect_DotNet
                 dotnet sql-cache create "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MsalTokenCacheDatabase;Integrated Security=True;" dbo TokenCache    
              */
 
-            services.AddMicrosoftWebApp(Configuration);
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                    .AddMicrosoftWebApp(Configuration)
 
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
-            services.AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead })
-                .AddDistributedTokenCaches();
+                    .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead });
+            services.AddDistributedTokenCaches();
 
             services.AddDistributedSqlServerCache(options =>
             {

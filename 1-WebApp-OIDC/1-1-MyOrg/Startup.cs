@@ -34,7 +34,8 @@ namespace WebApp_OpenIDConnect_DotNet
             });
 
             // Sign-in users with the Microsoft identity platform
-            services.AddMicrosoftWebApp(Configuration);
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                    .AddMicrosoftWebApp(Configuration);
 
             services.AddControllersWithViews(options =>
             {

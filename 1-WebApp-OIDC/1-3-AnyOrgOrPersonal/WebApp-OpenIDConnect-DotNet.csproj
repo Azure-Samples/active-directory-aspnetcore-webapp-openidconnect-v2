@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Identity.Web" Version="0.1.5-preview" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="0.1.5-preview" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="0.2.0-localbuild" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="0.2.0-localbuild" />
   </ItemGroup>
 
 </Project>

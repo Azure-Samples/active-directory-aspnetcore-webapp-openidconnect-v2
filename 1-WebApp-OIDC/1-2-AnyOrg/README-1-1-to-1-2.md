@@ -64,7 +64,8 @@ In the `Startup.cs` file, in the `ConfigureServices` method, after `services.Add
     {
     ...
     // Sign-in users with the Microsoft identity platform
-    services.AddMicrosoftWebApp(Configuration, options =>
+    services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+            .AddMicrosoftWebApp(Configuration, options =>
     {
         Configuration.Bind("AzureAd", options);
         // Restrict users to specific belonging to specific tenants

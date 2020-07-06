@@ -35,7 +35,8 @@ namespace WebApp_OpenIDConnect_DotNet
             });
 
             // Configuration to sign-in users with Azure AD B2C
-            services.AddMicrosoftWebApp(Configuration, "AzureAdB2C");
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                    .AddMicrosoftWebApp(Configuration, "AzureAdB2C");
 
             services.AddControllersWithViews()
                 .AddMicrosoftIdentityUI();

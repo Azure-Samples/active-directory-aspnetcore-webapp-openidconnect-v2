@@ -91,11 +91,13 @@ After the following lines in the ConfigureServices(IServiceCollection services) 
  public void ConfigureServices(IServiceCollection services)
 {
     . . .
-    // Token acquisition service based on MSAL.NET 
-    // and chosen token cache implementation
-    services.AddMicrosoftWebApp(Configuration)
-            .AddMicrosoftWebAppCallsWebApi(new string[] { Constants.ScopeUserRead })
-            .AddInMemoryTokenCache();
+   services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+           .AddMicrosoftWebApp(Configuration)
+
+            // Token acquisition service based on MSAL.NET
+            // and chosen token cache implementation
+           .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead });
+   services.AddInMemoryTokenCaches();
 ```
 
 The two new lines of code:

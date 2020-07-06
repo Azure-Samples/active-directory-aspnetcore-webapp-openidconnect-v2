@@ -42,12 +42,13 @@ namespace WebApp_OpenIDConnect_DotNet
 
             services.AddOptions();
 
-            services.AddMicrosoftWebApp(Configuration);
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                    .AddMicrosoftWebApp(Configuration)
 
             // Token acquisition service based on MSAL.NET
             // and chosen token cache implementation
-            services.AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead })
-                .AddInMemoryTokenCaches();
+                    .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead });
+            services.AddInMemoryTokenCaches();
 
             // Add APIs
             services.AddGraphService(Configuration);
