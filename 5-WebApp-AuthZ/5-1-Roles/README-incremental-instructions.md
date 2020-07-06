@@ -36,7 +36,7 @@ For more information about how the protocols work in this scenario and other sce
 
 ## Scenario
 
-This sample first leverages the ASP.NET Core OpenID Connect middleware to sign in the user. On the home page it displays the various `claims` that the user's [ID Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) contained. The ID token is used by the asp.net security middleware to build the [ClaimsPrincipal](https://docs.microsoft.com/dotnet/api/system.security.claims.claimsprincipal), accessible via **HttpContext.User** in the code.
+This sample first leverages the ASP.NET Core OpenID Connect middleware to sign in the user. On the home page it displays the various `claims` that the user's [ID Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) contained. The ID token is used by the asp.net security middleware to build the [ClaimsPrincipal](https://docs.microsoft.com/dotnet/api/system.security.claims.claimsprincipal), accessible via **HttpContext.User** in the code. The sample also shows how to use the [Policy-based authorization in ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authorization/policies).
 
 This web application allows users to list all users in their tenant or a list of all the app roles and groups the signed in user is assigned to depending on the app role they have been assigned to. The idea is to provide an example of how, within an application, access to certain functionality is restricted to subsets of users depending on which role they belong to.
 
@@ -271,7 +271,7 @@ The following files have the code that would be of interest to you.
 
 ## Learn more
 
-- Learn how [Microsoft.Identity.Web](../../Microsoft.Identity.Web) works, in particular hooks-up to the ASP.NET Core ODIC events
+- Learn how [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web/wiki) works, in particular hooks-up to the ASP.NET Core OIDC events
 
 ## Community Help and Support
 
@@ -292,6 +292,7 @@ To understand more about app registration, see:
 
 To understand more about groups roles and the various claims in tokens, see:
 
+- [Policy-based authorization in ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authorization/policies)
 - [Azure Active Directory app manifest](https://docs.microsoft.com/azure/active-directory/develop/reference-app-manifest)
 - [ID tokens](https://docs.microsoft.com/azure/active-directory/develop/id-tokens)
 - [Azure Active Directory access tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens)
