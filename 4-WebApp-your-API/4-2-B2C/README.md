@@ -183,9 +183,10 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
      by this line:
 
      ```CSharp
-     services.AddMicrosoftWebApp(Configuration)
-          .AddMicrosoftWebAppCallsWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
-          .AddInMemoryTokenCaches();
+     services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+            .AddMicrosoftWebApp(Configuration, "AzureAdB2C")
+            .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] }, configSectionName: "AzureAdB2C");
+     services.AddInMemoryTokenCaches();
      ```
 
      This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
@@ -214,9 +215,10 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
 1. Update the `configureServices` method in `startup.cs` to add the MSAL library and a token cache.
 
     ```CSharp
-     services.AddMicrosoftWebApp(Configuration)
-          .AddMicrosoftWebAppCallsWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
-          .AddInMemoryTokenCaches();
+     services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+            .AddMicrosoftWebApp(Configuration, "AzureAdB2C")
+            .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] }, configSectionName: "AzureAdB2C");
+     services.AddInMemoryTokenCaches();
     ```
 1. Update the `Configure` method to include **app.UseAuthentication();** before **app.UseMvc();**  
 
@@ -266,7 +268,8 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
   with
 
   ```Csharp
-    services.AddMicrosoftWebApi(options =>
+     services.AddAuthentication()
+             .AddMicrosoftWebApi(options =>
     {
         Configuration.Bind("AzureAdB2C", options);
 

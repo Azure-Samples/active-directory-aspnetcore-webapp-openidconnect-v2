@@ -246,12 +246,13 @@ Explore the sample by signing in into the TodoList client, adding items to the T
               .AddAzureAD(options => Configuration.Bind("AzureAd", options));
      ```
 
-     by this line:
+     with these lines:
 
      ```CSharp
-     services.AddMicrosoftWebApp(Configuration)
-          .AddMicrosoftWebAppCallsWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
-          .AddInMemoryTokenCaches();
+     services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+             .AddMicrosoftWebApp(Configuration)
+             .AddMicrosoftWebAppCallsWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
+     services.AddInMemoryTokenCaches();
      ```
 
      This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
@@ -280,9 +281,10 @@ Explore the sample by signing in into the TodoList client, adding items to the T
 1. Update the `configureServices` method in `startup.cs` to add the MSAL library and a token cache.
 
     ```CSharp
-     services.AddMicrosoftWebApp(Configuration)
-          .AddMicrosoftWebAppCallsWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
-          .AddInMemoryTokenCaches();
+     services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+             .AddMicrosoftWebApp(Configuration)
+             .AddMicrosoftWebAppCallsWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
+     services.AddInMemoryTokenCaches();
     ```
 1. Update the `Configure` method to include **app.UseAuthentication();** before **app.UseMvc();**  
 
@@ -332,8 +334,7 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
   with
 
   ```Csharp
-    services.AddMicrosoftWebApi(Configuration)
-         .AddInMemoryTokenCaches();
+    services.AddMicrosoftWebApiAuthentication(Configuration);
   ```
 - Add the method **app.UseAuthentication()** before **app.UseMvc()** in the `Configure` method
 

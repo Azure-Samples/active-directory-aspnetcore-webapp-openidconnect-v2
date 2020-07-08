@@ -147,12 +147,11 @@ In the **appsettings.json** file:
               .AddAzureAD(options => Configuration.Bind("AzureAd", options));
      ```
 
-     with these lines:
+     by this line:
 
      ```CSharp
 
-    services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-            .AddMicrosoftWebApp(Configuration);
+    services.AddMicrosoftWebAppAuthentication(Configuration);
 
      ```
 

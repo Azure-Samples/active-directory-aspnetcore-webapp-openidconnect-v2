@@ -205,9 +205,10 @@ Add a reference to the `Microsoft.Identity.Web` library if not already present. 
 1. Update the `configureServices` method in `startup.cs` to add the MSAL library and a token cache.
 
 ```CSharp
-    services.AddMicrosoftWebApp(Configuration)
-            .AddMicrosoftWebAppCallsWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
-            .AddInMemoryTokenCaches();
+    services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+            .AddMicrosoftWebApp(Configuration, "AzureAdB2C")
+            .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] }, configSectionName: "AzureAdB2C");
+    services.AddInMemoryTokenCaches();
  ```
 
 ### Creating the Web API project (TodoListService)
@@ -248,7 +249,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
   ```Csharp
   services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftWebApi("AzureAdB2C", Configuration, options =>
+          .AddMicrosoftWebApi("AzureAdB2C", Configuration, options =>
     {
         Configuration.Bind("AzureAdB2C", options);
 

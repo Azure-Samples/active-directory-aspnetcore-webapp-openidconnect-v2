@@ -22,8 +22,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.1" />
     <PackageReference Include="Microsoft.Graph" Version="1.20.0" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="0.2.0-localbuild" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="0.2.0-localbuild" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="0.2.0-preview" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="0.2.0-preview" />
   </ItemGroup>
 
 </Project>

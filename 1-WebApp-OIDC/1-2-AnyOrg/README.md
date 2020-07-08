@@ -152,11 +152,10 @@ cd "1-WebApp-OIDC\1-2-AnyOrg"
               .AddAzureAD(options => Configuration.Bind("AzureAd", options));
      ```
 
-     with these lines:
+     by this line:
 
      ```CSharp
-      services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-              .AddMicrosoftWebApp(Configuration);
+      services.AddMicrosoftWebAppAuthentication(Configuration);
      ```
 
      This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
