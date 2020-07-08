@@ -295,8 +295,8 @@ This project was created using the following command.
      // by these lines:
 
      //This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
-            services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
-                    .AddMsal(Configuration, new string[] { "User.Read" })
+            services.AddMicrosoftWebAppAuthentication(Configuration)
+                    .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead })
                     .AddInMemoryTokenCaches(); // Adds aspnetcore MemoryCache as Token cache provider for MSAL.
 
         services.AddGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.

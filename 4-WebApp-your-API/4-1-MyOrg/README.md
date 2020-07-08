@@ -249,10 +249,9 @@ Explore the sample by signing in into the TodoList client, adding items to the T
      with these lines:
 
      ```CSharp
-     services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-             .AddMicrosoftWebApp(Configuration)
-             .AddMicrosoftWebAppCallsWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
-     services.AddInMemoryTokenCaches();
+     services.AddMicrosoftWebAppAuthentication(Configuration)
+             .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] })
+             .AddInMemoryTokenCaches();
      ```
 
      This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.

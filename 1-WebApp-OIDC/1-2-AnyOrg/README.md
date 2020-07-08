@@ -221,14 +221,14 @@ These steps are encapsulated in the [Microsoft.Identity.Web](..\..\Microsoft.Ide
 
 In order to restrict users from specific organizations from signing-in to your web app, you'll need to customize your code a bit more to restrict issuers. In Azure AD, the token issuers are the Azure AD tenants which issue tokens to applications.
 
-In the `Startup.cs` file, in the `ConfigureServices` method, after `services.AddMicrosoftIdentityPlatformAuthentication(Configuration)` add some code to filter  issuers by overriding the `TokenValidationParameters.IssuerValidator` delegate.
+In the `Startup.cs` file, in the `ConfigureServices` method, after `services.AddMicrosoftWebAppAuthentication(Configuration)` add some code to filter  issuers by overriding the `TokenValidationParameters.IssuerValidator` delegate.
 
 ```CSharp
     public void ConfigureServices(IServiceCollection services)
     {
     ...
     // Sign-in users with the Microsoft identity platform
-    services.AddMicrosoftWebApp(Configuration);
+    services.AddMicrosoftWebAppAuthentication(Configuration);
 
     // Restrict users to specific belonging to specific tenants
     services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>

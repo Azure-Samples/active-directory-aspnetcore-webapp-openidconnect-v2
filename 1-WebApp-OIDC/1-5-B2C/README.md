@@ -130,7 +130,7 @@ Here is the middleware example:
 
 Important things to notice:
 
-- The method `AddMicrosoftWebAppAuthenticatio` will configure the authentication based on the `MicrosoftIdentityOptions.cs` options. Feel free to bind more properties on `AzureAdB2C` section on `appsettings.json` if you need to set more options.
+- The method `AddMicrosoftWebAppAuthentication` will configure the authentication based on the `MicrosoftIdentityOptions.cs` options. Feel free to bind more properties on `AzureAdB2C` section on `appsettings.json` if you need to set more options.
 - The urls you set for `CallbackPath` and `SignedOutCallbackPath` should be registered on the **Reply Urls** of your application, in [Azure Portal](https://portal.azure.com).
 
 ## Next steps
