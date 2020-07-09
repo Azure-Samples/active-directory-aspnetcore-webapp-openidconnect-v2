@@ -96,7 +96,7 @@ public void ConfigureServices(IServiceCollection services)
     . . .
     // Token acquisition service based on MSAL.NET 
     // and the Sql server based token cache implementation
-    services.AddMicrosoftIdentityPlatformAuthentication(Configuration)
+    services.AddMicrosoftWebAppAuthentication(Configuration)
             .AddMicrosoftWebAppCallsWebApi(new string[] { Constants.ScopeUserRead })
             .AddSqlAppTokenCache(Configuration)
             .AddSqlPerUserTokenCache(Configuration);
