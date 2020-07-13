@@ -34,14 +34,14 @@ namespace TodoListService
             // JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
             // Adds Microsoft Identity platform (AAD v2.0) support to protect this Api
-            services.AddAuthentication()
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddMicrosoftWebApi(options =>
             {
                 Configuration.Bind("AzureAdB2C", options);
 
                 options.TokenValidationParameters.NameClaimType = "name";
             },
-                options => { Configuration.Bind("AzureAdB2C", options); });
+            options => { Configuration.Bind("AzureAdB2C", options); });
 
             services.AddControllers();
             services.AddAuthorization(options =>

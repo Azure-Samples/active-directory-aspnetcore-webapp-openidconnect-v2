@@ -229,12 +229,12 @@ When you click on the page that fetches the signed-in user's roles and group ass
 
 ### Support in ASP.NET Core middleware libraries
 
-The asp.net middleware supports roles populated from claims by specifying the claim in the `RoleClaimType` property of `TokenValidationParameters`.
+The ASP.NET middleware supports roles populated from claims by specifying the claim in the `RoleClaimType` property of `TokenValidationParameters`.
 
 ```CSharp
 
 // Startup.cs
-public static IServiceCollection AddMicrosoftWebApp(this IServiceCollection services, IConfiguration configuration, X509Certificate2 tokenDecryptionCertificate = null)
+public void ConfigureServices(IServiceCollection services)
 {
             // [removed for] brevity
 
@@ -246,7 +246,7 @@ public static IServiceCollection AddMicrosoftWebApp(this IServiceCollection serv
 
             // The following lines code instruct the asp.net core middleware to use the data in the "groups" claim in the Authorize attribute and User.IsInrole()
             // See https://docs.microsoft.com/aspnet/core/security/authorization/roles?view=aspnetcore-2.2 for more info.
-            services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
+            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
                 // Use the groups claim for populating roles
                 options.TokenValidationParameters.RoleClaimType = "roles";
@@ -258,7 +258,8 @@ public static IServiceCollection AddMicrosoftWebApp(this IServiceCollection serv
                 options.AddPolicy(AuthorizationPolicies.AssignmentToUserReaderRoleRequired, policy => policy.RequireRole(AppRole.UserReaders));
                 options.AddPolicy(AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired, policy => policy.RequireRole(AppRole.DirectoryViewers));
             });
-        // [removed for] brevity
+
+            // [removed for] brevity
 }
 
 // In code..(Controllers & elsewhere)
@@ -286,14 +287,14 @@ This project was created using the following command.
 1. Add a reference from your newly generated project to `Microsoft.Identity.Web` (right click on the **Dependencies** node under your new project, and choose **Add Reference ...**, and then in the projects tab find the `Microsoft.Identity.Web` project)
 1. Open the **Startup.cs** file and:
 
-   - in the `ConfigureServices` method, the following lines have been replaced :
+   - in the `ConfigureServices` method, the following lines:
 
      ```CSharp
       services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
               .AddAzureAD(options => Configuration.Bind("AzureAd", options));
-
-     // by these lines:
-
+     ```
+      have been replaced by these lines:
+     ```CSharp
      //This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
             services.AddMicrosoftWebAppAuthentication(Configuration)
                     .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead })
@@ -302,7 +303,7 @@ This project was created using the following command.
         services.AddGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.
      ```
 
-1. In the `ConfigureServices` method of `Startup.cs', add the following line:
+1. In the `ConfigureServices` method of `Startup.cs', add the following lines:
 
      ```CSharp
             // This is required to be instantiated before the OpenIdConnectOptions starts getting configured.
@@ -319,11 +320,15 @@ This project was created using the following command.
             });
      ```
 
-1. In the `ConfigureServices` method of `Startup.cs', the following line instructs the asp.net security middleware to use the **roles** claim to fetch roles for authorization:
+1. In the `ConfigureServices` method of `Startup.cs', the following lines instruct the ASP.NET security middleware to use the **roles** claim to fetch roles for authorization.
 
      ```CSharp
-     // The claim in the Jwt token where App roles are available.
-     options.TokenValidationParameters.RoleClaimType = "roles";
+    // Add this configuration after the call to `AddMicrosoftWebAppAuthentication`.
+    services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+    {
+        // The claim in the JWT token where App roles are available.
+        options.TokenValidationParameters.RoleClaimType = "roles";
+    });
      ```
 
 1. In the `HomeController.cs`, the following method is added with the `Authorize` attribute with the name of the policy that enforces that the signed-in user is present in the app role **UserReaders**, that permits listing of users in the tenant.
