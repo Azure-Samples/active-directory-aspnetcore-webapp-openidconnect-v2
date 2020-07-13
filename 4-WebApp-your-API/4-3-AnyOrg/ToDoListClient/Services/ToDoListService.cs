@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Graph;
 using Microsoft.Identity.Web;
 using Newtonsoft.Json;
 using System;
@@ -12,7 +9,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using ToDoListClient.Models;
@@ -30,7 +26,6 @@ namespace ToDoListClient.Services
     }
     public class ToDoListService : IToDoListService
     {
-        private readonly IHttpContextAccessor _contextAccessor;
         private readonly HttpClient _httpClient;
         private readonly string _TodoListScope = string.Empty;
         private readonly string _TodoListBaseAddress = string.Empty;
@@ -38,11 +33,10 @@ namespace ToDoListClient.Services
         private readonly string _RedirectUri = string.Empty;
         private readonly ITokenAcquisition _tokenAcquisition;
 
-        public ToDoListService(ITokenAcquisition tokenAcquisition, HttpClient httpClient, IConfiguration configuration, IHttpContextAccessor contextAccessor)
+        public ToDoListService(ITokenAcquisition tokenAcquisition, HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _tokenAcquisition = tokenAcquisition;
-            _contextAccessor = contextAccessor;
             _TodoListScope = configuration["TodoList:TodoListScope"];
             _TodoListBaseAddress = configuration["TodoList:TodoListBaseAddress"];
             _ClientId = configuration["AzureAd:ClientId"];
@@ -122,7 +116,6 @@ namespace ToDoListClient.Services
             {
                 var content = await response.Content.ReadAsStringAsync();
                 IEnumerable<string> Users = JsonConvert.DeserializeObject<IEnumerable<string>>(content);
-
                 return Users;
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)

@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.Identity.Web;
 using ToDoListClient.Models;
 
 namespace ToDoListClient.Controllers
@@ -15,7 +9,6 @@ namespace ToDoListClient.Controllers
     [AllowAnonymous]
     public class HomeController : Controller
     {
-        private readonly ITokenAcquisition tokenAcquisition;
 
         private readonly string _TodoListScope = string.Empty;
         private readonly string _ClientId = string.Empty;
@@ -24,9 +17,8 @@ namespace ToDoListClient.Controllers
         private readonly string _ApiRedirectUri = string.Empty;
         private readonly string _ApiScope = "https://graph.microsoft.com/.default";
 
-        public HomeController(ITokenAcquisition tokenAcquisition, IConfiguration configuration)
+        public HomeController(IConfiguration configuration)
         {
-            this.tokenAcquisition = tokenAcquisition;
             _TodoListScope = configuration["TodoList:TodoListScope"];
             _ClientId = configuration["AzureAd:ClientId"];
             _RedirectUri = configuration["RedirectUri"];
