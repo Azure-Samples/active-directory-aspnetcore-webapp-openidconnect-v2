@@ -66,10 +66,6 @@ The Web API:
 ### Pre-requisites
 
 - [Visual Studio 2019](https://aka.ms/vsdownload) or just the [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
-- An Internet connection
-- A Windows machine (necessary if you want to run the app on Windows)
-- An OS X machine (necessary if you want to run the app on Mac)
-- A Linux machine (necessary if you want to run the app on Linux)
 - An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/)
 - A user account in your Azure AD tenant. This sample will not work with a Microsoft account (formerly Windows Live account). Therefore, if you signed in to the [Azure portal](https://portal.azure.com) with a Microsoft account and have never created a user account in your directory before, you need to do that now.
 
@@ -228,6 +224,43 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 1. Find the app key `AdminConsentRedirectApi` and replace the existing value with the Redirect URI for WebApi-MultiTenant-v2 app. For example, `https://localhost:44351/api/Home` .									
 ### Step 3: Run the sample
 
+#### Using a command line interface such as VS Code integrated terminal, follow the steps below:
+
+##### Step 1. Install .NET Core dependencies
+
+```console
+   cd TodoListAPI
+   dotnet restore
+```
+Then:  
+In a separate console window, execute the following commands
+
+```console
+   cd ../
+   cd ToDoListClient
+   dotnet restore
+```
+
+##### Step 2. Trust development certificates
+
+```console
+   dotnet dev-certs https --clean
+   dotnet dev-certs https --trust
+```
+
+Learn more about [HTTPS in .NET Core](https://docs.microsoft.com/aspnet/core/security/enforcing-ssl).
+
+##### Step 3. Run the applications
+
+In both the windows execute the below command: 
+
+```console
+    dotnet run
+```
+Open your browser and navigate to `https://localhost:44321`.
+
+#### Run the sample using Visual Studio:
+
 Clean the solution, rebuild the solution, and run it. You might want to go into the solution properties and set both projects as startup projects, with the service project starting first.
 
 When you start the Web API from Visual Studio, depending on the browser you use, you'll get:
@@ -237,9 +270,13 @@ When you start the Web API from Visual Studio, depending on the browser you use,
 
 This behavior is expected as you are not authenticated. The client application will be authenticated, so it will be able to access the Web API.
 
+## Explore the sample
+
 Explore the sample by signing in into the TodoList client, adding items to the To Do list and assigning them to users. If you stop the application without signing out, the next time you run the application, you won't be prompted to sign in again.
 
-To make the sample work for guest tenant, you need to provision service principal for that tenant. It can be done by clicking on `Admin Consent` link that is present on home page of Web App. The link provides consent screen that is used to create service principal by admin of the guest tenant.
+For Home Tenant, admin needs to sign-in first as `User.Read.All` permission requires admin consent for the organization.
+
+For guest tenant, you need to provision service principal for that tenant. It can be done by clicking on `Admin Consent` link that is present on home page of Web App. The link provides consent screen that is used to create service principal by admin of the guest tenant.
 
 > NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app. Each time you run the projects, your To-Do list will get emptied.
 
@@ -247,23 +284,11 @@ To make the sample work for guest tenant, you need to provision service principa
 
 ## About the code
 
-### Consenting to Applications with Distributed Topology
-
-Consider the application suite in this chapter: **TodoListAPI** and **TodoListSPA**. From one perspective, they are two different applications (two different projects), each represented with their own **app registration** on Azure AD, but from another perspective, they really constitute one application together i.e. a todo list application. In practice, an application can have a many such components: one component for the front-end, another for a REST API, another for a database and etc. While these components should have their own separate representation on Azure AD, they should also somehow know one another.
-
-From the perspective of **multi-tenancy**, the main challenge with such topologies is with providing admin-consent. This is due to the fact that some of their components, such as a web API or a background micro-service, do not have a front-end, and as such, has no user-interaction capability. The solution for this is to allow the user (in this case, an admin-user) to consent to web API at the same time they consent to the front-end application i.e. give a **combined consent**. In **Chapter 1**, we have seen that the `/.default` scope can be used to this effect, allowing you to consent to many different scopes at one step. However, unlike **Chapter 1**, our application suite here also has a back-end/web API component. But how could the web API know that the consent comes from a recognized front-end application, as opposed to some foreign application? The answer is to use the **KnownClientApplications** feature.
-
-> #### KnownClientApplications
->
-> **KnownClientApplications** is an attribute in **application manifest**. It is used for bundling consent if you have a solution that contains two (or more) parts: a client app and a custom web API. If you enter the `appID` (clientID) of the client app into this array, the user will only have to consent only once to the client app. Azure AD will know that consenting to the client means implicitly consenting to the web API. It will automatically provision service principals for both the client and web API at the same time. Both the client and the web API app must be registered in the same tenant.
-
-If you remember the last step of the registration for the client app (TodoListSPA), you were instructed to find the `KnownClientApplications` in application manifest, and add the Application (client) ID of the `TodoListSPA` application `KnownClient witApplications: ["your-client-id-for-TodoListSPA"]`. Once you do that, your web API will be able to correctly identify your front-end and the combined consent will be successfully carried out.
-
 ### Provisioning your Multi-tenant Apps in another Azure AD Tenant
 
-Often the user-based consent will be disabled in an Azure AD tenant or your application will be requesting permissions that requires a tenant-admin consent. In these scenarios, your application will need to utilize the `/adminconsent` endpoint to provision both the **TodoListSPA** and the **TodoListAPI** before the users from that tenant are able to sign-in to your app.
+Often the user-based consent will be disabled in an Azure AD tenant or your application will be requesting permissions that requires a tenant-admin consent. In these scenarios, your application will need to utilize the `/adminconsent` endpoint to provision both the **ToDoListClient** and the **TodoListAPI** before the users from that tenant are able to sign-in to your app.
 
-When provisioning, you have to take care of the dependency in the topology where the **TodoListSPA** is dependent on **TodoListAPI**. So in such a case, you would provision the **TodoListAPI** before the **TodoListSPA**.
+When provisioning, you have to take care of the dependency in the topology where the **ToDoListClient** is dependent on **TodoListAPI**. So in such a case, you would provision the **TodoListAPI** before the **ToDoListClient**.
 
 ### Code for the Web App (TodoListClient)
 
@@ -330,10 +355,9 @@ private void HandleChallengeFromWebApi(HttpResponseMessage response)
         var uri = new Uri(consentUri);
 
         var queryString = System.Web.HttpUtility.ParseQueryString(uri.Query);
-        queryString.Set("client_id", _ClientId);
-        queryString.Set("redirect_uri", _RedirectUri);
-        queryString.Set("scope", _TodoListScope);
+        queryString.Set("redirect_uri", _ApiRedirectUri);
         queryString.Add("prompt", "consent");
+        queryString.Add("state", _RedirectUri);
 
         var uriBuilder = new UriBuilder(uri);
         uriBuilder.Query = queryString.ToString();

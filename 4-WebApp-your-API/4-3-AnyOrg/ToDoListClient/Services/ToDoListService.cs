@@ -31,6 +31,7 @@ namespace ToDoListClient.Services
         private readonly string _TodoListBaseAddress = string.Empty;
         private readonly string _ClientId = string.Empty;
         private readonly string _RedirectUri = string.Empty;
+        private readonly string _ApiRedirectUri = string.Empty;
         private readonly ITokenAcquisition _tokenAcquisition;
 
         public ToDoListService(ITokenAcquisition tokenAcquisition, HttpClient httpClient, IConfiguration configuration)
@@ -41,6 +42,14 @@ namespace ToDoListClient.Services
             _TodoListBaseAddress = configuration["TodoList:TodoListBaseAddress"];
             _ClientId = configuration["AzureAd:ClientId"];
             _RedirectUri = configuration["RedirectUri"];
+            _ApiRedirectUri = configuration["TodoList:AdminConsentRedirectApi"];
+            if (!string.IsNullOrEmpty(_TodoListBaseAddress))
+            {
+                if (!_TodoListBaseAddress.EndsWith("/"))
+                {
+                    _TodoListBaseAddress = _TodoListBaseAddress+"/";
+                }
+            }
         }
         public async Task<ToDoItem> AddAsync(ToDoItem todo)
         {
@@ -165,11 +174,9 @@ namespace ToDoListClient.Services
 
                 //Set values of query string parameters
                 var queryString = System.Web.HttpUtility.ParseQueryString(uri.Query);
-                queryString.Set("client_id", _ClientId);
-                queryString.Set("redirect_uri", _RedirectUri);
-                queryString.Set("scope", _TodoListScope);
+                queryString.Set("redirect_uri", _ApiRedirectUri);
                 queryString.Add("prompt", "consent");
-
+                queryString.Add("state", _RedirectUri);
                 //Update values in consent Uri
                 var uriBuilder = new UriBuilder(uri);
                 uriBuilder.Query = queryString.ToString();

@@ -24,6 +24,13 @@ namespace ToDoListClient.Controllers
             _RedirectUri = configuration["RedirectUri"];
             _ApiClientId = configuration["TodoList:TodoListAppId"];
             _ApiRedirectUri = configuration["TodoList:AdminConsentRedirectApi"];
+            if (!string.IsNullOrEmpty(_RedirectUri))
+            {
+                if (!_RedirectUri.EndsWith("/"))
+                {
+                    _RedirectUri = _RedirectUri+"/";
+                }
+            }
         }
 
         public IActionResult Index()
