@@ -39,17 +39,13 @@ namespace WebApp_OpenIDConnect_DotNet
             });
 
             services.AddOptions();
-            
-            services.AddSignIn(Configuration);
 
-            // Token acquisition service based on MSAL.NET
-            // and chosen token cache implementation
-            services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { Constants.ScopeUserRead })
-               .AddInMemoryTokenCaches();
-
+            services.AddMicrosoftWebAppAuthentication(Configuration)
+                    .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead })
+                    .AddInMemoryTokenCaches();
             /*
                // or use a distributed Token Cache by adding 
-                           .AddDistributedTokenCaches();
+                    .AddDistributedTokenCaches();
 
                // and then choose your implementation. 
                // See https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed?view=aspnetcore-2.2#distributed-memory-cache
@@ -111,11 +107,11 @@ namespace WebApp_OpenIDConnect_DotNet
 
             app.UseEndpoints(endpoints =>
             {
-            endpoints.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
-            endpoints.MapRazorPages();
-        });
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
+            });
         }
     }
 }

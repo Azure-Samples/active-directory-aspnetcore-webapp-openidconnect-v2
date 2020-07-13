@@ -246,12 +246,12 @@ Explore the sample by signing in into the TodoList client, adding items to the T
               .AddAzureAD(options => Configuration.Bind("AzureAd", options));
      ```
 
-     by this line:
+     with these lines:
 
      ```CSharp
-     services.AddSignIn(Configuration)
-          .AddWebAppCallsProtectedWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
-          .AddInMemoryTokenCaches();
+     services.AddMicrosoftWebAppAuthentication(Configuration)
+             .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] })
+             .AddInMemoryTokenCaches();
      ```
 
      This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
@@ -280,9 +280,10 @@ Explore the sample by signing in into the TodoList client, adding items to the T
 1. Update the `configureServices` method in `startup.cs` to add the MSAL library and a token cache.
 
     ```CSharp
-     services.AddSignIn(Configuration)
-          .AddWebAppCallsProtectedWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
-          .AddInMemoryTokenCaches();
+     services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+             .AddMicrosoftWebApp(Configuration)
+             .AddMicrosoftWebAppCallsWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
+     services.AddInMemoryTokenCaches();
     ```
 1. Update the `Configure` method to include **app.UseAuthentication();** before **app.UseMvc();**  
 
@@ -332,8 +333,7 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
   with
 
   ```Csharp
-    services.AddProtectedWebApi(Configuration)
-         .AddInMemoryTokenCaches();
+    services.AddMicrosoftWebApiAuthentication(Configuration);
   ```
 - Add the method **app.UseAuthentication()** before **app.UseMvc()** in the `Configure` method
 
@@ -342,7 +342,7 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
      app.UseMvc();
   ```
 
-  `AddProtectedWebApi` does the following:
+  `AddMicrosoftWebApi` does the following:
   - add the **Jwt**BearerAuthenticationScheme (Note the replacement of **BearerAuthenticationScheme** by **Jwt**BearerAuthenticationScheme)
   - set the authority to be the Microsoft identity platform identity
   - sets the audiences to validate

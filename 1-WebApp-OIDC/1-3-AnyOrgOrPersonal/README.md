@@ -150,7 +150,9 @@ In the **appsettings.json** file:
      by this line:
 
      ```CSharp
-      services.AddSignIn(Configuration);
+
+    services.AddMicrosoftWebAppAuthentication(Configuration);
+
      ```
 
      This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.

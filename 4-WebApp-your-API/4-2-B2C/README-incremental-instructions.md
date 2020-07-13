@@ -205,8 +205,8 @@ Add a reference to the `Microsoft.Identity.Web` library if not already present. 
 1. Update the `configureServices` method in `startup.cs` to add the MSAL library and a token cache.
 
 ```CSharp
-    services.AddSignIn(Configuration)
-            .AddWebAppCallsProtectedWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
+    services.AddMicrosoftWebAppAuthentication(Configuration, "AzureAdB2C")
+            .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] }, configSectionName: "AzureAdB2C")
             .AddInMemoryTokenCaches();
  ```
 
@@ -248,7 +248,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
   ```Csharp
   services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddProtectedWebApi("AzureAdB2C", Configuration, options =>
+          .AddMicrosoftWebApi("AzureAdB2C", Configuration, options =>
     {
         Configuration.Bind("AzureAdB2C", options);
 
@@ -262,7 +262,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
      app.UseAuthentication();
      app.UseMvc();
   ```
-  `AddProtectedWebApi` does the following:
+  `AddMicrosoftWebApi` does the following:
   - add the **Jwt**BearerAuthenticationScheme (Note the replacement of **BearerAuthenticationScheme** by **Jwt**BearerAuthenticationScheme)
   - set the authority to be the Microsoft identity platform 
   - sets the audiences to validate

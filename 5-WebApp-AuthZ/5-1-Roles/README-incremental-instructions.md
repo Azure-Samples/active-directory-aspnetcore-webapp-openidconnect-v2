@@ -154,12 +154,12 @@ When you click on the page that fetches the signed-in user's roles and group ass
 
 ### Support in ASP.NET Core middleware libraries
 
-The asp.net middleware supports roles populated from claims by specifying the claim in the `RoleClaimType` property of `TokenValidationParameters`.
+The ASP.NET middleware supports roles populated from claims by specifying the claim in the `RoleClaimType` property of `TokenValidationParameters`.
 
 ```CSharp
 
 // Startup.cs
-public static IServiceCollection AddSignIn(this IServiceCollection services, IConfiguration configuration, X509Certificate2 tokenDecryptionCertificate = null)
+public void ConfigureServices(IServiceCollection services)
 {
             // [removed for brevity]
 
@@ -171,7 +171,7 @@ public static IServiceCollection AddSignIn(this IServiceCollection services, ICo
 
             // The following lines code instruct the asp.net core middleware to use the data in the "groups" claim in the Authorize attribute and User.IsInrole()
             // See https://docs.microsoft.com/aspnet/core/security/authorization/roles?view=aspnetcore-2.2 for more info.
-            services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
+            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
                 // Use the groups claim for populating roles
                 options.TokenValidationParameters.RoleClaimType = "roles";
@@ -183,7 +183,8 @@ public static IServiceCollection AddSignIn(this IServiceCollection services, ICo
                 options.AddPolicy(AuthorizationPolicies.AssignmentToUserReaderRoleRequired, policy => policy.RequireRole(AppRole.UserReaders));
                 options.AddPolicy(AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired, policy => policy.RequireRole(AppRole.DirectoryViewers));
             });
-        // [removed for brevity]
+
+            // [removed for brevity]
 }
 
 // In code..(Controllers & elsewhere)
@@ -198,23 +199,18 @@ The following files have the code that would be of interest to you.
 
 1. HomeController.cs
     1. Passes the **HttpContext.User** (the signed-in user) to the view.
-1 Services\GraphServiceClientFactory.cs
+1. Services\GraphServiceClientFactory.cs
     1. Uses the [Microsoft Graph SDK](https://github.com/microsoftgraph/msgraph-sdk-dotnet) to carry out various operations with [Microsoft Graph](https://graph.microsoft.com).
 1. Home\Index.cshtml
     1. This has some code to print the current user's claims
 
-1. Startup.cs
-
 1. In the `ConfigureServices` method of `Startup.cs', add the following lines:
 
     ```CSharp
-    services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
-                  .AddAzureAD(options => Configuration.Bind("AzureAd", options));
-    
     //This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
-    services.AddSignIn(Configuration)
-                .AddWebAppCallsProtectedWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" }) // Adds support for the MSAL library with the permissions necessary to retrieve the signed-in user's group info in case of a token overage
-                .AddInMemoryTokenCaches(); // Adds aspnetcore MemoryCache as Token cache provider for MSAL.
+    services.AddMicrosoftWebAppAuthentication(Configuration)
+            .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead })
+            .AddInMemoryTokenCaches(); // Adds aspnetcore MemoryCache as Token cache provider for MSAL.
     
     services.AddMSGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.
     
@@ -225,19 +221,15 @@ The following files have the code that would be of interest to you.
     JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
     ```
 
-1. In the `HomeController.cs`, the following method is added with the `Authorize` attribute with the name of the app role **UserReaders**, that permits listing of users in the tenant.
-
-    ```CSharp
-    [Authorize(Policy = AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired)]
-    public async Task<IActionResult> Users()
-    {
-     ```
-
-1. In the `ConfigureServices` method of `Startup.cs', the following line instructs the asp.net security middleware to use the **roles** claim to fetch roles for authorization:
+1. In the `ConfigureServices` method of `Startup.cs', the following lines instruct the ASP.NET security middleware to use the **roles** claim to fetch roles for authorization:
 
      ```CSharp
-    // The claim in the Jwt token where App roles are available.
-    options.TokenValidationParameters.RoleClaimType = "roles";
+    // Add this configuration after the call to `AddMicrosoftWebAppAuthentication`.
+    services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+    {
+        // The claim in the JWT token where App roles are available.
+        options.TokenValidationParameters.RoleClaimType = "roles";
+    });
 
      // Adding authorization policies that enforce authorization using Azure AD roles.
     services.AddAuthorization(options => 
@@ -245,6 +237,14 @@ The following files have the code that would be of interest to you.
         options.AddPolicy(AuthorizationPolicies.AssignmentToUserReaderRoleRequired, policy => policy.RequireRole(AppRole.UserReaders));
         options.AddPolicy(AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired, policy => policy.RequireRole(AppRole.DirectoryViewers));
     });
+     ```
+
+1. In the `HomeController.cs`, the following method is added with the `Authorize` attribute with the name of the app role **UserReaders**, that permits listing of users in the tenant.
+
+    ```CSharp
+    [Authorize(Policy = AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired)]
+    public async Task<IActionResult> Users()
+    {
      ```
 
 1. A new class called `AccountController.cs` is introduced. This contains the code to intercept the default AccessDenied error's route and present the user with an option to sign-out and sign-back in with a different account that has access to the required role.

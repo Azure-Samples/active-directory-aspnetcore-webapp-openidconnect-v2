@@ -48,12 +48,9 @@ namespace WebApp_OpenIDConnect_DotNet
 
 
             // Sign-in users with the Microsoft identity platform
-            services.AddSignIn(Configuration);
-
-            // Token acquisition service based on MSAL.NET
-            // and chosen token cache implementation
-            services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { Constants.ScopeUserRead })
-                .AddInMemoryTokenCaches();
+            services.AddMicrosoftWebAppAuthentication(Configuration)
+                    .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead })
+                    .AddInMemoryTokenCaches();
 
             // Add Graph
             services.AddGraphService(Configuration);

@@ -218,7 +218,7 @@ The following files have the code that would be of interest to you:
     1. Passes the **HttpContext.User** (the signed-in user) to the view.
 1. UserProfileController.cs
     1. Uses the **IMSGraphService** methods to fetch the signed-in user's group memberships.
-1 IMSGraphService.cs, MSGraphService.cs and UserGroupsAndDirectoryRoles.cs
+1. IMSGraphService.cs, MSGraphService.cs and UserGroupsAndDirectoryRoles.cs
     1. Uses the [Microsoft Graph SDK](https://github.com/microsoftgraph/msgraph-sdk-dotnet) to carry out various operations with [Microsoft Graph](https://graph.microsoft.com).
 1. Home\Index.cshtml
     1. This has some code to print the current user's claims
@@ -232,20 +232,19 @@ The following files have the code that would be of interest to you:
          using Microsoft.Identity.Web;
       ```
 
-   - in the `ConfigureServices` method, the following lines have been replaced :
+   - in the `ConfigureServices` method, the following lines:
 
      ```CSharp
       services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
               .AddAzureAD(options => Configuration.Bind("AzureAd", options));
      ```
 
-    - by these lines:
+    - have been replaced by these lines::
 
       ```CSharp
-      services.AddSignIn(Configuration);
-
-      services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" })
-          .AddInMemoryTokenCaches();
+      services.AddMicrosoftWebAppAuthentication(Configuration)
+              .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" })
+              .AddInMemoryTokenCaches();
 
       services.AddMSGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.
       ```

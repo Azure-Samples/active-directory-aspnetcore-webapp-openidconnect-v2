@@ -100,11 +100,9 @@ After the following lines in the ConfigureServices(IServiceCollection services) 
  public void ConfigureServices(IServiceCollection services)
 {
     . . .
-    services.AddSignIn(Configuration);
-    // Token acquisition service based on MSAL.NET 
-    // and chosen token cache implementation
-    services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { Constants.ScopeUserRead })
-        .AddInMemoryTokenCache();
+     services.AddMicrosoftWebAppAuthentication(Configuration)
+             .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead })
+             .AddInMemoryTokenCaches();
 ```
 
 The two new lines of code:

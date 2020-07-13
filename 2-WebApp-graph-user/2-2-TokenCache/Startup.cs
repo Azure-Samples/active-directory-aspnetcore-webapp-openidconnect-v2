@@ -47,16 +47,17 @@ namespace WebApp_OpenIDConnect_DotNet
             // NOTE : This is a one time use method. We advise using it in development environments to create the tables required to enable token caching.
             // For production deployments, preferably, generate the schema from the tables generated in dev environments and use it to create the necessary tables in production.
             /*
-                dotnet tool install --global dotnet-sql-cache
-                dotnet sql-cache create "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MsalTokenCacheDatabase;Integrated Security=True;" dbo TokenCache    
+             *  1. For instance in Visual Studio, open the SQL Server Object explorer, then (localdb)\MSSQLLocalDB, then databases
+             *  2. Right click on Databases and select "Add New database", and then choose the name of the database: 'MsalTokenCacheDatabase'
+             *  3. In the console application run the 2 following commands:
+                     dotnet tool install --global dotnet-sql-cache
+                     dotnet sql-cache create "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MsalTokenCacheDatabase;Integrated Security=True;" dbo TokenCache
              */
 
-            services.AddSignIn(Configuration);
-
-            // Token acquisition service based on MSAL.NET
-            // and chosen token cache implementation
-            services.AddWebAppCallsProtectedWebApi(Configuration, new string[] { Constants.ScopeUserRead })
-                .AddDistributedTokenCaches();
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                    .AddMicrosoftWebApp(Configuration)
+                    .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead })
+                    .AddDistributedTokenCaches();
 
             services.AddDistributedSqlServerCache(options =>
             {
