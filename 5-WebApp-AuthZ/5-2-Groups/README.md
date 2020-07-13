@@ -232,8 +232,8 @@ The object id of the security groups the signed in user is member of is returned
 
 ### Support in ASP.NET Core middleware libraries
 
-The asp.net middleware supports roles populated from claims by specifying the claim in the `RoleClaimType` property of `TokenValidationParameters`.
-Since the `groups` claim contains the object ids of the security groups than actual names by default, you'd use the group id's instead of group names. See [Role-based authorization in ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authorization/roles) for more info.
+The ASP.NET middleware supports roles populated from claims by specifying the claim in the `RoleClaimType` property of `TokenValidationParameters`.
+Since the `groups` claim contains the object IDs of the security groups than actual names by default, you'd use the group ID's instead of group names. See [Role-based authorization in ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authorization/roles) for more info.
 
 ```CSharp
 // Startup.cs
@@ -328,7 +328,7 @@ The following files have the code that would be of interest to you:
     1. Passes the **HttpContext.User** (the signed-in user) to the view.
 1. UserProfileController.cs
     1. Uses the **IMSGraphService** methods to fetch the signed-in user's group memberships.
-1 IMSGraphService.cs, MSGraphService.cs and UserGroupsAndDirectoryRoles.cs
+1. IMSGraphService.cs, MSGraphService.cs and UserGroupsAndDirectoryRoles.cs
     1. Uses the [Microsoft Graph SDK](https://github.com/microsoftgraph/msgraph-sdk-dotnet) to carry out various operations with [Microsoft Graph](https://graph.microsoft.com).
 1. Home\Index.cshtml
     1. This has some code to print the current user's claims
@@ -342,16 +342,16 @@ The following files have the code that would be of interest to you:
          using Microsoft.Identity.Web;
       ```
 
-   - in the `ConfigureServices` method, the following lines have been replaced :
+   - in the `ConfigureServices` method, the following lines:
 
      ```CSharp
       services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
               .AddAzureAD(options => Configuration.Bind("AzureAd", options));
      ```
 
-    - by these lines:
-
-      ```CSharp
+   - have been replaced by these lines:
+   - 
+     ```CSharp
       services.AddMicrosoftWebAppAuthentication(Configuration)
               .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" })
               .AddInMemoryTokenCaches();
