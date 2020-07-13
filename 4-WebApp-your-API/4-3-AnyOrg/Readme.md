@@ -34,6 +34,7 @@ This sample demonstrates how to develop a multi-tenant ASP.NET Core MVC web appl
   - [Step 1:  Clone or download this repository](#step-1-clone-or-download-this-repository)
   - [Step 2:  Register the sample application with your Azure Active Directory tenant](#step-2-register-the-sample-application-with-your-azure-active-directory-tenant)
   - [Step 3: Run the sample](#step-3-run-the-sample)
+  - [Testing the Application](#testing-the-application)
 - [About the code](#about-the-code)
 - [Community Help and Support](#community-help-and-support)
 - [Contributing](#contributing)
@@ -41,23 +42,25 @@ This sample demonstrates how to develop a multi-tenant ASP.NET Core MVC web appl
   
 ### Scenario
 
-In this scenario, you protect a Web API using the Microsoft Identity Platform so that only authenticated users can access it. The API will support authenticated users with Work and School accounts. Further on the API will also call a downstream API (Microsoft Graph) on-behalf of the signed-in user to provide additional value to its client apps.
+In this sample, we would protect an ASP.Net Core Web API using the Microsoft Identity Platform. The Web API will be protected using Azure Active Directory OAuth Bearer Authorization. The API will support authenticated users with Work and School accounts. Further on the API will also call a downstream API (Microsoft Graph) on-behalf of the signed-in user to provide additional value to its client apps.
 
 ### Overview
 
 This sample presents a Web application that signs-in users and obtains an Access Token for protected Web API.
 
+Both applications use the Microsoft Authentication Library [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) to sign-in user and obtain a JWT access token through the [OAuth 2.0](https://docs.microsoft.com/azure/active-directory/develop/active-directory-protocols-oauth-code) protocol.
+
 The Web App:
 
-1. TodoListClient uses [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) and [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) to authenticate a user.
-2. Acquires an access token for the Web API.
-3. Calls the ASP.NET Core Web API by using the access token as a bearer token in the authentication header of the Http request.
+1. Signs-in users using the MSAL.NET library.
+1. Acquires an access token for the Web API.
+1. Calls the ASP.NET Core Web API by using the access token as a bearer token in the authentication header of the Http request.
 
 The Web API:
 
-1. TodoListService uses [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) and [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) to protect its endpoint and accept authorized calls.
-2. Acquires another access token on-behalf-of the signed-in user using the [on-behalf of flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow).
-3. The Web API then uses this new Access token to call Microsoft Graph
+1. Authorizes the caller (user) using the ASP.NET JWT Bearer Authorization middleware.
+1. Acquires another access token on-behalf-of the signed-in user using the [on-behalf of flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow).
+1. The Web API then uses this new Access token to call Microsoft Graph.
 
 ![Topology](./ReadmeFiles/topology.png)
 
@@ -224,7 +227,20 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 1. Find the app key `AdminConsentRedirectApi` and replace the existing value with the Redirect URI for WebApi-MultiTenant-v2 app. For example, `https://localhost:44351/api/Home` .									
 ### Step 3: Run the sample
 
-#### Using a command line interface such as VS Code integrated terminal, follow the steps below:
+You can run the sample by using either Visual Studio or command line interface as shown below:
+
+#### Run the sample using Visual Studio
+
+Clean the solution, rebuild the solution, and run it. You might want to go into the solution properties and set both projects as startup projects, with the service project starting first.
+
+When you start the Web API from Visual Studio, depending on the browser you use, you'll get:
+
+- an empty web page (with Microsoft Edge)
+- or an error HTTP 401 (with Chrome)
+
+This behavior is expected as the browser is not authenticated. The Web application will be authenticated, so it will be able to access the Web API.
+
+#### Run the sample using a command line interface such as VS Code integrated terminal
 
 ##### Step 1. Install .NET Core dependencies
 
@@ -252,35 +268,69 @@ Learn more about [HTTPS in .NET Core](https://docs.microsoft.com/aspnet/core/sec
 
 ##### Step 3. Run the applications
 
-In both the windows execute the below command: 
+In both the console windows execute the below command: 
 
 ```console
     dotnet run
 ```
 Open your browser and navigate to `https://localhost:44321`.
 
-#### Run the sample using Visual Studio:
-
-Clean the solution, rebuild the solution, and run it. You might want to go into the solution properties and set both projects as startup projects, with the service project starting first.
-
-When you start the Web API from Visual Studio, depending on the browser you use, you'll get:
-
-- an empty web page (case with Microsoft Edge)
-- or an error HTTP 401 (case with Chrome)
-
-This behavior is expected as you are not authenticated. The client application will be authenticated, so it will be able to access the Web API.
-
-## Explore the sample
-
-Explore the sample by signing in into the TodoList client, adding items to the To Do list and assigning them to users. If you stop the application without signing out, the next time you run the application, you won't be prompted to sign in again.
-
-For Home Tenant, admin needs to sign-in first as `User.Read.All` permission requires admin consent for the organization.
-
-For guest tenant, you need to provision service principal for that tenant. It can be done by clicking on `Admin Consent` link that is present on home page of Web App. The link provides consent screen that is used to create service principal by admin of the guest tenant.
-
 > NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app. Each time you run the projects, your To-Do list will get emptied.
 
+### Testing the Application
+
+To properly test this application, you need *at least* **2** tenants, and on each tenant, *at least* **1** administrator and **1** non-administrator account.
+
+Before each test, you should delete your **service principal** for the tenant you are about to test, in order to remove any previously given consents and start the **provisioning process** from scratch.
+
+> #### How to delete Service Principals
+>
+> Steps for deleting a service principal differs with respect to whether the principal is in the **home tenant** of the application or in another tenant. If it is in the **home tenant**, you will find the entry for the application under the **App Registrations** blade. If it is another tenant, you will find the entry under the **Enterprise Applications** blade. Read more about these blades in the [How and why applications are added to Azure AD](https://docs.microsoft.com/azure/active-directory/develop/active-directory-how-applications-are-added).The screenshot below shows how to access the service principal from a **home tenant**:
+>
+> ![principal1](./ReadmeFiles/Home_Tenant_SP.png)
+>
+> The rest of the process is the same for both cases. In the next screen, click on **Properties** and then the **Delete** button on the upper side.
+>
+> ![principal1](./ReadmeFiles/Home_Tenant_SP_Delete.png)
+>
+> You have now deleted the service principal of Web App for that tenant. Similarly, you can delete the service principal for Web API. Next time, admin needs to provision service principal for both the applications in the tenant from which *that* admin belongs.
+
+#### Ways of providing admin consent
+
+A service principal of your multi-tenant app is created manually or programmatically by a tenant admin using one of the following
+   1. Using the [/adminconsent endpoint](https://docs.microsoft.com/azure/active-directory/develop/v2-admin-consent)
+   2. [Using the PowerShell command](https://docs.microsoft.com/powershell/azure/create-azure-service-principal-azureps).
+
+- **Consent using the `/adminconsent` endpoint**
+
+You can try the /adminconsent endpoint on the home page of the sample by clicking on the `Consent as Admin` link. Web API is provisioned first because the Web App is dependent on the Web API.
+
+![admin consent endpoint](./ReadmeFiles/AdminConsentBtn.png)
+
+> #### The `.default` scope
+>
+> Did you notice the scope here is set to `.default`, as opposed to `User.Read.All` for Microsoft Graph and `access_as_user` for Web API? This is a built-in scope for every application that refers to the static list of permissions configured on the application registration. Basically, it *bundles* all the permissions in one scope. The /.default scope can be used in any OAuth 2.0 flow, but is necessary when using the v2 admin consent endpoint to request application permissions. Read about `scopes` usage at [Scopes and permissions in the Microsoft Identity Platform](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent#scopes-and-permissions).  
+  
+When redirected to the `/adminconsent` endpoint, the tenant admin will see:
+
+![redirect](./ReadmeFiles/admin_redirect_api.png)
+
+After you choose an admin account, it will lead to the following prompt for Web API consent screen:
+
+![consent](./ReadmeFiles/admin_consent_api.png)
+
+When you click `Accept`, it will redirects to `/adminconsent` endpoint for Web App:
+
+![redirect](./ReadmeFiles/admin_redirect_app.png)
+
+After you choose an admin account, it will lead to the Web App consent as below:
+
+![consent](./ReadmeFiles/admin_consent_app.png)
+
+Once it finishes, your applications service principal will be provisioned in that tenant.
+
 > Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page. 
+
 
 ## About the code
 
@@ -438,63 +488,13 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 },
                 options => { Configuration.Bind("AzureAd", options); });
 ```
-### Testing the Application
 
-To properly test this application, you need *at least* **2** tenants, and on each tenant, *at least* **1** administrator and **1** non-administrator account.
-
-Before each test, you should delete your **service principal** for the tenant you are about to test, in order to remove any previously given consents and start the **provisioning process** from scratch.
-
-> #### How to delete Service Principals
->
-> Steps for deleting a service principal differs with respect to whether the principal is in the **home tenant** of the application or in another tenant. If it is in the **home tenant**, you will find the entry for the application under the **App Registrations** blade. If it is another tenant, you will find the entry under the **Enterprise Applications** blade. Read more about these blades in the [How and why applications are added to Azure AD](https://docs.microsoft.com/azure/active-directory/develop/active-directory-how-applications-are-added).The screenshot below shows how to access the service principal from a **home tenant**:
->
-> ![principal1](./ReadmeFiles/Home_Tenant_SP.png)
->
-> The rest of the process is the same for both cases. In the next screen, click on **Properties** and then the **Delete** button on the upper side.
->
-> ![principal1](./ReadmeFiles/Home_Tenant_SP_Delete.png)
->
-> You have now deleted the service principal of Web App for that tenant. Similarly, you can delete the service principal for Web API. Next time, admin needs to provision service principal for both the applications in the tenant from which *that* admin belongs.
-
-### Ways of providing admin consent
-
-A service principal of your multi-tenant app is created manually or programmatically by a tenant admin using one of the following
-   1. Using the [/adminconsent endpoint](https://docs.microsoft.com/azure/active-directory/develop/v2-admin-consent)
-   2. [Using the PowerShell command](https://docs.microsoft.com/powershell/azure/create-azure-service-principal-azureps).
-
-- **Consent using the `/adminconsent` endpoint**
-
-You can try the /adminconsent endpoint on the home page of the sample by clicking on the `Consent as Admin` link. Web API is provisioned first because the Web App is dependent on the Web API.
-
-![admin consent endpoint](./ReadmeFiles/AdminConsentBtn.png)
-
-> #### The `.default` scope
->
-> Did you notice the scope here is set to `.default`, as opposed to `User.Read.All` for Microsoft Graph and `access_as_user` for Web API? This is a built-in scope for every application that refers to the static list of permissions configured on the application registration. Basically, it *bundles* all the permissions in one scope. The /.default scope can be used in any OAuth 2.0 flow, but is necessary when using the v2 admin consent endpoint to request application permissions. Read about `scopes` usage at [Scopes and permissions in the Microsoft Identity Platform](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent#scopes-and-permissions).  
-  
-When redirected to the `/adminconsent` endpoint, the tenant admin will see:
-
-![redirect](./ReadmeFiles/admin_redirect_api.png)
-
-After you choose an admin account, it will lead to the following prompt for Web API consent screen:
-
-![consent](./ReadmeFiles/admin_consent_api.png)
-
-When you click `Accept`, it will redirects to `/adminconsent` endpoint for Web App:
-
-![redirect](./ReadmeFiles/admin_redirect_app.png)
-
-After you choose an admin account, it will lead to the Web App consent as below:
-
-![consent](./ReadmeFiles/admin_consent_app.png)
-
-Once it finishes, your applications service principal will be provisioned in that tenant.
 
 ## Community Help and Support
 
 Use [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) to get support from the community.
 Ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
-Make sure that your questions or comments are tagged with [`msal` `dotnet`].
+Make sure that your questions or comments are tagged with [`azure-active-directory` `msal` `dotnet`].
 
 If you find a bug in the sample, please raise the issue on [GitHub Issues](../../issues).
 
