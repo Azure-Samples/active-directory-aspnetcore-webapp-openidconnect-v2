@@ -62,6 +62,8 @@ The Web API:
 1. Acquires another access token on-behalf-of the signed-in user using the [on-behalf of flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow).
 1. The Web API then uses this new Access token to call Microsoft Graph.
 
+NOTE: Guest users in a tenant will not be authenticated if the `https://login.microsoftonline.com/common/` endpoint is used as the authority to sign in users. `TenantId` will be required for those users.
+
 ![Topology](./ReadmeFiles/topology.png)
 
 ## How to run this sample
