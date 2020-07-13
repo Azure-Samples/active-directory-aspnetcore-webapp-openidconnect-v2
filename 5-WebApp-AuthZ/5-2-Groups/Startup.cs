@@ -39,7 +39,7 @@ namespace WebApp_OpenIDConnect_DotNet
             services.AddMicrosoftWebAppAuthentication(Configuration)
                     .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" })
 
-                    // If you want to use group ids/names in the Authorize attribute then uncomment the following lines:
+            // If you want to use group ids/names in the Authorize attribute then uncomment the following lines:
             //services.Configure<OpenIdConnectOptions>(options =>
             //        {
             //            // Uncomment the following lines code instruct the asp.net core middleware to use the data in the "groups" claim in the [Authorize] attribute and for User.IsInrole()	
