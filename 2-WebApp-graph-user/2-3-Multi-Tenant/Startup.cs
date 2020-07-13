@@ -84,8 +84,6 @@ namespace WebApp_OpenIDConnect_DotNet
 
                         return Task.FromResult(0);
                     };
-                }, options =>
-                {
                 })
                     .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { GraphScope.UserReadAll })
                     .AddInMemoryTokenCaches();
