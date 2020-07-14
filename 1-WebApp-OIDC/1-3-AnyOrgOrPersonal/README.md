@@ -147,17 +147,15 @@ In the **appsettings.json** file:
               .AddAzureAD(options => Configuration.Bind("AzureAd", options));
      ```
 
-     by this line:
+   - by this line:
 
      ```CSharp
-
-    services.AddMicrosoftWebAppAuthentication(Configuration);
-
+     services.AddMicrosoftWebAppAuthentication(Configuration);
      ```
 
-     This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
+    This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
 
-    1. Change the `Properties\launchSettings.json` file to ensure that you start your web app from <https://localhost:44321> as registered. For this:
+1. Change the `Properties\launchSettings.json` file to ensure that you start your web app from <https://localhost:44321> as registered. For this:
     - update the `sslPort` of the `iisSettings` section to be `44321`
     - in the `applicationUrl` property of use `https://localhost:44321`
 
