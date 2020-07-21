@@ -14,17 +14,14 @@ products:
   - azure-active-directory  
   - dotnet
   - office-ms-graph
-description: "Sign-in a user into a Multi-tenant Web application using Microsoft Identity Platform and call a protected ASP.NET Core Web API, which calls Microsoft Graph on-behalf of the user"
+description: "Protect a multi-tenant SaaS web application and a Web API which calls Microsoft Graph on-behalf of the user with the Microsoft Identity Platform"
 ---
-# Sign-in a user into a Multi-tenant Web application using Microsoft Identity Platform and call a protected ASP.NET Core Web API, which calls Microsoft Graph on-behalf of the user
 
-![Build badge](https://identitydivision.visualstudio.com/_apis/public/build/definitions/a7934fdd-dcde-4492-a406-7fad6ac00e17/<BuildNumber>/badge)
+# Protect a multi-tenant SaaS web application and a Web API which calls Microsoft Graph on-behalf of the user with the Microsoft Identity Platform
 
-## About this sample
+> This sample is for Azure AD, not Azure AD B2C.
 
-This sample demonstrates how to develop a multi-tenant ASP.NET Core MVC web application (TodoListClient) calling a multi-tenant ASP.NET Core Web API (TodoListService) secured with Microsoft Identity Platform. 
-
-### Table of content
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 - [About this sample](#about-this-sample)
   - [Scenario](#scenario)
@@ -36,33 +33,44 @@ This sample demonstrates how to develop a multi-tenant ASP.NET Core MVC web appl
   - [Step 3: Run the sample](#step-3-run-the-sample)
   - [Testing the Application](#testing-the-application)
 - [About the code](#about-the-code)
+  - [Provisioning your Multi-tenant Apps in another Azure AD Tenant](#provisioning-your-multi-tenant-apps-in-another-azure-ad-tenant)
+  - [Code for the Web App (TodoListClient)](#code-for-the-web-app-todolistclient)
+  - [Code for the Web API (TodoListService)](#code-for-the-web-api-todolistservice)
 - [Community Help and Support](#community-help-and-support)
 - [Contributing](#contributing)
 - [More information](#more-information)
+
+## About this sample
+
+This sample demonstrates how to protect a **multi-tenant** ASP.NET Core MVC web application (TodoListClient) which calls another **multi-tenant** ASP.NET Core Web API (TodoListService) with Microsoft Identity Platform. This sample builds on the concepts introduced in the [Build a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect](../../../2-WebApp-graph-user\2-3-Multi-Tenant/README.md) sample. We advise you go through that sample once before trying this sample.  
   
 ### Scenario
 
 In this sample, we would protect an ASP.Net Core Web API using the Microsoft Identity Platform. The Web API will be protected using Azure Active Directory OAuth 2.0 Bearer Authorization. The API will support authenticated users with Work and School accounts. Further on the API will also call a downstream API (Microsoft Graph) on-behalf of the signed-in user to provide additional value to its client apps.
 
+The Web API is marked as a [multi-tenant](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps) app, so that it can be [provisioned](#provisioning-your-multi-tenant-apps-in-another-azure-ad-tenant) into Azure AD tenants where the registered client applications in that tenant can then obtain [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) for this web API and make calls to it.
+
+> Note that the client applications that want to call this web API do not need to be multi-tenant themselves to be able to do so.
+
 ### Overview
 
-This sample presents a Web application that signs-in users and obtains an Access Token for protected Web API.
+This sample presents a client Web application that signs-in users and obtains an Access Token for this protected Web API.
 
 Both applications use the Microsoft Authentication Library [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) to sign-in user and obtain a JWT access token through the [OAuth 2.0](https://docs.microsoft.com/azure/active-directory/develop/active-directory-protocols-oauth-code) protocol.
 
-The Web App:
+The client Web App:
 
-1. Signs-in users using the MSAL.NET library.
-1. Acquires an access token for the Web API.
+1. Signs-in users using the [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) and [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) libraries.
+1. Acquires an [Access Token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) for the Web API.
 1. Calls the ASP.NET Core Web API by using the access token as a bearer token in the authentication header of the Http request.
 
 The Web API:
 
-1. Authorizes the caller (user) using the ASP.NET JWT Bearer Authorization middleware.
+1. Authorizes the caller (user) using the [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web).
 1. Acquires another access token on-behalf-of the signed-in user using the [on-behalf of flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow).
 1. The Web API then uses this new Access token to call Microsoft Graph.
 
-NOTE: Guest users in a tenant will not be authenticated if the `https://login.microsoftonline.com/common/` endpoint is used as the authority to sign in users. `TenantId` will be required for those users.
+> A recording of a Microsoft Identity Platform developer session that covered this topic of developing a multi-tenant app with Azure Active Directory is available at [Develop multi-tenant applications with Microsoft identity platform](https://www.youtube.com/watch?v=B416AxHoMJ4).
 
 ![Topology](./ReadmeFiles/topology.png)
 
@@ -83,6 +91,7 @@ git clone https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-op
 
 cd "4-WebApp-your-API\4-3-AnyOrg"
 ```
+
 or download and extract the repository .zip file.
 
 > Given that the name of the sample is quite long, and so are the names of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
@@ -122,6 +131,7 @@ There are two projects in this sample. Each needs to be separately registered in
 </details>
 
 Follow the steps below to manually walk through the steps to register and configure the applications.
+
 #### Choose the Azure AD tenant where you want to create your applications
 
 As a first step you'll need to:
@@ -137,7 +147,7 @@ As a first step you'll need to:
 1. In the **Register an application page** that appears, enter your application's registration information:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApi-MultiTenant-v2`.
    - Under **Supported account types**, select **Accounts in any organizational directory and personal Microsoft accounts (e.g. Skype, Xbox, Outlook.com)**.
-   - In the **Redirect URI** section, select **Web** in the combo-box and enter the following redirect URI: `https://localhost:44351/api/Home`.						  
+   - In the **Redirect URI** section, select **Web** in the combo-box and enter the following redirect URI: `https://localhost:44351/api/Home`.
 1. Select **Register** to create the application.
 1. In the app's registration screen, find and note the **Application (client) ID**. You use this value in your app's configuration file(s) later in your code.
 1. Select **Save** to save your changes.
@@ -226,7 +236,8 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 1. Find the app key `TodoListScope` and replace the existing value with ScopeDefault.
 1. Find the app key `TodoListAppId` and replace the existing value with the application ID (clientId) of the `WebApi-MultiTenant-v2` application copied from the Azure portal.
 1. Find the app key `TodoListBaseAddress` and replace the existing value with the base address of the WebApi-MultiTenant-v2 project (by default `https://localhost:44351`).
-1. Find the app key `AdminConsentRedirectApi` and replace the existing value with the Redirect URI for WebApi-MultiTenant-v2 app. For example, `https://localhost:44351/api/Home` .									
+1. Find the app key `AdminConsentRedirectApi` and replace the existing value with the Redirect URI for WebApi-MultiTenant-v2 app. For example, `https://localhost:44351/api/Home` .
+
 ### Step 3: Run the sample
 
 You can run the sample by using either Visual Studio or command line interface as shown below:
@@ -250,6 +261,7 @@ This behavior is expected as the browser is not authenticated. The Web applicati
    cd TodoListAPI
    dotnet restore
 ```
+
 Then:  
 In a separate console window, execute the following commands
 
@@ -270,11 +282,12 @@ Learn more about [HTTPS in .NET Core](https://docs.microsoft.com/aspnet/core/sec
 
 ##### Step 3. Run the applications
 
-In both the console windows execute the below command: 
+In both the console windows execute the below command:
 
 ```console
     dotnet run
 ```
+
 Open your browser and navigate to `https://localhost:44321`.
 
 > NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app. Each time you run the projects, your To-Do list will get emptied.
@@ -300,6 +313,7 @@ Before each test, you should delete your **service principal** for the tenant yo
 #### Ways of providing admin consent
 
 A service principal of your multi-tenant app is created manually or programmatically by a tenant admin using one of the following
+
    1. Using the [/adminconsent endpoint](https://docs.microsoft.com/azure/active-directory/develop/v2-admin-consent)
    2. [Using the PowerShell command](https://docs.microsoft.com/powershell/azure/create-azure-service-principal-azureps).
 
@@ -332,7 +346,6 @@ After you choose an admin account, it will lead to the Web App consent as below:
 Once it finishes, your applications service principal will be provisioned in that tenant.
 
 > Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page. 
-
 
 ## About the code
 
