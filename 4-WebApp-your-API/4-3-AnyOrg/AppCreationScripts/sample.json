@@ -24,14 +24,6 @@
           "Resource": "Microsoft Graph",
           "DelegatedPermissions": [ "User.Read.All" ]
         }
-      ],
-      "ManualSteps": [
-        {
-          "Comment": "Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'."
-        },
-        {
-          "Comment": "Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2."
-        }
       ]
     },
     {
@@ -50,12 +42,6 @@
         }
       ],
       "ManualSteps": [
-        {
-          "Comment": "Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'."
-        },
-        {
-          "Comment": "Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2."
-        },
         {
           "Comment": "[Optional] If you are a tenant admin, you can navigate to the API Permisions page and select 'Grant admin consent for (your tenant)'"
         }

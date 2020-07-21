@@ -42,7 +42,7 @@ This sample demonstrates how to develop a multi-tenant ASP.NET Core MVC web appl
   
 ### Scenario
 
-In this sample, we would protect an ASP.Net Core Web API using the Microsoft Identity Platform. The Web API will be protected using Azure Active Directory OAuth Bearer Authorization. The API will support authenticated users with Work and School accounts. Further on the API will also call a downstream API (Microsoft Graph) on-behalf of the signed-in user to provide additional value to its client apps.
+In this sample, we would protect an ASP.Net Core Web API using the Microsoft Identity Platform. The Web API will be protected using Azure Active Directory OAuth 2.0 Bearer Authorization. The API will support authenticated users with Work and School accounts. Further on the API will also call a downstream API (Microsoft Graph) on-behalf of the signed-in user to provide additional value to its client apps.
 
 ### Overview
 
@@ -348,10 +348,9 @@ When provisioning, you have to take care of the dependency in the topology where
 
 In `Startup.cs`, below lines of code enables Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
 ```csharp
-services.AddSignIn(Configuration).
-         AddWebAppCallsProtectedWebApi(Configuration, new string[] 
-         {Configuration["TodoList:TodoListScope"] }.
-         AddInMemoryTokenCaches();
+services.AddMicrosoftWebAppAuthentication(Configuration)
+    .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] })
+   .AddInMemoryTokenCaches();
 ```
 
 The following code injects the ToDoList service implementation in the client
@@ -473,22 +472,23 @@ By marking your application as multi-tenant, your application will be able to si
 
 ```csharp
 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddProtectedWebApi(options =>
-                {
-                    Configuration.Bind("AzureAd", options);
-                    options.Events = new JwtBearerEvents();
-                    options.Events.OnTokenValidated = async context =>
-                    {
-                        string[] allowedTenants = { /* list of tenant IDs */ };
-                        string tenantId = context.Principal.Claims.FirstOrDefault(x => x.Type == "tid" 
-                        || x.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
-                        if (!allowedTenants.Contains(tenantId))
-                        {
-                            throw new Exception("This tenant is not authorized");
-                        }
-                    };
-                },
-                options => { Configuration.Bind("AzureAd", options); });
+  .AddMicrosoftWebApi(options =>
+{
+    Configuration.Bind("AzureAd", options);
+    options.Events = new JwtBearerEvents();
+    options.Events.OnTokenValidated = async context =>
+    {
+        string[] allowedTenants = {/* list of tenant IDs */ };
+        string tenantId = context.Principal.Claims.FirstOrDefault(x => x.Type == "tid" || x.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
+
+        if (!allowedTenants.Contains(tenantId))
+        {
+            throw new Exception("This tenant is not authorized");
+        }
+    };
+}, options => { Configuration.Bind("AzureAd", options); })
+  .AddMicrosoftWebApiCallsWebApi(Configuration)
+  .AddInMemoryTokenCaches();
 ```
 
 
