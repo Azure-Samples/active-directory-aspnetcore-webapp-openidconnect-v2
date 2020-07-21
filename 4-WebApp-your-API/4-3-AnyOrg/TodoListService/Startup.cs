@@ -33,20 +33,23 @@ namespace TodoListAPI
 
             // Comment above lines of code and uncomment this section if you would like to validate ID tokens for allowed tenantIds
             //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //    .AddProtectedWebApi(options => {
-            //        Configuration.Bind("AzureAd", options);
-            //        options.Events = new JwtBearerEvents();
-            //        options.Events.OnTokenValidated = async context=>{
-            //            string[] allowedTenants = { /* list of tenant IDs */ };
-            //            string tenantId = context.Principal.Claims.FirstOrDefault(x => x.Type == "tid" || x.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
+            //  .AddMicrosoftWebApi(options =>
+            //{
+            //    Configuration.Bind("AzureAd", options);
+            //    options.Events = new JwtBearerEvents();
+            //    options.Events.OnTokenValidated = async context =>
+            //    {
+            //        string[] allowedTenants = {/* list of tenant IDs */ };
+            //        string tenantId = context.Principal.Claims.FirstOrDefault(x => x.Type == "tid" || x.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
 
-            //            if (!allowedTenants.Contains(tenantId))
-            //            {
-            //                throw new Exception("This tenant is not authorized");
-            //            }
-            //        };
-            //    },
-            //    options => { Configuration.Bind("AzureAd", options); });
+            //        if (!allowedTenants.Contains(tenantId))
+            //        {
+            //            throw new Exception("This tenant is not authorized");
+            //        }
+            //    };
+            //}, options => { Configuration.Bind("AzureAd", options); })
+            //  .AddMicrosoftWebApiCallsWebApi(Configuration)
+            //    .AddInMemoryTokenCaches();
 
             // Creating policies that wraps the authorization requirements
             services.AddAuthorization();
