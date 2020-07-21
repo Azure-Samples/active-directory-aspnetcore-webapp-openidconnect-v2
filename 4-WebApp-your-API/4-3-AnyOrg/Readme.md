@@ -146,7 +146,7 @@ As a first step you'll need to:
 1. Select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApi-MultiTenant-v2`.
-   - Under **Supported account types**, select **Accounts in any organizational directory and personal Microsoft accounts (e.g. Skype, Xbox, Outlook.com)**.
+   - Under **Supported account types**, select **Accounts in any organizational directory**.
    - In the **Redirect URI** section, select **Web** in the combo-box and enter the following redirect URI: `https://localhost:44351/api/Home`.
 1. Select **Register** to create the application.
 1. In the app's registration screen, find and note the **Application (client) ID**. You use this value in your app's configuration file(s) later in your code.
@@ -195,7 +195,7 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 1. Select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp-MultiTenant-v2`.
-   - Under **Supported account types**, select **Accounts in any organizational directory and personal Microsoft accounts (e.g. Skype, Xbox, Outlook.com)**.
+   - Under **Supported account types**, select **Accounts in any organizational directory**.
    - In the **Redirect URI (optional)** section, select **Web** in the combo-box and enter the following redirect URI: `https://localhost:44321/`.
      > Note that there are more than one redirect URIs used in this sample. You'll need to add them from the **Authentication** tab later after the app has been created successfully.
 1. Select **Register** to create the application.
@@ -205,9 +205,6 @@ Open the project in your IDE (like Visual Studio) to configure the code.
    - In the **Redirect URIs** section, enter the following redirect URIs.
       - `https://localhost:44321/signin-oidc`
    - In the **Logout URL** section, set it to `https://localhost:44321/signout-oidc`.
-   - In the **Implicit grant** section, check **ID tokens** as this sample requires
-     the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to
-     sign-in the user, and call an API.
 1. Select **Save** to save your changes.
 1. In the app's registration screen, click on the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
 1. In the **Client secrets** section, click on **New client secret**:
@@ -219,7 +216,7 @@ Open the project in your IDE (like Visual Studio) to configure the code.
    - Click the **Add a permission** button and then,
    - Ensure that the **My APIs** tab is selected.
    - In the list of APIs, select the API `WebApi-MultiTenant-v2`.
-   - In the **Delegated permissions** section, select the **access_as_user** in the list. Use the search box if necessary.
+   - In the **Delegated permissions** section, select the **Access 'WebApi-MultiTenant-v2'** in the list. Use the search box if necessary.
    - Click on the **Add permissions** button at the bottom.
 
 ##### Configure the  Web App (WebApp-MultiTenant-v2) to use your app registration
@@ -258,7 +255,7 @@ This behavior is expected as the browser is not authenticated. The Web applicati
 ##### Step 1. Install .NET Core dependencies
 
 ```console
-   cd TodoListAPI
+   cd TodoListService
    dotnet restore
 ```
 
@@ -351,15 +348,15 @@ Once it finishes, your applications service principal will be provisioned in tha
 
 ### Provisioning your Multi-tenant Apps in another Azure AD Tenant
 
-Often the user-based consent will be disabled in an Azure AD tenant or your application will be requesting permissions that requires a tenant-admin consent. In these scenarios, your application will need to utilize the `/adminconsent` endpoint to provision both the **ToDoListClient** and the **TodoListAPI** before the users from that tenant are able to sign-in to your app.
+Often the user-based consent will be disabled in an Azure AD tenant or your application will be requesting permissions that requires a tenant-admin consent. In these scenarios, your application will need to utilize the `/adminconsent` endpoint to provision both the **ToDoListClient** and the **TodoListService** before the users from that tenant are able to sign-in to your app.
 
-When provisioning, you have to take care of the dependency in the topology where the **ToDoListClient** is dependent on **TodoListAPI**. So in such a case, you would provision the **TodoListAPI** before the **ToDoListClient**.
+When provisioning, you have to take care of the dependency in the topology where the **ToDoListClient** is dependent on **TodoListService**. So in such a case, you would provision the **TodoListService** before the **ToDoListClient**.
 
 ### Code for the Web App (TodoListClient)
 
 #### 
 
-In `Startup.cs`, below lines of code enables Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
+In `Startup.cs`, below lines of code enables Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School.
 ```csharp
 services.AddMicrosoftWebAppAuthentication(Configuration)
     .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] })
@@ -469,7 +466,7 @@ public IActionResult AdminConsent()
 
 #### Choosing which scopes to expose
 
-This sample exposes a delegated permission (access_as_user) that will be presented in the access token claim. The method `AddProtectedWebApi` does not validate the scope, but Microsoft.Identity.Web has a HttpContext extension method, `VerifyUserHasAnyAcceptedScope`, where you can validate the scope as below:
+This sample exposes a delegated permission (access_as_user) that will be presented in the access token claim. The method `AddMicrosoftWebApi` does not validate the scope, but Microsoft.Identity.Web has a HttpContext extension method, `VerifyUserHasAnyAcceptedScope`, where you can validate the scope as below:
 
 ```csharp
 HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);

@@ -232,8 +232,6 @@ These steps are encapsulated in the [Microsoft.Identity.Web](https://github.com/
 
 In order to be able to sign-in users from multiple tenants, the [/common endpoint](https://docs.microsoft.com/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant#update-your-code-to-send-requests-to-common) must be used. In the sample, this endpoint is used as a result of setting the value for `TenantId` as `organizations` on the `appsettings.json` file, and configuring the middleware to read the values from it.
 
-NOTE: Guest users in a tenant will not be authenticated if the `https://login.microsoftonline.com/common/` endpoint is used as the authority to sign in users. `TenantId` will be required for those users.
-
 ```csharp
 services.AddSignIn(Configuration);
 ```
