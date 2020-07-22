@@ -17,9 +17,25 @@ namespace TodoListService.Controllers
         /// <returns></returns>
         public IActionResult AdminConsent()
         {
-            var queryString = System.Web.HttpUtility.ParseQueryString(HttpContext.Request.QueryString.ToString());
+            var decodeUrl = System.Web.HttpUtility.UrlDecode(HttpContext.Request.QueryString.ToString());
+            var queryString = System.Web.HttpUtility.ParseQueryString(decodeUrl);
             var clientRedirect = queryString["state"];
-            return Redirect(clientRedirect);
+            if (!string.IsNullOrEmpty(clientRedirect))
+            {
+                if (queryString["error"] == "access_denied" && queryString["error_subcode"] == "cancel")
+                {
+                    var clientRedirectUri = new Uri(clientRedirect);
+                    return Redirect(clientRedirectUri.GetLeftPart(System.UriPartial.Authority));
+                }
+                else
+                {
+                    return Redirect(clientRedirect);
+                }
+            }
+            else
+            {
+                return RedirectToAction("GetTodoItems", "TodoList");
+            }
         }
     }
 }
