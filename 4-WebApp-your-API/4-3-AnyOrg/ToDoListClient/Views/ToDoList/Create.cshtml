@@ -10,6 +10,7 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
+            <input type="hidden" asp-for="TenantId" value="@((string)TempData["TenantId"])"/>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
@@ -17,10 +18,7 @@
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
             <div class="form-group">
-                @*<label asp-for="Owner" class="control-label"></label>
-        <input asp-for="Owner" class="form-control"  value="@Html.DisplayTextFor(model => model.Owner)"/>
-        <span asp-validation-for="Owner" class="text-danger"></span>*@
-                <label asp-for="Owner" class="control-label"></label>
+               <label asp-for="Owner" class="control-label"></label>
 
                 <select class="form-control" asp-for="Owner" asp-items="@((List<SelectListItem>)TempData["UsersDropDown"])"></select>
 

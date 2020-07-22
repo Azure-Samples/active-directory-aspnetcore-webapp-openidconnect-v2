@@ -12,10 +12,6 @@ namespace TodoListAPI.Models
         public string Title { get; set; }
 
         public string Owner { get; set; }
+        public string TenantId { get; set; }
     }
-    //public class Users
-    //{
-    //    public int UserId { get; set; }
-    //    public string UserName { get; set; }
-    //}
 }

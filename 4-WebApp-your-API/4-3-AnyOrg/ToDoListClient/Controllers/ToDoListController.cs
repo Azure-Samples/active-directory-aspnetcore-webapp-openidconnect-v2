@@ -11,18 +11,15 @@ using ToDoListClient.Utils;
 
 namespace ToDoListClient.Controllers
 {
-    [Authorize]
+    [AuthorizeForScopes(ScopeKeySection = "TodoList:TodoListScope")]
     public class ToDoListController : Controller
     {
         private IToDoListService _todoListService;
-
         public ToDoListController(IToDoListService todoListService)
         {
             _todoListService = todoListService;
-
         }
 
-        [AuthorizeForScopes(ScopeKeySection = "TodoList:TodoListScope")]
         // GET: TodoList
         public async Task<ActionResult> Index()
         {
@@ -43,18 +40,18 @@ namespace ToDoListClient.Controllers
                 {
                     Text = u
                 }).ToList();
+                TempData["TenantId"] = HttpContext.User.GetTenantId();
                 return View(todo);
             }
             catch (WebApiMsalUiRequiredException ex)
             {
-                var a = ex.Message;
                 return Redirect(ex.Message);
             }
         }
         // POST: TodoList/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind("Title,Owner")] ToDoItem todo)
+        public async Task<ActionResult> Create([Bind("Title,Owner,TenantId")] ToDoItem todo)
         {
             await _todoListService.AddAsync(todo);
             return RedirectToAction("Index");
@@ -76,7 +73,7 @@ namespace ToDoListClient.Controllers
         // POST: TodoList/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(int id, [Bind("Id,Title,Owner")] ToDoItem todo)
+        public async Task<ActionResult> Edit(int id, [Bind("Id,Title,Owner,TenantId")] ToDoItem todo)
         {
             await _todoListService.EditAsync(todo);
             return RedirectToAction("Index");

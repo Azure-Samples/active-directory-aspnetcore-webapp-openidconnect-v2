@@ -18,7 +18,7 @@ namespace ToDoListClient.Services
 {
     public static class TodoListServiceExtensions
     {
-        public static void AddTodoListService(this IServiceCollection services, IConfiguration configuration)
+        public static void AddTodoListService(this IServiceCollection services)
         {
             // https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests
             services.AddHttpClient<IToDoListService, ToDoListService>();
@@ -29,7 +29,6 @@ namespace ToDoListClient.Services
         private readonly HttpClient _httpClient;
         private readonly string _TodoListScope = string.Empty;
         private readonly string _TodoListBaseAddress = string.Empty;
-        private readonly string _ClientId = string.Empty;
         private readonly string _RedirectUri = string.Empty;
         private readonly string _ApiRedirectUri = string.Empty;
         private readonly ITokenAcquisition _tokenAcquisition;
@@ -40,7 +39,6 @@ namespace ToDoListClient.Services
             _tokenAcquisition = tokenAcquisition;
             _TodoListScope = configuration["TodoList:TodoListScope"];
             _TodoListBaseAddress = configuration["TodoList:TodoListBaseAddress"];
-            _ClientId = configuration["AzureAd:ClientId"];
             _RedirectUri = configuration["RedirectUri"];
             _ApiRedirectUri = configuration["TodoList:AdminConsentRedirectApi"];
             if (!string.IsNullOrEmpty(_TodoListBaseAddress))

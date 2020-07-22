@@ -36,7 +36,7 @@ namespace ToDoListClient
             services.AddMicrosoftWebAppAuthentication(Configuration)
                 .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] })
                .AddInMemoryTokenCaches();
-            services.AddTodoListService(Configuration);
+            services.AddTodoListService();
             services.AddControllersWithViews(options =>
             {
                 var policy = new AuthorizationPolicyBuilder()

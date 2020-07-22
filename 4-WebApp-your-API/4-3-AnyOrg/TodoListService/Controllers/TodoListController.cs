@@ -39,16 +39,17 @@ namespace TodoListAPI.Controllers
         public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
         {
             HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
+            string userTenantId = HttpContext.User.GetTenantId();
             try
             {
                 Microsoft.Graph.User user = new User();
                 await _context.TodoItems.ToListAsync();
             }
-            catch(Exception ex)
+            catch(Exception)
             {
-                var a = ex.Message;
+                throw;
             }
-            return await _context.TodoItems.ToListAsync();
+            return await _context.TodoItems.Where(x => x.TenantId == userTenantId).ToListAsync();
         }
 
         // GET: api/TodoItems/5
