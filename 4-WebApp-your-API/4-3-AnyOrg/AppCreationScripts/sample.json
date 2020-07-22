@@ -1,6 +1,6 @@
 {
   "Sample": {
-    "Title": "Sign a user into a Web application using Microsoft Identity Platform and call a protected ASP.NET Core Web API, which calls Microsoft Graph on-behalf of the user",
+    "Title": "Protect a multi-tenant SaaS web application and a Web API which calls Microsoft Graph on-behalf of the user with the Microsoft Identity Platform",
     "Level": 400,
     "Client": "ASP.NET Core Web App",
     "Service": "ASP.NET Core Web API",
@@ -43,7 +43,7 @@
       ],
       "ManualSteps": [
         {
-          "Comment": "[Optional] If you are a tenant admin, you can navigate to the API Permisions page and select 'Grant admin consent for (your tenant)'"
+          "Comment": "[Optional] If you are a tenant admin, you can navigate to the API Permissions page and select 'Grant admin consent for (your tenant)'"
         }
       ]
     }

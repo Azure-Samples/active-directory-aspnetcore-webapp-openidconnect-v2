@@ -15,15 +15,36 @@ products:
   - dotnet
   - CSharp
   - office-ms-graph
-description: "Build a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect"
+description: "Protect a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect"
 ---
 
-# Build a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect
+# Protect a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect
 
 > This sample is for Azure AD, not Azure AD B2C.
 
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
+- [About this sample](#about-this-sample)
+  - [Overview](#overview)
+- [Scenario](#scenario)
+- [How to run this sample](#how-to-run-this-sample)
+  - [Step 1:  Clone or download this repository](#step-1-clone-or-download-this-repository)
+  - [Step 2:  Register the sample application with your Azure Active Directory tenant](#step-2-register-the-sample-application-with-your-azure-active-directory-tenant)
+  - [Step 3:  Configure the sample to use your Azure AD tenant](#step-3-configure-the-sample-to-use-your-azure-ad-tenant)
+  - [Step 4: Run the sample](#step-4-run-the-sample)
+- [About The code](#about-the-code)
+  - [Usage of `/common` endpoint](#usage-of-common-endpoint)
+  - [Service principal provisioning for new tenants (onboarding process)](#service-principal-provisioning-for-new-tenants-onboarding-process)
+  - [Custom token validation allowing only registered tenants](#custom-token-validation-allowing-only-registered-tenants)
+  - [Partitioning data by tenant](#partitioning-data-by-tenant)
+  - [Acquiring Access token for Microsoft Graph for each tenant](#acquiring-access-token-for-microsoft-graph-for-each-tenant)
+- [Troubleshooting](#troubleshooting)
+  - [Error AADSTS650051](#error-aadsts650051)
+  - [Error `The provided request must include a 'response_type' input parameter`](#error-the-provided-request-must-include-a-response_type-input-parameter)
+- [Next Steps](#next-steps)
+- [Contributing](#contributing)
+- [Learn more](#learn-more)
+  
 ## About this sample
 
 This sample shows how to build an ASP.NET Core MVC web application that uses OpenID Connect to sign in users from multiple Azure AD tenants. Additionally it also introduces developers to the concept of a [multi-tenant](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps) Azure Active Directory application.
@@ -205,7 +226,7 @@ This sample is using the OpenID Connect ASP.NET Core middleware to sign in users
 
 You can trigger the middleware to send an OpenID Connect sign-in request by decorating a class or method with the `[Authorize]` attribute or by issuing a challenge (see the [AccountController.cs](https://github.com/aspnet/AspNetCore/blob/master/src/Azure/AzureAD/Authentication.AzureAD.UI/src/Areas/AzureAD/Controllers/AccountController.cs) file which is part of ASP.NET Core):
 
-These steps are encapsulated in the [Microsoft.Identity.Web](..\..\Microsoft.Identity.Web) project, and in particular in the [WebAppServiceCollectionExtensions.cs](..\..\Microsoft.Identity.Web\WebAppServiceCollectionExtensions.cs) file
+These steps are encapsulated in the [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) project, and in particular in the [WebAppServiceCollectionExtensions.cs](https://github.com/AzureAD/microsoft-identity-web/blob/master/src/Microsoft.Identity.Web/WebAppExtensions/WebAppServiceCollectionExtensions.cs) file
 
 ### Usage of `/common` endpoint
 
@@ -287,7 +308,7 @@ services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationSch
 });
 ```
 
-### Data partitioning by tenant
+### Partitioning data by tenant
 
 There are two common scenarios regarding data partition on a multi-tenant app. Having a separate database for each tenant or having a single database and using the **tenantId** to separate the data of each tenant. In this sample, we have taken the single database approach to save the ToDo items for all users from all tenants.
 
@@ -331,6 +352,10 @@ If you had provisioned a service principal of this app in the past and created a
 If you try to sign-in with a Microsoft account (MSA), such as hotmail.com, outlook.com, and msn.com, you'd receive this error during admin consent because MSA is not supported at the `/common` endpoint which this sample is using to obtain the admin consent.
 Please use an admin account with from the Azure AD tenant for this purpose.
 
+## Next Steps
+
+If your application topology comprises of multiple apps, for example a web API that the multi-tenant app will call, we recommend you also go through the [Protect a multi-tenant SaaS web application and a Web API which calls Microsoft Graph on-behalf of the user with the Microsoft Identity Platform](../../4-WebApp-your-API\4-3-AnyOrg/Readme.md) sample.
+
 ## Contributing
 
 If you'd like to contribute to this sample, see [CONTRIBUTING.MD](/CONTRIBUTING.md).
@@ -341,23 +366,24 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 To learn more about single and multi-tenant apps
 
-- [Tenancy in Azure Active Directory](https://docs.microsoft.com/en-us/azure/active-directory/develop/single-and-multi-tenant-apps)
-- [How to: Sign in any Azure Active Directory user using the multi-tenant application pattern](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant)
-- [Application and service principal objects in Azure Active Directory](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals)
-- [National Clouds](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-national-cloud)
-- [Endpoints](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-protocols#endpoints)
+- [Tenancy in Azure Active Directory](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps)
+- [How to: Sign in any Azure Active Directory user using the multi-tenant application pattern](https://docs.microsoft.com/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant)
+- [Application and service principal objects in Azure Active Directory](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals)
+- [National Clouds](https://docs.microsoft.com/azure/active-directory/develop/authentication-national-cloud)
+- [Endpoints](https://docs.microsoft.com/azure/active-directory/develop/active-directory-v2-protocols#endpoints)
 - [Multi-tenant SaaS database tenancy patterns](https://docs.microsoft.com/azure/sql-database/saas-tenancy-app-design-patterns)
 
 To learn more about admin consent experiences
-- [Understanding Azure AD application consent experiences](https://docs.microsoft.com/en-us/azure/active-directory/develop/application-consent-experience)
-- [Understand user and admin consent](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant#understand-user-and-admin-consent)
+
+- [Understanding Azure AD application consent experiences](https://docs.microsoft.com/azure/active-directory/develop/application-consent-experience)
+- [Understand user and admin consent](https://docs.microsoft.com/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant#understand-user-and-admin-consent)
 
 To learn more about token validation, see
+
 - [Validating tokens](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki/ValidatingTokens)
-- [Validating an id_token](https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens#validating-an-id_token)
+- [Validating an id_token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens#validating-an-id_token)
 
 To understand more about app registration, see:
 
 - [Quickstart: Register an application with the Microsoft identity platform (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
 - [Quickstart: Configure a client application to access web APIs (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
-
