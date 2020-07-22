@@ -6,12 +6,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
-using TodoListAPI.Models;
+using ToDoListService.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Linq;
 using System;
 
-namespace TodoListAPI
+namespace ToDoListService
 {
     public class Startup
     {

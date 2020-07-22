@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace TodoListAPI.Models
+namespace ToDoListService.Models
 {
     public class TodoItem
     {

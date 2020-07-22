@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using TodoListAPI.Models;
+using ToDoListService.Models;
 using Microsoft.Identity.Web.Resource;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Client;
@@ -14,7 +14,7 @@ using System.Net.Http.Headers;
 using Microsoft.Graph;
 using System.Net;
 
-namespace TodoListAPI.Controllers
+namespace ToDoListService.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]

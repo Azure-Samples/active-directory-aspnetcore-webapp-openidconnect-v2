@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace TodoListService.Controllers
+namespace ToDoListService.Controllers
 {
     [Route("api/[controller]")]
     [Microsoft.AspNetCore.Authorization.AllowAnonymous]

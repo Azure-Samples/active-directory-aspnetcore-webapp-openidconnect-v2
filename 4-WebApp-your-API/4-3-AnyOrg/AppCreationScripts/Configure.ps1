@@ -256,7 +256,7 @@ Function ConfigureApplications
         Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($serviceServicePrincipal.DisplayName)'"
    }
 
-    # rename the user_impersonation scope if it exists to match the readme steps or add a new scope
+    # rename the access_as_user scope if it exists to match the readme steps or add a new scope
     $scopes = New-Object System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.OAuth2Permission]
    
     if ($scopes.Count -ge 0) 
@@ -321,7 +321,6 @@ Function ConfigureApplications
                                                   -IdentifierUris "https://$tenantName/WebApp-MultiTenant-v2" `
                                                   -AvailableToOtherTenants $True `
                                                   -PasswordCredentials $key `
-                                                  -Oauth2AllowImplicitFlow $true `
                                                   -PublicClient $False
 
    # create the service principal of the newly created application 
@@ -366,7 +365,7 @@ Function ConfigureApplications
 
 
    # Update config file for 'service'
-   $configFile = $pwd.Path + "\..\TodoListService\appsettings.json"
+   $configFile = $pwd.Path + "\..\ToDoListService\appsettings.json"
    Write-Host "Updating the sample code ($configFile)"
    $dictionary = @{ "Domain" = $tenantName;"TenantId" = 'common';"ClientId" = $serviceAadApplication.AppId;"ClientSecret" = $serviceAppKey };
    UpdateTextFile -configFilePath $configFile -dictionary $dictionary
@@ -381,7 +380,7 @@ Function ConfigureApplications
    Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
    Write-Host "- For 'client'"
    Write-Host "  - Navigate to '$clientPortalUrl'"
-   Write-Host "  - [Optional] If you are a tenant admin, you can navigate to the API Permisions page and select 'Grant admin consent for (your tenant)'" -ForegroundColor Red 
+   Write-Host "  - [Optional] If you are a tenant admin, you can navigate to the API Permissions page and select 'Grant admin consent for (your tenant)'" -ForegroundColor Red 
 
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
      
