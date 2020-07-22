@@ -97,7 +97,7 @@ cd "4-WebApp-your-API\4-3-AnyOrg"
 
 or download and extract the repository .zip file.
 
-> :warning: Given that the name of the sample is quiet long, and so are the names of the referenced packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
+> :warning: Given that the name of the sample is quite long, and so are the names of the referenced packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
 ### Step 2:  Register the sample applications with your Azure Active Directory tenant
 
@@ -352,6 +352,12 @@ The tenant administrators of a tenant can provision service principals for the a
 Connect-AzureAD -TenantId "[The tenant Id]"
 New-AzureADServicePrincipal -AppId -DisplayName
 ```
+
+#### Explore the sample
+
+1. Open your browser and navigate to `https://localhost:44321` and sign-in using the link on top-right.
+1. Click on Create New link to create new tasks and you can select the user from the list and assign a task to that user.
+1. Click on To-Do List to access all the tasks assigned to users in the tenant of signed-in user.
 
 > Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
 
