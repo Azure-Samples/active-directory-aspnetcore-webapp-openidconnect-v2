@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <UserSecretsId>aspnet-TodoListAPI-BA938C29-8BAB-4664-A688-8FD54049C1C3</UserSecretsId>
+    <UserSecretsId>aspnet-ToDoListService-BA938C29-8BAB-4664-A688-8FD54049C1C3</UserSecretsId>
     <WebProject_DirectoryAccessLevelKey>1</WebProject_DirectoryAccessLevelKey>
   </PropertyGroup>
 

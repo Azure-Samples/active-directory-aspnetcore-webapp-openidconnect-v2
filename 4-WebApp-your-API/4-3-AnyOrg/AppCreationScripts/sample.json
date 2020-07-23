@@ -58,7 +58,7 @@
     {
       "App": "service",
       "SettingKind": "Text",
-      "SettingFile": "\\..\\TodoListService\\appsettings.json",
+      "SettingFile": "\\..\\ToDoListService\\appsettings.json",
       "Mappings": [
         {
           "key": "Domain",

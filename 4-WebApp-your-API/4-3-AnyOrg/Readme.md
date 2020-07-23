@@ -44,7 +44,7 @@ description: "Protect a multi-tenant SaaS web application and a Web API which ca
 
 ## About this sample
 
-This sample demonstrates how to protect a **multi-tenant** ASP.NET Core MVC web application (TodoListClient) which calls another **multi-tenant** ASP.NET Core Web API (TodoListService) with Microsoft Identity Platform. This sample builds on the concepts introduced in the [Build a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect](../../../2-WebApp-graph-user\2-3-Multi-Tenant/README.md) sample. We advise you go through that sample once before trying this sample.  
+This sample demonstrates how to protect a **multi-tenant** ASP.NET Core MVC web application (TodoListClient) which calls another **multi-tenant** ASP.NET Core Web API (ToDoListService) with Microsoft Identity Platform. This sample builds on the concepts introduced in the [Build a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect](../../../2-WebApp-graph-user\2-3-Multi-Tenant/README.md) sample. We advise you go through that sample once before trying this sample.  
   
 ### Scenario
 
@@ -140,12 +140,12 @@ As a first step you'll need to:
 1. Sign in to the [Azure portal](https://portal.azure.com).
 1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant..
 
-#### Register the service app (WebApi-MultiTenant-TodoListService-v2)
+#### Register the service app (WebApi-MultiTenant-ToDoListService-v2)
 
 1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
 1. Select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
-   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApi-MultiTenant-TodoListService-v2`.
+   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApi-MultiTenant-ToDoListService-v2`.
    - Under **Supported account types**, select **Accounts in any organizational directory**.
    - In the **Redirect URI (optional)** section, select **Web** in the combo-box and enter the following redirect URI: `https://localhost:44351/api/Home`.
 1. Select **Register** to create the application.
@@ -171,24 +171,24 @@ The first thing that we need to do is to declare the unique [resource](https://d
    - Select **Add a scope** button open the **Add a scope** screen and Enter the values as indicated below:
         - For **Scope name**, use `access_as_user`.
         - Select **Admins and users** options for **Who can consent?**
-        - For **Admin consent display name** type `Access WebApi-MultiTenant-TodoListService-v2`
-        - For **Admin consent description** type `Allows the app to access WebApi-MultiTenant-TodoListService-v2 as the signed-in user.`
-        - For **User consent display name** type `Access WebApi-MultiTenant-TodoListService-v2`
-        - For **User consent description** type `Allow the application to access WebApi-MultiTenant-TodoListService-v2 on your behalf.`
+        - For **Admin consent display name** type `Access WebApi-MultiTenant-ToDoListService-v2`
+        - For **Admin consent description** type `Allows the app to access WebApi-MultiTenant-ToDoListService-v2 as the signed-in user.`
+        - For **User consent display name** type `Access WebApi-MultiTenant-ToDoListService-v2`
+        - For **User consent description** type `Allow the application to access WebApi-MultiTenant-ToDoListService-v2 on your behalf.`
         - Keep **State** as **Enabled**
         - Click on the **Add scope** button on the bottom to save this scope.
 
-#### Configure the service app (WebApi-MultiTenant-TodoListService-v2) to use your app registration
+#### Configure the service app (WebApi-MultiTenant-ToDoListService-v2) to use your app registration
 
 Open the project in your IDE (like Visual Studio or Visual Studio Code) to configure the code.
 
 >In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
-1. Open the `TodoListService\appsettings.json` file
+1. Open the `ToDoListService\appsettings.json` file
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
 1. Find the app key `TenantId` and replace the existing value with 'common'.
-1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `WebApi-MultiTenant-TodoListService-v2` application copied from the Azure portal.
-1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApi-MultiTenant-TodoListService-v2` app, in the Azure portal.
+1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `WebApi-MultiTenant-ToDoListService-v2` application copied from the Azure portal.
+1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApi-MultiTenant-ToDoListService-v2` app, in the Azure portal.
 
 #### Register the client app (WebApp-MultiTenant-ToDoListClient-v2)
 
@@ -216,8 +216,8 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. In the app's registration screen, click on the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
    - Click the **Add a permission** button and then,
    - Ensure that the **My APIs** tab is selected.
-   - In the list of APIs, select the API `WebApi-MultiTenant-TodoListService-v2`.
-   - In the **Delegated permissions** section, select the **Access 'WebApi-MultiTenant-TodoListService-v2'** in the list. Use the search box if necessary.
+   - In the list of APIs, select the API `WebApi-MultiTenant-ToDoListService-v2`.
+   - In the **Delegated permissions** section, select the **Access 'WebApi-MultiTenant-ToDoListService-v2'** in the list. Use the search box if necessary.
    - Click on the **Add permissions** button at the bottom.
 
 #### Configure the client app (WebApp-MultiTenant-ToDoListClient-v2) to use your app registration
@@ -233,8 +233,8 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp-MultiTenant-ToDoListClient-v2` app, in the Azure portal.
 1. Find the app key `RedirectUri` and replace the existing value with the base address of the WebApp-MultiTenant-ToDoListClient-v2 project (by default `https://localhost:44321/`).
 1. Find the app key `TodoListScope` and replace the existing value with ScopeDefault.
-1. Find the app key `TodoListAppId` and replace the existing value with the application ID (clientId) of the `WebApi-MultiTenant-TodoListService-v2` application copied from the Azure portal.
-1. Find the app key `TodoListBaseAddress` and replace the existing value with the base address of the WebApi-MultiTenant-TodoListService-v2 project (by default `https://localhost:44351/`).
+1. Find the app key `TodoListAppId` and replace the existing value with the application ID (clientId) of the `WebApi-MultiTenant-ToDoListService-v2` application copied from the Azure portal.
+1. Find the app key `TodoListBaseAddress` and replace the existing value with the base address of the WebApi-MultiTenant-ToDoListService-v2 project (by default `https://localhost:44351/`).
 1. Find the app key `AdminConsentRedirectApi` and replace the existing value with "https://localhost:44351/api/Home".
 
 ### Step 3: Run the sample
@@ -257,7 +257,7 @@ This behavior is expected as the browser is not authenticated. The Web applicati
 ##### Step 1. Install .NET Core dependencies
 
 ```console
-   cd TodoListService
+   cd ToDoListService
    dotnet restore
 ```
 
@@ -289,7 +289,7 @@ In both the console windows execute the below command:
 
 Open your browser and navigate to `https://localhost:44321`.
 
-> NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app. Each time you run the projects, your To-Do list will get emptied.
+> NOTE: Remember, the To-Do list is stored in memory in this `ToDoListService` app. Each time you run the projects, your To-Do list will get emptied.
 
 ### Testing the Application
 
@@ -365,9 +365,9 @@ New-AzureADServicePrincipal -AppId -DisplayName
 
 ### Provisioning your Multi-tenant Apps in another Azure AD Tenant programatically
 
-Often the user-based consent will be disabled in an Azure AD tenant or your application will be requesting permissions that requires a tenant-admin consent. In these scenarios, your application will need to utilize the `/adminconsent` endpoint to provision both the **ToDoListClient** and the **TodoListService** before the users from that tenant are able to sign-in to your app.
+Often the user-based consent will be disabled in an Azure AD tenant or your application will be requesting permissions that requires a tenant-admin consent. In these scenarios, your application will need to utilize the `/adminconsent` endpoint to provision both the **ToDoListClient** and the **ToDoListService** before the users from that tenant are able to sign-in to your app.
 
-When provisioning, you have to take care of the dependency in the topology where the **ToDoListClient** is dependent on **TodoListService**. So in such a case, you would provision the **TodoListService** before the **ToDoListClient**.
+When provisioning, you have to take care of the dependency in the topology where the **ToDoListClient** is dependent on **ToDoListService**. So in such a case, you would provision the **ToDoListService** before the **ToDoListClient**.
 
 ### Code for the Web App (TodoListClient)
 
@@ -466,7 +466,7 @@ public async Task<IActionResult> Create()
 }
 ```
 
-### Code for the Web API (TodoListService)
+### Code for the Web API (ToDoListService)
 
 #### Admin consent Client Redirect
 
