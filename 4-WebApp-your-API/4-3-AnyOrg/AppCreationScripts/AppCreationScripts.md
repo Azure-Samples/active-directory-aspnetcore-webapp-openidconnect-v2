@@ -1,4 +1,5 @@
-# Registering the sample apps with Microsoft identity platform and updating the configuration files using PowerShell scripts
+# Registering the sample apps with Microsoft identity platform and updating the configuration files using PowerShell
+scripts
 
 ## Overview
 

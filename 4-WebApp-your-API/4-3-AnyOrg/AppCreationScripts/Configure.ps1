@@ -241,6 +241,7 @@ Function ConfigureApplications
                                                    -AvailableToOtherTenants $True `
                                                    -PasswordCredentials $key `
                                                    -PublicClient $False
+
    $serviceIdentifierUri = 'api://'+$serviceAadApplication.AppId
    Set-AzureADApplication -ObjectId $serviceAadApplication.ObjectId -IdentifierUris $serviceIdentifierUri
 
@@ -321,7 +322,6 @@ Function ConfigureApplications
                                                   -IdentifierUris "https://$tenantName/WebApp-MultiTenant-v2" `
                                                   -AvailableToOtherTenants $True `
                                                   -PasswordCredentials $key `
-                                                  -Oauth2AllowImplicitFlow $true `
                                                   -PublicClient $False
 
    # create the service principal of the newly created application 
@@ -374,14 +374,12 @@ Function ConfigureApplications
    # Update config file for 'client'
    $configFile = $pwd.Path + "\..\ToDoListClient\appsettings.json"
    Write-Host "Updating the sample code ($configFile)"
-   $dictionary = @{ "ClientId" = $clientAadApplication.AppId;"TenantId" = 'common';"Domain" = $tenantName;"ClientSecret" = $clientAppKey;"RedirectUri" = $clientAadApplication.HomePage;"TodoListScope" = ("api://"+$serviceAadApplication.AppId+"/.default");"TodoListAppId" = $serviceAadApplication.AppId;"TodoListBaseAddress" = $serviceAadApplication.HomePage;"AdminConsentRedirectApi" = $serviceAadApplication.ReplyUrls };
-   UpdateTextFile -configFilePath $configFile -dictionary $dictionary
    Write-Host ""
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
    Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
    Write-Host "- For 'client'"
    Write-Host "  - Navigate to '$clientPortalUrl'"
-   Write-Host "  - [Optional] If you are a tenant admin, you can navigate to the API Permisions page and select 'Grant admin consent for (your tenant)'" -ForegroundColor Red 
+   Write-Host "  - [Optional] If you are a tenant admin, you can navigate to the API Permissions page and select 'Grant admin consent for (your tenant)'" -ForegroundColor Red 
 
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
      
