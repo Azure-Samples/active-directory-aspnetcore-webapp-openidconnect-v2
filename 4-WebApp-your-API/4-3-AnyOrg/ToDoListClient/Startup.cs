@@ -34,12 +34,12 @@ namespace ToDoListClient
                 options.HandleSameSiteCookieCompatibility();
             });
 
-            // TODO: Comment properly
+            //Add authentication with Microsoft identity platform.
             services.AddMicrosoftWebAppAuthentication(Configuration)
                 .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] })
                .AddInMemoryTokenCaches();
 
-            // TODO: Comment properly            
+            //Enables to add client service to use the HttpClient by dependency injection.
             services.AddTodoListService();
 
             services.AddControllersWithViews(options =>

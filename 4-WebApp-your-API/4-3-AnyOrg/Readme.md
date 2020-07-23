@@ -376,8 +376,8 @@ If you get errors during admin consent, consider deleting the  **service princip
 ### Explore the sample
 
 1. Open your browser and navigate to `https://localhost:44321` and sign-in using the link on top-right.
-2. Click on Create New link to create new tasks and you can select the user from the list and assign a task to that user.
-3. Click on To-Do List to access all the tasks assigned to users in the tenant of the signed-in user.
+1. Click on `To-Do List`, you can click on `Create New` link. It will redirect to create task screen where you can add a new task and assign it to any user from the list.
+1. The `To-Do List` screen also displays tasks that are assigned to and created by signed-in user. The user can edit and delete the created tasks but can only view the assigned tasks.
 
 > Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
 
@@ -399,11 +399,11 @@ services.AddMicrosoftWebAppAuthentication(Configuration)
    .AddInMemoryTokenCaches();
 ```
 
- 1. AddMicrosoftWebAppAuthentication :TODO: add details
- 1. AddMicrosoftWebAppCallsWebApi :TODO: add details
- 1. AddInMemoryTokenCaches:TODO: add details
+ 1. AddMicrosoftWebAppAuthentication : This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
+ 1. AddMicrosoftWebAppCallsWebApi : Enables the web app to call protected APIs.
+ 1. AddInMemoryTokenCaches: Adds an in memory token cache provider, which will cache the Access Tokens acquired for the Web API.
 
-The following code injects the ToDoList service implementation in the client
+The following code enables to add client service to use the HttpClient by dependency injection.
 
 ```CSharp
 services.AddTodoListService(Configuration);
@@ -439,8 +439,9 @@ public IActionResult AdminConsentClient()
 
 ### Handle the **MsalUiRequiredException** from Web API
 
- In `ToDoListService.cs`, the method `HandleChallengeFromWebApi` handles the `MsalUiRequiredException` response from Web API in the on-behalf of flow. It creates a consent URI and throws a custom exception i.e., `WebApiMsalUiRequiredException`.
-TODO: Explain why it is needed?
+If signed-in user does not have consent for a permission on the Web API, for instance "user.read.all" in this sample, then Web API will throw `MsalUiRequiredException`. The response contains the details about consent Uri and proposed action.
+
+The Web App contains a method `HandleChallengeFromWebApi` in `ToDoListService.cs` that handles the exception thrown by API. It creates a consent URI and throws a custom exception i.e., `WebApiMsalUiRequiredException`.
 
 ```csharp
 private void HandleChallengeFromWebApi(HttpResponseMessage response)
@@ -473,9 +474,7 @@ private void HandleChallengeFromWebApi(HttpResponseMessage response)
 }
 ```
 
-The following code in `ToDoListController.cs` catches the `WebApiMsalUiRequiredException` exception and redirects to consent Uri.
-
-TODO: Explain why it is needed?
+The following code in `ToDoListController.cs` catches the `WebApiMsalUiRequiredException` exception thrown by `HandleChallengeFromWebApi` method as explained above. Further it Redirects to `consentUri` that is retrieved from exception message. Admin needs to consent as `user.read.all` permission requires admin approval.
 
 ```csharp
 public async Task<IActionResult> Create()
@@ -487,7 +486,6 @@ public async Task<IActionResult> Create()
     }
     catch (WebApiMsalUiRequiredException ex)
     {
-        var a = ex.Message;
         return Redirect(ex.Message);
     }
 }
@@ -497,14 +495,30 @@ public async Task<IActionResult> Create()
 
 #### Admin consent Client Redirect
 
-In HomeController.cs, the method `AdminConsent` redirects to the URI passed in the state parameter by Web App.
+In HomeController.cs, the method `AdminConsent` redirects to the URI passed in the state parameter by Web App. If admin consent is cancelled from API consent screen then it redirects to base address of Web App.
 
 ```csharp
 public IActionResult AdminConsent()
 {
-    var queryString = System.Web.HttpUtility.ParseQueryString(HttpContext.Request.QueryString.ToString());
+    var decodeUrl = System.Web.HttpUtility.UrlDecode(HttpContext.Request.QueryString.ToString());
+    var queryString = System.Web.HttpUtility.ParseQueryString(decodeUrl);
     var clientRedirect = queryString["state"];
-    return Redirect(clientRedirect);
+    if (!string.IsNullOrEmpty(clientRedirect))
+    {
+        if (queryString["error"] == "access_denied" && queryString["error_subcode"] == "cancel")
+        {
+            var clientRedirectUri = new Uri(clientRedirect);
+            return Redirect(clientRedirectUri.GetLeftPart(System.UriPartial.Authority));
+        }
+        else
+        {
+            return Redirect(clientRedirect);
+        }
+    }
+    else
+    {
+        return RedirectToAction("GetTodoItems", "TodoList");
+    }
 }
 ```
 
