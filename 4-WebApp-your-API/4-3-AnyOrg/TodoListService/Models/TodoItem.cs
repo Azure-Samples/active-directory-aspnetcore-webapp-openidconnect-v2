@@ -11,7 +11,8 @@ namespace ToDoListService.Models
 
         public string Title { get; set; }
 
-        public string Owner { get; set; }
+        public string AssignedTo { get; set; }
+        public string Assignedby { get; set; }
         public string TenantId { get; set; }
     }
 }

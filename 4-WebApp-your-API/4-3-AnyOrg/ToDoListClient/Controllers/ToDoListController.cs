@@ -23,6 +23,7 @@ namespace ToDoListClient.Controllers
         // GET: TodoList
         public async Task<ActionResult> Index()
         {
+            TempData["SignedInUser"] = User.GetDisplayName();
             return View(await _todoListService.GetAsync());
         }
 
@@ -40,6 +41,7 @@ namespace ToDoListClient.Controllers
                     Text = u
                 }).ToList();
                 TempData["TenantId"] = HttpContext.User.GetTenantId();
+                TempData["AssignedBy"] = HttpContext.User.GetDisplayName();
                 return View(todo);
             }
             catch (WebApiMsalUiRequiredException ex)
@@ -51,7 +53,7 @@ namespace ToDoListClient.Controllers
         // POST: TodoList/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind("Title,Owner,TenantId")] ToDoItem todo)
+        public async Task<ActionResult> Create([Bind("Title,AssignedTo,AssignedBy,TenantId")] ToDoItem todo)
         {
             await _todoListService.AddAsync(todo);
             return RedirectToAction("Index");
@@ -73,7 +75,7 @@ namespace ToDoListClient.Controllers
         // POST: TodoList/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(int id, [Bind("Id,Title,Owner,TenantId")] ToDoItem todo)
+        public async Task<ActionResult> Edit(int id, [Bind("Id,Title,AssignedTo,AssignedBy,TenantId")] ToDoItem todo)
         {
             await _todoListService.EditAsync(todo);
             return RedirectToAction("Index");
@@ -95,7 +97,7 @@ namespace ToDoListClient.Controllers
         // POST: TodoList/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(int id, [Bind("Id,Title,Owner")] ToDoItem todo)
+        public async Task<ActionResult> Delete(int id, [Bind("Id,Title,AssignedTo")] ToDoItem todo)
         {
             await _todoListService.DeleteAsync(id);
             return RedirectToAction("Index");

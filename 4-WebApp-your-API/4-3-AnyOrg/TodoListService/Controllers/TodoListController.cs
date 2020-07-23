@@ -40,6 +40,7 @@ namespace ToDoListService.Controllers
         {
             HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
             string userTenantId = HttpContext.User.GetTenantId();
+            var signedInUser = HttpContext.User.GetDisplayName();
             try
             {
                 Microsoft.Graph.User user = new User();
@@ -49,7 +50,8 @@ namespace ToDoListService.Controllers
             {
                 throw;
             }
-            return await _context.TodoItems.Where(x => x.TenantId == userTenantId).ToListAsync();
+            return await _context.TodoItems.Where
+                (x => x.TenantId == userTenantId && (x.AssignedTo == signedInUser || x.Assignedby== signedInUser)).ToListAsync();
         }
 
         // GET: api/TodoItems/5

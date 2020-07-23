@@ -9,7 +9,8 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+<p> Tasks assigned to signed-in User</p>
+<table class="table table-bordered">
     <thead>
         <tr>
             <th>
@@ -19,7 +20,42 @@
                 @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Owner)
+                @Html.DisplayNameFor(model => model.AssignedBy)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            if (item.AssignedTo == TempData["SignedInUser"].ToString())
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Title)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AssignedBy)
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<p>Tasks created by signed-in User</p>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AssignedTo)
             </th>
             <th>
                 Actions
@@ -27,23 +63,26 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item2 in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Owner)
-                </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-                </td>
-            </tr>
+            if (item2.AssignedBy == TempData["SignedInUser"].ToString())
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item2.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item2.Title)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item2.AssignedTo)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item2.Id }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = item2.Id })
+                    </td>
+                </tr>
+            }
         }
     </tbody>
 </table>
