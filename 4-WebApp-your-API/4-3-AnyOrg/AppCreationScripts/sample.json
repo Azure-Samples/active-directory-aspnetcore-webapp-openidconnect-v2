@@ -80,7 +80,7 @@
     },
     {
       "App": "client",
-      "SettingKind": "JSon",
+      "SettingKind": "JSON",
       "SettingFile": "\\..\\ToDoListClient\\appsettings.json",
       "Mappings": [
         {

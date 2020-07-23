@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System.Diagnostics;
 using ToDoListClient.Models;
 
 namespace ToDoListClient.Controllers
@@ -9,7 +9,6 @@ namespace ToDoListClient.Controllers
     [AllowAnonymous]
     public class HomeController : Controller
     {
-
         private readonly string _TodoListScope = string.Empty;
         private readonly string _ClientId = string.Empty;
         private readonly string _RedirectUri = string.Empty;
@@ -28,7 +27,7 @@ namespace ToDoListClient.Controllers
             {
                 if (!_RedirectUri.EndsWith("/"))
                 {
-                    _RedirectUri = _RedirectUri+"/";
+                    _RedirectUri = _RedirectUri + "/";
                 }
             }
         }
@@ -44,8 +43,8 @@ namespace ToDoListClient.Controllers
         }
 
         /// <summary>
-        /// Creates Admin Consent Endpoint and redirects to the endpoint for Web API provisioning.
-        /// Admin consent has a URL in state and it is used to redirect back to Web App once SP for API is provisioned.
+        /// Creates a Url to the Admin Consent Endpoint and redirects the user to the end point provisioning the Web API.
+        /// Admin consent has a URL in state and it is used to redirect back to Web App once the SP for API is provisioned.
         /// </summary>
         /// <returns></returns>
         public IActionResult AdminConsentApi()
@@ -58,7 +57,7 @@ namespace ToDoListClient.Controllers
         }
 
         /// <summary>
-        /// Creates Admin Consent Endpoint and redirects to the endpoint for Web App provisioning.
+        /// Creates a Url to the Admin Consent Endpoint and redirects the user to the end point provisioning the Web app.
         /// </summary>
         /// <returns></returns>
         public IActionResult AdminConsentClient()
@@ -69,6 +68,7 @@ namespace ToDoListClient.Controllers
 
             return Redirect(adminConsent2);
         }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
