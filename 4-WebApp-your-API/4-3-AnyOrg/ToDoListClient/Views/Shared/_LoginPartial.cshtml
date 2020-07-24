@@ -1,0 +1,19 @@
+﻿@using Microsoft.Identity.Web;
+@if (User.Identity.IsAuthenticated)
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li class="nav-item">Hello @User.GetDisplayName()!</li>
+        <li class="nav-item"><a asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign Out</a></li>
+    </ul>
+}
+else
+{
+    <ul class="navbar-nav flex-grow-1 justify-content-end">
+        <li class="nav-item"> <a class="nav-link text-dark" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">Sign In</a></li>
+    </ul>
+}
+@*@{
+        ViewData["Title"] = "_LoginPartial";
+    }
+
+    <h1>_LoginPartial</h1>*@
