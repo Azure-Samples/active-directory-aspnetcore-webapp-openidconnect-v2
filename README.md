@@ -77,7 +77,7 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
 
    - Learn how to secure your own Web API and update your Web App to [call your own web API](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/4-WebApp-your-API/4-1-MyOrg/README-incremental-instructions.md)
    - Learn how to update you B2C Web App to [call you own B2C web API](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/4-WebApp-your-API/4-2-B2C/README.md)
-   - Learn how to [secure a multi-tenant SaaS application with its own Web API](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/4-WebApp-your-API/4-3-AnyOrg/README.md)
+   - Learn how to [secure a multi-tenant SaaS application with its own Web API](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/4-WebApp-your-API/4-3-AnyOrg/Readme.md)
 
 5. Once you know how to sign-in users and call Web APIs from your Web App, you might want to restrict part of the application depending on the user having a role in the application or belonging to a group. So far you've learnt how to add and process authentication. Now learn how to [add authorization to your Web application](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/5-WebApp-AuthZ), and driving business logic according to roles and group assignments.
 
