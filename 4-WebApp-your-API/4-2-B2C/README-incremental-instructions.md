@@ -249,12 +249,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
   ```Csharp
   services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
           .AddMicrosoftWebApi(options =>
-          {
-              Configuration.Bind("AzureAdB2C", options);
+  {
+      Configuration.Bind("AzureAdB2C", options);
 
-              options.TokenValidationParameters.NameClaimType = "name";
-          },
-          options => { Configuration.Bind("AzureAdB2C", options); });
+      options.TokenValidationParameters.NameClaimType = "name";
+  },
+  options => { Configuration.Bind("AzureAdB2C", options); });
   ```
   
   - Add the method **app.UseAuthentication()** before **app.UseMvc()** in the `Configure` method
