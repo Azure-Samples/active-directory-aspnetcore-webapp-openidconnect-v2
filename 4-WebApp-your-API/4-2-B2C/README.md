@@ -268,7 +268,7 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
   with
 
   ```Csharp
-     services.AddAuthentication()
+     services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
              .AddMicrosoftWebApi(options =>
     {
         Configuration.Bind("AzureAdB2C", options);
