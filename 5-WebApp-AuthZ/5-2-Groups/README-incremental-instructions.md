@@ -10,10 +10,11 @@ page_type: sample
 languages:
   - csharp  
 products:
-  - azure
+  - microsoft-authentication-library
+  - microsoft-identity-platform		   
   - azure-active-directory  
   - dotnet
-  - office-ms-graph
+  - microsoft-graph-api
 description: "Add authorization using groups & group claims to an ASP.NET Core Web app that signs-in users with the Microsoft identity platform"
 ---
 
@@ -42,17 +43,13 @@ This sample first leverages the ASP.NET Core OpenID Connect middleware to sign i
 
 To run this sample, you'll need:
 
-- [Visual Studio 2019](https://aka.ms/vsdownload) or just the [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
-- An Internet connection
-- A Windows machine (necessary if you want to run the app on Windows)
-- An OS X machine (necessary if you want to run the app on Mac)
-- A Linux machine (necessary if you want to run the app on Linux)
+- [Visual Studio](https://visualstudio.microsoft.com/downloads/)
 - An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/)
-- A user account in your Azure AD tenant. This sample will not work with a Microsoft account (formerly Windows Live account). Therefore, if you signed in to the [Azure portal](https://portal.azure.com) with a Microsoft account and have never created a user account in your directory before, you need to do that now.
+- A user account in your Azure AD tenant. This sample will not work with a **personal Microsoft account**. Therefore, if you signed in to the [Azure portal](https://portal.azure.com) with a personal account and have never created a user account in your directory before, you need to do that now.
 
  > Please make sure to have one or more user accounts in the tenant assigned to a few security groups in your tenant. Please follow the instructions in [Create a basic group and add members using Azure Active Directory](https://docs.microsoft.com/azure/active-directory/fundamentals/active-directory-groups-create-azure-portal) to create a few groups and assign users to them if not already done.
 
-### Step 1:  Clone or download this repository
+### Step 1: In the downloaded folder
 
 From your shell or command line:
 
@@ -113,8 +110,8 @@ Now you have two different options available to you on how you can further confi
 
 1. Clean and rebuild the solution, and run it.
 
-1. Open your web browser and make a request to the app. The app immediately attempts to authenticate you to the Microsoft identity platform. Sign in with a *work or school account* from the tenant where you created this app.
-1. On the home page, the app lists the various claims it obtained from your ID token. You'd notice one more claims named `groups`. 
+1. Open your web browser and make a request to the app. The app immediately attempts to authenticate you to the Microsoft identity platform. You can sign-in with a *work or school account* from the tenant where you created this app. But sign-in with admin for the first time as admin consent is required for `GroupMember.Read.All` permission.
+1. On the home page, the app lists the various claims it obtained from your ID token. You'd notice one more claims named `groups`.
 1. On the top menu, click on the signed-in user's name **user@domain.com**, you should now see all kind of information about yourself including their picture. Beneath that, a list of all the security groups that the signed-in user is assigned to are listed as well. All of this was obtained by making calls to Microsoft Graph. This list is useful if the **Overage** scenario occurs with this signed-in user. The [overage](#groups-overage-claim) scenario is discussed later in this article.
 
 > Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
@@ -137,8 +134,8 @@ The object id of the security groups the signed in user is member of is returned
 
 ### Support in ASP.NET Core middleware libraries
 
-The asp.net middleware supports roles populated from claims by specifying the claim in the `RoleClaimType` property of `TokenValidationParameters`.
-Since the `groups` claim contains the object ids of the security groups than actual names by default, you'd use the group id's instead of group names. See [Role-based authorization in ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authorization/roles) for more info.
+The ASP.NET middleware supports roles populated from claims by specifying the claim in the `RoleClaimType` property of `TokenValidationParameters`.
+Since the `groups` claim contains the object IDs of the security groups than actual names by default, you'd use the group ID's instead of group names. See [Role-based authorization in ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authorization/roles) for more info.
 
 ```CSharp
 // Startup.cs
@@ -243,7 +240,7 @@ The following files have the code that would be of interest to you:
 
       ```CSharp
       services.AddMicrosoftWebAppAuthentication(Configuration)
-              .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" })
+              .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { "User.Read", "GroupMember.Read.All" })
               .AddInMemoryTokenCaches();
 
       services.AddMSGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.
@@ -252,7 +249,6 @@ The following files have the code that would be of interest to you:
 1. if you used the Powershell scripts provided in the [AppCreationScripts](.\AppCreationScripts) folder, then note the extra parameter `-GroupMembershipClaims` in the  `Configure.ps1` script.
 
      ```PowerShell
-       -Oauth2AllowImplicitFlow $true `
        -GroupMembershipClaims "SecurityGroup" `
        -PublicClient $False
      ```
@@ -261,7 +257,7 @@ The following files have the code that would be of interest to you:
 
 Use [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) to get support from the community.
 Ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
-Make sure that your questions or comments are tagged with [ `msal` `azure-active-directory`].
+Make sure that your questions or comments are tagged with [ `msal` `azure-active-directory` `dotnet`].
 
 If you find a bug in the sample, please raise the issue on [GitHub Issues](../../../../issues).
 
@@ -273,7 +269,7 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
 
 ## Learn more
 
-- Learn how [Microsoft.Identity.Web](../../Microsoft.Identity.Web) works, in particular hooks-up to the ASP.NET Core ODIC events
+- Learn how [Microsoft.Identity.Web](https://aka.ms/idweblib) works, in particular hooks-up to the ASP.NET Core ODIC events
 
 - To understand more about groups roles and the various claims in tokens, see:
   - [Configure group claims for applications with Azure Active Directory (Public Preview)](https://docs.microsoft.com/azure/active-directory/hybrid/how-to-connect-fed-group-claims#configure-the-azure-ad-application-registration-for-group-attributes)

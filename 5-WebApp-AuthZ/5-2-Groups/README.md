@@ -10,10 +10,11 @@ page_type: sample
 languages:
   - csharp  
 products:
-  - azure
+  - microsoft-authentication-library
+  - microsoft-identity-platform					   
   - azure-active-directory  
   - dotnet
-  - office-ms-graph
+  - microsoft-graph-api
 description: "Add authorization using groups & group claims to an ASP.NET Core Web app that signs-in users with the Microsoft identity platform"
 ---
 
@@ -41,17 +42,13 @@ This sample first leverages the ASP.NET Core OpenID Connect middleware to sign i
 
 To run this sample, you'll need:
 
-- [Visual Studio 2019](https://aka.ms/vsdownload) or just the [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
-- An Internet connection
-- A Windows machine (necessary if you want to run the app on Windows)
-- An OS X machine (necessary if you want to run the app on Mac)
-- A Linux machine (necessary if you want to run the app on Linux)
+- [Visual Studio](https://visualstudio.microsoft.com/downloads/)
 - An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/)
-- A user account in your Azure AD tenant. This sample will not work with a Microsoft account (formerly Windows Live account). Therefore, if you signed in to the [Azure portal](https://portal.azure.com) with a Microsoft account and have never created a user account in your directory before, you need to do that now.
+- A user account in your Azure AD tenant. This sample will not work with a **personal Microsoft account**. Therefore, if you signed in to the [Azure portal](https://portal.azure.com) with a personal account and have never created a user account in your directory before, you need to do that now.
 
  > Please make sure to have one or more user accounts in the tenant assigned to a few security groups in your tenant. Please follow the instructions in [Create a basic group and add members using Azure Active Directory](https://docs.microsoft.com/azure/active-directory/fundamentals/active-directory-groups-create-azure-portal) to create a few groups and assign users to them if not already done.
 
-### Step 1:  Clone or download this repository
+### Step 1: Clone the repository
 
 From your shell or command line:
 
@@ -61,7 +58,7 @@ git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcor
 
 or download and extract the repository .zip file.
 
-> Given that the name of the sample is quiet long, and so are the names of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file name length limitations on Windows.
+> :warning: Given that the name of the sample is quite long, and so are the names of the referenced packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
 Navigate to the `"5-WebApp-AuthZ"` folder
 
@@ -73,10 +70,10 @@ Navigate to the `"5-WebApp-AuthZ"` folder
 
 There is one project in this sample. To register it, you can:
 
-- either follow the steps [Step 2: Register the sample with your Azure Active Directory tenant](#step-2-register-the-sample-with-your-azure-active-directory-tenant) and [Step 3:  Configure the sample to use your Azure AD tenant](#choose-the-azure-ad-tenant-where-you-want-to-create-your-applications)
+- either follow the step [Choose the Azure AD tenant where you want to create your applications](#choose-the-azure-ad-tenant-where-you-want-to-create-your-applications) below
 - or use PowerShell scripts that:
-  - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you. Note that this works for Visual Studio only.
-  - modify the Visual Studio projects' configuration files.
+  - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you.
+  - modify the projects' configuration files.
 
 <details>
   <summary>Expand this section if you want to use this automation:</summary>
@@ -99,20 +96,18 @@ There is one project in this sample. To register it, you can:
    > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
    > The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
 
-1. Open the Visual Studio solution and click start to run the code.
-
 </details>
 
-Follow the steps below to manually walk through the steps to register and configure the application registration in the portal.
+Follow the steps below to manually register and configure your application on Azure AD.
 
 #### Choose the Azure AD tenant where you want to create your applications
 
 As a first step you'll need to:
 
-1. Sign in to the [Azure portal](https://portal.azure.com) using either a work or school account or a personal Microsoft account.
-1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page. Then select **switch directory** to change your portal session to the desired Azure AD tenant.
+1. Sign in to the [Azure portal](https://portal.azure.com).
+1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory**.
 
-#### Register the webApp app (WebApp-GroupClaims)
+#### Register the Web App (WebApp-GroupClaims)
 
 1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
 1. Select **New registration**.
@@ -128,22 +123,18 @@ As a first step you'll need to:
    - In the **Redirect URIs** section, enter the following redirect URIs.
       - `https://localhost:44321/signin-oidc`
    - In the **Logout URL** section, set it to `https://localhost:44321/signout-oidc`.
-   - In the **Implicit grant** section, check the **ID tokens** option as this sample requires
-     the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to
-     sign-in the user, and call an API.
-
 1. Select **Save** to save your changes.
 1. In the app's registration screen, click on the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
 1. In the **Client secrets** section, click on **New client secret**:
    - Type a key description (for instance `app secret`),
-   - Select one of the available key durations (**In 1 year**, **In 2 years**, or **Never Expires**) as per your security posture.
+   - Select one of the available key durations (**In 1 year**, **In 2 years**, or **Never Expires**) as per your security concerns.
    - The generated key value will be displayed when you click the **Add** button. Copy the generated value for use in the steps later.
    - You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
-1. In the app's registration screen, click on the **API permissions** blade in the left to open the page where we add access to the Apis that your application needs.
+1. In the app's registration screen, click on the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
    - Click the **Add a permission** button and then,
    - Ensure that the **Microsoft APIs** tab is selected.
    - In the *Commonly used Microsoft APIs* section, click on **Microsoft Graph**
-   - In the **Delegated permissions** section, select the **Directory.Read.All** in the list. Use the search box if necessary.
+   - In the **Delegated permissions** section, select the **GroupMember.Read.All** in the list. Use the search box if necessary.
    - Click on the **Add permissions** button at the bottom.
 
 #### Configure your application to receive the **groups** claim
@@ -188,12 +179,11 @@ Now you have two different options available to you on how you can further confi
     1. Click **Assign** to finish the group assignment process.  
     1. Your application will now receive these selected groups in the `groups` claim when a user signing in to your app is a member of  one or more these **assigned** groups.
 1. Select the **Properties** blade in the left to open the page that lists the basic properties of your application.Set the **User assignment required?** flag to **Yes**.
-
    > **Important security tip**
    >
    > When you set **User assignment required?** to **Yes**, Azure AD will check that only users assigned to your application in the **Users and groups** blade are able to sign-in to your app. You can assign users directly or by assigning security groups they belong to.
 
-##### Configure the  webApp app (WebApp-GroupClaims) to use your app registration
+##### Configure the  Web App (WebApp-GroupClaims) to use your app registration
 
 Open the project in your IDE (like Visual Studio) to configure the code.
 >In the steps below, "ClientID" is the same as "Application ID" or "AppId".
@@ -207,8 +197,7 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 ### Step 4: Run the sample
 
 1. Clean and rebuild the solution, and run it.
-
-1. Open your web browser and make a request to the app. The app immediately attempts to authenticate you to the Microsoft identity platform. Sign in with a *work or school account* from the tenant where you created this app.
+1. Open your web browser and make a request to the app. The app immediately attempts to authenticate you to the Microsoft identity platform. You can sign-in with a *work or school account* from the tenant where you created this app. But sign-in with admin for the first time as admin consent is required for `GroupMember.Read.All` permission.
 1. On the home page, the app lists the various claims it obtained from your ID token. You'd notice one more claims named `groups`.
 1. On the top menu, click on the signed-in user's name **user@domain.com**, you should now see all kind of information about yourself including their picture. Beneath that, a list of all the security groups that the signed-in user is assigned to are listed as well. All of this was obtained by making calls to Microsoft Graph. This list is useful if the **Overage** scenario occurs with this signed-in user. The [overage](#groups-overage-claim) scenario is discussed later in this article.
 
@@ -342,18 +331,18 @@ The following files have the code that would be of interest to you:
          using Microsoft.Identity.Web;
       ```
 
-   - in the `ConfigureServices` method, the following lines:
+    - in the `ConfigureServices` method, the following lines:
 
      ```CSharp
       services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
               .AddAzureAD(options => Configuration.Bind("AzureAd", options));
      ```
 
-   - have been replaced by these lines:
-   - 
+    - have been replaced by these lines:
+      
      ```CSharp
-      services.AddMicrosoftWebAppAuthentication(Configuration)
-              .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" })
+       services.AddMicrosoftWebAppAuthentication(Configuration)
+              .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { "User.Read", "GroupMember.Read.All" })
               .AddInMemoryTokenCaches();
 
       services.AddMSGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.
@@ -394,7 +383,7 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
 
 Use [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) to get support from the community.
 Ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
-Make sure that your questions or comments are tagged with [ `msal` `azure-active-directory`].
+Make sure that your questions or comments are tagged with [ `msal` `azure-active-directory` `dotnet`].
 
 If you find a bug in the sample, please raise the issue on [GitHub Issues](../../../../issues).
 

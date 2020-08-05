@@ -206,7 +206,6 @@ Function ConfigureApplications
                                                   -IdentifierUris "https://$tenantName/WebApp-GroupClaims" `
                                                   -PasswordCredentials $key `
                                                   -GroupMembershipClaims "SecurityGroup" `
-                                                  -Oauth2AllowImplicitFlow $true `
                                                   -PublicClient $False
 
    # create the service principal of the newly created application 
@@ -234,7 +233,7 @@ Function ConfigureApplications
    # Add Required Resources Access (from 'webApp' to 'Microsoft Graph')
    Write-Host "Getting access from 'webApp' to 'Microsoft Graph'"
    $requiredPermissions = GetRequiredPermissions -applicationDisplayName "Microsoft Graph" `
-                                                -requiredDelegatedPermissions "Directory.Read.All" `
+                                                -requiredDelegatedPermissions "GroupMember.Read.All" `
 
    $requiredResourcesAccess.Add($requiredPermissions)
 
