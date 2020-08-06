@@ -99,7 +99,7 @@ Now you need to [register your web app in your B2C tenant](https://docs.microsof
 Your web application registration should include the following information:
 
 - Enable the **Web App/Web API** setting for your application.
-- Set the **Reply URL** to `https://localhost:44316/signin-oidc`.
+- Set the **Reply URL** to `https://localhost:44321/signin-oidc`.
 - Copy the Application ID generated for your application, so you can use it in the next step.
 
 ### Step 5: Configure the sample with your app coordinates
