@@ -10,7 +10,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using Microsoft.Identity.Web.UI;
-using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
+using WebApp_OpenIDConnect_DotNet.Services.GroupProcessing;
+using WebAppCallsMicrosoftGraph;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -36,11 +37,23 @@ namespace WebApp_OpenIDConnect_DotNet
             });
 
             // Sign-in users with the Microsoft identity platform
-            services.AddMicrosoftWebAppAuthentication(Configuration)
-                    .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { "User.Read", "GroupMember.Read.All" })
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                    .AddMicrosoftWebApp(
+                options =>
+                {
+                    Configuration.Bind("AzureAd", options);
+                    options.Events = new OpenIdConnectEvents();
+                    options.Events.OnTokenValidated = async context =>
+                    {
+                        //Calls method to process groups overage claim.
+                        await GraphHelper.ProcessGroupsClaimforAccessToken(context);
+                    };
+                }, options => { Configuration.Bind("AzureAd", options); })
+                    .AddMicrosoftWebAppCallsWebApi(Configuration)
                     .AddInMemoryTokenCaches();
 
-            services.AddMSGraphService(Configuration);
+            //Adds Microsoft Graph Client
+            services.AddMicrosoftGraph(Configuration, new string[] { "User.Read", "GroupMember.Read.All" });
 
             services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options => {
                 // The following code instructs the ASP.NET Core middleware to use the data in the "groups" claim in the [Authorize] attribute and for User.IsInRole()
