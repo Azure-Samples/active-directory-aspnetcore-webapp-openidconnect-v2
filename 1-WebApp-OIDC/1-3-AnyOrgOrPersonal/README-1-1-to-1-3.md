@@ -16,7 +16,7 @@ endpoint: Microsoft identity platform
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
 
-> This is the third chapter of the first phase of this ASP.NET Core Web App tutorials. You learnt previously how to build an ASP.NET Core Web app that signs-in users with the Microsoft identity platform in [your organization](../1-1-MyOrg) or [any organization](../1-2-AnyOrg). This chapter describes how to change that application to enable users to sign-in from any work or school account or Microsoft personal account.
+> This is the third chapter of the first phase of this ASP.NET Core Web App tutorials. You learned previously how to build an ASP.NET Core Web app that signs-in users with the Microsoft identity platform in [your organization](../1-1-MyOrg) or [any organization](../1-2-AnyOrg). This chapter describes how to change that application to enable users to sign-in from any work or school account or Microsoft personal account.
 >
 > If you are not interested in the differentials, but want to understand all the steps, read the full [Readme.md](./Readme.md)
 

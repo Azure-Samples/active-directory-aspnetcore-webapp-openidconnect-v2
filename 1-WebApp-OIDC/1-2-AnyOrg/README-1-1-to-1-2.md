@@ -25,7 +25,7 @@ description: "Change your ASP.NET Core Web app to sign-in users in any org with 
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
 
-> This is the second chapter of the first phase of this ASP.NET Core Web App tutorial. You learnt previously how to build an ASP.NET Core Web app signing-in users with the Microsoft identity platform in [your organization](../1-1-MyOrg). This chapter describes how to change that application to enable users to sign-in from any organization.
+> This is the second chapter of the first phase of this ASP.NET Core Web App tutorial. You learned previously how to build an ASP.NET Core Web app signing-in users with the Microsoft identity platform in [your organization](../1-1-MyOrg). This chapter describes how to change that application to enable users to sign-in from any organization.
 >
 > If you are not interested in the differentials, but want to understand all the steps, read the full [Readme.md](./Readme.md)
 
@@ -65,7 +65,7 @@ In the `Startup.cs` file, in the `ConfigureServices` method, after `services.Add
     ...
     // Sign-in users with the Microsoft identity platform
     services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-            .AddMicrosoftWebApp(options =>
+            .AddMicrosoftIdentityWebApp(options =>
             {
                 Configuration.Bind("AzureAd", options);
                 // Restrict users to specific belonging to specific tenants
