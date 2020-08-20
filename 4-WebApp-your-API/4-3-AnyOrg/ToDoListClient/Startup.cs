@@ -35,9 +35,9 @@ namespace ToDoListClient
             });
 
             //Add authentication with Microsoft identity platform.
-            services.AddMicrosoftWebAppAuthentication(Configuration)
-                .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] })
-               .AddInMemoryTokenCaches();
+            services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+                    .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Configuration["TodoList:TodoListScope"] })
+                    .AddInMemoryTokenCaches();
 
             //Enables to add client service to use the HttpClient by dependency injection.
             services.AddTodoListService();

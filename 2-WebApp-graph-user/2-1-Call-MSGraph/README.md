@@ -100,9 +100,9 @@ After the following lines in the ConfigureServices(IServiceCollection services) 
  public void ConfigureServices(IServiceCollection services)
 {
     . . .
-     services.AddMicrosoftWebAppAuthentication(Configuration)
-             .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead })
-             .AddInMemoryTokenCaches();
+    services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+                .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Constants.ScopeUserRead })
+                .AddInMemoryTokenCaches();
 ```
 
 The two new lines of code:
@@ -281,7 +281,7 @@ HTML table displaying the properties of the *me* object as returned by Microsoft
 ## Next steps
 
 - Learn how to enable distributed caches in [token cache serialization](../2-2-TokenCache)
-- Learn how the same principle you've just learnt can be used to call:
+- Learn how the same principle you've just learned can be used to call:
   - [several Microsoft APIs](../../3-WebApp-multi-APIs), which will enable you to learn how incremental consent and conditional access is managed in your Web App
   - 3rd party, or even [your own Web API](../../4-WebApp-your-API), which will enable you to learn about custom scopes
 

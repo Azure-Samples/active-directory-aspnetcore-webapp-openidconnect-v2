@@ -27,13 +27,13 @@ namespace ToDoListService
         {
             // Setting configuration for protected web api
 
-            services.AddMicrosoftWebApiAuthentication(Configuration)
-                .AddMicrosoftWebApiCallsWebApi(Configuration)
-                .AddInMemoryTokenCaches();
+            services.AddMicrosoftIdentityWebApiAuthentication(Configuration)
+                    .EnableTokenAcquisitionToCallDownstreamApi()
+                    .AddInMemoryTokenCaches();
 
             // Comment above lines of code and uncomment this section if you would like to validate ID tokens for allowed tenantIds
             //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //  .AddMicrosoftWebApi(options =>
+            //  .AddMicrosoftIdentityWebApi(options =>
             //{
             //    Configuration.Bind("AzureAd", options);
             //    options.Events = new JwtBearerEvents();
@@ -48,7 +48,11 @@ namespace ToDoListService
             //        }
             //    };
             //}, options => { Configuration.Bind("AzureAd", options); })
-            //  .AddMicrosoftWebApiCallsWebApi(Configuration)
+            //  .EnableTokenAcquisitionToCallDownstreamApi(
+            //        options =>
+            //        {
+            //             Configuration.Bind("AzureAd", options);
+            //        })
             //    .AddInMemoryTokenCaches();
 
             // Creating policies that wraps the authorization requirements

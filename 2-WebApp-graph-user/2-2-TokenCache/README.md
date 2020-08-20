@@ -186,9 +186,9 @@ public void ConfigureServices(IServiceCollection services)
 {
     . . .
     services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-            .AddMicrosoftWebApp(Configuration)
-            .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead })
-            .AddDistributedTokenCaches();
+                .AddMicrosoftIdentityWebApp(Configuration)   
+                .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Constants.ScopeUserRead })
+                .AddDistributedTokenCaches();
 
     services.AddDistributedSqlServerCache(options =>
     {

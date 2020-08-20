@@ -237,7 +237,7 @@ In order to be able to sign-in users from multiple tenants, the [/common endpoin
 
 ```csharp
 services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-        .AddMicrosoftWebApp(Configuration)
+        .AddMicrosoftIdentityWebApp(Configuration)
 ```
 
  You can read about the various endpoints of the Microsoft Identity Platform [here](https://docs.microsoft.com/azure/active-directory/develop/active-directory-v2-protocols#endpoints).
