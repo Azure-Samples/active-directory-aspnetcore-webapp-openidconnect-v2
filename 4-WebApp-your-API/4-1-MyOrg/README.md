@@ -249,8 +249,8 @@ Explore the sample by signing in into the TodoList client, adding items to the T
      with these lines:
 
      ```CSharp
-     services.AddMicrosoftWebAppAuthentication(Configuration)
-             .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] })
+     services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+             .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Configuration["TodoList:TodoListScope"] })
              .AddInMemoryTokenCaches();
      ```
 
@@ -281,9 +281,9 @@ Explore the sample by signing in into the TodoList client, adding items to the T
 
     ```CSharp
      services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-             .AddMicrosoftWebApp(Configuration)
-             .AddMicrosoftWebAppCallsWebApi(new string[] { Configuration["TodoList:TodoListScope"] })
-     services.AddInMemoryTokenCaches();
+             .AddMicrosoftIdentityWebApp(Configuration)
+             .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Configuration["TodoList:TodoListScope"] })
+             .AddInMemoryTokenCaches();
     ```
 1. Update the `Configure` method to include **app.UseAuthentication();** before **app.UseMvc();**  
 
@@ -333,7 +333,7 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
   with
 
   ```Csharp
-    services.AddMicrosoftWebApiAuthentication(Configuration);
+    services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
   ```
 - Add the method **app.UseAuthentication()** before **app.UseMvc()** in the `Configure` method
 
@@ -399,7 +399,7 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
 1. Thereafter select the `Subscription`, `Resource Group`, `App service plan and Location`. `OS` will be **Windows** and `Publish` will be **Code**.
 1. Click `Create` and wait for the App Service to be created.
 1. Once you get the `Deployment succeeded` notification, then click on `Go to resource` to navigate to the newly created App service.
-1. Once the web site is created, locate it it in the **Dashboard** and click it to open **App Services** **Overview** screen.
+1. Once the web site is created, locate it in the **Dashboard** and click it to open **App Services** **Overview** screen.
 1. From the **Overview** tab of the App Service, download the publish profile by clicking the **Get publish profile** link and save it.  Other deployment mechanisms, such as from source control, can also be used.
 1. Switch to Visual Studio and go to the TodoListClient-aspnetcore-webapi project.  Right click on the project in the Solution Explorer and select **Publish**.  Click **Import Profile** on the bottom bar, and import the publish profile that you downloaded earlier.
 1. Click on **Configure** and in the `Connection tab`, update the Destination URL so that it is a `https` in the home page url, for example [https://TodoListClient-aspnetcore-webapi-contoso.azurewebsites.net](https://TodoListClient-aspnetcore-webapi-contoso.azurewebsites.net). Click **Next**.

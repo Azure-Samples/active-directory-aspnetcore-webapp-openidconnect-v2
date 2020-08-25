@@ -48,8 +48,8 @@ namespace WebApp_OpenIDConnect_DotNet
 
 
             // Sign-in users with the Microsoft identity platform
-            services.AddMicrosoftWebAppAuthentication(Configuration)
-                    .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead })
+            services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+                    .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Constants.ScopeUserRead })
                     .AddInMemoryTokenCaches();
 
             // Add Graph

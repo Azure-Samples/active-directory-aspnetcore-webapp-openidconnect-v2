@@ -57,7 +57,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
             // Sign-in users with the Microsoft identity platform
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                    .AddMicrosoftWebApp(options =>
+                    .AddMicrosoftIdentityWebApp(options =>
                 {
                     Configuration.Bind("AzureAd", options);
                     options.Events.OnTokenValidated = async context =>
@@ -85,7 +85,12 @@ namespace WebApp_OpenIDConnect_DotNet
                         return Task.FromResult(0);
                     };
                 })
-                    .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { GraphScope.UserReadAll })
+                    .EnableTokenAcquisitionToCallDownstreamApi(
+                options => 
+                { 
+                    Configuration.Bind("AzureAd", options); 
+                }, 
+                new string[] { GraphScope.UserReadAll })
                     .AddInMemoryTokenCaches();
 
             services.AddControllersWithViews(options =>

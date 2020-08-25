@@ -242,14 +242,14 @@ The following files have the code that would be of interest to you:
     - have been replaced by these lines::
 
       ```CSharp
-      services.AddMicrosoftWebAppAuthentication(Configuration)
-              .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" })
+      services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+              .EnableTokenAcquisitionToCallDownstreamApi( new string[] { "User.Read", "Directory.Read.All" })
               .AddInMemoryTokenCaches();
 
       services.AddMSGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.
       ```
 
-1. if you used the Powershell scripts provided in the [AppCreationScripts](.\AppCreationScripts) folder, then note the extra parameter `-GroupMembershipClaims` in the  `Configure.ps1` script.
+1. if you used the PowerShell scripts provided in the [AppCreationScripts](.\AppCreationScripts) folder, then note the extra parameter `-GroupMembershipClaims` in the  `Configure.ps1` script.
 
      ```PowerShell
        -Oauth2AllowImplicitFlow $true `

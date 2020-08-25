@@ -163,7 +163,7 @@ cd "1-WebApp-OIDC\1-1-MyOrg"
      by this line:
 
      ```CSharp
-       services.AddMicrosoftWebAppAuthentication(Configuration);
+       services.AddMicrosoftIdentityWebAppAuthentication(Configuration);
      ```
 
      This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.

@@ -82,8 +82,8 @@ After the following lines in the ConfigureServices(IServiceCollection services) 
  public void ConfigureServices(IServiceCollection services)
 {
     . . .
-     services.AddMicrosoftWebAppAuthentication(Configuration)
-                    .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead })
+    services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+                    .EnableTokenAcquisitionToCallDownstreamApi( new string[] { Constants.ScopeUserRead })
                     .AddInMemoryTokenCaches();
     services.AddHttpClient<IArmOperations, ArmApiOperationService>();
 ```

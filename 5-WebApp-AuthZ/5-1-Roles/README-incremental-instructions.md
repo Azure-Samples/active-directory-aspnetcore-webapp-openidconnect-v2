@@ -208,9 +208,9 @@ The following files have the code that would be of interest to you.
 
     ```CSharp
     //This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
-    services.AddMicrosoftWebAppAuthentication(Configuration)
-            .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead })
-            .AddInMemoryTokenCaches(); // Adds aspnetcore MemoryCache as Token cache provider for MSAL.
+    services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+                    .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Constants.ScopeUserRead })
+                    .AddInMemoryTokenCaches(); // Adds aspnetcore MemoryCache as Token cache provider for MSAL.
     
     services.AddMSGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.
     
@@ -224,7 +224,7 @@ The following files have the code that would be of interest to you.
 1. In the `ConfigureServices` method of `Startup.cs', the following lines instruct the ASP.NET security middleware to use the **roles** claim to fetch roles for authorization:
 
      ```CSharp
-    // Add this configuration after the call to `AddMicrosoftWebAppAuthentication`.
+    // Add this configuration after the call to `AddMicrosoftIdentityWebAppAuthentication`.
     services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
     {
         // The claim in the JWT token where App roles are available.

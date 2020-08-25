@@ -352,9 +352,9 @@ The following files have the code that would be of interest to you:
    - have been replaced by these lines:
    - 
      ```CSharp
-      services.AddMicrosoftWebAppAuthentication(Configuration)
-              .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { "User.Read", "Directory.Read.All" })
-              .AddInMemoryTokenCaches();
+      services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+               .EnableTokenAcquisitionToCallDownstreamApi( new string[] { "User.Read", "Directory.Read.All" })
+               .AddInMemoryTokenCaches();
 
       services.AddMSGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.
       ```
@@ -383,7 +383,7 @@ This project has one WebApp project. To deploy that to Azure Web Sites, you'll n
 
 ### Update the Active Directory tenant application registration for `WebApp-GroupClaims`
 
-1. Navigate back to to the [Azure portal](https://portal.azure.com).
+1. Navigate back to the [Azure portal](https://portal.azure.com).
 In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations (Preview)**.
 1. In the resultant screen, select the `WebApp-GroupClaims` application.
 1. In the **Authentication** | page for your application, update the Logout URL fields with the address of your service, for example [https://WebApp-GroupClaims-contoso.azurewebsites.net](https://WebApp-GroupClaims-contoso.azurewebsites.net)
