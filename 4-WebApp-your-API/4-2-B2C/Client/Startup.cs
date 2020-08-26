@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using TodoListClient.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -42,8 +41,8 @@ namespace WebApp_OpenIDConnect_DotNet
 
             services.AddOptions();
 
-            services.AddMicrosoftWebAppAuthentication(Configuration, "AzureAdB2C")
-                    .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] }, configSectionName: "AzureAdB2C")
+            services.AddMicrosoftIdentityWebAppAuthentication(Configuration, "AzureAdB2C")
+                    .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Configuration["TodoList:TodoListScope"] })
                     .AddInMemoryTokenCaches();
 
             // Add APIs

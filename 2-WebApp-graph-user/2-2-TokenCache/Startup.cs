@@ -55,8 +55,8 @@ namespace WebApp_OpenIDConnect_DotNet
              */
 
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                    .AddMicrosoftWebApp(Configuration)
-                    .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead })
+                    .AddMicrosoftIdentityWebApp(Configuration)   
+                    .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Constants.ScopeUserRead })
                     .AddDistributedTokenCaches();
 
             services.AddDistributedSqlServerCache(options =>

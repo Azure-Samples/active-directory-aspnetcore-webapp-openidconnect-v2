@@ -296,8 +296,8 @@ This project was created using the following command.
       have been replaced by these lines:
      ```CSharp
      //This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
-            services.AddMicrosoftWebAppAuthentication(Configuration)
-                    .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Constants.ScopeUserRead })
+            services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+                    .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Constants.ScopeUserRead })
                     .AddInMemoryTokenCaches(); // Adds aspnetcore MemoryCache as Token cache provider for MSAL.
 
         services.AddGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.
@@ -372,7 +372,7 @@ This project has one WebApp project. To deploy it to Azure Web Sites, you'll nee
 1. Thereafter select the `Subscription`, `Resource Group`, `App service plan and Location`. `OS` will be **Windows** and `Publish` will be **Code**.
 1. Click `Create` and wait for the App Service to be created.
 1. Once you get the `Deployment succeeded` notification, then click on `Go to resource` to navigate to the newly created App service.
-1. Once the web site is created, locate it it in the **Dashboard** and click it to open **App Services** **Overview** screen.
+1. Once the web site is created, locate it in the **Dashboard** and click it to open **App Services** **Overview** screen.
 1. From the **Overview** tab of the App Service, download the publish profile by clicking the **Get publish profile** link and save it.  Other deployment mechanisms, such as from source control, can also be used.
 1. Switch to Visual Studio and go to the WebApp-RolesClaims project.  Right click on the project in the Solution Explorer and select **Publish**.  Click **Import Profile** on the bottom bar, and import the publish profile that you downloaded earlier.
 1. Click on **Configure** and in the `Connection tab`, update the Destination URL so that it is a `https` in the home page url, for example [https://WebApp-RolesClaims-contoso.azurewebsites.net](https://WebApp-RolesClaims-contoso.azurewebsites.net). Click **Next**.

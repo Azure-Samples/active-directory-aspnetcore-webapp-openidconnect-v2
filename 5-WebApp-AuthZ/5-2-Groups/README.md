@@ -10,11 +10,10 @@ page_type: sample
 languages:
   - csharp  
 products:
-  - microsoft-authentication-library
-  - microsoft-identity-platform					   
+  - azure
   - azure-active-directory  
   - dotnet
-  - microsoft-graph-api
+  - ms-graph
 description: "Add authorization using groups & group claims to an ASP.NET Core Web app that signs-in users with the Microsoft identity platform"
 ---
 
@@ -48,7 +47,7 @@ To run this sample, you'll need:
 
  > Please make sure to have one or more user accounts in the tenant assigned to a few security groups in your tenant. Please follow the instructions in [Create a basic group and add members using Azure Active Directory](https://docs.microsoft.com/azure/active-directory/fundamentals/active-directory-groups-create-azure-portal) to create a few groups and assign users to them if not already done.
 
-### Step 1: Clone the repository
+### Step 1:  Clone or download this repository
 
 From your shell or command line:
 
@@ -107,7 +106,7 @@ As a first step you'll need to:
 1. Sign in to the [Azure portal](https://portal.azure.com).
 1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory**.
 
-#### Register the Web App (WebApp-GroupClaims)
+#### Register the web app (WebApp-GroupClaims)
 
 1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
 1. Select **New registration**.
@@ -183,7 +182,7 @@ Now you have two different options available to you on how you can further confi
    >
    > When you set **User assignment required?** to **Yes**, Azure AD will check that only users assigned to your application in the **Users and groups** blade are able to sign-in to your app. You can assign users directly or by assigning security groups they belong to.
 
-##### Configure the  Web App (WebApp-GroupClaims) to use your app registration
+##### Configure the  web app (WebApp-GroupClaims) to use your app registration
 
 Open the project in your IDE (like Visual Studio) to configure the code.
 >In the steps below, "ClientID" is the same as "Application ID" or "AppId".
@@ -341,9 +340,9 @@ The following files have the code that would be of interest to you:
     - have been replaced by these lines:
       
      ```CSharp
-       services.AddMicrosoftWebAppAuthentication(Configuration)
-              .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { "User.Read", "GroupMember.Read.All" })
-              .AddInMemoryTokenCaches();
+      services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+               .EnableTokenAcquisitionToCallDownstreamApi( new string[] { "User.Read", "Directory.Read.All" })
+               .AddInMemoryTokenCaches();
 
       services.AddMSGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.
       ```
@@ -372,7 +371,7 @@ This project has one WebApp project. To deploy that to Azure Web Sites, you'll n
 
 ### Update the Active Directory tenant application registration for `WebApp-GroupClaims`
 
-1. Navigate back to to the [Azure portal](https://portal.azure.com).
+1. Navigate back to the [Azure portal](https://portal.azure.com).
 In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations (Preview)**.
 1. In the resultant screen, select the `WebApp-GroupClaims` application.
 1. In the **Authentication** | page for your application, update the Logout URL fields with the address of your service, for example [https://WebApp-GroupClaims-contoso.azurewebsites.net](https://WebApp-GroupClaims-contoso.azurewebsites.net)

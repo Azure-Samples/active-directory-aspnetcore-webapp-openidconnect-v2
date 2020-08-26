@@ -10,11 +10,10 @@ page_type: sample
 languages:
   - csharp  
 products:
-  - microsoft-authentication-library
-  - microsoft-identity-platform		   
+  - azure
   - azure-active-directory  
   - dotnet
-  - microsoft-graph-api
+  - ms-graph
 description: "Add authorization using groups & group claims to an ASP.NET Core Web app that signs-in users with the Microsoft identity platform"
 ---
 
@@ -49,7 +48,7 @@ To run this sample, you'll need:
 
  > Please make sure to have one or more user accounts in the tenant assigned to a few security groups in your tenant. Please follow the instructions in [Create a basic group and add members using Azure Active Directory](https://docs.microsoft.com/azure/active-directory/fundamentals/active-directory-groups-create-azure-portal) to create a few groups and assign users to them if not already done.
 
-### Step 1: In the downloaded folder
+### Step 1:  Clone or download this repository
 
 From your shell or command line:
 
@@ -239,14 +238,14 @@ The following files have the code that would be of interest to you:
     - have been replaced by these lines::
 
       ```CSharp
-      services.AddMicrosoftWebAppAuthentication(Configuration)
-              .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { "User.Read", "GroupMember.Read.All" })
+      services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+              .EnableTokenAcquisitionToCallDownstreamApi( new string[] { "User.Read", "Directory.Read.All" })
               .AddInMemoryTokenCaches();
 
       services.AddMSGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.
       ```
 
-1. if you used the Powershell scripts provided in the [AppCreationScripts](.\AppCreationScripts) folder, then note the extra parameter `-GroupMembershipClaims` in the  `Configure.ps1` script.
+1. if you used the PowerShell scripts provided in the [AppCreationScripts](.\AppCreationScripts) folder, then note the extra parameter `-GroupMembershipClaims` in the  `Configure.ps1` script.
 
      ```PowerShell
        -GroupMembershipClaims "SecurityGroup" `
