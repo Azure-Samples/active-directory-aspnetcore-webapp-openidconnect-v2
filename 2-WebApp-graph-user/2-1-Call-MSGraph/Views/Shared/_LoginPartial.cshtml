@@ -4,7 +4,7 @@
     @if (User.Identity.IsAuthenticated)
     {
     <li class="nav-item">
-        <p class="nav-link text-dark">Hello @User.GetDisplayName()</p>
+        <div class="nav-link text-dark">Hello @User.GetDisplayName()</div>
     </li>
     <li class="nav-item">
         <a class="nav-link text-dark" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign out</a>
