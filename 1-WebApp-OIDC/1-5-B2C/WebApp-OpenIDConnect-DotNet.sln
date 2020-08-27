@@ -5,10 +5,6 @@ VisualStudioVersion = 16.0.29123.89
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApp-OpenIDConnect-DotNet", "WebApp-OpenIDConnect-DotNet.csproj", "{8DCFEEC2-0A85-4C7E-B96A-21C9184470B1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web", "..\..\..\..\..\gh\microsoft-identity-web\src\Microsoft.Identity.Web\Microsoft.Identity.Web.csproj", "{D8BB5AEE-7B17-4A03-AB1D-37B73238788B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web.UI", "..\..\..\..\..\gh\microsoft-identity-web\src\Microsoft.Identity.Web.UI\Microsoft.Identity.Web.UI.csproj", "{6A400A74-F4D9-4D9B-AB38-A52D5249D5F7}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,14 +15,6 @@ Global
 		{8DCFEEC2-0A85-4C7E-B96A-21C9184470B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DCFEEC2-0A85-4C7E-B96A-21C9184470B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DCFEEC2-0A85-4C7E-B96A-21C9184470B1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D8BB5AEE-7B17-4A03-AB1D-37B73238788B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D8BB5AEE-7B17-4A03-AB1D-37B73238788B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D8BB5AEE-7B17-4A03-AB1D-37B73238788B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D8BB5AEE-7B17-4A03-AB1D-37B73238788B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6A400A74-F4D9-4D9B-AB38-A52D5249D5F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6A400A74-F4D9-4D9B-AB38-A52D5249D5F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6A400A74-F4D9-4D9B-AB38-A52D5249D5F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6A400A74-F4D9-4D9B-AB38-A52D5249D5F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
