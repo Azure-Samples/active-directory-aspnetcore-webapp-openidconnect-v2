@@ -38,7 +38,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
             // Sign-in users with the Microsoft identity platform
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                    .AddMicrosoftWebApp(
+                    .AddMicrosoftIdentityWebApp(
                 options =>
                 {
                     Configuration.Bind("AzureAd", options);
@@ -49,7 +49,7 @@ namespace WebApp_OpenIDConnect_DotNet
                         await GraphHelper.ProcessGroupsClaimforAccessToken(context);
                     };
                 }, options => { Configuration.Bind("AzureAd", options); })
-                    .AddMicrosoftWebAppCallsWebApi(Configuration)
+                    .EnableTokenAcquisitionToCallDownstreamApi(options=>Configuration.Bind("AzureAd", options))
                     .AddInMemoryTokenCaches();
 
             //Adds Microsoft Graph Client
