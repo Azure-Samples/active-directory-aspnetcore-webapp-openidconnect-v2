@@ -11,7 +11,6 @@ using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using Microsoft.Identity.Web.UI;
 using WebApp_OpenIDConnect_DotNet.Services.GroupProcessing;
-using WebAppCallsMicrosoftGraph;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -49,11 +48,9 @@ namespace WebApp_OpenIDConnect_DotNet
                         await GraphHelper.ProcessGroupsClaimforAccessToken(context);
                     };
                 }, options => { Configuration.Bind("AzureAd", options); })
-                    .EnableTokenAcquisitionToCallDownstreamApi(options=>Configuration.Bind("AzureAd", options))
+                    .EnableTokenAcquisitionToCallDownstreamApi(options => Configuration.Bind("AzureAd", options))
+                    .AddMicrosoftGraph(Configuration.GetSection("GraphAPI"))
                     .AddInMemoryTokenCaches();
-
-            //Adds Microsoft Graph Client
-            services.AddMicrosoftGraph(Configuration, new string[] { "User.Read", "GroupMember.Read.All" });
 
             services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options => {
                 // The following code instructs the ASP.NET Core middleware to use the data in the "groups" claim in the [Authorize] attribute and for User.IsInRole()
