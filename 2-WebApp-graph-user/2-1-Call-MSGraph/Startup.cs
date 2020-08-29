@@ -38,6 +38,33 @@ namespace _2_1_Call_MSGraph
                             .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
                             .AddInMemoryTokenCaches();
 
+                    /*
+                       // or use a distributed Token Cache by adding 
+                            .AddDistributedTokenCaches();
+
+                       // and then choose your implementation. 
+                       // See https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed?view=aspnetcore-2.2#distributed-memory-cache
+
+                       // For instance the distributed in memory cache
+                        services.AddDistributedMemoryCache()
+
+                       // Or a Redis cache
+                       services.AddStackExchangeRedisCache(options =>
+                            {
+                                options.Configuration = "localhost";
+                                options.InstanceName = "SampleInstance";
+                            });
+
+                       // Or even a SQL Server token cache
+                       services.AddDistributedSqlServerCache(options =>
+                        {
+                            options.ConnectionString = 
+                                _config["DistCache_ConnectionString"];
+                            options.SchemaName = "dbo";
+                            options.TableName = "TestCache";
+                        });
+                    */
+
             services.AddControllersWithViews(options =>
             {
                 var policy = new AuthorizationPolicyBuilder()
