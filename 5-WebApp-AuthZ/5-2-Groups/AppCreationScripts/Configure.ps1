@@ -233,7 +233,7 @@ Function ConfigureApplications
    # Add Required Resources Access (from 'webApp' to 'Microsoft Graph')
    Write-Host "Getting access from 'webApp' to 'Microsoft Graph'"
    $requiredPermissions = GetRequiredPermissions -applicationDisplayName "Microsoft Graph" `
-                                                -requiredDelegatedPermissions "GroupMember.Read.All" `
+                                                -requiredDelegatedPermissions "User.Read|GroupMember.Read.All" `
 
    $requiredResourcesAccess.Add($requiredPermissions)
 
@@ -247,6 +247,15 @@ Function ConfigureApplications
    $dictionary = @{ "ClientId" = $webAppAadApplication.AppId;"TenantId" = $tenantId;"Domain" = $tenantName;"ClientSecret" = $webAppAppKey };
    UpdateTextFile -configFilePath $configFile -dictionary $dictionary
   
+   Write-Host ""
+   Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+   Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
+   Write-Host "- For 'webApp'"
+   Write-Host "  - Navigate to '$webAppPortalUrl'"
+   Write-Host "  - Navigate to the API Permissions page and select 'Grant admin consent for (your tenant)'" -ForegroundColor Red 
+
+   Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+     
    Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  
 }
 
