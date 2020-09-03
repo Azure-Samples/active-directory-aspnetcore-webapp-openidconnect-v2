@@ -17,11 +17,12 @@
     },
     "webApp": {
       "commandName": "Project",
+      "dotnetRunMessages": "true",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:3110/"
+      "applicationUrl": "https://localhost:44321/"
     }
   }
 }
