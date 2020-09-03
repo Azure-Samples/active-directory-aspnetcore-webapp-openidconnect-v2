@@ -45,17 +45,19 @@ namespace WebApp_OpenIDConnect_DotNet
                     options.Events.OnTokenValidated = async context =>
                     {
                         //Calls method to process groups overage claim.
-                        await GraphHelper.ProcessGroupsClaimforAccessToken(context);
+                        await GraphHelper.ProcessClaimsForGroupsOverage(context);
                     };
                 }, options => { Configuration.Bind("AzureAd", options); })
                     .EnableTokenAcquisitionToCallDownstreamApi(options => Configuration.Bind("AzureAd", options))
                     .AddMicrosoftGraph(Configuration.GetSection("GraphAPI"))
                     .AddInMemoryTokenCaches();
 
-            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options => {
+            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+            {
                 // The following code instructs the ASP.NET Core middleware to use the data in the "groups" claim in the [Authorize] attribute and for User.IsInRole()
+                // Uncomment the following if you wish to use groups for roles
                 // See https://docs.microsoft.com/en-us/aspnet/core/security/authorization/roles for more info.
-                options.TokenValidationParameters.RoleClaimType = "groups";
+                // options.TokenValidationParameters.RoleClaimType = "groups";
             });
 
             services.AddControllersWithViews(options =>
