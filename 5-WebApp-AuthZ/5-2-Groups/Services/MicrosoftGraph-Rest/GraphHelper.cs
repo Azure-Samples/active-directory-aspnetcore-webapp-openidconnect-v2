@@ -24,32 +24,45 @@ namespace WebApp_OpenIDConnect_DotNet.Services.GroupProcessing
                 // Checks if the incoming token contained a 'Group Overage' claim.
                 if (context.Principal.Claims.Any(x => x.Type == "hasgroups" || (x.Type == "_claim_names" && x.Value == "{\"groups\":\"src1\"}")))
                 {
-                    // For this API call to succeed, the app should have permission 'GroupMember.Read.All' granted.
-                    var graph = context.HttpContext.RequestServices.GetService<GraphServiceClient>();
+                    // Before instatntiating GraphServiceClient, the app should have granted admin consent for 'GroupMember.Read.All' permission.
+                    var graphClient = context.HttpContext.RequestServices.GetService<GraphServiceClient>();
 
-                    if (graph == null)
+                    if (graphClient == null)
                     {
                         Console.WriteLine("No service for type 'Microsoft.Graph.GraphServiceClient' has been registered in the Startup.");
                     }
+
+                    // Checks if the SecurityToken is not null.
+                    // For the Web App, SecurityToken contains value of the ID Token.
                     else if (context.SecurityToken != null)
                     {
-                        // Check if an on-behalf-of all was made to a Web API
+                        // Checks if 'JwtSecurityTokenUsedToCallWebAPI' key already exists. 
+                        // This key is required to acquire Access Token for Graph Service Client.
                         if (!context.HttpContext.Items.ContainsKey("JwtSecurityTokenUsedToCallWebAPI"))
                         {
-                            // extract the cached AT that was presented to the Web API
+                            // For Web App, access token is retrieved using account identifier. But at this point account identifier is null.
+                            // So, SecurityToken is saved in 'JwtSecurityTokenUsedToCallWebAPI' key.
+                            // The key is then used to get the Access Token on-behalf of user.
                             context.HttpContext.Items.Add("JwtSecurityTokenUsedToCallWebAPI", context.SecurityToken as JwtSecurityToken);
                         }
 
-                        // We do not want to pull all attributes of a group from MS Graph, so we use a 'select' to just pick the ones we need.
+                        // The properties that we want to retrieve from MemberOf endpoint.
                         string select = "id,displayName,onPremisesNetBiosName,onPremisesDomainName,onPremisesSamAccountNameonPremisesSecurityIdentifier";
-
-                        // TODO: this line needs a try-catch, with the exception error message being "A call to Microsoft Graph failed, the error is <whatever>"
-                        // Make a Graph call to get groups and directory roles that the user is a direct member of.
-                        var memberPage = await graph.Me.MemberOf.Request().Select(select).GetAsync().ConfigureAwait(false);
-
+                       
+                        IUserMemberOfCollectionWithReferencesPage memberPage = new UserMemberOfCollectionWithReferencesPage();
+                        try
+                        {
+                            //Request to get groups and directory roles that the user is a direct member of.
+                            memberPage = await graphClient.Me.MemberOf.Request().Select(select).GetAsync().ConfigureAwait(false);
+                        }
+                        catch(Exception graphEx)
+                        {
+                            var exMsg = graphEx.InnerException != null ? graphEx.InnerException.Message : graphEx.Message;
+                            Console.WriteLine("Call to Microsoft Graph failed: "+ exMsg);
+                        }
                         if (memberPage?.Count > 0)
                         {
-                            // If the result is paginated, this method will process all the pages for us.
+                            // There is a limit to number of groups returned, below method make calls to Microsoft graph to get all the groups.
                             var allgroups = ProcessIGraphServiceMemberOfCollectionPage(memberPage);
 
                             if (allgroups?.Count > 0)
@@ -85,11 +98,12 @@ namespace WebApp_OpenIDConnect_DotNet.Services.GroupProcessing
             }
             finally
             {
+                // Checks if the key 'JwtSecurityTokenUsedToCallWebAPI' exists.
                 if (context.HttpContext.Items.ContainsKey("JwtSecurityTokenUsedToCallWebAPI"))
                 {
-                    // TODO: The following comment makes no sense !
-                    // Remove the key as Microsoft.Identity.Web library utilizes this key.
+                    // Removes 'JwtSecurityTokenUsedToCallWebAPI' from Items collection.
                     // If not removed then it can cause failure to the application.
+                    // Because this key is also added by StoreTokenUsedToCallWebAPI method of Microsoft.Identity.Web. 
                     context.HttpContext.Items.Remove("JwtSecurityTokenUsedToCallWebAPI");
                 }
             }
@@ -100,9 +114,9 @@ namespace WebApp_OpenIDConnect_DotNet.Services.GroupProcessing
         /// </summary>
         /// <param name="context"></param>
         /// <param name="identity"></param>
-        private static void RemoveExistingClaim(ClaimsIdentity identity)
+        private static void RemoveExistingClaims(ClaimsIdentity identity)
         {
-            // clear an existing claim
+            //clear existing claim
             List<Claim> existingGroupsClaims = identity.Claims.Where(x => x.Type == "groups").ToList();
             if (existingGroupsClaims?.Count > 0)
             {

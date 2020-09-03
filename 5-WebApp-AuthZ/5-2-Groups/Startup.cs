@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using Microsoft.Identity.Web.UI;
+using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Services.GroupProcessing;
 
 namespace WebApp_OpenIDConnect_DotNet
@@ -26,6 +27,7 @@ namespace WebApp_OpenIDConnect_DotNet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var initialScopes = new string[] { Constants.ScopeUserRead, Constants.ScopeGroupMemberRead };
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -48,7 +50,7 @@ namespace WebApp_OpenIDConnect_DotNet
                         await GraphHelper.ProcessClaimsForGroupsOverage(context);
                     };
                 }, options => { Configuration.Bind("AzureAd", options); })
-                    .EnableTokenAcquisitionToCallDownstreamApi(options => Configuration.Bind("AzureAd", options))
+                    .EnableTokenAcquisitionToCallDownstreamApi(options => Configuration.Bind("AzureAd", options), initialScopes)
                     .AddMicrosoftGraph(Configuration.GetSection("GraphAPI"))
                     .AddInMemoryTokenCaches();
 
