@@ -1,20 +1,14 @@
 ---
-services: active-directory
-platforms: dotnet
-author: kalyankrishna1
-level: 300
-client: ASP.NET Core Web App
-service: Microsoft Graph
-endpoint: Microsoft identity platform
 page_type: sample
 languages:
-  - csharp  
+  - csharp
 products:
   - azure
   - azure-active-directory  
   - dotnet
   - ms-graph
-description: "Add authorization using groups & group claims to an ASP.NET Core Web app that signs-in users with the Microsoft identity platform"
+name: Add authorization using groups & group claims to an ASP.NET Core Web app that signs-in users with the Microsoft identity platform
+description: "This sample demonstrates a ASP.NET Core Web App application calling The Microsoft Graph"																   
 ---
 
 # Add authorization using groups & group claims to an ASP.NET Core Web app that signs-in users with the Microsoft identity platform
@@ -37,9 +31,7 @@ This sample first leverages the ASP.NET Core OpenID Connect middleware to sign i
 
 > An Identity Developer session covered Azure AD App roles and security groups, featuring this scenario and how to handle the overage claim. Watch the video [Using Security Groups and Application Roles in your apps](https://www.youtube.com/watch?v=LRoc-na27l0)
 
-## How to run this sample
-
-To run this sample, you'll need:
+## Prerequisites
 
 - [Visual Studio](https://visualstudio.microsoft.com/downloads/)
 - An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/)
@@ -47,11 +39,13 @@ To run this sample, you'll need:
 
  > Please make sure to have one or more user accounts in the tenant assigned to a few security groups in your tenant. Please follow the instructions in [Create a basic group and add members using Azure Active Directory](https://docs.microsoft.com/azure/active-directory/fundamentals/active-directory-groups-create-azure-portal) to create a few groups and assign users to them if not already done.
 
-### Step 1:  Clone or download this repository
+## Setup
+
+### Step 1: Clone or download this repository
 
 From your shell or command line:
 
-```Shell
+```console
 git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial.git
 ```
 
@@ -65,11 +59,11 @@ Navigate to the `"5-WebApp-AuthZ"` folder
   cd 5-WebApp-AuthZ\5-2-Groups
   ```
 
-### Step 2:  Register the sample application with your Azure Active Directory tenant
+## Register the sample application with your Azure Active Directory tenant
 
 There is one project in this sample. To register it, you can:
 
-- either follow the step [Choose the Azure AD tenant where you want to create your applications](#choose-the-azure-ad-tenant-where-you-want-to-create-your-applications) below
+- either follow the steps below for manually register your apps
 - or use PowerShell scripts that:
   - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you.
   - modify the projects' configuration files.
@@ -77,7 +71,7 @@ There is one project in this sample. To register it, you can:
 <details>
   <summary>Expand this section if you want to use this automation:</summary>
 
-1. On Windows, run PowerShell and navigate to the root of the cloned directory
+1. On Windows, run PowerShell as **Administrator** and navigate to the root of the cloned directory
 1. In PowerShell run:
 
    ```PowerShell
@@ -97,14 +91,14 @@ There is one project in this sample. To register it, you can:
 
 </details>
 
-Follow the steps below to manually register and configure your application on Azure AD.
+Follow the steps below to manually walk through the steps to register and configure the applications in the Azure portal.
 
-#### Choose the Azure AD tenant where you want to create your applications
+### Choose the Azure AD tenant where you want to create your applications
 
 As a first step you'll need to:
 
 1. Sign in to the [Azure portal](https://portal.azure.com).
-1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory**.
+1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant.
 
 #### Register the web app (WebApp-GroupClaims)
 
@@ -126,15 +120,16 @@ As a first step you'll need to:
 1. In the app's registration screen, click on the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
 1. In the **Client secrets** section, click on **New client secret**:
    - Type a key description (for instance `app secret`),
-   - Select one of the available key durations (**In 1 year**, **In 2 years**, or **Never Expires**) as per your security concerns.
+   - Select one of the available key durations (**In 1 year**, **In 2 years**, or **Never Expires**) as per your security posture.
    - The generated key value will be displayed when you click the **Add** button. Copy the generated value for use in the steps later.
    - You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
 1. In the app's registration screen, click on the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
    - Click the **Add a permission** button and then,
    - Ensure that the **Microsoft APIs** tab is selected.
    - In the *Commonly used Microsoft APIs* section, click on **Microsoft Graph**
-   - In the **Delegated permissions** section, select the **GroupMember.Read.All** in the list. Use the search box if necessary.
+   - In the **Delegated permissions** section, select the **User.Read** and **GroupMember.Read.All** in the list. Use the search box if necessary.
    - Click on the **Add permissions** button at the bottom.
+   - Click on 'Grant admin consent for (your tenant)'.
 
 #### Configure your application to receive the **groups** claim
 
@@ -193,12 +188,13 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
 1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp-GroupClaims` app, in the Azure portal.
 
-### Step 4: Run the sample
+## Running the sample
 
 1. Clean and rebuild the solution, and run it.
 1. Open your web browser and make a request to the app. The app immediately attempts to authenticate you to the Microsoft identity platform. You can sign-in with a *work or school account* from the tenant where you created this app. But sign-in with admin for the first time as admin consent is required for `GroupMember.Read.All` permission.
+1. If the **Overage** scenario occurs for the signed-in user then all the groups are retrieved from Microsoft Graph and added in a list. The [overage](#groups-overage-claim) scenario is discussed later in this article.
 1. On the home page, the app lists the various claims it obtained from your ID token. You'd notice one more claims named `groups`.
-1. On the top menu, click on the signed-in user's name **user@domain.com**, you should now see all kind of information about yourself including their picture. Beneath that, a list of all the security groups that the signed-in user is assigned to are listed as well. All of this was obtained by making calls to Microsoft Graph. This list is useful if the **Overage** scenario occurs with this signed-in user. The [overage](#groups-overage-claim) scenario is discussed later in this article.
+1. On the top menu, click on the signed-in user's name **user@domain.com**, you should now see all kind of information about yourself including their picture.
 
 > Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
 
@@ -314,14 +310,8 @@ The following files have the code that would be of interest to you:
 
 1. HomeController.cs
     1. Passes the **HttpContext.User** (the signed-in user) to the view.
-1. UserProfileController.cs
-    1. Uses the **IMSGraphService** methods to fetch the signed-in user's group memberships.
-1. IMSGraphService.cs, MSGraphService.cs and UserGroupsAndDirectoryRoles.cs
-    1. Uses the [Microsoft Graph SDK](https://github.com/microsoftgraph/msgraph-sdk-dotnet) to carry out various operations with [Microsoft Graph](https://graph.microsoft.com).
 1. Home\Index.cshtml
     1. This has some code to print the current user's claims
-1. UserProfile\Index.cshtml
-    1. Has some client code that prints the signed-in user's information obtained from the [/me](https://docs.microsoft.com/graph/api/user-get?view=graph-rest-1.0), [/me/photo](https://docs.microsoft.com/graph/api/profilephoto-get) and [/memberOf](https://docs.microsoft.com/graph/api/user-list-memberof) endpoints.
 1. Startup.cs
 
     - at the top of the file, add the following using directive:
@@ -340,43 +330,114 @@ The following files have the code that would be of interest to you:
     - have been replaced by these lines:
       
      ```CSharp
-      services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
-               .EnableTokenAcquisitionToCallDownstreamApi( new string[] { "User.Read", "Directory.Read.All" })
-               .AddInMemoryTokenCaches();
-
-      services.AddMSGraphService(Configuration);    // Adds the IMSGraphService as an available service for this app.
+      services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+              .AddMicrosoftIdentityWebApp(
+                options =>
+                {
+                    Configuration.Bind("AzureAd", options);
+                    options.Events = new OpenIdConnectEvents();
+                    options.Events.OnTokenValidated = async context =>
+                    {
+                        await GraphHelper.ProcessClaimsForGroupsOverage(context);
+                    };
+                }, options => { Configuration.Bind("AzureAd", options); })
+             .EnableTokenAcquisitionToCallDownstreamApi(options => Configuration.Bind("AzureAd", options), initialScopes)
+             .AddMicrosoftGraph(Configuration.GetSection("GraphAPI"))
+             .AddInMemoryTokenCaches();
       ```
+
+    `OnTokenValidated` event calls **ProcessClaimsForGroupsOverage** method, that is defined in GraphHelper.cs, to process groups overage claim.
+  
+    `AddMicrosoftGraph` registers the service for `GraphServiceClient`. The values for BaseUrl and Scopes defined in `GraphAPI` section of **appsettings.json**.
+  
+1. In GraphHelper.cs, ProcessClaimsForGroupsOverage method uses `GraphServiceClient` to retrieve groups for the signed-in user from [/me/memberOf](https://docs.microsoft.com/graph/api/user-list-memberof) endpoint. All the groups are stored in list of claims and the data can be used in the application as per requirement.
+
+   ```csharp
+   public static async Task ProcessClaimsForGroupsOverage(TokenValidatedContext context)
+   {
+        if (context.Principal.Claims.Any(x => x.Type == "hasgroups" || (x.Type == "_claim_names" && x.Value == "{\"groups\":\"src1\"}")))
+        {
+            var graphClient = context.HttpContext.RequestServices.GetService<GraphServiceClient>();
+            if (graphClient == null)
+            {
+                Console.WriteLine("No service for type 'Microsoft.Graph.GraphServiceClient' has been registered.");
+            }
+            else if (context.SecurityToken != null)
+            {
+                if (!context.HttpContext.Items.ContainsKey("JwtSecurityTokenUsedToCallWebAPI"))
+                {
+                    context.HttpContext.Items.Add("JwtSecurityTokenUsedToCallWebAPI", context.SecurityToken as JwtSecurityToken);
+                }
+                string select = "id,displayName,onPremisesNetBiosName,onPremisesDomainName,onPremisesSamAccountNameonPremisesSecurityIdentifier";
+                IUserMemberOfCollectionWithReferencesPage memberPage = new UserMemberOfCollectionWithReferencesPage();
+                try
+                {
+                    memberPage = await graphClient.Me.MemberOf.Request().Select(select).GetAsync().ConfigureAwait(false);
+                }
+                catch(Exception graphEx)
+                {
+                    var exMsg = graphEx.InnerException != null ? graphEx.InnerException.Message : graphEx.Message;
+                    Console.WriteLine("Call to Microsoft Graph failed: "+ exMsg);
+                }
+                if (memberPage?.Count > 0)
+                {
+                    var allgroups = ProcessIGraphServiceMemberOfCollectionPage(memberPage);
+                    if (allgroups?.Count > 0)
+                    {
+                        var identity = (ClaimsIdentity)context.Principal.Identity;
+                        if (identity != null)
+                        {
+                            RemoveExistingClaims(identity);
+                            List<Claim> groupClaims = new List<Claim>();
+                            foreach (Group group in allgroups)
+                            {
+                                groupClaims.Add(new Claim("groups", group.Id));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ....
+    }
+    ```
+
+1. UserProfile\Index.cshtml
+    1. Has some client code that prints the signed-in user's information obtained from the [/me](https://docs.microsoft.com/graph/api/user-get?view=graph-rest-1.0) and [/me/photo](https://docs.microsoft.com/graph/api/profilephoto-get) endpoints by using `GraphServiceClient`.
 
 ## How to deploy this sample to Azure
 
 This project has one WebApp project. To deploy that to Azure Web Sites, you'll need to:
 
 - create an Azure Web Site
-- publish the Web App / Web APIs to the web site, and
-- update its client(s) to call the web site instead of IIS Express.
+- publish the project to the web site, and
+- update its client(s) to call the web site instead of the local environment.
 
 ### Create and publish the `WebApp-GroupClaims` to an Azure Web Site
 
 1. Sign in to the [Azure portal](https://portal.azure.com).
 1. Click `Create a resource` in the top left-hand corner, select **Web** --> **Web App**, and give your web site a name, for example, `WebApp-GroupClaims-contoso.azurewebsites.net`.
-1. Thereafter select the `Subscription`, `Resource Group`, `App service plan and Location`. `OS` will be **Windows** and `Publish` will be **Code**.
+1. Next, select the `Subscription`, `Resource Group`, `App service plan and Location`. `OS` will be **Windows** and `Publish` will be **Code**.
 1. Click `Create` and wait for the App Service to be created.
 1. Once you get the `Deployment succeeded` notification, then click on `Go to resource` to navigate to the newly created App service.
 1. Once the web site is created, locate it it in the **Dashboard** and click it to open **App Services** **Overview** screen.
-1. From the **Overview** tab of the App Service, download the publish profile by clicking the **Get publish profile** link and save it.  Other deployment mechanisms, such as from source control, can also be used.
+1. From the **Overview** tab of the App Service, download the publish profile by clicking the **Get publish profile** link and save it.  Other deployment mechanisms, such as from **source control**, can also be used.
 1. Switch to Visual Studio and go to the WebApp-GroupClaims project.  Right click on the project in the Solution Explorer and select **Publish**.  Click **Import Profile** on the bottom bar, and import the publish profile that you downloaded earlier.
-1. Click on **Configure** and in the `Connection tab`, update the Destination URL so that it is a `https` in the home page url, for example [https://WebApp-GroupClaims-contoso.azurewebsites.net](https://WebApp-GroupClaims-contoso.azurewebsites.net). Click **Next**.
+1. Click on **Configure** and in the `Connection tab`, update the Destination URL so that it is a `https` in the home page URL, for example [https://WebApp-GroupClaims-contoso.azurewebsites.net](https://WebApp-GroupClaims-contoso.azurewebsites.net). Click **Next**.
 1. On the Settings tab, make sure `Enable Organizational Authentication` is NOT selected.  Click **Save**. Click on **Publish** on the main screen.
 1. Visual Studio will publish the project and automatically open a browser to the URL of the project.  If you see the default web page of the project, the publication was successful.
 
-### Update the Active Directory tenant application registration for `WebApp-GroupClaims`
+### Update the Azure AD app registration for `WebApp-GroupClaims`
 
 1. Navigate back to the [Azure portal](https://portal.azure.com).
 In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations (Preview)**.
-1. In the resultant screen, select the `WebApp-GroupClaims` application.
-1. In the **Authentication** | page for your application, update the Logout URL fields with the address of your service, for example [https://WebApp-GroupClaims-contoso.azurewebsites.net](https://WebApp-GroupClaims-contoso.azurewebsites.net)
+1. In the resulting screen, select the `WebApp-GroupClaims` application.
+1. In the **Authentication** page for your application, update the Logout URL fields with the address of your service, for example [https://WebApp-GroupClaims-contoso.azurewebsites.net](https://WebApp-GroupClaims-contoso.azurewebsites.net)
 1. From the *Branding* menu, update the **Home page URL**, to the address of your service, for example [https://WebApp-GroupClaims-contoso.azurewebsites.net](https://WebApp-GroupClaims-contoso.azurewebsites.net). Save the configuration.
-1. Add the same URL in the list of values of the *Authentication -> Redirect URIs* menu. If you have multiple redirect urls, make sure that there a new entry using the App service's Uri for each redirect url.
+1. Add the same URL in the list of values of the *Authentication -> Redirect URIs* menu. If you have multiple redirect URIs, make sure that there a new entry using the App service's URI for each redirect URIs.
+
+> :warning: If your app is using an *in-memory* storage, **Azure App Services** will spin down your web site if it is inactive, and any records that your app was keeping will emptied.
+In addition, if you increase the instance count of your web site, requests will be distributed among the instances. Your app's records, therefore, will not be the same on each instance.
 
 ## Community Help and Support
 

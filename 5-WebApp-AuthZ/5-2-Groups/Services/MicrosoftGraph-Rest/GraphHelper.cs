@@ -55,10 +55,10 @@ namespace WebApp_OpenIDConnect_DotNet.Services.GroupProcessing
                             //Request to get groups and directory roles that the user is a direct member of.
                             memberPage = await graphClient.Me.MemberOf.Request().Select(select).GetAsync().ConfigureAwait(false);
                         }
-                        catch(Exception graphEx)
+                        catch (Exception graphEx)
                         {
                             var exMsg = graphEx.InnerException != null ? graphEx.InnerException.Message : graphEx.Message;
-                            Console.WriteLine("Call to Microsoft Graph failed: "+ exMsg);
+                            Console.WriteLine("Call to Microsoft Graph failed: " + exMsg);
                         }
                         if (memberPage?.Count > 0)
                         {
@@ -72,7 +72,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services.GroupProcessing
                                 if (identity != null)
                                 {
                                     // Remove any existing groups claim
-                                    RemoveExistingClaim(identity);
+                                    RemoveExistingGroupsClaims(identity);
 
                                     List<Claim> groupClaims = new List<Claim>();
 
@@ -112,9 +112,8 @@ namespace WebApp_OpenIDConnect_DotNet.Services.GroupProcessing
         /// <summary>
         /// Remove groups claims if already exists.
         /// </summary>
-        /// <param name="context"></param>
         /// <param name="identity"></param>
-        private static void RemoveExistingClaims(ClaimsIdentity identity)
+        private static void RemoveExistingGroupsClaims(ClaimsIdentity identity)
         {
             //clear existing claim
             List<Claim> existingGroupsClaims = identity.Claims.Where(x => x.Type == "groups").ToList();
