@@ -119,9 +119,8 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         /// <summary>
         /// Remove groups claims if already exists.
         /// </summary>
-        /// <param name="context"></param>
         /// <param name="identity"></param>
-        private static void RemoveExistingClaims(ClaimsIdentity identity)
+        private static void RemoveExistingGroupsClaims(ClaimsIdentity identity)
         {
             //clear existing claim
             List<Claim> existingGroupsClaims = identity.Claims.Where(x => x.Type == "groups").ToList();
