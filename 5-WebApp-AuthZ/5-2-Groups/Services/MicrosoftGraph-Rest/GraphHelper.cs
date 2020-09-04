@@ -75,9 +75,6 @@ namespace WebApp_OpenIDConnect_DotNet.Services
 
                                 if (identity != null)
                                 {
-                                    // Remove any existing groups claim
-                                    RemoveExistingClaims(identity);
-
                                     // Re-populate the `groups` claim with the complete list of groups fetched from MS Graph
                                     foreach (Group group in allgroups)
                                     {
@@ -114,23 +111,6 @@ namespace WebApp_OpenIDConnect_DotNet.Services
             context.HttpContext.Session.SetAsByteArray("groupClaims", groupClaims);
 
             return groupClaims;
-        }
-
-        /// <summary>
-        /// Remove groups claims if already exists.
-        /// </summary>
-        /// <param name="identity"></param>
-        private static void RemoveExistingGroupsClaims(ClaimsIdentity identity)
-        {
-            //clear existing claim
-            List<Claim> existingGroupsClaims = identity.Claims.Where(x => x.Type == "groups").ToList();
-            if (existingGroupsClaims?.Count > 0)
-            {
-                foreach (Claim groupsClaim in existingGroupsClaims)
-                {
-                    identity.RemoveClaim(groupsClaim);
-                }
-            }
         }
 
         /// <summary>
