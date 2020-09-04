@@ -135,6 +135,10 @@ As a first step you'll need to:
    - In the *Commonly used Microsoft APIs* section, click on **Microsoft Graph**
    - In the **Delegated permissions** section, select the **GroupMember.Read.All** in the list. Use the search box if necessary.
    - Click on the **Add permissions** button at the bottom.
+1. At this stage permissions are assigned correctly and the **GroupMember.Read.All** requires admin to consent.
+   Click the **Grant/revoke admin consent for {tenant}** button, and then select **Yes** when you are asked if you want to grant consent for the
+   requested permissions for all account in the tenant.
+   You need to be an Azure AD tenant admin to do this.
 
 #### Configure your application to receive the **groups** claim
 

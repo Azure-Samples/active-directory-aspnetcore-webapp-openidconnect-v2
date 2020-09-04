@@ -8,10 +8,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using Microsoft.Identity.Web.UI;
+using System;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
-using WebApp_OpenIDConnect_DotNet.Services.GroupProcessing;
+using WebApp_OpenIDConnect_DotNet.Services;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -33,7 +33,7 @@ namespace WebApp_OpenIDConnect_DotNet
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
-                // Handling SameSite cookie according to https://docs.microsoft.com/en-us/aspnet/core/security/samesite?view=aspnetcore-3.1
+                // Handling SameSite cookie according to https://docs.microsoft.com/en-us/aspnet/core/security/samesite
                 options.HandleSameSiteCookieCompatibility();
             });
 
@@ -47,7 +47,7 @@ namespace WebApp_OpenIDConnect_DotNet
                     options.Events.OnTokenValidated = async context =>
                     {
                         //Calls method to process groups overage claim.
-                        await GraphHelper.ProcessClaimsForGroupsOverage(context);
+                        await GraphHelper.GetSignedInUsersGroups(context);
                     };
                 }, options => { Configuration.Bind("AzureAd", options); })
                     .EnableTokenAcquisitionToCallDownstreamApi(options => Configuration.Bind("AzureAd", options), initialScopes)
@@ -60,6 +60,14 @@ namespace WebApp_OpenIDConnect_DotNet
                 // Uncomment the following if you wish to use groups for roles
                 // See https://docs.microsoft.com/en-us/aspnet/core/security/authorization/roles for more info.
                 // options.TokenValidationParameters.RoleClaimType = "groups";
+            });
+
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(1);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
             });
 
             services.AddControllersWithViews(options =>
@@ -88,11 +96,12 @@ namespace WebApp_OpenIDConnect_DotNet
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
 
             app.UseRouting();
+            app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
+
 
             app.UseEndpoints(endpoints =>
             {

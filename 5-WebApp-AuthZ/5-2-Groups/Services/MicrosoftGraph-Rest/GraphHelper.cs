@@ -7,18 +7,21 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using WebApp_OpenIDConnect_DotNet.Infrastructure;
 
-namespace WebApp_OpenIDConnect_DotNet.Services.GroupProcessing
+namespace WebApp_OpenIDConnect_DotNet.Services
 {
     public class GraphHelper
     {
         /// <summary>
-        /// This method inspects the claims collection created from the ID or Access token and detects groups overage. If Groups overage is detected, the method then makes calls to
-        /// Microsoft Graph to fetch the group membership of the authenticated user.
+        /// This method inspects the claims collection created from the ID or Access token issued to a user and returns the groups that are present in the token . If it detects groups overage,
+        /// the method then makes calls to Microsoft Graph to fetch the group membership of the authenticated user.
         /// </summary>
         /// <param name="context">TokenValidatedContext</param>
-        public static async Task ProcessClaimsForGroupsOverage(TokenValidatedContext context)
+        public static async Task<List<string>> GetSignedInUsersGroups(TokenValidatedContext context)
         {
+            List<string> groupClaims = new List<string>();
+
             try
             {
                 // Checks if the incoming token contained a 'Group Overage' claim.
@@ -36,7 +39,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services.GroupProcessing
                     // For the Web App, SecurityToken contains value of the ID Token.
                     else if (context.SecurityToken != null)
                     {
-                        // Checks if 'JwtSecurityTokenUsedToCallWebAPI' key already exists. 
+                        // Checks if 'JwtSecurityTokenUsedToCallWebAPI' key already exists.
                         // This key is required to acquire Access Token for Graph Service Client.
                         if (!context.HttpContext.Items.ContainsKey("JwtSecurityTokenUsedToCallWebAPI"))
                         {
@@ -48,18 +51,19 @@ namespace WebApp_OpenIDConnect_DotNet.Services.GroupProcessing
 
                         // The properties that we want to retrieve from MemberOf endpoint.
                         string select = "id,displayName,onPremisesNetBiosName,onPremisesDomainName,onPremisesSamAccountNameonPremisesSecurityIdentifier";
-                       
+
                         IUserMemberOfCollectionWithReferencesPage memberPage = new UserMemberOfCollectionWithReferencesPage();
                         try
                         {
                             //Request to get groups and directory roles that the user is a direct member of.
                             memberPage = await graphClient.Me.MemberOf.Request().Select(select).GetAsync().ConfigureAwait(false);
                         }
-                        catch(Exception graphEx)
+                        catch (Exception graphEx)
                         {
                             var exMsg = graphEx.InnerException != null ? graphEx.InnerException.Message : graphEx.Message;
-                            Console.WriteLine("Call to Microsoft Graph failed: "+ exMsg);
+                            Console.WriteLine("Call to Microsoft Graph failed: " + exMsg);
                         }
+
                         if (memberPage?.Count > 0)
                         {
                             // There is a limit to number of groups returned, below method make calls to Microsoft graph to get all the groups.
@@ -72,9 +76,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services.GroupProcessing
                                 if (identity != null)
                                 {
                                     // Remove any existing groups claim
-                                    RemoveExistingClaim(identity);
-
-                                    List<Claim> groupClaims = new List<Claim>();
+                                    RemoveExistingClaims(identity);
 
                                     // Re-populate the `groups` claim with the complete list of groups fetched from MS Graph
                                     foreach (Group group in allgroups)
@@ -83,8 +85,8 @@ namespace WebApp_OpenIDConnect_DotNet.Services.GroupProcessing
                                         // the app registration, you might want to add other attributes than id to the `groups` claim, examples being;
 
                                         // For instance if the required format is 'NetBIOSDomain\sAMAccountName' then the code is as commented below:
-                                        // groupClaims.AddClaim(new Claim("groups", group.OnPremisesNetBiosName+"\\"+group.OnPremisesSamAccountName));
-                                        groupClaims.Add(new Claim("groups", group.Id));
+                                        // groupClaims.Add(group.OnPremisesNetBiosName+"\\"+group.OnPremisesSamAccountName));
+                                        groupClaims.Add(group.Id);
                                     }
                                 }
                             }
@@ -103,10 +105,15 @@ namespace WebApp_OpenIDConnect_DotNet.Services.GroupProcessing
                 {
                     // Removes 'JwtSecurityTokenUsedToCallWebAPI' from Items collection.
                     // If not removed then it can cause failure to the application.
-                    // Because this key is also added by StoreTokenUsedToCallWebAPI method of Microsoft.Identity.Web. 
+                    // Because this key is also added by StoreTokenUsedToCallWebAPI method of Microsoft.Identity.Web.
                     context.HttpContext.Items.Remove("JwtSecurityTokenUsedToCallWebAPI");
                 }
             }
+
+            // Here we add the groups in a session variable to print on the home page for informational purposes
+            context.HttpContext.Session.SetAsByteArray("groupClaims", groupClaims);
+
+            return groupClaims;
         }
 
         /// <summary>

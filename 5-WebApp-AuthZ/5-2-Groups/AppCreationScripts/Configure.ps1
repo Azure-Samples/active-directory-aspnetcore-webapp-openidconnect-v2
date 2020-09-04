@@ -102,6 +102,42 @@ Function GetRequiredPermissions([string] $applicationDisplayName, [string] $requ
 }
 
 
+Function UpdateLine([string] $line, [string] $value)
+{
+    $index = $line.IndexOf('=')
+    $delimiter = ';'
+    if ($index -eq -1)
+    {
+        $index = $line.IndexOf(':')
+        $delimiter = ','
+    }
+    if ($index -ige 0)
+    {
+        $line = $line.Substring(0, $index+1) + " "+'"'+$value+'"'+$delimiter
+    }
+    return $line
+}
+
+Function UpdateTextFile([string] $configFilePath, [System.Collections.HashTable] $dictionary)
+{
+    $lines = Get-Content $configFilePath
+    $index = 0
+    while($index -lt $lines.Length)
+    {
+        $line = $lines[$index]
+        foreach($key in $dictionary.Keys)
+        {
+            if ($line.Contains($key))
+            {
+                $lines[$index] = UpdateLine $line $dictionary[$key]
+            }
+        }
+        $index++
+    }
+
+    Set-Content -Path $configFilePath -Value $lines -Force
+}
+
 Set-Content -Value "<html><body><table>" -Path createdApps.html
 Add-Content -Value "<thead><tr><th>Application</th><th>AppId</th><th>Url in the Azure portal</th></tr></thead><tbody>" -Path createdApps.html
 
@@ -207,8 +243,10 @@ Function ConfigureApplications
 
    # Update config file for 'webApp'
    $configFile = $pwd.Path + "\..\appsettings.json"
+
    Write-Host "Updating the sample code ($configFile)"
-  
+   $dictionary = @{ "ClientId" = $webAppAadApplication.AppId;"TenantId" = $tenantId;"Domain" = $tenantName;"ClientSecret" = $webAppAppKey };
+   UpdateTextFile -configFilePath $configFile -dictionary $dictionary
    Write-Host ""
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
    Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
