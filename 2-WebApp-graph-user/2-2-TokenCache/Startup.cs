@@ -1,20 +1,23 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.UI;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Identity.Web;
-using System.IdentityModel.Tokens.Jwt;
-using WebApp_OpenIDConnect_DotNet.Infrastructure;
-using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.Identity.Web.UI;
+using Microsoft.Graph;
+using System.IdentityModel.Tokens.Jwt;
 
-namespace WebApp_OpenIDConnect_DotNet
+namespace _2_1_Call_MSGraph
 {
     public class Startup
     {
@@ -28,14 +31,8 @@ namespace WebApp_OpenIDConnect_DotNet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
-                // Handling SameSite cookie according to https://docs.microsoft.com/en-us/aspnet/core/security/samesite?view=aspnetcore-3.1
-                options.HandleSameSiteCookieCompatibility();
-            });
+            string[] initialScopes = Configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
+
 
             // This is required to be instantiated before the OpenIdConnectOptions starts getting configured.
             // By default, the claims mapping will map claim names in the old format to accommodate older SAML applications.
@@ -54,10 +51,12 @@ namespace WebApp_OpenIDConnect_DotNet
                      dotnet sql-cache create "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MsalTokenCacheDatabase;Integrated Security=True;" dbo TokenCache
              */
 
+
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                    .AddMicrosoftIdentityWebApp(Configuration)   
-                    .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Constants.ScopeUserRead })
-                    .AddDistributedTokenCaches();
+                    .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+                        .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
+                            .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
+                            .AddDistributedTokenCaches();
 
             services.AddDistributedSqlServerCache(options =>
             {
@@ -66,18 +65,16 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.TableName = "TokenCache";
             });
 
-
-            // Add Graph
-            services.AddGraphService(Configuration);
-
             services.AddControllersWithViews(options =>
             {
                 var policy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
-            }).AddMicrosoftIdentityUI();
-            services.AddRazorPages();
+            });
+
+            services.AddRazorPages()
+                .AddMicrosoftIdentityUI();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -93,12 +90,11 @@ namespace WebApp_OpenIDConnect_DotNet
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
 
             app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
 
