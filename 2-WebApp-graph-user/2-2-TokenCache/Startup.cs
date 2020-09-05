@@ -51,7 +51,6 @@ namespace _2_1_Call_MSGraph
                      dotnet sql-cache create "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MsalTokenCacheDatabase;Integrated Security=True;" dbo TokenCache
              */
 
-
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                     .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
                         .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
