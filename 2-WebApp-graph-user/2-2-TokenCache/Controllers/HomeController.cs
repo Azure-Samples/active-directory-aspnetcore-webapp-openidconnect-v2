@@ -1,44 +1,68 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Web;
-using WebApp_OpenIDConnect_DotNet.Infrastructure;
-using WebApp_OpenIDConnect_DotNet.Models;
-using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
+using System.Net;
+using System.Net.Http;
+using Microsoft.Graph;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using _2_1_Call_MSGraph.Models;
+using System.IO;
 
-namespace WebApp_OpenIDConnect_DotNet.Controllers
+namespace _2_1_Call_MSGraph.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
-        readonly         ITokenAcquisition   tokenAcquisition;
-        private readonly IGraphApiOperations graphApiOperations;
+        private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ITokenAcquisition   tokenAcquisition,
-                              IGraphApiOperations graphApiOperations)
-        {
-            this.tokenAcquisition   = tokenAcquisition;
-            this.graphApiOperations = graphApiOperations;
-        }
+        private readonly GraphServiceClient _graphServiceClient;
 
-        public IActionResult Index()
+        public HomeController(ILogger<HomeController> logger,
+                          GraphServiceClient graphServiceClient)
         {
+             _logger = logger;
+            _graphServiceClient = graphServiceClient;
+       }
+
+        [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
+        public async Task<IActionResult> Index()
+        {
+            var user = await _graphServiceClient.Me.Request().GetAsync();
+            ViewData["ApiResult"] = user.DisplayName;
+
             return View();
         }
 
-        [AuthorizeForScopes(Scopes = new[] {Constants.ScopeUserRead})]
+        [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
         public async Task<IActionResult> Profile()
         {
-            var accessToken =
-                await tokenAcquisition.GetAccessTokenForUserAsync(new[] {Constants.ScopeUserRead});
-
-            var me = await graphApiOperations.GetUserInformation(accessToken);
-            var photo = await graphApiOperations.GetPhotoAsBase64Async(accessToken);
-
+            var me = await _graphServiceClient.Me.Request().GetAsync();
             ViewData["Me"] = me;
-            ViewData["Photo"] = photo;
 
+            try
+            {
+                // Get user photo
+                using (var photoStream = await _graphServiceClient.Me.Photo.Content.Request().GetAsync())
+                {
+                    byte[] photoByte = ((MemoryStream)photoStream).ToArray();
+                    ViewData["Photo"] = Convert.ToBase64String(photoByte);
+                }
+            }
+            catch (System.Exception)
+            {
+                ViewData["Photo"] = null;
+            }
+
+            return View();
+        }
+        public IActionResult Privacy()
+        {
             return View();
         }
 
@@ -46,7 +70,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
