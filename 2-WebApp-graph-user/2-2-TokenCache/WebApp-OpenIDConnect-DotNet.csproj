@@ -20,8 +20,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.7" />
     <PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="3.1.7" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="0.3.1-preview" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="0.3.0-preview" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="0.4.0-preview" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="0.4.0-preview" />
   </ItemGroup>
   
 
