@@ -47,20 +47,26 @@ namespace WebApp_OpenIDConnect_DotNet
                     options.Events.OnTokenValidated = async context =>
                     {
                         //Calls method to process groups overage claim.
-                        await GraphHelper.GetSignedInUsersGroups(context);
+                        var groupClaims = await GraphHelper.GetSignedInUsersGroups(context);
+                    };
+                    options.Events.OnSignedOutCallbackRedirect = async context =>
+                    {
+                        context.HttpContext.Session.Clear();
                     };
                 }, options => { Configuration.Bind("AzureAd", options); })
                     .EnableTokenAcquisitionToCallDownstreamApi(options => Configuration.Bind("AzureAd", options), initialScopes)
                     .AddMicrosoftGraph(Configuration.GetSection("GraphAPI"))
                     .AddInMemoryTokenCaches();
 
-            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+            // Adding authorization policies that enforce authorization using group values.
+            services.AddAuthorization(options =>
             {
-                // The following code instructs the ASP.NET Core middleware to use the data in the "groups" claim in the [Authorize] attribute and for User.IsInRole()
-                // Uncomment the following if you wish to use groups for roles
-                // See https://docs.microsoft.com/en-us/aspnet/core/security/authorization/roles for more info.
-                // options.TokenValidationParameters.RoleClaimType = "groups";
+            options.AddPolicy("GroupAdmin",
+            policy => policy.Requirements.Add(new GroupPolicyRequirement(Configuration["Groups:GroupAdmin"])));
+                options.AddPolicy("GroupMember",
+              policy => policy.Requirements.Add(new GroupPolicyRequirement(Configuration["Groups:GroupMember"])));
             });
+            services.AddSingleton<IAuthorizationHandler, GroupPolicyHandler>();
 
             services.AddDistributedMemoryCache();
             services.AddSession(options =>

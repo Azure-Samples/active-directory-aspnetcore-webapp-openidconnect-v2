@@ -85,6 +85,9 @@ namespace WebApp_OpenIDConnect_DotNet.Services
                                         // groupClaims.Add(group.OnPremisesNetBiosName+"\\"+group.OnPremisesSamAccountName));
                                         groupClaims.Add(group.Id);
                                     }
+
+                                    // Here we add the groups in a session variable that is used in authorization policy handler.
+                                    context.HttpContext.Session.SetAsByteArray("groupClaims", groupClaims);
                                 }
                             }
                         }
@@ -106,9 +109,6 @@ namespace WebApp_OpenIDConnect_DotNet.Services
                     context.HttpContext.Items.Remove("JwtSecurityTokenUsedToCallWebAPI");
                 }
             }
-
-            // Here we add the groups in a session variable to print on the home page for informational purposes
-            context.HttpContext.Session.SetAsByteArray("groupClaims", groupClaims);
 
             return groupClaims;
         }

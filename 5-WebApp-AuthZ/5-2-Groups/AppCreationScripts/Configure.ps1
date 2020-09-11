@@ -253,6 +253,8 @@ Function ConfigureApplications
    Write-Host "- For 'webApp'"
    Write-Host "  - Navigate to '$webAppPortalUrl'"
    Write-Host "  - Navigate to the API Permissions page and select 'Grant admin consent for (your tenant)'" -ForegroundColor Red 
+   Write-Host "  - On Azure Portal, create a security group named GroupAdmin, assign some users to it, and configure your ID and Access token to emit GroupID in your app registration. Configure the value for 'GroupAdmin' key in appsettings.json." -ForegroundColor Red 
+   Write-Host "  - On Azure Portal, create a security group named GroupMember, assign some users to it, and configure your ID and Access token to emit GroupID in your app registration. Configure the value for 'GroupMember' key in appsettings.json." -ForegroundColor Red 
 
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
      

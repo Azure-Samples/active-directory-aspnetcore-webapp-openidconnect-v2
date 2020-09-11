@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Graph;
 using Microsoft.Identity.Web;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         {
             this.graphServiceClient= graphServiceClient;
         }
-
+        [Authorize(Policy = "GroupAdmin")]
         [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]        
         public async Task<IActionResult> Index()
         {
