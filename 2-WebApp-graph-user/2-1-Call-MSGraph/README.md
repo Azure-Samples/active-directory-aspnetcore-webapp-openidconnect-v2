@@ -102,11 +102,12 @@ After the following lines in the ConfigureServices(IServiceCollection services) 
     . . .
     string[] initialScopes = Configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
 
+    // Add Graph
     services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-		    .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
-			    .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
-				    .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
-				    .AddInMemoryTokenCaches();
+        .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+        .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
+        .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
+        .AddInMemoryTokenCaches();
 ```
 
 The two new lines of code:
@@ -163,10 +164,10 @@ Still in the `Startup.cs` file, add the following `AddMicrosoftGraph` extension 
 ```CSharp
     // Add Graph
     services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-		    .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
-			    .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
-				    .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
-				    .AddInMemoryTokenCaches();
+        .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+        .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
+        .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
+        .AddInMemoryTokenCaches();
 ```
 
 ### Change the controller code to acquire a token and call Microsoft Graph

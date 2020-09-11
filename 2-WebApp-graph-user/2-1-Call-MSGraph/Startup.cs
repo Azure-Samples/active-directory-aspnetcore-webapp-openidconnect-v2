@@ -26,10 +26,10 @@ namespace _2_1_Call_MSGraph
             string[] initialScopes = Configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
 
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                    .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
-                        .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
-                            .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
-                            .AddInMemoryTokenCaches();
+                .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+                .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
+                .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
+                .AddInMemoryTokenCaches();
 
             /*
                // or use a distributed Token Cache by adding 
