@@ -3,7 +3,7 @@ services: active-directory
 platforms: dotnet
 author: jmprieur
 level: 200
-client: ASP.NET Core 2.x Web App
+client: ASP.NET Core 3.x Web App
 service: Microsoft Graph
 endpoint: Microsoft identity platform
 ---
