@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Web;
-using System.Net;
-using System.Net.Http;
 using Microsoft.Graph;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -26,9 +21,9 @@ namespace _2_1_Call_MSGraph.Controllers
         public HomeController(ILogger<HomeController> logger,
                           GraphServiceClient graphServiceClient)
         {
-             _logger = logger;
+            _logger = logger;
             _graphServiceClient = graphServiceClient;
-       }
+        }
 
         [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
         public async Task<IActionResult> Index()
