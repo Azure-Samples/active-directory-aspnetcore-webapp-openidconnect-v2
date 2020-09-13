@@ -86,10 +86,10 @@ namespace WebApp_OpenIDConnect_DotNet
                     };
                 })
                     .EnableTokenAcquisitionToCallDownstreamApi(
-                options => 
-                { 
-                    Configuration.Bind("AzureAd", options); 
-                }, 
+                options =>
+                {
+                    Configuration.Bind("AzureAd", options);
+                },
                 new string[] { GraphScope.UserReadAll })
                     .AddInMemoryTokenCaches();
 

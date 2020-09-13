@@ -28,7 +28,7 @@ namespace WebApp_OpenIDConnect_DotNet.Utils
 {
     public class UnauthorizedTenantException : UnauthorizedAccessException
     {
-        public UnauthorizedTenantException():base() { }
-        public UnauthorizedTenantException(string message):base(message) { }
+        public UnauthorizedTenantException() : base() { }
+        public UnauthorizedTenantException(string message) : base(message) { }
     }
 }

@@ -114,7 +114,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
                 await sampleDbContext.SaveChangesAsync();
             }
         }
-        
+
         private bool IsAuthorizedToModify(int itemId, ClaimsPrincipal user)
         {
             var tenantId = user.GetTenantId();
