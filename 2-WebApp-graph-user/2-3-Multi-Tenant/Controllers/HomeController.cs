@@ -1,7 +1,7 @@
 ﻿/*
  The MIT License (MIT)
 
-Copyright (c) 2018 Microsoft Corporation
+Copyright (c) 2020 Microsoft Corporation
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -80,6 +80,12 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View();
         }
 
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
