@@ -75,19 +75,25 @@ namespace WebApp_OpenIDConnect_DotNet.Services
 
                                 if (identity != null)
                                 {
-                                    // Re-populate the `groups` claim with the complete list of groups fetched from MS Graph
-                                    foreach (Group group in allgroups)
+                                    // Checks if token is 'ID Token'. 
+                                    // ID Token does not contain 'aapid' or 'azp' claims.
+                                    // These claims exist for Access Token.
+                                    if (!identity.Claims.Any(x => x.Type == "appid" || x.Type == "azp"))
                                     {
-                                        // The following code adds group ids to the 'groups' claim. But depending upon your reequirement and the format of the 'groups' claim selected in
-                                        // the app registration, you might want to add other attributes than id to the `groups` claim, examples being;
+                                        // Re-populate the `groups` claim with the complete list of groups fetched from MS Graph
+                                        foreach (Group group in allgroups)
+                                        {
+                                            // The following code adds group ids to the 'groups' claim. But depending upon your reequirement and the format of the 'groups' claim selected in
+                                            // the app registration, you might want to add other attributes than id to the `groups` claim, examples being;
 
-                                        // For instance if the required format is 'NetBIOSDomain\sAMAccountName' then the code is as commented below:
-                                        // groupClaims.Add(group.OnPremisesNetBiosName+"\\"+group.OnPremisesSamAccountName));
-                                        groupClaims.Add(group.Id);
+                                            // For instance if the required format is 'NetBIOSDomain\sAMAccountName' then the code is as commented below:
+                                            // groupClaims.Add(group.OnPremisesNetBiosName+"\\"+group.OnPremisesSamAccountName));
+                                            groupClaims.Add(group.Id);
+                                        }
+
+                                        // Here we add the groups in a session variable that is used in authorization policy handler.
+                                        context.HttpContext.Session.SetAsByteArray("groupClaims", groupClaims);
                                     }
-
-                                    // Here we add the groups in a session variable that is used in authorization policy handler.
-                                    context.HttpContext.Session.SetAsByteArray("groupClaims", groupClaims);
                                 }
                             }
                         }

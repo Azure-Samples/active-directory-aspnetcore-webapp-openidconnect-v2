@@ -34,7 +34,6 @@ namespace WebApp_OpenIDConnect_DotNet.Infrastructure
             {
                 // Retrieves all the groups saved in Session.
                 var groups = _httpContextAccessor.HttpContext.Session.GetAsByteArray("groupClaims") as List<string>;
-                groups = null;
 
                 // Checks if required group exists in Session.
                 if (groups?.Count > 0 && groups.Contains(requirement.GroupName))
