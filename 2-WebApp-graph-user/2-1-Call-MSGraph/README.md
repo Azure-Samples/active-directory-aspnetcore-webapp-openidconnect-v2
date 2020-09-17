@@ -100,9 +100,14 @@ After the following lines in the ConfigureServices(IServiceCollection services) 
  public void ConfigureServices(IServiceCollection services)
 {
     . . .
-    services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
-                .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Constants.ScopeUserRead })
-                .AddInMemoryTokenCaches();
+    string[] initialScopes = Configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
+
+    // Add Graph
+    services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+        .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+        .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
+        .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
+        .AddInMemoryTokenCaches();
 ```
 
 The two new lines of code:
@@ -154,11 +159,15 @@ Add the `Services\*.cs` files. The `GraphServiceClientFactory.cs` returns a `Gra
 
 ### Update the `Startup.cs` file to enable the Microsoft Graph custom service
 
-Still in the `Startup.cs` file, add the following lines just after the following. This lines ensures that the GraphAPIService benefits from the optimized `HttpClient` management by ASP.NET Core.
+Still in the `Startup.cs` file, add the following `AddMicrosoftGraph` extension method. This lines ensures that the GraphAPIService benefits from the optimized `HttpClient` management by ASP.NET Core.
 
 ```CSharp
     // Add Graph
-    services.AddGraphService(Configuration);
+    services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+        .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+        .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
+        .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
+        .AddInMemoryTokenCaches();
 ```
 
 ### Change the controller code to acquire a token and call Microsoft Graph
@@ -168,32 +177,29 @@ In the `Controllers\HomeController.cs`file:
 1. Add a constructor to HomeController, making the ITokenAcquisition service available (used by the ASP.NET dependency injection mechanism)
 
 ```CSharp
-readonly ITokenAcquisition tokenAcquisition;
-readonly WebOptions webOptions;
+private readonly GraphServiceClient _graphServiceClient;
 
-public HomeController(ITokenAcquisition tokenAcquisition, IOptions<WebOptions> webOptionValue)
+public HomeController(ILogger<HomeController> logger,
+                    GraphServiceClient graphServiceClient)
 {
-    this.tokenAcquisition = tokenAcquisition;
-    this.webOptions = webOptionValue.Value;
+    _logger = logger;
+    _graphServiceClient = graphServiceClient;
 }
 ```
 
 1. Add a `Profile()` action so that it calls the Microsoft Graph *me* endpoint. In case a token cannot be acquired, a challenge is attempted to re-sign-in the user, and have them consent to the requested scopes. This is expressed declaratively by the `AuthorizeForScopes`attribute. This attribute is part of the `Microsoft.Identity.Web` project and automatically manages incremental consent.
 
 ```CSharp
-[AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]
+[AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
 public async Task<IActionResult> Profile()
 {
-    // Initialize the GraphServiceClient. 
-    Graph::GraphServiceClient graphClient = GetGraphServiceClient(new[] { Constants.ScopeUserRead });
-
-    var me = await graphClient.Me.Request().GetAsync();
+    var me = await _graphServiceClient.Me.Request().GetAsync();
     ViewData["Me"] = me;
 
     try
     {
         // Get user photo
-        using (var photoStream = await graphClient.Me.Photo.Content.Request().GetAsync())
+        using (var photoStream = await _graphServiceClient.Me.Photo.Content.Request().GetAsync())
         {
             byte[] photoByte = ((MemoryStream)photoStream).ToArray();
             ViewData["Photo"] = Convert.ToBase64String(photoByte);
@@ -205,15 +211,6 @@ public async Task<IActionResult> Profile()
     }
 
     return View();
-}
-
-private Graph::GraphServiceClient GetGraphServiceClient(string[] scopes)
-{
-    return GraphServiceClientFactory.GetAuthenticatedGraphClient(async () =>
-    {
-        string result = await tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(scopes);
-        return result;
-    }, webOptions.GraphApiUrl);
 }
 ```
 

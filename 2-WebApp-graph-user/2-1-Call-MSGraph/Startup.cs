@@ -1,20 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Graph;
 
 namespace _2_1_Call_MSGraph
 {
@@ -33,37 +26,37 @@ namespace _2_1_Call_MSGraph
             string[] initialScopes = Configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
 
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                    .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
-                        .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
-                            .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
-                            .AddInMemoryTokenCaches();
+                .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+                .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
+                .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
+                .AddInMemoryTokenCaches();
 
-                    /*
-                       // or use a distributed Token Cache by adding 
-                            .AddDistributedTokenCaches();
+            /*
+               // or use a distributed Token Cache by adding 
+                    .AddDistributedTokenCaches();
 
-                       // and then choose your implementation. 
-                       // See https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed?view=aspnetcore-2.2#distributed-memory-cache
+               // and then choose your implementation. 
+               // See https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed?view=aspnetcore-2.2#distributed-memory-cache
 
-                       // For instance the distributed in memory cache
-                        services.AddDistributedMemoryCache()
+               // For instance the distributed in memory cache
+                services.AddDistributedMemoryCache()
 
-                       // Or a Redis cache
-                       services.AddStackExchangeRedisCache(options =>
-                            {
-                                options.Configuration = "localhost";
-                                options.InstanceName = "SampleInstance";
-                            });
+               // Or a Redis cache
+               services.AddStackExchangeRedisCache(options =>
+                    {
+                        options.Configuration = "localhost";
+                        options.InstanceName = "SampleInstance";
+                    });
 
-                       // Or even a SQL Server token cache
-                       services.AddDistributedSqlServerCache(options =>
-                        {
-                            options.ConnectionString = 
-                                _config["DistCache_ConnectionString"];
-                            options.SchemaName = "dbo";
-                            options.TableName = "TestCache";
-                        });
-                    */
+               // Or even a SQL Server token cache
+               services.AddDistributedSqlServerCache(options =>
+                {
+                    options.ConnectionString = 
+                        _config["DistCache_ConnectionString"];
+                    options.SchemaName = "dbo";
+                    options.TableName = "TestCache";
+                });
+            */
 
             services.AddControllersWithViews(options =>
             {
@@ -72,8 +65,8 @@ namespace _2_1_Call_MSGraph
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
-           services.AddRazorPages()
-                   .AddMicrosoftIdentityUI();
+            services.AddRazorPages()
+                    .AddMicrosoftIdentityUI();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
