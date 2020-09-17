@@ -46,9 +46,9 @@ namespace _2_1_Call_MSGraph
 
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
-                .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
-                .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
-                .AddDistributedTokenCaches();
+                    .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
+                        .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
+                        .AddDistributedTokenCaches();
 
             services.AddDistributedSqlServerCache(options =>
             {
