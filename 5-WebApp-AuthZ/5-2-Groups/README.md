@@ -331,7 +331,7 @@ The following files have the code that would be of interest to you:
      ```
 
     - have been replaced by these lines:
-      
+
      ```CSharp
       services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
               .AddMicrosoftIdentityWebApp(
@@ -353,56 +353,68 @@ The following files have the code that would be of interest to you:
   
     `AddMicrosoftGraph` registers the service for `GraphServiceClient`. The values for BaseUrl and Scopes defined in `GraphAPI` section of **appsettings.json**.
   
-1. In GraphHelper.cs, ProcessClaimsForGroupsOverage method uses `GraphServiceClient` to retrieve groups for the signed-in user from [/me/memberOf](https://docs.microsoft.com/graph/api/user-list-memberof) endpoint. All the groups are stored in list of claims and the data can be used in the application as per requirement.
+1. In GraphHelper.cs, ProcessClaimsForGroupsOverage method uses `GraphServiceClient` to retrieve groups for the signed-in user from [/me/memberOf](https://docs.microsoft.com/graph/api/user-list-memberof) endpoint. All the group ids are stored in list of claims and the data can be used in the application as per requirement.
 
-   ```csharp
-   public static async Task ProcessClaimsForGroupsOverage(TokenValidatedContext context)
-   {
-        if (context.Principal.Claims.Any(x => x.Type == "hasgroups" || (x.Type == "_claim_names" && x.Value == "{\"groups\":\"src1\"}")))
-        {
-            var graphClient = context.HttpContext.RequestServices.GetService<GraphServiceClient>();
-            if (graphClient == null)
-            {
-                Console.WriteLine("No service for type 'Microsoft.Graph.GraphServiceClient' has been registered.");
-            }
-            else if (context.SecurityToken != null)
-            {
-                if (!context.HttpContext.Items.ContainsKey("JwtSecurityTokenUsedToCallWebAPI"))
-                {
-                    context.HttpContext.Items.Add("JwtSecurityTokenUsedToCallWebAPI", context.SecurityToken as JwtSecurityToken);
-                }
-                string select = "id,displayName,onPremisesNetBiosName,onPremisesDomainName,onPremisesSamAccountNameonPremisesSecurityIdentifier";
-                IUserMemberOfCollectionWithReferencesPage memberPage = new UserMemberOfCollectionWithReferencesPage();
-                try
-                {
-                    memberPage = await graphClient.Me.MemberOf.Request().Select(select).GetAsync().ConfigureAwait(false);
-                }
-                catch(Exception graphEx)
-                {
-                    var exMsg = graphEx.InnerException != null ? graphEx.InnerException.Message : graphEx.Message;
-                    Console.WriteLine("Call to Microsoft Graph failed: "+ exMsg);
-                }
-                if (memberPage?.Count > 0)
-                {
-                    var allgroups = ProcessIGraphServiceMemberOfCollectionPage(memberPage);
-                    if (allgroups?.Count > 0)
-                    {
-                        var identity = (ClaimsIdentity)context.Principal.Identity;
-                        if (identity != null)
-                        {
-                            RemoveExistingClaims(identity);
-                            List<Claim> groupClaims = new List<Claim>();
-                            foreach (Group group in allgroups)
-                            {
-                                groupClaims.Add(new Claim("groups", group.Id));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    ....
-    }
+    ```csharp
+    public static async Task ProcessClaimsForGroupsOverage(TokenValidatedContext context)
+    {
+          if (context.Principal.Claims.Any(x => x.Type == "hasgroups" || (x.Type == "_claim_names" && x.Value == "{\"groups\":\"src1\"}")))
+          {
+              var graphClient = context.HttpContext.RequestServices.GetService<GraphServiceClient>();
+              if (graphClient == null)
+              {
+                  Console.WriteLine("No service for type 'Microsoft.Graph.GraphServiceClient' has been registered.");
+              }
+              else if (context.SecurityToken != null)
+              {
+                  if (!context.HttpContext.Items.ContainsKey("JwtSecurityTokenUsedToCallWebAPI"))
+                  {
+                      context.HttpContext.Items.Add("JwtSecurityTokenUsedToCallWebAPI", context.SecurityToken as JwtSecurityToken);
+                  }
+                  string select = "id,displayName,onPremisesNetBiosName,onPremisesDomainName,onPremisesSamAccountNameonPremisesSecurityIdentifier";
+                  IUserMemberOfCollectionWithReferencesPage memberPage = new UserMemberOfCollectionWithReferencesPage();
+                  try
+                  {
+                      memberPage = await graphClient.Me.MemberOf.Request().Select(select).GetAsync().ConfigureAwait(false);
+                  }
+                  catch(Exception graphEx)
+                  {
+                      var exMsg = graphEx.InnerException != null ? graphEx.InnerException.Message : graphEx.Message;
+                      Console.WriteLine("Call to Microsoft Graph failed: "+ exMsg);
+                  }
+                  if (memberPage?.Count > 0)
+                  {
+                      var allgroups = ProcessIGraphServiceMemberOfCollectionPage(memberPage);
+                      if (allgroups?.Count > 0)
+                      {
+                          var identity = (ClaimsIdentity)context.Principal.Identity;
+                          if (identity != null)
+                          {
+                              RemoveExistingClaims(identity);
+                              List<Claim> groupClaims = new List<Claim>();
+                              foreach (Group group in allgroups)
+                              {
+                                  groupClaims.Add(new Claim("groups", group.Id));
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+      ....
+      }
+      ```
+
+    If application is using different group property type for instance, `NetBIOSDomain\sAMAccountName` then replace
+
+    ```csharp
+    groupClaims.Add(new Claim("groups", group.Id));
+    ```
+
+    with
+
+    ```csharp
+    groupClaims.Add(group.OnPremisesNetBiosName+"\\"+group.OnPremisesSamAccountName));
     ```
 
 1. UserProfile\Index.cshtml

@@ -10,9 +10,9 @@ using WebApp_OpenIDConnect_DotNet.Services;
 namespace WebApp_OpenIDConnect_DotNet.Infrastructure
 {
     /// <summary>
-    /// GroupPolicyHandler represents Policy-based authorization.
+    /// GroupPolicyHandler deals with custom Policy-based authorization.
     /// GroupPolicyHandler evaluates the GroupPolicyRequirement against AuthorizationHandlerContext 
-    /// to determine if authorization is allowed.
+    /// by calling CheckUsersGroupMembership method to determine if authorization is allowed.
     /// </summary>
     public class GroupPolicyHandler : AuthorizationHandler<GroupPolicyRequirement>
     {

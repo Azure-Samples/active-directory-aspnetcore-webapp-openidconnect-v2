@@ -25,16 +25,19 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         {
             List<string> groupClaims = new List<string>();
 
-            // Gets group values from session variable if exists.
-            groupClaims = GetSessionGroupList(context.HttpContext.Session);
-            if (groupClaims?.Count>0)
-            {
-                return groupClaims;
-            }
             // Checks if the incoming token contained a 'Group Overage' claim.
-            else if (HasOverageOccurred(context.Principal))
+            if (HasOverageOccurred(context.Principal))
             {
-                groupClaims= await ProcessUserGroupsForOverage(context);
+                // Gets group values from session variable if exists.
+                groupClaims = GetSessionGroupList(context.HttpContext.Session);
+                if (groupClaims?.Count > 0)
+                {
+                    return groupClaims;
+                }
+                else
+                {
+                    groupClaims = await ProcessUserGroupsForOverage(context);
+                }
             }
             return groupClaims;
         }
@@ -72,12 +75,11 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        static async Task<List<string>> ProcessUserGroupsForOverage(TokenValidatedContext context)
+        private static async Task<List<string>> ProcessUserGroupsForOverage(TokenValidatedContext context)
         {
             List<string> groupClaims = new List<string>();
             try
             {
-               
                 // Before instatntiating GraphServiceClient, the app should have granted admin consent for 'GroupMember.Read.All' permission.
                 var graphClient = context.HttpContext.RequestServices.GetService<GraphServiceClient>();
 
@@ -226,7 +228,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         {
             bool result = false;
             // Checks if groups claim exists in claims collection of signed-in User.
-            if(HasOverageOccurred(context.User))
+            if (HasOverageOccurred(context.User))
             {
                 // Calls method GetSessionGroupList to get groups from session.
                 var groups = GetSessionGroupList(_httpContextAccessor.HttpContext.Session);
@@ -239,7 +241,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
             }
             else if (context.User.Claims.Any(x => x.Type == "groups" && x.Value == GroupName))
             {
-                    result = true;
+                result = true;
             }
             return result;
         }
