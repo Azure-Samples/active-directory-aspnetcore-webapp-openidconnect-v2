@@ -25,7 +25,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         {
             List<string> groupClaims = new List<string>();
 
-            // 
+            // Gets group values from session variable if exists.
             groupClaims = GetSessionGroupList(context.HttpContext.Session);
             if (groupClaims?.Count>0)
             {

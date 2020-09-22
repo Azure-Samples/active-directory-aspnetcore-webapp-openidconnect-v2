@@ -240,6 +240,8 @@ User.IsInRole("Group-object-id"); // In methods
 
 ```
 
+>Once overage occurs , the [Authorize] attribute and IsInRole() won’t work as the claims collection no longer has the groups fetched via graph.
+
 ### The groups overage claim
 
 To ensure that the token size doesn’t exceed HTTP header size limits, the Microsoft Identity Platform limits the number of object Ids that it includes in the **groups** claim.
@@ -331,7 +333,7 @@ The following files have the code that would be of interest to you:
      ```
 
     - have been replaced by these lines:
-      
+
      ```CSharp
       services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
               .AddMicrosoftIdentityWebApp(
@@ -341,7 +343,7 @@ The following files have the code that would be of interest to you:
                     options.Events = new OpenIdConnectEvents();
                     options.Events.OnTokenValidated = async context =>
                     {
-                        await GraphHelper.ProcessClaimsForGroupsOverage(context);
+                        await GraphHelper.GetSignedInUsersGroups(context);
                     };
                 }, options => { Configuration.Bind("AzureAd", options); })
              .EnableTokenAcquisitionToCallDownstreamApi(options => Configuration.Bind("AzureAd", options), initialScopes)
@@ -349,21 +351,23 @@ The following files have the code that would be of interest to you:
              .AddInMemoryTokenCaches();
       ```
 
-    `OnTokenValidated` event calls **ProcessClaimsForGroupsOverage** method, that is defined in GraphHelper.cs, to process groups overage claim.
+    `OnTokenValidated` event calls **GetSignedInUsersGroups** method, that is defined in GraphHelper.cs, to process groups overage claim.
   
     `AddMicrosoftGraph` registers the service for `GraphServiceClient`. The values for BaseUrl and Scopes defined in `GraphAPI` section of **appsettings.json**.
   
-1. In GraphHelper.cs, ProcessClaimsForGroupsOverage method uses `GraphServiceClient` to retrieve groups for the signed-in user from [/me/memberOf](https://docs.microsoft.com/graph/api/user-list-memberof) endpoint. All the groups are stored in list of claims and the data can be used in the application as per requirement.
+1. In GraphHelper.cs, GetSignedInUsersGroups method uses `GraphServiceClient` to retrieve groups for the signed-in user from [/me/memberOf](https://docs.microsoft.com/graph/api/user-list-memberof) endpoint. All the groups are stored in list of claims and the data can be used in the application as per requirement.
 
    ```csharp
-   public static async Task ProcessClaimsForGroupsOverage(TokenValidatedContext context)
+   public static async Task GetSignedInUsersGroups(TokenValidatedContext context)
    {
+      List<string> groupClaims = new List<string>();
+      ...
         if (context.Principal.Claims.Any(x => x.Type == "hasgroups" || (x.Type == "_claim_names" && x.Value == "{\"groups\":\"src1\"}")))
         {
             var graphClient = context.HttpContext.RequestServices.GetService<GraphServiceClient>();
             if (graphClient == null)
             {
-                Console.WriteLine("No service for type 'Microsoft.Graph.GraphServiceClient' has been registered.");
+                Console.WriteLine("No service for type 'Microsoft.Graph.GraphServiceClient' has been registered in the Startup.");
             }
             else if (context.SecurityToken != null)
             {
@@ -372,36 +376,40 @@ The following files have the code that would be of interest to you:
                     context.HttpContext.Items.Add("JwtSecurityTokenUsedToCallWebAPI", context.SecurityToken as JwtSecurityToken);
                 }
                 string select = "id,displayName,onPremisesNetBiosName,onPremisesDomainName,onPremisesSamAccountNameonPremisesSecurityIdentifier";
+
                 IUserMemberOfCollectionWithReferencesPage memberPage = new UserMemberOfCollectionWithReferencesPage();
                 try
                 {
                     memberPage = await graphClient.Me.MemberOf.Request().Select(select).GetAsync().ConfigureAwait(false);
                 }
-                catch(Exception graphEx)
+                catch (Exception graphEx)
                 {
                     var exMsg = graphEx.InnerException != null ? graphEx.InnerException.Message : graphEx.Message;
-                    Console.WriteLine("Call to Microsoft Graph failed: "+ exMsg);
+                    Console.WriteLine("Call to Microsoft Graph failed: " + exMsg);
                 }
+
                 if (memberPage?.Count > 0)
                 {
                     var allgroups = ProcessIGraphServiceMemberOfCollectionPage(memberPage);
+
                     if (allgroups?.Count > 0)
                     {
                         var identity = (ClaimsIdentity)context.Principal.Identity;
+
                         if (identity != null)
                         {
-                            RemoveExistingClaims(identity);
-                            List<Claim> groupClaims = new List<Claim>();
                             foreach (Group group in allgroups)
                             {
-                                groupClaims.Add(new Claim("groups", group.Id));
+                                groupClaims.Add(group.Id);
                             }
                         }
                     }
                 }
             }
         }
-    ....
+      }
+      ...
+    context.HttpContext.Session.SetAsByteArray("groupClaims", groupClaims);
     }
     ```
 

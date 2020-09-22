@@ -164,16 +164,16 @@ namespace ToDoListService.Controllers
         }
         public async Task<List<string>> CallGraphApiOnBehalfOfUser()
         {
-            string[] scopes = { "user.read.all" };
+            string[] scopes = { "user.read" };
 
             // we use MSAL.NET to get a token to call the API On Behalf Of the current user
             try
             {
                 List<string> userList = new List<string>();
                 string accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
-                IEnumerable<User> users = await CallGraphApiOnBehalfOfUser(accessToken);
-                userList = users.Select(x => x.UserPrincipalName).ToList();
-                return userList;
+                //IEnumerable<User> users = await CallGraphApiOnBehalfOfUser(accessToken);
+                //userList = users.Select(x => x.UserPrincipalName).ToList();
+                return null;
             }
             catch (MsalUiRequiredException ex)
             {
