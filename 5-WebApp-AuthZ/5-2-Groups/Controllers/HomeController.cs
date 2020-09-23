@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Security.Claims;
 using WebApp_OpenIDConnect_DotNet.Models;
-using WebApp_OpenIDConnect_DotNet.Infrastructure;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
+using WebApp_OpenIDConnect_DotNet.Services;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
@@ -21,10 +18,11 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         {
             ViewData["User"] = HttpContext.User;
 
-            // If groups overage occurred..
-            if (HttpContext.Session.Keys.Contains("groupClaims"))
+            // Calls method GetSessionGroupList to get groups from session.
+            var groups = GraphHelper.GetUserGroupsFromSession(HttpContext.Session);
+            if (groups?.Count > 0)
             {
-                ViewData.Add("groupClaims", HttpContext.Session.GetAsByteArray("groupClaims") as List<string>);
+                ViewData.Add("groupClaims", groups );
             }
             return View();
         }

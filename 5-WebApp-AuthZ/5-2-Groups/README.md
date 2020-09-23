@@ -3,9 +3,9 @@ page_type: sample
 languages:
   - csharp
 products:
-  - azure
   - azure-active-directory  
-  - dotnet
+  - dotnet  
+  - aspnet-core
   - ms-graph
 name: Add authorization using groups & group claims to an ASP.NET Core Web app that signs-in users with the Microsoft identity platform
 description: "This sample demonstrates a ASP.NET Core Web App application calling The Microsoft Graph"																   
@@ -34,8 +34,8 @@ This sample first leverages the ASP.NET Core OpenID Connect middleware to sign i
 ## Prerequisites
 
 - [Visual Studio](https://visualstudio.microsoft.com/downloads/)
-- An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/)
-- A user account in your Azure AD tenant. This sample will not work with a **personal Microsoft account**. Therefore, if you signed in to the [Azure portal](https://portal.azure.com) with a personal account and have never created a user account in your directory before, you need to do that now.
+- An **Azure AD** tenant. For more information see: [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/)
+- A user account in your **Azure AD**. This sample will not work with a **personal Microsoft account**. Therefore, if you signed in to the [Azure portal](https://portal.azure.com) with a personal account and have never created a user account in your directory before, you need to do that now.
 
  > Please make sure to have one or more user accounts in the tenant assigned to a few security groups in your tenant. Please follow the instructions in [Create a basic group and add members using Azure Active Directory](https://docs.microsoft.com/azure/active-directory/fundamentals/active-directory-groups-create-azure-portal) to create a few groups and assign users to them if not already done.
 
@@ -51,7 +51,7 @@ git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcor
 
 or download and extract the repository .zip file.
 
-> :warning: Given that the name of the sample is quite long, and so are the names of the referenced packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
+> :warning: Given that the name of the sample is quite long, and so are the names of the referenced packages, you might want to clone it in a folder close to the root of your hard drive, to avoid maximum file path length limitations on Windows.
 
 Navigate to the `"5-WebApp-AuthZ"` folder
 
@@ -70,6 +70,8 @@ There is one project in this sample. To register it, you can:
 
 <details>
   <summary>Expand this section if you want to use this automation:</summary>
+
+> :warning: If you have never used **Azure AD PowerShell** before, we recommend you go through the [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
 
 1. On Windows, run PowerShell as **Administrator** and navigate to the root of the cloned directory
 1. In PowerShell run:
@@ -102,8 +104,8 @@ As a first step you'll need to:
 
 #### Register the web app (WebApp-GroupClaims)
 
-1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
-1. Select **New registration**.
+1. Navigate to the [Azure portal](https://portal.azure.com) and select the **Azure AD** service.
+1. Select the **App registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp-GroupClaims`.
    - Under **Supported account types**, select **Accounts in this organizational directory only**.
@@ -134,14 +136,25 @@ As a first step you'll need to:
    requested permissions for all account in the tenant.
    You need to be an Azure AD tenant admin to do this.
 
+##### Configure the  web app (WebApp-GroupClaims) to use your app registration
+
+Open the project in your IDE (like Visual Studio) to configure the code.
+>In the steps below, "ClientID" is the same as "Application ID" or "AppId".
+
+1. Open the `appsettings.json` file
+1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `WebApp-GroupClaims` application copied from the Azure portal.
+1. Find the app key `TenantId` and replace the existing value with your Azure AD tenant ID.
+1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
+1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp-GroupClaims` app, in the Azure portal.
+
 #### Configure your application to receive the **groups** claim
 
-Now you have two different options available to you on how you can further configure your application to receive the `groups` claim.
+You have two different options available to you on how you can further configure your application to receive the `groups` claim.
 
 1. [Receive **all the groups** that the signed-in user is assigned to in an Azure AD tenant, included nested groups](#configure-your-application-to-receive-all-the-groups-the-signed-in-user-is-assigned-to-included-nested-groups).
-1. [Receive the **groups** claim values from a **filtered set of groups** that your application is programmed to work with](#configure-your-application-to-receive-the-groups-claim-values-from-a-filtered-set-of-groups-a-user-may-be-assigned-to). (Not available in the [Azure AD Free edition](https://azure.microsoft.com/pricing/details/active-directory/)).
+1. [Receive the **groups** claim values from a **filtered set of groups** that your application is programmed to work with](#configure-your-application-to-receive-the-groups-claim-values-from-a-filtered-set-of-groups-a-user-may-be-assigned-to) (Not available in the [Azure AD Free edition](https://azure.microsoft.com/pricing/details/active-directory/)).
 
-> To get the on-premise group's `samAccountName` or `On Premises Group Security Identifier` instead of Group id, please refer to the document [Configure group claims for applications with Azure Active Directory](https://docs.microsoft.com/azure/active-directory/hybrid/how-to-connect-fed-group-claims#prerequisites-for-using-group-attributes-synchronized-from-active-directory).
+> To get the on-premise group's `samAccountName` or `On Premises Group Security Identifier` instead of Group ID, please refer to the document [Configure group claims for applications with Azure Active Directory](https://docs.microsoft.com/azure/active-directory/hybrid/how-to-connect-fed-group-claims#prerequisites-for-using-group-attributes-synchronized-from-active-directory).
 
 ##### Configure your application to receive **all the groups** the signed-in user is assigned to, included nested groups
 
@@ -166,8 +179,8 @@ Now you have two different options available to you on how you can further confi
 1. Select `Groups assigned to the application`.
     1. Choosing additional options like `Security Groups` or `All groups (includes distribution lists but not groups assigned to the application)` will negate the benefits your app derives from choosing to use this option.
 1. Under the **ID** section, select `Group ID`. This will result in Azure AD sending the object [id](https://docs.microsoft.com/graph/api/resources/group?view=graph-rest-1.0) of the groups the user is assigned to in the `groups` claim of the [ID Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) that your app receives after signing-in a user.
-1. If you are exposing a Web API using the **Expose an API** option, then you can also choose the `Group ID` option under the **Access** section. This will result in Azure AD sending the object [id](https://docs.microsoft.com/graph/api/resources/group?view=graph-rest-1.0) of the groups the user is assigned to in the `groups` claim of the [Access Token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) issued to the client applications of your API.
-1. In the app's registration screen, click on the **Overview** blade in the left to open the Application overview screen. Select the hyperlink with the name of your application in **Managed application in local directory** (note this field title can be truncated for instance `Managed application in ...`). When you select this link you will navigate to the **Enterprise Application Overview** page associated with the service principal for your application in the tenant where you created it. You can navigate back to the app registration page by using the back button of your browser.
+1. If you are exposing a Web API using the **Expose an API** option, then you can also choose the `Group ID` option under the **Access** section. This will result in Azure AD sending the [Object ID](https://docs.microsoft.com/graph/api/resources/group?view=graph-rest-1.0) of the groups the user is assigned to in the `groups` claim of the [Access Token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) issued to the client applications of your API.
+1. In the app's registration screen, click on the **Overview** blade in the left to open the Application overview screen. Select the hyperlink with the name of your application in **Managed application in local directory** (note this field title can be truncated for instance `Managed application in ...`). When you select this link you will navigate to the **Enterprise Application Overview** page associated with the service principal for your application in the tenant where you created it. You can navigate back to the app registration page by using the *back* button of your browser.
 1. Select the **Users and groups** blade in the left to open the page where you can assign users and groups to your application.
     1. Click on the **Add user** button on the top row.
     1. Select **User and Groups** from the resultant screen.
@@ -180,21 +193,50 @@ Now you have two different options available to you on how you can further confi
    >
    > When you set **User assignment required?** to **Yes**, Azure AD will check that only users assigned to your application in the **Users and groups** blade are able to sign-in to your app. You can assign users directly or by assigning security groups they belong to.
 
-##### Configure the  web app (WebApp-GroupClaims) to use your app registration
+### Configure the web app (WebApp-GroupClaims) to recognize Group IDs
 
-Open the project in your IDE (like Visual Studio) to configure the code.
->In the steps below, "ClientID" is the same as "Application ID" or "AppId".
+> :warning:
+> During **Token Configuration**, if you have chosen any other option except **groupID** (e.g. like **DNSDomain\sAMAccountName**) you should enter the **group name** (for example `contoso.com\Test Group`) instead of the **object ID** below:
 
-1. Open the `appsettings.json` file
-1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `WebApp-GroupClaims` application copied from the Azure portal.
-1. Find the app key `TenantId` and replace the existing value with your Azure AD tenant ID.
-1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
-1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp-GroupClaims` app, in the Azure portal.
+1. Open the `appsettings.json` file.
+1. Find the app key `Groups.GroupAdmin` and replace the existing value with the object ID of the **GroupAdmin** group copied from the Azure portal.
+1. Find the app key `Groups.GroupMember` and replace the existing value with the object ID of the **GroupMember** group copied from the Azure portal.
 
 ## Running the sample
 
-1. Clean and rebuild the solution, and run it.
-1. Open your web browser and make a request to the app. The app immediately attempts to authenticate you to the Microsoft identity platform. You can sign-in with a *work or school account* from the tenant where you created this app. But sign-in with admin for the first time as admin consent is required for `GroupMember.Read.All` permission.
+### Run the sample using Visual Studio
+
+> For Visual Studio Users
+>
+> Clean the solution, rebuild the solution, and run it.
+
+### Run the sample using a command line interface such as VS Code integrated terminal
+
+#### Step 1. Install .NET Core dependencies
+
+```console
+   cd WebApp-GroupClaims
+   dotnet restore
+```
+
+#### Step 2. Trust development certificates
+
+```console
+   dotnet dev-certs https --clean
+   dotnet dev-certs https --trust
+```
+
+Learn more about [HTTPS in .NET Core](https://docs.microsoft.com/aspnet/core/security/enforcing-ssl).
+
+#### Step 3. Run the applications
+
+In the console window execute the below command:
+
+```console
+    dotnet run
+```
+
+1. Open your web browser and make a request to the app. The app immediately attempts to authenticate you to the Microsoft identity platform. You can sign-in with a *work or school account* from the tenant where you created this app. If admin consent to `GroupMember.Read.All` permission from portal is not done then sign-in with admin for the first time and consent for the permission.
 1. If the **Overage** scenario occurs for the signed-in user then all the groups are retrieved from Microsoft Graph and added in a list. The [overage](#groups-overage-claim) scenario is discussed later in this article.
 1. On the home page, the app lists the various claims it obtained from your ID token. You'd notice one more claims named `groups`.
 1. On the top menu, click on the signed-in user's name **user@domain.com**, you should now see all kind of information about yourself including their picture.
@@ -217,34 +259,11 @@ The object id of the security groups the signed in user is member of is returned
 }
 ```
 
-### Support in ASP.NET Core middleware libraries
-
-The ASP.NET middleware supports roles populated from claims by specifying the claim in the `RoleClaimType` property of `TokenValidationParameters`.
-Since the `groups` claim contains the object IDs of the security groups than actual names by default, you'd use the group ID's instead of group names. See [Role-based authorization in ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authorization/roles) for more info.
-
-```CSharp
-// Startup.cs
-
-// The following lines code instruct the asp.net core middleware to use the data in the "groups" claim in the [Authorize] attribute and for User.IsInrole()
-// See https://docs.microsoft.com/aspnet/core/security/authorization/roles
-services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
-{
-    // Use the groups claim for populating roles
-    options.TokenValidationParameters.RoleClaimType = "groups";
-});
-
-// In code..(Controllers & elsewhere)
-[Authorize(Roles = "Group-object-id")] // In controllers
-// or
-User.IsInRole("Group-object-id"); // In methods
-
-```
-
 ### The groups overage claim
 
 To ensure that the token size doesn’t exceed HTTP header size limits, the Microsoft Identity Platform limits the number of object Ids that it includes in the **groups** claim.
 
-If a user is member of more groups than the overage limit (**150 for SAML tokens, 200 for JWT tokens, 6 for Single Page applications**, ), then the Microsoft Identity Platform does not emit the group ids in the `groups` claim in the token. Instead, it includes an **overage** claim in the token that indicates to the application to query the [Graph API](https://graph.microsoft.com) to retrieve the user’s group membership.
+If a user is member of more groups than the overage limit (**150 for SAML tokens, 200 for JWT tokens, 6 for Single Page applications**), then the Microsoft Identity Platform does not emit the group IDs in the `groups` claim in the token. Instead, it includes an **overage** claim in the token that indicates to the application to query the [MS Graph API](https://graph.microsoft.com) to retrieve the user’s group membership.
 
 ```JSON
 {
@@ -264,7 +283,7 @@ If a user is member of more groups than the overage limit (**150 for SAML tokens
 
 #### Create the overage scenario in this sample for testing
 
-1. You can use the `BulkCreateGroups.ps1` provided in the [App Creation Scripts](./AppCreationScripts/) folder to create a large number of groups and assign users to them. This will help test overage scenarios during development. Remember to change the user's objectId provided in the `BulkCreateGroups.ps1` script.
+1. You can use the `BulkCreateGroups.ps1` provided in the [App Creation Scripts](./AppCreationScripts/) folder to create a large number of groups and assign users to them. This will help test overage scenarios during development. Remember to change the user's **objectId** provided in the `BulkCreateGroups.ps1` script.
 1. When you run this sample and an overage occurred, then you'd see the  `_claim_names` in the home page after the user signs-in.
 1. We strongly advise you use the [group filtering feature](#configure-your-application-to-receive-the-groups-claim-values-from-a-filtered-set-of-groups-a-user-may-be-assigned-to) (if possible) to avoid running into group overages.
 1. In case you cannot avoid running into group overage, we suggest you use the following logic to process groups claim in your token.  
@@ -313,8 +332,24 @@ The following files have the code that would be of interest to you:
 
 1. HomeController.cs
     1. Passes the **HttpContext.User** (the signed-in user) to the view.
+    1. Calls method **GetSessionGroupList** of `GraphHelper.cs` to get groups from session and if groups are returned then pass them to the view.
+
+       ```csharp
+        public IActionResult Index()
+        {
+            ViewData["User"] = HttpContext.User;
+            var groups = GraphHelper.GetUserGroupsFromSession(HttpContext.Session);
+            if (groups?.Count > 0)
+            {
+                ViewData.Add("groupClaims", groups );
+            }
+            return View();
+        }
+       ```
+
 1. Home\Index.cshtml
-    1. This has some code to print the current user's claims
+    1. This has some code to print the current user's claims.
+
 1. Startup.cs
 
     - at the top of the file, add the following using directive:
@@ -335,90 +370,171 @@ The following files have the code that would be of interest to you:
      ```CSharp
       services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
               .AddMicrosoftIdentityWebApp(
-                options =>
-                {
-                    Configuration.Bind("AzureAd", options);
-                    options.Events = new OpenIdConnectEvents();
-                    options.Events.OnTokenValidated = async context =>
-                    {
-                        await GraphHelper.ProcessClaimsForGroupsOverage(context);
-                    };
-                }, options => { Configuration.Bind("AzureAd", options); })
-             .EnableTokenAcquisitionToCallDownstreamApi(options => Configuration.Bind("AzureAd", options), initialScopes)
-             .AddMicrosoftGraph(Configuration.GetSection("GraphAPI"))
-             .AddInMemoryTokenCaches();
+          options =>
+          {
+              Configuration.Bind("AzureAd", options);
+              options.Events = new OpenIdConnectEvents();
+              options.Events.OnTokenValidated = async context =>
+              {
+                  var overageGroupClaims = await GraphHelper.GetSignedInUsersGroups(context);
+              };
+          }, options => { Configuration.Bind("AzureAd", options); })
+              .EnableTokenAcquisitionToCallDownstreamApi(options => Configuration.Bind("AzureAd", options), initialScopes)
+              .AddMicrosoftGraph(Configuration.GetSection("GraphAPI"))
+              .AddInMemoryTokenCaches();
       ```
 
-    `OnTokenValidated` event calls **ProcessClaimsForGroupsOverage** method, that is defined in GraphHelper.cs, to process groups overage claim.
+    `OnTokenValidated` event calls **GetSignedInUsersGroups** method, that is defined in GraphHelper.cs, to process groups overage claim.
   
     `AddMicrosoftGraph` registers the service for `GraphServiceClient`. The values for BaseUrl and Scopes defined in `GraphAPI` section of **appsettings.json**.
-  
-1. In GraphHelper.cs, ProcessClaimsForGroupsOverage method uses `GraphServiceClient` to retrieve groups for the signed-in user from [/me/memberOf](https://docs.microsoft.com/graph/api/user-list-memberof) endpoint. All the group ids are stored in list of claims and the data can be used in the application as per requirement.
+
+    Following lines of code adds authorization policies that enforce authorization using group values.
 
     ```csharp
-    public static async Task ProcessClaimsForGroupsOverage(TokenValidatedContext context)
-    {
-          if (context.Principal.Claims.Any(x => x.Type == "hasgroups" || (x.Type == "_claim_names" && x.Value == "{\"groups\":\"src1\"}")))
+          services.AddAuthorization(options =>
           {
-              var graphClient = context.HttpContext.RequestServices.GetService<GraphServiceClient>();
-              if (graphClient == null)
+            options.AddPolicy("GroupAdmin",
+            policy => policy.Requirements.Add(new GroupPolicyRequirement(Configuration["Groups:GroupAdmin"])));
+                options.AddPolicy("GroupMember",
+              policy => policy.Requirements.Add(new GroupPolicyRequirement(Configuration["Groups:GroupMember"])));
+          });
+    ```
+  
+1. In GraphHelper.cs, **GetSignedInUsersGroups** method checks if incoming token contains *Group Overage* claim then returns the list of groups from Microsoft Graph. First **GetUserGroupsFromSession** method is called to get group values from session if exists. If session does not contain groups claim then it will call **ProcessUserGroupsForOverage** method to retrieve groups.
+  
+      ```csharp
+    public static async Task<List<string>> GetSignedInUsersGroups(TokenValidatedContext context)
+          {
+              List<string> groupClaims = new List<string>();
+              if (HasOverageOccurred(context.Principal))
               {
-                  Console.WriteLine("No service for type 'Microsoft.Graph.GraphServiceClient' has been registered.");
+                  // 
+                  groupClaims = GetUserGroupsFromSession(context.HttpContext.Session);
+                  if (groupClaims?.Count > 0)
+                  {
+                      return groupClaims;
+                  }
+                  else
+                  {
+                      groupClaims = await ProcessUserGroupsForOverage(context);
+                  }
               }
-              else if (context.SecurityToken != null)
-              {
-                  if (!context.HttpContext.Items.ContainsKey("JwtSecurityTokenUsedToCallWebAPI"))
+              return groupClaims;
+          }
+      ```
+
+    **ProcessClaimsForGroupsOverage** method uses `GraphServiceClient` to retrieve groups for the signed-in user from [/me/memberOf](https://docs.microsoft.com/graph/api/user-list-memberof) endpoint. All the group ids are stored in Session.
+
+      ```csharp
+          private static async Task<List<string>> ProcessUserGroupsForOverage(TokenValidatedContext context)
+          {
+              List<string> groupClaims = new List<string>();
+              ...
+                  var graphClient = context.HttpContext.RequestServices.GetService<GraphServiceClient>();
+                  if (graphClient == null)
                   {
-                      context.HttpContext.Items.Add("JwtSecurityTokenUsedToCallWebAPI", context.SecurityToken as JwtSecurityToken);
+                      Console.WriteLine("No service for type 'Microsoft.Graph.GraphServiceClient' has been registered in the Startup.");
                   }
-                  string select = "id,displayName,onPremisesNetBiosName,onPremisesDomainName,onPremisesSamAccountNameonPremisesSecurityIdentifier";
-                  IUserMemberOfCollectionWithReferencesPage memberPage = new UserMemberOfCollectionWithReferencesPage();
-                  try
+                  else if (context.SecurityToken != null)
                   {
-                      memberPage = await graphClient.Me.MemberOf.Request().Select(select).GetAsync().ConfigureAwait(false);
-                  }
-                  catch(Exception graphEx)
-                  {
-                      var exMsg = graphEx.InnerException != null ? graphEx.InnerException.Message : graphEx.Message;
-                      Console.WriteLine("Call to Microsoft Graph failed: "+ exMsg);
-                  }
-                  if (memberPage?.Count > 0)
-                  {
-                      var allgroups = ProcessIGraphServiceMemberOfCollectionPage(memberPage);
-                      if (allgroups?.Count > 0)
+                      if (!context.HttpContext.Items.ContainsKey("JwtSecurityTokenUsedToCallWebAPI"))
                       {
-                          var identity = (ClaimsIdentity)context.Principal.Identity;
-                          if (identity != null)
+                          context.HttpContext.Items.Add("JwtSecurityTokenUsedToCallWebAPI", context.SecurityToken as JwtSecurityToken);
+                      }
+                      string select = "id,displayName,onPremisesNetBiosName,onPremisesDomainName,onPremisesSamAccountNameonPremisesSecurityIdentifier";
+
+                      IUserMemberOfCollectionWithReferencesPage memberPage = new UserMemberOfCollectionWithReferencesPage();
+                      try
+                      {
+                          memberPage = await graphClient.Me.MemberOf.Request().Select(select).GetAsync().ConfigureAwait(false);
+                      }
+                      catch (Exception graphEx)
+                      {
+                          var exMsg = graphEx.InnerException != null ? graphEx.InnerException.Message : graphEx.Message;
+                          Console.WriteLine("Call to Microsoft Graph failed: " + exMsg);
+                      }
+                      if (memberPage?.Count > 0)
+                      {
+                          var allgroups = ProcessIGraphServiceMemberOfCollectionPage(memberPage);
+                          if (allgroups?.Count > 0)
                           {
-                              RemoveExistingClaims(identity);
-                              List<Claim> groupClaims = new List<Claim>();
-                              foreach (Group group in allgroups)
+                              var identity = (ClaimsIdentity)context.Principal.Identity;
+
+                              if (identity != null)
                               {
-                                  groupClaims.Add(new Claim("groups", group.Id));
+                                  if (!IsAccessToken(identity))
+                                  {
+                                      foreach (Group group in allgroups)
+                                      {
+                                          groupClaims.Add(group.Id);
+                                      }
+                                      context.HttpContext.Session.SetAsByteArray("groupClaims", groupClaims);
+                                  }
                               }
                           }
                       }
                   }
               }
+              ...
+              return groupClaims;
           }
-      ....
-      }
       ```
 
-    If application is using different group property type for instance, `NetBIOSDomain\sAMAccountName` then replace
+    In the app registration, you might want to add other attributes than id to the `groups` claim; For instance if, the required format is `NetBIOSDomain\sAMAccountName` then replace
 
-    ```csharp
-    groupClaims.Add(new Claim("groups", group.Id));
-    ```
+      ```csharp
+          groupClaims.Add(new Claim("groups", group.Id));
+      ```
 
     with
 
+      ```csharp
+       groupClaims.Add(group.OnPremisesNetBiosName+"\\"+group.OnPremisesSamAccountName));
+      ```
+
+    GraphHelper.cs contains a method **CheckUsersGroupMembership** that is called in `CustomAuthorization.cs` to check if value of GroupName parameter exists in either Session for Overage scenario or in User claims otherwise.
+
+      ```csharp
+        public static bool CheckUsersGroupMembership(AuthorizationHandlerContext context, string GroupName, IHttpContextAccessor _httpContextAccessor)
+        {
+            bool result = false;
+            if (HasOverageOccurred(context.User))
+            {
+                var groups = GetUserGroupsFromSession(_httpContextAccessor.HttpContext.Session);
+                if (groups?.Count > 0 && groups.Contains(GroupName))
+                {
+                    result = true;
+                }
+            }
+            else if (context.User.Claims.Any(x => x.Type == "groups" && x.Value == GroupName))
+            {
+                result = true;
+            }
+            return result;
+        }
+      ```
+
+1. In `CustomAuthorization.cs`, we have **GroupPolicyHandler** class that deals with custom Policy-based authorization. It evaluates the GroupPolicyRequirement against AuthorizationHandlerContext by overriding **HandleRequirementAsync** of **AuthorizationHandler**.
+
+    HandleRequirementAsync calls **CheckUsersGroupMembership** method of `GraphHelper.cs` to determine if authorization is allowed.
+
     ```csharp
-    groupClaims.Add(group.OnPremisesNetBiosName+"\\"+group.OnPremisesSamAccountName));
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+                                                   GroupPolicyRequirement requirement)
+        {
+            if (GraphHelper.CheckUsersGroupMembership(context, requirement.GroupName, _httpContextAccessor))
+            {
+                context.Succeed(requirement);
+            }
+            return Task.CompletedTask;
+        }
     ```
 
+1. UserProfileController.cs
+    1. Checks authorization of signed-in user for ```[Authorize(Policy = "GroupAdmin")]```. If authorized successfully then obtain information from the [/me](https://docs.microsoft.com/graph/api/user-get?view=graph-rest-1.0) and [/me/photo](https://docs.microsoft.com/graph/api/profilephoto-get) endpoints by using `GraphServiceClient`.
+
 1. UserProfile\Index.cshtml
-    1. Has some client code that prints the signed-in user's information obtained from the [/me](https://docs.microsoft.com/graph/api/user-get?view=graph-rest-1.0) and [/me/photo](https://docs.microsoft.com/graph/api/profilephoto-get) endpoints by using `GraphServiceClient`.
+    1. Has some client code that prints the signed-in user's information.
 
 ## How to deploy this sample to Azure
 
@@ -449,7 +565,7 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
 1. In the resulting screen, select the `WebApp-GroupClaims` application.
 1. In the **Authentication** page for your application, update the Logout URL fields with the address of your service, for example [https://WebApp-GroupClaims-contoso.azurewebsites.net](https://WebApp-GroupClaims-contoso.azurewebsites.net)
 1. From the *Branding* menu, update the **Home page URL**, to the address of your service, for example [https://WebApp-GroupClaims-contoso.azurewebsites.net](https://WebApp-GroupClaims-contoso.azurewebsites.net). Save the configuration.
-1. Add the same URL in the list of values of the *Authentication -> Redirect URIs* menu. If you have multiple redirect URIs, make sure that there a new entry using the App service's URI for each redirect URIs.
+1. Add the same URL in the list of values of the *Authentication -> Redirect URIs* menu. If you have multiple redirect URIs, make sure that there a new entry using the App service's URI for each redirect URI.
 
 > :warning: If your app is using an *in-memory* storage, **Azure App Services** will spin down your web site if it is inactive, and any records that your app was keeping will emptied.
 In addition, if you increase the instance count of your web site, requests will be distributed among the instances. Your app's records, therefore, will not be the same on each instance.

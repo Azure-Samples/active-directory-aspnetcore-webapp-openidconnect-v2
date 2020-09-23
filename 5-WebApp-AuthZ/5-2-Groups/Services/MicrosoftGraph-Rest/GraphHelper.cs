@@ -29,7 +29,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
             if (HasOverageOccurred(context.Principal))
             {
                 // Gets group values from session variable if exists.
-                groupClaims = GetSessionGroupList(context.HttpContext.Session);
+                groupClaims = GetUserGroupsFromSession(context.HttpContext.Session);
                 if (groupClaims?.Count > 0)
                 {
                     return groupClaims;
@@ -47,7 +47,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         /// </summary>
         /// <param name="_httpContextSession"></param>
         /// <returns></returns>
-        private static List<string> GetSessionGroupList(ISession _httpContextSession)
+        public static List<string> GetUserGroupsFromSession(ISession _httpContextSession)
         {
             // Checks if Session contains data for groupClaims.
             // The data will exist for 'Group Overage' claim.
@@ -68,6 +68,16 @@ namespace WebApp_OpenIDConnect_DotNet.Services
             return identity.Claims.Any(x => x.Type == "hasgroups" || (x.Type == "_claim_names" && x.Value == "{\"groups\":\"src1\"}"));
         }
 
+        /// <summary>
+        /// ID Token does not contain 'scp' claim.
+        /// This claims exist for Access Token.
+        /// </summary>
+        /// <param name="identity"></param>
+        /// <returns></returns>
+        private static bool IsAccessToken(ClaimsIdentity identity)
+        {
+            return identity.Claims.Any(x => x.Type == "scp");
+        }
 
         /// <summary>
         /// This method is called for Groups overage scenario.
@@ -128,10 +138,8 @@ namespace WebApp_OpenIDConnect_DotNet.Services
 
                             if (identity != null)
                             {
-                                // Checks if token is 'ID Token'. 
-                                // ID Token does not contain 'aapid' or 'azp' claims.
-                                // These claims exist for Access Token.
-                                if (!identity.Claims.Any(x => x.Type == "appid" || x.Type == "azp"))
+                                // Checks if token is not Access Token but 'ID Token'. 
+                                if (!IsAccessToken(identity))
                                 {
                                     // Re-populate the `groups` claim with the complete list of groups fetched from MS Graph
                                     foreach (Group group in allgroups)
@@ -231,7 +239,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
             if (HasOverageOccurred(context.User))
             {
                 // Calls method GetSessionGroupList to get groups from session.
-                var groups = GetSessionGroupList(_httpContextAccessor.HttpContext.Session);
+                var groups = GetUserGroupsFromSession(_httpContextAccessor.HttpContext.Session);
 
                 // Checks if required group exists in Session.
                 if (groups?.Count > 0 && groups.Contains(GroupName))
