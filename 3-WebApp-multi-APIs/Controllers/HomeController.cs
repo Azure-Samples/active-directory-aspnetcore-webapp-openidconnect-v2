@@ -91,7 +91,14 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
             using (MemoryStream stream = new MemoryStream(byteArray))
             {
-                await blobClient.UploadAsync(stream);
+                try
+                {
+                    await blobClient.UploadAsync(stream);
+                }
+                catch (Exception e)
+                {
+                    return ($"Blob failed to create. Exception: {e.Message}");
+                }
             }
             return "Blob successfully created";
         }

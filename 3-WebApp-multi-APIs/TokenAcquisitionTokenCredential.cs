@@ -8,7 +8,7 @@ namespace WebApp_OpenIDConnect_DotNet
 {
     public class TokenAcquisitionTokenCredential : TokenCredential
     {
-        private ITokenAcquisition _tokenAcquisition;
+        readonly private ITokenAcquisition _tokenAcquisition;
 
         /// <summary>
         /// Constructor from an ITokenAcquisition service.
