@@ -76,7 +76,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         /// <returns></returns>
         private static bool IsAccessToken(ClaimsIdentity identity)
         {
-            return identity.Claims.Any(x => x.Type == "scp");
+            return identity.Claims.Any(x => x.Type == "scp" || x.Type == "http://schemas.microsoft.com/identity/claims/scope");
         }
 
         /// <summary>
