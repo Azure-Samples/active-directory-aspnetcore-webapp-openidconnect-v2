@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
-namespace WebApp_OpenIDConnect_DotNet
+namespace _2_1_Call_MSGraph
 {
     public class Program
     {

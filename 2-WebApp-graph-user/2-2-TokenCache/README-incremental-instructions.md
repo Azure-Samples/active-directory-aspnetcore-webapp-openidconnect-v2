@@ -3,12 +3,12 @@ services: active-directory
 platforms: dotnet
 author: kalyankrishna1
 level: 200
-client: ASP.NET Core 2.x Web App
+client: ASP.NET Core 3.x Web App
 service: Microsoft Graph
 endpoint: Microsoft identity platform
 ---
 
-# Call the Microsoft Graph API from an An ASP.NET Core 2.x Web App, using Sql Server for caching tokens
+# Call the Microsoft Graph API from an An ASP.NET Core 3.x Web App, using Sql Server for caching tokens
 
 ## About this sample
 
@@ -16,7 +16,7 @@ endpoint: Microsoft identity platform
 
 ## Scenario
 
-Starting from a .NET Core 2.2 MVC Web app that uses OpenID Connect to sign in users, this chapter of the tutorial shows how to make a call to Microsoft Graph `/me` endpoint on behalf of the signed-in user. This sample additionally provides instructions on how to use Sql Server for caching tokens.
+Starting from a .NET Core 3.1 MVC Web app that uses OpenID Connect to sign in users, this chapter of the tutorial shows how to make a call to Microsoft Graph `/me` endpoint on behalf of the signed-in user. This sample additionally provides instructions on how to use Sql Server for caching tokens.
 
 It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). The complexities of the library's integration with the ASP.NET Core dependency Injection patterns is encapsultated into the `Microsoft.Identity.Web` library project, which is a part of this tutorial.
 
@@ -26,7 +26,7 @@ It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentica
 
 To run this sample, you'll need:
 
-- [Visual Studio 2017](https://aka.ms/vsdownload) or just the [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
+- [Visual Studio](https://aka.ms/vsdownload) or just the [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
 - An Internet connection
 - A Windows machine (necessary if you want to run the app on Windows)
 - An OS X machine (necessary if you want to run the app on Mac)
@@ -94,12 +94,18 @@ Starting from the [previous phase of the tutorial](../../2-WebApp-graph-user/2-1
 public void ConfigureServices(IServiceCollection services)
 {
     . . .
-    // Token acquisition service based on MSAL.NET 
-    // and the Sql server based token cache implementation
-    services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
-            .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Constants.ScopeUserRead })
-            .AddSqlAppTokenCache(Configuration)
-            .AddSqlPerUserTokenCache(Configuration);
+	services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+			.AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+				.EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
+					.AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
+					.AddDistributedTokenCaches();
+
+	services.AddDistributedSqlServerCache(options =>
+	{
+		options.ConnectionString = Configuration.GetConnectionString("TokenCacheDbConnStr");
+		options.SchemaName = "dbo";
+		options.TableName = "TokenCache";
+	});
 ```
 
 The aforementioned four lines of code are explained below.
@@ -127,5 +133,5 @@ services.AddDataProtection()
 
 ## Learn more
 
-- Learn how [Microsoft.Identity.Web](../../Microsoft.Identity.Web) works, in particular hooks-up to the ASP.NET Core ODIC events
+- Learn how [Microsoft.Identity.Web](../../Microsoft.Identity.Web) works, in particular hooks-up to the ASP.NET Core OIDC events
 - [Use HttpClientFactory to implement resilient HTTP requests](https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests) used by the Graph custom service

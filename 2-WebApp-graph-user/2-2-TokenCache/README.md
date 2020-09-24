@@ -26,7 +26,7 @@ It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentica
 
 To run this sample, you'll need:
 
-- [Visual Studio 2017](https://aka.ms/vsdownload) or just the [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
+- [Visual Studio](https://aka.ms/vsdownload) or just the [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
 - An Internet connection
 - A Windows machine (necessary if you want to run the app on Windows)
 - An OS X machine (necessary if you want to run the app on Mac)
@@ -102,7 +102,7 @@ As a first step you'll need to:
        - `https://localhost:44321/signin-oidc`
    - In the **Advanced settings** section set **Logout URL** to `https://localhost:44321/signout-oidc`
    - In the **Advanced settings** | **Implicit grant** section, check **ID tokens** as this sample requires
-     the [Implicit grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to
+     the [ID Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) to be enabled to
      sign-in the user, and call an API.
 1. Select **Save**.
 1. From the **Certificates & secrets** page, in the **Client secrets** section, choose **New client secret**:
@@ -186,15 +186,16 @@ public void ConfigureServices(IServiceCollection services)
 {
     . . .
     services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApp(Configuration)   
-                .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Constants.ScopeUserRead })
-                .AddDistributedTokenCaches();
+        .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+        .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
+        .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
+        .AddDistributedTokenCaches();
 
     services.AddDistributedSqlServerCache(options =>
     {
-            options.ConnectionString = Configuration.GetConnectionString("TokenCacheDbConnStr");
-            options.SchemaName = "dbo";
-            options.TableName = "TokenCache";
+        options.ConnectionString = Configuration.GetConnectionString("TokenCacheDbConnStr");
+        options.SchemaName = "dbo";
+        options.TableName = "TokenCache";
     });
 ```
 
@@ -215,7 +216,7 @@ The files `MSALAppSqlTokenCacheProvider.cs` and `MSALPerUserSqlTokenCacheProvide
 
 ## Learn more
 
-- Learn how [Microsoft.Identity.Web](../../Microsoft.Identity.Web) works, in particular hooks-up to the ASP.NET Core ODIC events
+- Learn how [Microsoft.Identity.Web](../../Microsoft.Identity.Web) works, in particular hooks-up to the ASP.NET Core OIDC events
 - [Use HttpClientFactory to implement resilient HTTP requests](https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests) used by the Graph custom service
 
 

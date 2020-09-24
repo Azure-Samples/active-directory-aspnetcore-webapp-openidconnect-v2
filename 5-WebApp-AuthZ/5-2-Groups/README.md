@@ -118,6 +118,10 @@ As a first step you'll need to:
    - In the **Redirect URIs** section, enter the following redirect URIs.
       - `https://localhost:44321/signin-oidc`
    - In the **Logout URL** section, set it to `https://localhost:44321/signout-oidc`.
+   - In the **Advanced settings** | **Implicit grant** section, check **ID tokens** as this sample requires
+     the [ID Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) to be enabled to
+     sign-in the user, and call an API.
+
 1. Select **Save** to save your changes.
 1. In the app's registration screen, click on the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
 1. In the **Client secrets** section, click on **New client secret**:

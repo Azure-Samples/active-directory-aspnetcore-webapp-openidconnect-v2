@@ -156,7 +156,9 @@ As a first step you'll need to:
            - `https://localhost:44321/signin-oidc`
            - `https://localhost:44321/Onboarding/ProcessCode`
         - In the **Advanced settings** section, set **Logout URL** to `https://localhost:44321/signout-oidc`.
-        - In the **Advanced settings** | **Implicit grant** section, check the **ID tokens** option as the [AspNetCore security middleware](https://github.com/aspnet/AspNetCore/tree/master/src/Security) used in the sample uses the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) by default to get the user info right after sign-in.
+        - In the **Advanced settings** | **Implicit grant** section, check **ID tokens** as this sample requires
+            the [ID Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) to be enabled to
+            sign-in the user.
 
 1. Click the **Save** button on top to save the changes.
 1. In the app's registration screen, click on the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
