@@ -26,20 +26,44 @@
 
     @foreach (var claim in user.Claims)
     {
-<tr>
-    @{
-        if (claim.Type == "groups")
-        {
-            <td><b>@claim.Type</b></td>
-        }
-        else
-        {
-            <td>@claim.Type</td>
-        }
+        <tr>
+            @{
+                if (claim.Type == "groups")
+                {
+                    <td><b>@claim.Type</b></td>
+                }
+                else
+                {
+                    <td>@claim.Type</td>
+                }
+            }
+
+            <td>@claim.Value</td>
+        </tr>
     }
 
-    <td>@claim.Value</td>
-</tr>
+</table>
+
+@{
+    List<string> groupClaims = new List<string>();
+
+    if (ViewData.ContainsKey("groupClaims"))
+    {
+        groupClaims = ViewData["groupClaims"] as List<string>;
+    }
+
+}
+
+<table class="table table-striped table-bordered table-condensed table-hover">
+    <tr>
+        <td colspan="2">If groups overage occured, the groups fetched from Graph will be listed below</td>
+        </tr>
+
+    @foreach (var group in groupClaims)
+    {
+        <tr>
+            <td colspan="2">@group</td>
+        </tr>
     }
 
 </table>
