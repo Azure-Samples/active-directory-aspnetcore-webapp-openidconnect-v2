@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.6.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.19.0" />
     <PackageReference Include="Microsoft.Identity.Web" Version="0.4.0-preview" />
     <PackageReference Include="Microsoft.Identity.Web.UI" Version="0.4.0-preview" />
   </ItemGroup>

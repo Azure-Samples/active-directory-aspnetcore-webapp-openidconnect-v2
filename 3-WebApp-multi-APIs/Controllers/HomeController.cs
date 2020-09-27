@@ -1,6 +1,7 @@
 ﻿using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using Microsoft.Identity.Web;
 using System;
 using System.Diagnostics;
@@ -87,6 +88,10 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                 {
                     await blobClient.UploadAsync(stream);
                     message = "Blob successfully created";
+                }
+                catch (MsalUiRequiredException ex)
+                {
+                    throw ex;
                 }
                 catch (Exception)
                 {
