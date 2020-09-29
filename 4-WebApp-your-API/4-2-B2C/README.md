@@ -14,21 +14,19 @@ description: "How to secure a Web API built with ASP.NET Core using the Azure AD
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 > The sample in this folder is part of a multi-chapter tutorial. The first phase is available at [An ASP.NET Core Web app signing-in users with the Microsoft identity platform in your organization](../1-WebApp-OIDC/1-1-MyOrg).
->
-> This article (README.md) contains the full instructions on how to configure the sample. If you have gone through the [first chapter](../1-WebApp-OIDC/1-1-MyOrg) and already configured the client web application to sigh-in users, read through the [README-incremental-instructions.md](README-incremental-instructions.md) instead.
 
 ## Overview
 
-This sample demonstrates a ASP.NET Core Web App application calling a ASP.NET Core Web API that is secured using Azure AD B2C.
+This sample demonstrates an ASP.NET Core Web App application calling an ASP.NET Core Web API that is secured using Azure AD B2C.
 
-1. The client ASP.NET Core Web App application uses the Microsoft Authentication Library (MSAL) to obtain a JWT access token from **Azure AD B2C**:
-1. The access token is used as a bearer token to authenticate the user when calling the ASP.NET Core Web API.
+1. The client ASP.NET Core Web App application uses the Microsoft Authentication Library [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) to sign-in a user and obtain a JWT access token from **Azure AD B2C**:
+1. The [Access Token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) is used as a bearer token to authenticate the user when calling the ASP.NET Core Web API.
 
 The client web application essentially takes the following steps to sign-in the user and obtain a bearer token for the Web API:
 
-1. Signs-in the user with local or social identities. When the user signs-in for the first time , a consent screen is presented. This consent screen lets the user consent for the application to access the web API( TodoListService).
+1. Signs-in the user with local or social identities.
 1. Acquires an access token for the Web API.
-1. Calls the Web API using the access token as a bearer token in the authentication header of the Http request. The Web API validates the caller using the ASP.NET JWT Bearer Authentication middleware.
+1. Calls the Web API using the access token as a bearer token in the authentication header of the Http request. The Web API authorizes the caller (user) using the ASP.NET JWT Bearer Authorization middleware.
 
 ![Topology](./ReadmeFiles/topology.png)
 
@@ -40,7 +38,6 @@ This sample has a web API and a client web app, both built using the asp.net cor
 
 - [Visual Studio](https://visualstudio.microsoft.com/downloads/)
 - An **Azure AD B2C** tenant. For more information see: [How to get an Azure AD B2C tenant](https://docs.microsoft.com/azure/active-directory-b2c/tutorial-create-tenant)
-- A user account in your **Azure AD B2C**. This sample will not work with a **personal Microsoft account**. Therefore, if you signed in to the [Azure portal](https://portal.azure.com) with a personal account and have never created a user account in your directory before, you need to do that now.
 
 ## Setup
 
@@ -79,7 +76,7 @@ Please refer to: [Tutorial: Add identity providers to your applications in Azure
 
 ### Register the service app (TodoListService-aspnetcore-webapi)
 
-Now you need to [register your web app in your B2C tenant](https://docs.microsoft.com/azure/active-directory-b2c/active-directory-b2c-app-registration#register-a-web-application), so that it has its own Application ID.
+You need to [register your web app in your B2C tenant](https://docs.microsoft.com/azure/active-directory-b2c/active-directory-b2c-app-registration#register-a-web-application), so that it has its own Application ID.
 
 #### Configure the service app (TodoListService-aspnetcore-webapi) to use your app registration
 
@@ -114,17 +111,44 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 
 ## Running the sample
 
-> For Visual Studio Users
->
-> Clean the solution, rebuild the solution, and run it.  You might want to go into the solution properties and set both projects as startup projects, with the service project starting first.
+You can run the sample by using either Visual Studio or command line interface as shown below:
+
+### Run the sample using Visual Studio
+
+Clean the solution, rebuild the solution, and run it. You might want to go into the solution properties and set both projects as startup projects, with the service project starting first.
+
+### Run the sample using a command line interface such as VS Code integrated terminal
+
+#### Step 1. Install .NET Core dependencies
 
 ```console
-    cd TodoListService-aspnetcore-webapi
-    dotnet run
+   cd TodoListService
+   dotnet restore
 ```
 
+Then:  
+In a separate console window, execute the following commands
+
 ```console
-    cd TodoListClient-aspnetcore-webapi
+   cd ../
+   cd Client
+   dotnet restore
+```
+
+#### Step 2. Trust development certificates
+
+```console
+   dotnet dev-certs https --clean
+   dotnet dev-certs https --trust
+```
+
+Learn more about [HTTPS in .NET Core](https://docs.microsoft.com/aspnet/core/security/enforcing-ssl).
+
+#### Step 3. Run the applications
+
+In both the console windows execute the below command:
+
+```console
     dotnet run
 ```
 
@@ -138,9 +162,9 @@ When you start the Web API from Visual Studio, depending on the browser you use,
 - an empty web page (case with Microsoft Edge)
 - or an error HTTP 401 (case with Chrome)
 
-This behavior is expected as you are not authenticated. The client application will be authenticated, so it will be able to access the Web API.
+This behavior is expected as the browser is not authenticated. The client application will be authenticated, so it will be authorized to access the Web API.
 
-Explore the sample by signing in into the TodoList client, adding items to the To Do list. If you stop the application without signing out, the next time you run the application, you won't be prompted to sign in again.
+Explore the sample by signing in into the TodoList client, adding items to the To-Do list. If you stop the application without signing out, the next time you run the application, you won't be prompted to sign in again.
 
 NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app. Each time you run the projects, your To-Do list will get emptied.
 
@@ -194,18 +218,16 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
 
      This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
 
-    1. Change the `Properties\launchSettings.json` file to ensure that you start your web app from <https://localhost:44321> as registered. For this:
+1. Change the `Properties\launchSettings.json` file to ensure that you start your web app from <https://localhost:44321> as registered. For this:
     - update the `sslPort` of the `iisSettings` section to be `44321`
     - in the `applicationUrl` property of use `https://localhost:44321`
-
-  - Then add the following code to inject the ToDoList service implementation in the client
+    - Then add the following code to inject the ToDoList service implementation in the client
 
    ```CSharp
-     // Add APIs
      services.AddTodoListService(Configuration);
    ```
 
-  1. Open the `appsettings.json` file and copy the keys from the sample's corresponding file under the `AzureAd` and `TodoList` sections.
+1. Open the `appsettings.json` file and copy the keys from the sample's corresponding file under the `AzureAd` and `TodoList` sections.
 
 #### Add a model (TodoListItem) and add the controller and views
 
@@ -223,12 +245,13 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
             .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] }, configSectionName: "AzureAdB2C");
      services.AddInMemoryTokenCaches();
     ```
+
 1. Update the `Configure` method to include **app.UseAuthentication();** before **app.UseMvc();**  
 
-  ```Csharp
-     app.UseAuthentication();
-     app.UseMvc();
-  ```
+    ```Csharp
+      app.UseAuthentication();
+      app.UseMvc();
+    ```
 
 ### Creating the Web API project (TodoListService)
 
@@ -236,11 +259,13 @@ The code for the TodoListService was created in the following way:
 
 #### Step 1: Create the web api using the ASP.NET Core templates
 
-```Text
-md TodoListService
-cd TodoListService
-dotnet new webapi -au=SingleOrg
-```
+1. Run the following command to create a sample from the command line using the `SingleOrg` template:
+
+    ```Text
+    md TodoListService
+    cd TodoListService
+    dotnet new webapi -au=SingleOrg
+    ```
 
 1. Open the generated project (.csproj) in Visual Studio, and save the solution.
 
@@ -280,6 +305,7 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
     },
         options => { Configuration.Bind("AzureAdB2C", options); });
   ```
+
 - Add the method **app.UseAuthentication()** before **app.UseMvc()** in the `Configure` method
 
   ```Csharp
@@ -333,9 +359,9 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
 ### Update the `TodoListClient-aspnetcore-webapi` to call the `TodoListService-aspnetcore-webapi` Running in Azure App Services
 
 1. In your IDE, go to the `TodoListClient-aspnetcore-webapi` project.
-2. Open `TodoListClient\appsettings.json`.  Only one change is needed - update the `todo:TodoListBaseAddress` key value to be the address of the website you published,
+1. Open `TodoListClient\appsettings.json`.  Only one change is needed - update the `todo:TodoListBaseAddress` key value to be the address of the website you published,
    for example, [https://TodoListService-aspnetcore-webapi-contoso.azurewebsites.net](https://TodoListService-aspnetcore-webapi-contoso.azurewebsites.net).
-3. Run the client! If you are trying multiple different client types (for example, .Net, Windows Store, Android, iOS) you can have them all call this one published web API.
+1. Run the client! If you are trying multiple different client types (for example, .Net, Windows Store, Android, iOS) you can have them all call this one published web API.
 
 ### Create and publish `TodoListClient-aspnetcore-webapi` to an Azure App Services
 
@@ -364,7 +390,7 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
 
 ## Next steps
 
-If you're interested in the Web API calling a downstream API, you might want to have a look at the [ASP.NET Core Web API tutorial](https://github.com/Azure-Samples/active-directory-dotnet-native-aspnetcore-v2), in chapter 2 [2. Web API now calls Microsoft Graph/](https://github.com/Azure-Samples/active-directory-dotnet-native-aspnetcore-v2/tree/master/2.%20Web%20API%20now%20calls%20Microsoft%20Graph). The client is a desktop app there, whereas you have a Web App, but apart from that all the app registration steps apply.
+If you're interested in the Web API calling a downstream API, you might want to have a look at the [ASP.NET Core Web API tutorial](https://github.com/Azure-Samples/active-directory-dotnet-native-aspnetcore-v2), in chapter 2 [2. Web API now calls Microsoft Graph](https://github.com/Azure-Samples/active-directory-dotnet-native-aspnetcore-v2/tree/master/2.%20Web%20API%20now%20calls%20Microsoft%20Graph). The client is a desktop app there, whereas you have a Web App, but apart from that all the app registration steps apply.
 
 ## Community Help and Support
 
@@ -384,25 +410,17 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## More information
 
-For more information, visit the following links:
+Learn more about **Microsoft Identity Platform** and **Azure AD B2C**:
 
-- Articles about the Microsoft identity platform are at [https://aka.ms/aaddevv2](https://aka.ms/aaddevv2), with a focus on:
-  - [Azure AD OAuth Bearer protocol](https://docs.microsoft.com/azure/active-directory/develop/active-directory-v2-protocols)
-  - [The OAuth 2.0 protocol in Azure AD](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow)
-  - [Access token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens)
-  - [The OpenID Connect protocol](https://docs.microsoft.com/azure/active-directory/develop/v2-protocols-oidc)
+- [Microsoft identity platform (Azure Active Directory for developers)](https://docs.microsoft.com/azure/active-directory/develop/)
+- [Overview of Microsoft Authentication Library (MSAL)](https://docs.microsoft.com/azure/active-directory/develop/msal-overview)
+- [What is Azure Active Directory B2C?](https://docs.microsoft.com/azure/active-directory-b2c/overview)
+- [Azure AD B2C User Flows](https://docs.microsoft.com/azure/active-directory-b2c/user-flow-overview)
+- [Azure AD B2C Custom Policies](https://docs.microsoft.com/azure/active-directory-b2c/custom-policy-overview)
+- [Tutorial: Grant access to an ASP.NET web API using Azure Active Directory B2C](https://docs.microsoft.com/azure/active-directory-b2c/tutorial-web-api-dotnet?tabs=app-reg-ga)
 
-- To lean more about the application registration, visit:
-  - [Quickstart: Register an application with the Microsoft identity platform (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
-  - [Quickstart: Configure a client application to access web APIs (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
-  - [Quickstart: Configure an application to expose web APIs (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-expose-web-apis)
+To learn more about the code, visit:
 
-- To learn more about the code, visit:
-  - [Conceptual documentation for MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki#conceptual-documentation) and in particular:
-  - [Acquiring tokens with authorization codes on web apps](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/Acquiring-tokens-with-authorization-codes-on-web-apps)
-  - [Customizing Token cache serialization](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/token-cache-serialization)
-
-- To learn more about security in aspnetcore,
-  - [Introduction to Identity on ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authentication/identity?view=aspnetcore-2.1&tabs=visual-studio%2Caspnetcore2x)
-  - [AuthenticationBuilder](https://docs.microsoft.com/dotnet/api/microsoft.aspnetcore.authentication.authenticationbuilder?view=aspnetcore-2.0)
-  - [Azure Active Directory with ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authentication/azure-active-directory/?view=aspnetcore-2.1)
+- [Conceptual documentation for MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki#conceptual-documentation) and in particular:
+- [Acquiring tokens with authorization codes on web apps](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/Acquiring-tokens-with-authorization-codes-on-web-apps)
+- [Customizing Token cache serialization](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/token-cache-serialization)
