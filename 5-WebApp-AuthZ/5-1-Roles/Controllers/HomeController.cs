@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Models;
 using WebApp_OpenIDConnect_DotNet.Services;
+using Constants = WebApp_OpenIDConnect_DotNet.Infrastructure.Constants;
 using Graph = Microsoft.Graph;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
