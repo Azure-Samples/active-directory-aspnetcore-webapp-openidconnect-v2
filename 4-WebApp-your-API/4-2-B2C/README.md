@@ -19,7 +19,7 @@ description: "How to secure a Web API built with ASP.NET Core using the Azure AD
 
 This sample demonstrates an ASP.NET Core Web App application calling an ASP.NET Core Web API that is secured using Azure AD B2C.
 
-1. The client ASP.NET Core Web App application uses the Microsoft Authentication Library [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) to sign-in a user and obtain a JWT access token from **Azure AD B2C**:
+1. The client ASP.NET Core Web App application uses the Microsoft Authentication Library [Microsoft Authentication Library (MSAL) for .NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) to sign-in a user and obtain a JWT access token from **Azure AD B2C**:
 1. The [Access Token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) is used as a bearer token to authenticate the user when calling the ASP.NET Core Web API.
 
 The client web application essentially takes the following steps to sign-in the user and obtain a bearer token for the Web API:
@@ -210,13 +210,18 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
      by this line:
 
      ```CSharp
-     services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-            .AddMicrosoftWebApp(Configuration, "AzureAdB2C")
-            .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] }, configSectionName: "AzureAdB2C");
+      services.AddMicrosoftIdentityWebAppAuthentication(Configuration, "AzureAdB2C")
+                    .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Configuration["TodoList:TodoListScope"] })
+                    .AddInMemoryTokenCaches();
      services.AddInMemoryTokenCaches();
      ```
 
-     This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
+1. Update the `Configure` method to include **app.UseAuthentication();** before **app.UseMvc();**  
+
+    ```Csharp
+      app.UseAuthentication();
+      app.UseMvc();
+    ```
 
 1. Change the `Properties\launchSettings.json` file to ensure that you start your web app from <https://localhost:44321> as registered. For this:
     - update the `sslPort` of the `iisSettings` section to be `44321`
@@ -237,21 +242,6 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
 1. Copy the contents of **TodoListClient\views\ToDo** folder to the views folder of your project.
 1. Modify the `Views\Shared\_Layout.cshtml` to add a link to the ***ToDolist* controller. Check the `Views\Shared\_Layout.cshtml` in the sample for reference.
 1. Add a section name **TodoList** in the appsettings.json file and add the keys `TodoListScope`, `TodoListBaseAddress`.
-1. Update the `configureServices` method in `startup.cs` to add the MSAL library and a token cache.
-
-    ```CSharp
-     services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-            .AddMicrosoftWebApp(Configuration, "AzureAdB2C")
-            .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] }, configSectionName: "AzureAdB2C");
-     services.AddInMemoryTokenCaches();
-    ```
-
-1. Update the `Configure` method to include **app.UseAuthentication();** before **app.UseMvc();**  
-
-    ```Csharp
-      app.UseAuthentication();
-      app.UseMvc();
-    ```
 
 ### Creating the Web API project (TodoListService)
 
@@ -313,18 +303,41 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
      app.UseMvc();
   ```
 
-  `AddMicrosoftWebApi` does the following:
-  - add the **Jwt**BearerAuthenticationScheme (Note the replacement of **BearerAuthenticationScheme** by **Jwt**BearerAuthenticationScheme)
-  - set the authority to be the Microsoft identity platform identity
-  - sets the audiences to validate
-  - register an issuer validator that accepts issuers to be in the Microsoft identity platform clouds.
-
-The implementations of these classes are in the `Microsoft.Identity.Web` library (and folder), and they are designed to be reusable in your applications (Web apps and Web apis). You are encouraged to browse the code in the library to understand the changes in detail.
-
 ### Create the TodoListController.cs file
 
 1. Add a folder named `Models` and then create a new  file named `TodoItem.cs`. Copy the contents of the TodoListClient\Models\TodoItem.cs in this file.
 1. Create a new Controller named `TodoListController` and copy and paste the code from the sample (\TodoListService\Controllers\TodoListController.cs) to this controller.
+
+## About the code
+
+### Code for the Web App (TodoListClient)
+
+In `Startup.cs`, below lines of code enables Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School Accounts.
+
+```csharp
+services.AddMicrosoftIdentityWebAppAuthentication(Configuration, "AzureAdB2C")
+                    .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Configuration["TodoList:TodoListScope"] })
+                    .AddInMemoryTokenCaches();
+```
+
+ 1. AddMicrosoftIdentityWebAppAuthentication : This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
+ 1. EnableTokenAcquisitionToCallDownstreamApi : Enables the web app to call the protected API ToDoList Api.
+ 1. AddInMemoryTokenCaches: Adds an in memory token cache provider, which will cache the Access Tokens acquired for the Web API.
+
+### Code for the Web API (ToDoListService)
+
+In `Startup.cs`, below lines of code protects the web API with Microsoft identity platform.
+
+```Csharp
+     services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+             .AddMicrosoftIdentityWebApi(options =>
+    {
+        Configuration.Bind("AzureAdB2C", options);
+
+        options.TokenValidationParameters.NameClaimType = "name";
+    },
+        options => { Configuration.Bind("AzureAdB2C", options); });
+```
 
 ### Deployment to Azure App Services
 
