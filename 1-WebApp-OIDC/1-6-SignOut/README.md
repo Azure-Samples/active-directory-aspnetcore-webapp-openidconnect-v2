@@ -80,3 +80,5 @@ options.Events.OnRemoteSignOut = async context =>
     //Intercepting the signout-oidc endpoint
 };
 ```
+
+> [Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbRz0h_jLR5HNJlvkZAewyoWxUNEFCQ0FSMFlPQTJURkJZMTRZWVJRNkdRMC4u)
