@@ -17,6 +17,8 @@ In this chapter of the tutorial, You'll learn how to use the [Microsoft.Identity
    1. If you application wants to connect with your customers, or with small business partners, you can have your application [sign-in users with their social identities](./1-5-B2C/README.md) using Microsoft Azure AD B2C.
    1. Finally, you'll want to let users [sign-out](./1-6-SignOut/README.md) from your application, or globally from their browser session.
 
+> [Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbRz0h_jLR5HNJlvkZAewyoWxUNEFCQ0FSMFlPQTJURkJZMTRZWVJRNkdRMC4u)
+
 ## Next chapters
 
 - If you signed-in users with Work or School accounts, or Microsoft personal accounts, you might want to learn how to call an API, starting with [Microsoft Graph](./2-WebApp-graph-user/2-1-Call-MSGraph/README.md).

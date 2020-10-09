@@ -108,6 +108,8 @@ An example of code for `ValidateSpecificIssuers` is the following:
 
 > If you are building a SaaS application that will be used in multiple Azure AD tenants, the please note that there are a number of steps that a SaaS developer should be aware of and is beyond the scope of this article. You are advised to go through the the multi-tenant app developer's guide [Build a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect](../../2-WebApp-graph-user/2-3-Multi-Tenant/README.md) as well.
 
+> [Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbRz0h_jLR5HNJlvkZAewyoWxUNEFCQ0FSMFlPQTJURkJZMTRZWVJRNkdRMC4u)
+
 ## Next steps
 
 - Learn how to enable [any Microsoft accounts](../1-3-AnyOrgOrPersonal) to sign-in to your application
