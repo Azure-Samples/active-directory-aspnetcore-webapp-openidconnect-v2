@@ -11,7 +11,6 @@ using Microsoft.Identity.Web;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Constants = WebApp_OpenIDConnect_DotNet.Infrastructure.Constants;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
