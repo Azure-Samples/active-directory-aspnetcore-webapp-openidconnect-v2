@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
-using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Models;
 using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
+using Constants = WebApp_OpenIDConnect_DotNet.Infrastructure.Constants;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
@@ -27,7 +27,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View();
         }
 
-        [AuthorizeForScopes(Scopes = new[] {Constants.ScopeUserRead})]
+        [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead})]
         public async Task<IActionResult> Profile()
         {
             var accessToken =

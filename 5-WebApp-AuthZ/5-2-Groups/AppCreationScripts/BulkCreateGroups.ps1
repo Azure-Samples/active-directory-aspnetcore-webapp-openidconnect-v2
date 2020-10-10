@@ -6,10 +6,11 @@
 
 $ErrorActionPreference = "Stop"
 
+ # ObjectId of the user to be assigned to these security groups. The ObjectId can be obtained via Graph Explorer or in the "Users" blade on the portal.
+$usersobjectId = "695a3e1d-2e9f-4d24-aa3c-ac795c16f25c"
+
 Get-AzureADUser -ObjectId $usersobjectId
 
- # ObjectId of the user to be assigned to these security groups. The ObjectId can be obtained via Graph Explorer or in the "Users" blade on the portal.
-$usersobjectId = "5b6e08a5-7789-4ae0-a4cb-3d73b4097752"
 $groupNamePrefix = "TestGroup"
 $numberOfGroupsToCreate = 222;
 

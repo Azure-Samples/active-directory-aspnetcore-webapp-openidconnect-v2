@@ -8,9 +8,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using Microsoft.Identity.Web.UI;
-using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
+using System;
+using WebApp_OpenIDConnect_DotNet.Infrastructure;
+using WebApp_OpenIDConnect_DotNet.Services;
+using Constants = WebApp_OpenIDConnect_DotNet.Infrastructure.Constants;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -26,26 +28,49 @@ namespace WebApp_OpenIDConnect_DotNet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var initialScopes = new string[] { Constants.ScopeUserRead, Constants.ScopeGroupMemberRead };
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
-                // Handling SameSite cookie according to https://docs.microsoft.com/en-us/aspnet/core/security/samesite?view=aspnetcore-3.1
+                // Handling SameSite cookie according to https://docs.microsoft.com/en-us/aspnet/core/security/samesite
                 options.HandleSameSiteCookieCompatibility();
             });
 
             // Sign-in users with the Microsoft identity platform
-            services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
-                    .EnableTokenAcquisitionToCallDownstreamApi( new string[] { "User.Read", "Directory.Read.All" })
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                    .AddMicrosoftIdentityWebApp(
+                options =>
+                {
+                    Configuration.Bind("AzureAd", options);
+                    options.Events = new OpenIdConnectEvents();
+                    options.Events.OnTokenValidated = async context =>
+                    {
+                        //Calls method to process groups overage claim.
+                        var overageGroupClaims = await GraphHelper.GetSignedInUsersGroups(context);
+                    };
+                }, options => { Configuration.Bind("AzureAd", options); })
+                    .EnableTokenAcquisitionToCallDownstreamApi(options => Configuration.Bind("AzureAd", options), initialScopes)
+                    .AddMicrosoftGraph(Configuration.GetSection("GraphAPI"))
                     .AddInMemoryTokenCaches();
 
-            services.AddMSGraphService(Configuration);
+            // Adding authorization policies that enforce authorization using group values.
+            services.AddAuthorization(options =>
+            {
+            options.AddPolicy("GroupAdmin",
+            policy => policy.Requirements.Add(new GroupPolicyRequirement(Configuration["Groups:GroupAdmin"])));
+                options.AddPolicy("GroupMember",
+              policy => policy.Requirements.Add(new GroupPolicyRequirement(Configuration["Groups:GroupMember"])));
+            });
+            services.AddSingleton<IAuthorizationHandler, GroupPolicyHandler>();
 
-            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options => {
-                // The following code instructs the ASP.NET Core middleware to use the data in the "groups" claim in the [Authorize] attribute and for User.IsInRole()
-                // See https://docs.microsoft.com/en-us/aspnet/core/security/authorization/roles for more info.
-                options.TokenValidationParameters.RoleClaimType = "groups";
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(1);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
             });
 
             services.AddControllersWithViews(options =>
@@ -74,11 +99,12 @@ namespace WebApp_OpenIDConnect_DotNet
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
 
             app.UseRouting();
+            app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
+
 
             app.UseEndpoints(endpoints =>
             {

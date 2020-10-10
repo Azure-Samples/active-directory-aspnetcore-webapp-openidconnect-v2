@@ -7,7 +7,7 @@ param(
     [string] $azureEnvironmentName
 )
 
-#Requires -Modules AzureAD
+#Requires -Modules AzureAD -RunAsAdministrator
 
 <#
  This script creates the Azure AD applications needed for this sample and updates the configuration files
@@ -206,7 +206,6 @@ Function ConfigureApplications
                                                   -IdentifierUris "https://$tenantName/WebApp-GroupClaims" `
                                                   -PasswordCredentials $key `
                                                   -GroupMembershipClaims "SecurityGroup" `
-                                                  -Oauth2AllowImplicitFlow $true `
                                                   -PublicClient $False
 
    # create the service principal of the newly created application 
@@ -234,7 +233,7 @@ Function ConfigureApplications
    # Add Required Resources Access (from 'webApp' to 'Microsoft Graph')
    Write-Host "Getting access from 'webApp' to 'Microsoft Graph'"
    $requiredPermissions = GetRequiredPermissions -applicationDisplayName "Microsoft Graph" `
-                                                -requiredDelegatedPermissions "Directory.Read.All" `
+                                                -requiredDelegatedPermissions "User.Read|GroupMember.Read.All" `
 
    $requiredResourcesAccess.Add($requiredPermissions)
 
@@ -244,10 +243,21 @@ Function ConfigureApplications
 
    # Update config file for 'webApp'
    $configFile = $pwd.Path + "\..\appsettings.json"
+
    Write-Host "Updating the sample code ($configFile)"
    $dictionary = @{ "ClientId" = $webAppAadApplication.AppId;"TenantId" = $tenantId;"Domain" = $tenantName;"ClientSecret" = $webAppAppKey };
    UpdateTextFile -configFilePath $configFile -dictionary $dictionary
-  
+   Write-Host ""
+   Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+   Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
+   Write-Host "- For 'webApp'"
+   Write-Host "  - Navigate to '$webAppPortalUrl'"
+   Write-Host "  - Navigate to the API Permissions page and select 'Grant admin consent for (your tenant)'" -ForegroundColor Red 
+   Write-Host "  - On Azure Portal, create a security group named GroupAdmin, assign some users to it, and configure your ID and Access token to emit GroupID in your app registration. Configure the value for 'GroupAdmin' key in appsettings.json." -ForegroundColor Red 
+   Write-Host "  - On Azure Portal, create a security group named GroupMember, assign some users to it, and configure your ID and Access token to emit GroupID in your app registration. Configure the value for 'GroupMember' key in appsettings.json." -ForegroundColor Red 
+
+   Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+     
    Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  
 }
 

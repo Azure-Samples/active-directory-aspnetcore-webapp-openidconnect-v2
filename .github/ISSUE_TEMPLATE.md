@@ -27,7 +27,10 @@ Please add an 'x' for the scenario(s) where you found an issue
    1. [ ] With specific token caches: [2-WebApp-graph-user/2-2-TokenCache](../blob/master/2-WebApp-graph-user/2-2-TokenCache)
    1. [ ] Calling Microsoft Graph in national clouds: [2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph](../blob/master/2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph)
 1. [ ] Web app calling several APIs [3-WebApp-multi-APIs](../blob/master/3-WebApp-multi-APIs)
-1. [ ] Web app calling your own Web API [4-WebApp-your-API](../blob/master/4-WebApp-your-API)
+1. [ ] Web app calling your own Web API
+   1. [ ] with a work and school account in your organization: [4-WebApp-your-API/4-1-MyOrg](../blob/master/4-WebApp-your-API/4-1-MyOrg)
+   1. [ ] with B2C users: [4-WebApp-your-API/4-2-B2C](../blob/master/4-WebApp-your-API/4-2-B2C)
+   1. [ ] with any work and school account: [4-WebApp-your-API/4-3-AnyOrg](../blob/master/4-WebApp-your-API/4-3-AnyOrg)
 1. Web app restricting users
    1. [ ] by Roles: [5-WebApp-AuthZ/5-1-Roles](../blob/master/5-WebApp-AuthZ/5-1-Roles)
    1. [ ] by Groups: [5-WebApp-AuthZ/5-2-Groups](../blob/master/5-WebApp-AuthZ/5-2-Groups)
