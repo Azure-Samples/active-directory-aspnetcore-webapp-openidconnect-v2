@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure.Storage.Blobs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using Microsoft.Identity.Web;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
-using Constants = WebApp_OpenIDConnect_DotNet.Infrastructure.Constants;
 using WebApp_OpenIDConnect_DotNet.Models;
 using WebApp_OpenIDConnect_DotNet.Services.Arm;
 using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
@@ -34,11 +35,11 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View();
         }
 
-        [AuthorizeForScopes(Scopes = new[] {Constants.ScopeUserRead})]
+        [AuthorizeForScopes(Scopes = new[] { WebApp_OpenIDConnect_DotNet.Infrastructure.Constants.ScopeUserRead})]
         public async Task<IActionResult> Profile()
         {
             var accessToken =
-                await tokenAcquisition.GetAccessTokenForUserAsync(new[] {Constants.ScopeUserRead});
+                await tokenAcquisition.GetAccessTokenForUserAsync(new[] { WebApp_OpenIDConnect_DotNet.Infrastructure.Constants.ScopeUserRead});
 
             var me = await graphApiOperations.GetUserInformation(accessToken);
             var photo = await graphApiOperations.GetPhotoAsBase64Async(accessToken);
@@ -73,21 +74,30 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
         public async Task<IActionResult> Blob()
         {
-            var scopes = new string[] { "https://storage.azure.com/user_impersonation" };
-
-            var accessToken =
-                await tokenAcquisition.GetAccessTokenForUserAsync(scopes);
-
-            // create a blob on behalf of the user
-            TokenCredential tokenCredential = new TokenCredential(accessToken);
-            StorageCredentials storageCredentials = new StorageCredentials(tokenCredential);
-
+            string message = "Blob failed to create";
             // replace the URL below with your storage account URL
             Uri blobUri = new Uri("https://blobstorageazuread.blob.core.windows.net/sample-container/Blob1.txt");
-            CloudBlockBlob blob = new CloudBlockBlob(blobUri, storageCredentials);
-            await blob.UploadTextAsync("Blob created by Azure AD authenticated user.");
+            BlobClient blobClient = new BlobClient(blobUri, new TokenAcquisitionTokenCredential(tokenAcquisition));
 
-            ViewData["Message"] = "Blob successfully created";
+            string blobContents = "Blob created by Azure AD authenticated user.";
+            byte[] byteArray = Encoding.ASCII.GetBytes(blobContents);
+            using (MemoryStream stream = new MemoryStream(byteArray))
+            {
+                try
+                {
+                    await blobClient.UploadAsync(stream);
+                    message = "Blob successfully created";
+                }
+                catch (MsalUiRequiredException ex)
+                {
+                    throw ex;
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            ViewData["Message"] = message;
             return View();
         }
 

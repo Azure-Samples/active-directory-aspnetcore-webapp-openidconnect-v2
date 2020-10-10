@@ -38,11 +38,10 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.HandleSameSiteCookieCompatibility();
             });
 
-            services.AddOptions();
-
-            services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
-                    .EnableTokenAcquisitionToCallDownstreamApi( new string[] { Constants.ScopeUserRead })
-                    .AddInMemoryTokenCaches();
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+                .EnableTokenAcquisitionToCallDownstreamApi()
+                .AddInMemoryTokenCaches();
 
             // Add APIs
             services.AddGraphService(Configuration);
