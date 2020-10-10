@@ -40,7 +40,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
-                .EnableTokenAcquisitionToCallDownstreamApi(null)
+                .EnableTokenAcquisitionToCallDownstreamApi()
                 .AddInMemoryTokenCaches();
 
             // Add APIs
