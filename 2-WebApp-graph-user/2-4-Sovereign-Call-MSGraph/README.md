@@ -64,11 +64,13 @@ Go to the `"2-WebApp-graph-user\2-4-Sovereign-Call-MSGraph"` folder
 - the `TenantId` by `organizations`, as here you chose to sign-in users with their work or school  account. In case you want to sign-in different audiences, refer back to the first phase of the tutorial
 - and the `ClientSecret` by the client secret you generated in Step 1.
 
--  The `GraphApiUrl` for US Government cloud is
+-  The `DownstreamApi:BaseUrl` for US Government cloud is
 
-  ```JSon
-   "GraphApiUrl": "https://graph.microsoft.us"
-  ```
+```JSon
+"DownstreamApi": {
+    "BaseUrl": "https://graph.microsoft.us/beta"
+}
+```
 In case you want to deploy your app in other sovereign or national clouds, go to [Microsoft Graph service root endpoints](https://docs.microsoft.com/en-us/graph/deployments#microsoft-graph-and-graph-explorer-service-root-endpoints). 
 
 ### Step 3: Run the sample
@@ -92,16 +94,20 @@ Starting from the [previous phase of the tutorial](../../1-WebApp-OIDC), the cod
 After the following lines in the ConfigureServices(IServiceCollection services) method, replace `services.AddAzureAdV2Authentication(Configuration);`, by the following lines:
 
 ```CSharp
- public void ConfigureServices(IServiceCollection services)
+public void ConfigureServices(IServiceCollection services)
 {
-    . . .
-   services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-           .AddMicrosoftIdentityWebApp(Configuration)
+    services.AddOptions();
 
-            // Token acquisition service based on MSAL.NET
-            // and chosen token cache implementation
-           .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Constants.ScopeUserRead })
-           .AddInMemoryTokenCaches();
+    string[] initialScopes = Configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
+
+    // Token acquisition service based on MSAL.NET
+    // and chosen token cache implementation
+
+    services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+        .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+            .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
+                .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
+                .AddInMemoryTokenCaches();
 ```
 
 The two new lines of code:
@@ -109,17 +115,6 @@ The two new lines of code:
 - enable MSAL.NET to hook-up to the OpenID Connect events and redeem the authorization code obtained by the ASP.NET Core middleware and after obtaining a token, saves it into the token cache, for use by the Controllers.
 - Decide which token cache implementation to use. In this part of the phase, we'll use a simple in memory token cache, but next steps will show you other implementations you can benefit from, including distributed token caches based on a SQL database, or a Redis cache.
 
-### Add additional files to call Microsoft Graph
-
-Add the `Services\Microsoft-Graph-Rest\*.cs` files. This is an implementation of a custom service, which encapsulates the call to the Microsoft Graph /me endpoint. Given an access token for Microsoft Graph, it's capable of getting the user information and the photo of the user.
-
-```CSharp
-public interface IGraphApiOperations
-{
- Task<dynamic> GetUserInformation(string accessToken);
- Task<string> GetPhotoAsBase64Async(string accessToken);
-}
-```
 
 ### Update the `Startup.cs` file to enable the Microsoft Graph custom service
 
@@ -127,7 +122,7 @@ Still in the `Startup.cs` file, add the following lines just after the following
 
 ```CSharp
     // Add Graph
-    services.AddGraphService(Configuration);
+    .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
 ```
 
 ### Change the controller code to acquire a token and call Microsoft Graph
@@ -136,26 +131,28 @@ In the `Controllers\HomeController.cs`file:
 
 1. Add a constructor to HomeController, making the ITokenAcquisition service available (used by the ASP.NET dependency injection mechanism)
 
-   ```CSharp
-   public HomeController(ITokenAcquisition tokenAcquisition, IGraphApiOperations graphApiOperations)
-   {
-     this.tokenAcquisition = tokenAcquisition;
-     this.graphApiOperations = graphApiOperations;
+```CSharp
+private readonly ILogger<HomeController> _logger;
 
-   }
-   private ITokenAcquisition tokenAcquisition;
-   private readonly IGraphApiOperations graphApiOperations;
-   ```
+private readonly GraphServiceClient _graphServiceClient;
+
+public HomeController(ILogger<HomeController> logger,
+                    GraphServiceClient graphServiceClient)
+{
+    _logger = logger;
+    _graphServiceClient = graphServiceClient;
+}
+```
 
 1. Add a `Profile()` action so that it calls the Microsoft Graph *me* endpoint. In case a token cannot be acquired, a challenge is attempted to re-sign-in the user, and have them consent to the requested scopes. This is expressed declaratively by the `AuthorizeForScopes`attribute. This attribute is part of the `Microsoft.Identity.Web` project and automatically manages incremental consent.
 
-   ```CSharp
-   [AuthorizeForScopes(Scopes = new[] {Constants.ScopeUserRead})]
-   public async Task<IActionResult> Profile()
-   {
+```CSharp
+[AuthorizeForScopes(Scopes = new[] {Constants.ScopeUserRead})]
+public async Task<IActionResult> Profile()
+{
     var accessToken =
     await tokenAcquisition.GetAccessTokenOnBehalfOfUser(HttpContext, 
-                                                     new[] {Constants.ScopeUserRead});
+                                                    new[] {Constants.ScopeUserRead});
 
     var me = await graphApiOperations.GetUserInformation(accessToken);
     var photo = await graphApiOperations.GetPhotoAsBase64Async(accessToken);
@@ -164,8 +161,8 @@ In the `Controllers\HomeController.cs`file:
     ViewData["Photo"] = photo;
 
     return View();
-   }
-   ```
+}
+```
 
 ### Add a Profile view to display the *me* object
 
@@ -181,37 +178,50 @@ HTML table displaying the properties of the *me* object as returned by Microsoft
 <h3>@ViewData["Message"]</h3>
 
 <table class="table table-striped table-condensed" style="font-family: monospace">
- <tr>
-    <th>Property</th>
-    <th>Value</th>
- </tr>
- <tr>
-   <td>photo</td>
-   <td>
-   @{
-     if (ViewData["photo"] != null)
-     {
-     <img style="margin: 5px 0; width: 150px" src="data:image/jpeg;base64, @ViewData["photo"]" />
-     }
-     else
-     {
-      <h3>NO PHOTO</h3>
-      <p>Check user profile in Azure Active Directory to add a photo.</p>
-     }
+    <tr>
+        <th>Property</th>
+        <th>Value</th>
+    </tr>
+    <tr>
+        <td>photo</td>
+        <td>
+            @{
+                if (ViewData["photo"] != null)
+                {
+                    <img style="margin: 5px 0; width: 150px" src="data:image/jpeg;base64, @ViewData["photo"]" />
+                }
+                else
+                {
+                    <h3>NO PHOTO</h3>
+                    <p>Check user profile in Azure Active Directory to add a photo.</p>
+                }
+            }
+        </td>
+    </tr>
+    @{       
+        var me = ViewData["me"] as Microsoft.Graph.User;
+        var properties = me.GetType().GetProperties();
+        foreach (var child in properties)
+        {
+            object value = child.GetValue(me);
+            string stringRepresentation;
+            if (!(value is string) && value is IEnumerable<string>)
+            {
+                stringRepresentation = "["
+                    + string.Join(", ", (value as IEnumerable<string>).OfType<object>().Select(c => c.ToString()))
+                    + "]";
+            }
+            else
+            {
+                stringRepresentation = value?.ToString();
+            }
+
+            <tr>
+                <td> @child.Name </td>
+                <td> @stringRepresentation </td>
+            </tr>
+        }      
     }
-    </td>
-  </tr>
-  @{
-    var me = ViewData["me"] as JObject;
-    var children = me.Properties();
-    foreach (var child in children)
-    {
-     <tr>
-       <td>@child.Name</td>
-       <td>@child.Value</td>
-     </tr>
-    }
-   }
 </table>
 ```
 
