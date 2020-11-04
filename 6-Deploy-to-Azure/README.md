@@ -48,11 +48,37 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
 1. On the Settings tab, make sure `Enable Organizational Authentication` is NOT selected.  Click **Save**. Click on **Publish** on the main screen.
 1. Visual Studio will publish the project and automatically open a browser to the URL of the project.  If you see the default web page of the project, the publication was successful.
 
+### Case of web apps deployed to App Services as Linux containers
+
+#### What is the issue?
+
+Normally, Microsoft Identity Web computes the redirect URI automatically depending on the deployed URL.
+
+However, when you deploy web apps to App Services as Linux containers, your application will be called by App Services on an HTTP address, whereas its registered redirect URI in the app registration will be HTTPS.
+
+This means that when a user browses to the web app, they will be redirected to `login.microsoftonline.com` as expected, but with:
+
+```
+redirect_uri=http://<your app service name>.azurewebsites.net/signin-oidc
+```
+
+instead of 
+
+```
+redirect_uri=https://<your app service name>.azurewebsites.net/signin-oidc
+```
+
+#### How to fix it?
+
+In order to get the right result, the guidance from the ASP.NET Core team for working with proxies is in [Configure ASP.NET Core to work with proxy servers and load balancers](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer). You should address the issue centrally by using `UseForwardedHeaders` to fix the request fields, like scheme.
+
+The container scenario should have been addressed by default in .NET Core 3.0. See [Forwarded Headers Middleware Updates in .NET Core 3.0 preview 6](https://devblogs.microsoft.com/aspnet/forwarded-headers-middleware-updates-in-net-core-3-0-preview-6). If there are issues with this for you, please contact the ASP .NET Core team <https://github.com/dotnet/aspnetcore>, as they will be the right team to assist with this.
+
 ## Key Vault and Managed Service Identity (MSI)
 
-Secure key management is essential to protect data in the cloud. Use [Azure Key Vault](https://azure.microsoft.com/en-ca/services/key-vault/) to encrypt keys and small secrets like passwords that use keys stored in hardware security modules (HSMs).
+Secure key management is essential to protect data in the cloud. Use [Azure Key Vault](https://azure.microsoft.com/services/key-vault/) to encrypt certicates/keys and small secrets like passwords that use keys stored in hardware security modules (HSMs). Then Microsoft.Identity.Web leverages Managed Service Identity to retrieve these certificates. For details see [https://aka.ms/ms-id-web-certificates](https://aka.ms/ms-id-web-certificates)
 
-Use [this sample](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet) as a guide on how to use Azure Key Vault from App Service with Managed Service Identity (MSI).
+If you want to retrieve passwords, instead of certificates, see the [pp-service-msi-keyvault-dotnet](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet) sample as a guide on how to use Azure Key Vault from App Service with Managed Service Identity (MSI).
 
 ## MSAL token cache on distributed environments
 
