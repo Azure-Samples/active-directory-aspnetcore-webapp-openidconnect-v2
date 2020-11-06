@@ -78,7 +78,7 @@ The container scenario should have been addressed by default in .NET Core 3.0. S
 
 Secure key management is essential to protect data in the cloud. Use [Azure Key Vault](https://azure.microsoft.com/services/key-vault/) to encrypt certicates/keys and small secrets like passwords that use keys stored in hardware security modules (HSMs). Then Microsoft.Identity.Web leverages Managed Service Identity to retrieve these certificates. For details see [https://aka.ms/ms-id-web-certificates](https://aka.ms/ms-id-web-certificates)
 
-If you want to retrieve passwords, instead of certificates, see the [pp-service-msi-keyvault-dotnet](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet) sample as a guide on how to use Azure Key Vault from App Service with Managed Service Identity (MSI).
+If you want to retrieve passwords, instead of certificates, see the [app-service-msi-keyvault-dotnet](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet) sample as a guide on how to use Azure Key Vault from App Service with Managed Service Identity (MSI).
 
 ## MSAL token cache on distributed environments
 
