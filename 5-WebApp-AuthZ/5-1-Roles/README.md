@@ -14,7 +14,7 @@ products:
   - azure-active-directory  
   - dotnet
   - office-ms-graph
-description: "Add authorization using app roles & roles claims to an ASP.NET Core web app thats signs-in users with the Microsoft identity platform"
+description: "Add authorization using app roles & roles claims to an ASP.NET Core web app that signs-in users with the Microsoft identity platform"
 ---
 # Add authorization using **app roles** & **roles** claims to an ASP.NET Core web app thats signs-in users with the Microsoft identity platform
 
