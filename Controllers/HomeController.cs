@@ -1,30 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Identity.Web;
+using Microsoft.Graph;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using WebApp_OpenIDConnect_DotNet.Models;
+using active_directory_aspnetcore_webapp_openidconnect_v2.Models;
 
-namespace WebApp_OpenIDConnect_DotNet.Controllers
+namespace active_directory_aspnetcore_webapp_openidconnect_v2.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
+        private readonly GraphServiceClient _graphServiceClient;
 
-        public IActionResult Index()
+        public HomeController(ILogger<HomeController> logger,
+                          GraphServiceClient graphServiceClient)
         {
+             _logger = logger;
+            _graphServiceClient = graphServiceClient;
+       }
+
+        [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
+        public async Task<IActionResult> Index()
+        {
+            var user = await _graphServiceClient.Me.Request().GetAsync();
+            ViewData["ApiResult"] = user.DisplayName;
+
             return View();
         }
-
         public IActionResult Privacy()
         {
             return View();
