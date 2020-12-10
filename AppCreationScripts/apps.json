@@ -1,8 +1,8 @@
 {
     "Sample": {
-    "Title": "Signing users to an ASP.NET Core Web App",
+    "Title": "Signing users to an ASP.NET Core Web App and call Microsoft Graph",
     "Level": 200,
-    "Client": "ASP.NET Core 2.2"
+    "Client": "ASP.NET Core 3.1"
   },
   "AppRegistrations": [
     {
@@ -11,15 +11,10 @@
       "x-ms-version": "2.0",
       "replyUrlsWithType": [
         {
-          "url": "https://localhost:44321/",
-          "type": "Web"
-        },
-        {
           "url": "https://localhost:44321/signin-oidc",
           "type": "Web"
         }
       ],
-      "oauth2AllowIdTokenImplicitFlow": true,
       "logoutUrl": "https://localhost:44321/signout-callback-oidc",
       "requiredResourceAccess": [
         {
@@ -34,13 +29,15 @@
           ]
         }
       ],
-      "codeConfigurations": [	
+      "codeConfigurations": [
         {
-		      "settingFile": "/appsettings.json",
+          "settingFile": "/appsettings.json",
           "replaceTokens": {
             "appId": "Enter_the_Application_Id_here",
             "tenantId": "common",
-            "authorityEndpointHost": "https://login.microsoftonline.com/"
+            "authorityEndpointHost": "https://login.microsoftonline.com/",
+            "msgraphEndpointHost": "https://graph.microsoft.com/",
+            "clientSecret": "Enter_the_Client_Secret_Here"
           }
         }
       ]	
