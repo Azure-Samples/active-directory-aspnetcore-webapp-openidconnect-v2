@@ -75,7 +75,7 @@ namespace TodoListClient.Services
                 return;
             }
 
-            throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
+            throw new TodolistServiceException($"Unexpected status code in the HttpResponseMessage: {response.StatusCode}.",  response);
         }
 
         public async Task<Todo> EditAsync(Todo todo)
@@ -131,8 +131,8 @@ namespace TodoListClient.Services
 
                 return todo;
             }
-
-            throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
+            return null;
+            //throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
         }
     }
 }

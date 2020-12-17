@@ -7,8 +7,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
-
+using System.Linq;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.IdentityModel.Tokens.Jwt;
+using System;
+using Constants = TodoListService.Models.Constants;
 
 namespace TodoListService
 {
@@ -28,10 +31,41 @@ namespace TodoListService
             // By default, the claims mapping will map claim names in the old format to accommodate older SAML applications.
             // 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role' instead of 'roles'
             // This flag ensures that the ClaimsIdentity claims collection will be built from the claims in the token
-            // JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
             // Adds Microsoft Identity platform (AAD v2.0) support to protect this Api
-            services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
+            services.AddMicrosoftIdentityWebApiAuthentication(Configuration)
+                .EnableTokenAcquisitionToCallDownstreamApi()
+                        .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
+                        .AddInMemoryTokenCaches();
+
+            services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+            {
+                var existingOnTokenValidatedHandler = options.Events.OnTokenValidated;
+                options.Events.OnTokenValidated = async context =>
+                {
+                    // Let the standard token validation complete
+                    await existingOnTokenValidatedHandler(context);
+
+                    // Your code to conduct extra processing will come below
+
+                    // This check is required to ensure that the web API only accepts tokens from tenants where it has been consented and provisioned.
+                    if (!context.Principal.Claims.Any(x => x.Type == ClaimConstants.Scope)
+                    && !context.Principal.Claims.Any(y => y.Type == ClaimConstants.Scp)
+                    && !context.Principal.Claims.Any(y => y.Type == ClaimConstants.Roles))
+                    {
+                        throw new UnauthorizedAccessException("Neither scope or roles claim was found in the bearer token.");
+                    }
+
+                    // Here we are testimg that the Access token's 'scope' claim has a value of 'access_as_user'. Checking here helps us remove 'AuthorizeForScopes' attribute in the individual API controllers
+                    string scope = context.Principal.Claims.FirstOrDefault(x => x.Type == "scp")?.Value;
+
+                    if (scope != Constants.scopeRequiredByApi)
+                    {
+                        throw new UnauthorizedAccessException("The expected scope was not found in the ones presented by the Access Token.");
+                    }
+                };
+            });
 
             services.AddControllers();
         }
@@ -53,7 +87,7 @@ namespace TodoListService
             }
 
             app.UseHttpsRedirection();
-            
+
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
