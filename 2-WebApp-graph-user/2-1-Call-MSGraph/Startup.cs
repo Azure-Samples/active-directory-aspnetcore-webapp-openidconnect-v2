@@ -67,6 +67,8 @@ namespace _2_1_Call_MSGraph
             });
             services.AddRazorPages()
                     .AddMicrosoftIdentityUI();
+            services.AddServerSideBlazor()
+                    .AddMicrosoftIdentityConsentHandler();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

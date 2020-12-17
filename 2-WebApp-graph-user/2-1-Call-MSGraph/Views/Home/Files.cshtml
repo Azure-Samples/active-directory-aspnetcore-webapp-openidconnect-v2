@@ -1,0 +1,24 @@
+﻿@using Newtonsoft.Json.Linq
+@using Microsoft.Graph
+@{
+    ViewData["Title"] = "Files from sharepoint";
+}
+<h2>@ViewData["Title"]</h2>
+<h3>@ViewData["Message"]</h3>
+
+<table class="table table-striped table-condensed" style="font-family: monospace">
+    <tr>
+        <th>Property</th>
+        <th>Value</th>
+    </tr>
+    @{
+        var files = ViewData["Files"] as List<ListItem>;
+        foreach (var file in files)
+        {
+            <tr>
+                <td> @file.Name</td>
+                <td> @file.WebUrl</td>
+            </tr>
+        }
+    }
+</table>
