@@ -17,8 +17,14 @@
       "Name": "TodoListService-aspnetcore-webapi",
       "Kind": "WebApi",
       "Audience": "AzureADMyOrg",
-      "HomePage": "https://localhost:44351"
-     
+      "HomePage": "https://localhost:44351",
+      "PasswordCredentials": "Auto",
+      "RequiredResourcesAccess": [
+        {
+          "Resource": "Microsoft Graph",
+          "DelegatedPermissions": [ "User.Read", "Sites.Read.All"]
+        }
+      ]
     },
     {
       "Id": "client",
@@ -61,6 +67,10 @@
         {
           "key": "ClientId",
           "value": "service.AppId"
+        },
+        {
+          "key": "ClientSecret",
+          "value": ".AppKey"
         }
       ]
     },
