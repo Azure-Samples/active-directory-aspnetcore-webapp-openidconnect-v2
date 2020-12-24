@@ -45,7 +45,7 @@ This sample has a web api and a client web app, both built using the asp.net cor
 
 ### Overview
 
-This sample presents a Web API running on ASP.NET Core, protected by [Azure AD OAuth Bearer](https://docs.microsoft.com/azure/active-directory/develop/active-directory-v2-protocols) Authentication. The client application uses [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) library to obtain a JWT access token through using the [OAuth 2.0](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow) protocol flow. 
+This sample presents a Web API running on ASP.NET Core, protected by [Azure AD OAuth Bearer](https://docs.microsoft.com/azure/active-directory/develop/active-directory-v2-protocols) Authentication. The client application uses [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) library to obtain a JWT access token through using the [OAuth 2.0](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow) protocol flow.
 
 The client web application essentially takes the following steps to sign-in the user and obtain a bearer token for the Web API:
 
@@ -220,7 +220,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. Find the key `TenantId` and replace the existing value with your Azure AD tenant ID.
 1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `TodoListClient-aspnetcore-webapi` app copied from the Azure Portal.
 1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of `TodoListClient-aspnetcore-webapi` copied from the Azure Portal.
-1. Find the key `TodoListScope` and replace the existing value with Scope.
+1. Find the key `TodoListScope` and replace the existing value with **api://[Enter_client_ID_Of_TodoListService-from_Azure_Portal,_e.g._2ec40e65-ba09-4853-bcde-bcb60029e596]/.default**.
 1. Find the key `TodoListBaseAddress` and replace the existing value with the base address of `TodoListService-aspnetcore-webapi` (by default `https://localhost:44351`).
 
 #### Configure Known Client Applications for service (TodoListService-aspnetcore-webapi)
