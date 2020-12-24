@@ -18,6 +18,7 @@ namespace WebApp_OpenIDConnect_DotNet.Utils
 {
     /// <summary>
     /// Helper class that processes the content of a WWW-Authenticate header
+    /// Flow details <a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/app-resilience-continuous-access-evaluation">How to use Continuous Access Evaluation enabled APIs in your applications</a>
     /// </summary>
     public class WwwAuthenticateHelper
     {

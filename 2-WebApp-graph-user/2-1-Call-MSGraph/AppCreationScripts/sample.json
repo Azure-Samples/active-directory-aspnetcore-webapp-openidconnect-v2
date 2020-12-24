@@ -39,7 +39,7 @@
   "CodeConfiguration": [
     {
       "App": "webApp",
-      "SettingKind": "JSon",
+      "SettingKind": "JSON",
       "SettingFile": "\\..\\appsettings.json",
       "Mappings": [
         {
