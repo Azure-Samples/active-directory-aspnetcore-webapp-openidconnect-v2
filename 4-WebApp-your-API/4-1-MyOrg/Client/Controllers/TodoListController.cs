@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using TodoListClient.Infrastructure;
@@ -99,22 +101,24 @@ namespace TodoListClient.Controllers
             }
             catch (TodolistServiceException hex)
             {
-                if (hex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                if (hex.StatusCode == System.Net.HttpStatusCode.Unauthorized && hex.Headers.WwwAuthenticate.Any())
                 {
-                    HttpResponseHeaders header = hex.HttpResponseMessage.Headers;
-                    WwwAuthenticateHelper wwwAuth = null;
-
-                    // If WWW-Authenticate happened
-                    if (header.WwwAuthenticate != null)
-                    {
-                        wwwAuth = new WwwAuthenticateHelper(header.WwwAuthenticate);
-                    }
+                    AuthenticationHeaderValue bearer = hex.Headers.WwwAuthenticate.First(v => v.Scheme == "Bearer");
+                    IEnumerable<string> parameters = bearer.Parameter.Split(',').Select(v => v.Trim()).ToList();
+                    var errorValue = GetParameterValue(parameters, "error");
 
                     try
                     {
-                        if (null != wwwAuth && null != wwwAuth.Claims)
+                        if (null != errorValue && "insufficient_claims" == errorValue)
                         {
-                            _consentHandler.ChallengeUser(new string[] { "user.read Sites.Read.All" }, wwwAuth.Claims);
+                            var claimChallengeParameter = GetParameterValue(parameters, "claims");
+                            if (null != claimChallengeParameter)
+                            {
+                                var claimChallengebase64Bytes = System.Convert.FromBase64String(claimChallengeParameter);
+                                var claimChallenge = System.Text.Encoding.UTF8.GetString(claimChallengebase64Bytes);
+
+                                _consentHandler.ChallengeUser(new string[] { "user.read Sites.Read.All" }, claimChallenge);
+                            }
                             return new EmptyResult();
                         }
                     }
@@ -127,6 +131,32 @@ namespace TodoListClient.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        private string GetParameterValue(IEnumerable<string> parameters, string keyToLook)
+        {
+            char[] pc = new char[2] { ' ', '\"' };
+
+            if (parameters.Count() > 0)
+            {
+                foreach (string parameter in parameters)
+                {
+                    int i = parameter.IndexOf('=');
+
+                    if (i > 0 && i < (parameter.Length - 1))
+                    {
+                        string key = parameter.Substring(0, i).Trim(pc).ToLower();
+                        string value = parameter.Substring(i + 1).Trim(pc);
+
+                        if (key==keyToLook)
+                        {
+                            return value;
+                        }
+                    }
+                }
+            }
+
+            return string.Empty;
         }
     }
 }
