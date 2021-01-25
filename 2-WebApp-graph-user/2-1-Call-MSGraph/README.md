@@ -157,9 +157,7 @@ The two new lines of code:
 
 ### Add additional files to call Microsoft Graph
 
-Add `Microsoft.Graph` package, to use [Microsoft Graph SDK](https://github.com/microsoftgraph/msgraph-sdk-dotnet/blob/dev/docs/overview.md).
-
-Add the `Services\*.cs` files. The `GraphServiceClientFactory.cs` returns a `GraphServiceClient` with an authentication provider, used for [Microsoft Graph SDK](https://github.com/microsoftgraph/msgraph-sdk-dotnet/blob/dev/docs/overview.md). Given an access token for Microsoft Graph, it's capable of making a request to Graph services sending that access token in the header.
+Add the `Microsoft.Identity.Web.MicrosoftGraph` package, to use [Microsoft Graph SDK](https://github.com/microsoftgraph/msgraph-sdk-dotnet/blob/dev/docs/overview.md).
 
 ### Update the `Startup.cs` file to enable the Microsoft Graph custom service
 
