@@ -200,7 +200,7 @@ public void ConfigureServices(IServiceCollection services)
         options.TableName = "TokenCache";
 
        // You don't want the SQL token cache to be purged before the access token has expired. Usually
-       // access tokens expire after 1 hours (but this can be changed by token lifetime policies), whereas
+       // access tokens expire after 1 hour (but this can be changed by token lifetime policies), whereas
        // the default sliding expiration for the distributed SQL database is 20 mins. 
        // Use a value which is above 60 mins (or the lifetime of a token in case of longer lived tokens)
        options.DefaultSlidingExpiration = TimeSpan.FromMinutes(90); 
