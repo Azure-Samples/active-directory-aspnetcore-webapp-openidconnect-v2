@@ -50,7 +50,7 @@ namespace WebApp_OpenIDConnect_DotNet
                         //Calls method to process groups overage claim.
                         var overageGroupClaims = await GraphHelper.GetSignedInUsersGroups(context);
                     };
-                }, options => { Configuration.Bind("AzureAd", options); })
+                })
                     .EnableTokenAcquisitionToCallDownstreamApi(options => Configuration.Bind("AzureAd", options), initialScopes)
                     .AddMicrosoftGraph(Configuration.GetSection("GraphAPI"))
                     .AddInMemoryTokenCaches();
