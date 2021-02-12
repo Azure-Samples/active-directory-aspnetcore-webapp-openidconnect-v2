@@ -18,13 +18,10 @@ namespace ToDoListService.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
+    [RequiredScope("access_as_user")]
     [ApiController]
     public class TodoListController : ControllerBase
     {
-        // The Web API will only accept tokens 1) for users, and 
-        // 2) having the access_as_user scope for this API
-        static readonly string[] scopeRequiredByApi = new string[] { "access_as_user" };
-
         private readonly TodoContext _context;
         private ITokenAcquisition _tokenAcquisition;
      
@@ -38,12 +35,10 @@ namespace ToDoListService.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
         {
-            HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
             string userTenantId = HttpContext.User.GetTenantId();
             var signedInUser = HttpContext.User.GetDisplayName();
             try
             {
-                Microsoft.Graph.User user = new User();
                 await _context.TodoItems.ToListAsync();
             }
             catch(Exception)
@@ -57,9 +52,7 @@ namespace ToDoListService.Controllers
         // GET: api/TodoItems/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoItem>> GetTodoItem(int id)
-        {
-            HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
- 
+        { 
             var todoItem = await _context.TodoItems.FindAsync(id);
 
             if (todoItem == null)
@@ -72,7 +65,6 @@ namespace ToDoListService.Controllers
         [HttpGet("getallusers")]
         public async Task<ActionResult<IEnumerable<string>>> GetAllUsers()
         {
-            HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
             try
             {
                 List<string> Users = await CallGraphApiOnBehalfOfUser();
@@ -93,8 +85,6 @@ namespace ToDoListService.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTodoItem(int id, TodoItem todoItem)
         {
-            HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
-
             if (id != todoItem.Id)
             {
                 return BadRequest();
@@ -127,8 +117,6 @@ namespace ToDoListService.Controllers
         [HttpPost]
         public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
         {
-            HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
-
             var random = new Random();
             todoItem.Id = random.Next();
 
@@ -144,8 +132,6 @@ namespace ToDoListService.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<TodoItem>> DeleteTodoItem(int id)
         {
-            HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
-
             var todoItem = await _context.TodoItems.FindAsync(id);
             if (todoItem == null)
             {
@@ -178,7 +164,7 @@ namespace ToDoListService.Controllers
             catch (MsalUiRequiredException ex)
             {
                 await _tokenAcquisition.ReplyForbiddenWithWwwAuthenticateHeaderAsync(scopes, ex);
-                throw (ex);
+                throw ex;
             }
         }
         private static async Task<IEnumerable<User>> CallGraphApiOnBehalfOfUser(string accessToken)
