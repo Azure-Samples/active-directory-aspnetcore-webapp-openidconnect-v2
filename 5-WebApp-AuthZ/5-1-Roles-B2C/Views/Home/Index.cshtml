@@ -1,0 +1,57 @@
+﻿@using System.Security.Claims
+@using WebApp_OpenIDConnect_DotNet.Infrastructure
+@{
+    ViewData["Title"] = "Add authorization using custom roles & roles claims";
+}
+<h2>
+    Integrating Azure AD V2 into an ASP.NET Core web app and using Azure AD B2C custom roles for authorization.
+</h2>
+<p>
+    This sample shows how to build a .NET Core MVC Web app that uses Azure AD B2C custom roles for authorization. It leverages the ASP.NET Core OpenID Connect middleware to sign-in users.
+</p>
+
+<br />
+
+@{
+    var user = ViewData["User"] as ClaimsPrincipal;
+}
+
+<h3 style="color:blue">Claims from the signed-in user's token</h3>
+<table class="table table-striped table-bordered table-condensed table-hover">
+    <tr>
+        <th>ClaimType</th>
+        <th>Value</th>
+    </tr>
+
+    @foreach (var claim in user.Claims)
+    {
+    <tr>
+        @{
+                if (claim.Type == Constants.RoleClaimType)
+                {
+            <td><b>role</b></td>
+                }
+                else
+                {
+            <td>@claim.Type</td>
+                }
+        }
+
+        <td>@claim.Value</td>
+    </tr>
+    }
+</table>
+<br />
+<h3 style="color:blue">Try to access of the following pages protected by Azure B2C custom roles</h3>
+
+<table>
+    <tr>
+        <td></td>
+        <td><a href="~/Home/Admins">Admins page (you need to be a member of the 'Admin' role)</a></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><a href="~/Home/Users">Users page (you need to be a member of the 'User' or 'Admin' role)</a></td>
+    </tr>
+</table>
+<br />
