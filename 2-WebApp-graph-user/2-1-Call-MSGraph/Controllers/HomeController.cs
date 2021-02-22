@@ -1,14 +1,16 @@
 ﻿using _2_1_Call_MSGraph.Models;
 using Microsoft.AspNetCore.Authorization;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using Microsoft.Identity.Web;
 using System;
+using System.Linq;
+using System.Net.Http.Headers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using WebApp_OpenIDConnect_DotNet.Utils;
 
@@ -111,7 +113,8 @@ namespace _2_1_Call_MSGraph.Controllers
                 }
                 catch (ServiceException sx)
                 {
-                    if (sx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                    Debug.WriteLine(sx.ResponseHeaders.WwwAuthenticate.Any());
+                    if (sx.StatusCode == System.Net.HttpStatusCode.Unauthorized && sx.ResponseHeaders.WwwAuthenticate != null)
                     {
                         HttpResponseHeaders header = sx.ResponseHeaders;
                         WwwAuthenticateHelper wwwAuth = null;
@@ -134,7 +137,32 @@ namespace _2_1_Call_MSGraph.Controllers
                         {
                             _consentHandler.HandleException(ex);
                         }
+
+                        //AuthenticationHeaderValue bearer = sx.ResponseHeaders.WwwAuthenticate.First(v => v.Scheme == "Bearer");
+                        //IEnumerable<string> parameters = bearer.Parameter.Split(',').Select(v => v.Trim()).ToList();
+                        //var errorValue = GetParameterValue(parameters, "error");
+
+                        //try
+                        //{
+                        //    if (null != errorValue && "insufficient_claims" == errorValue)
+                        //    {
+                        //        var claimChallengeParameter = GetParameterValue(parameters, "claims");
+                        //        if (null != claimChallengeParameter)
+                        //        {
+                        //            var claimChallengebase64Bytes = System.Convert.FromBase64String(claimChallengeParameter);
+                        //            var claimChallenge = System.Text.Encoding.UTF8.GetString(claimChallengebase64Bytes);
+
+                        //            _consentHandler.ChallengeUser(new string[] { "user.read Sites.Read.All" }, claimChallenge);
+                        //        }
+                        //        return new EmptyResult();
+                        //    }
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    _consentHandler.HandleException(ex);
+                        //}
                     }
+                   
                 }
             }
             catch (System.Exception ex)
@@ -146,6 +174,32 @@ namespace _2_1_Call_MSGraph.Controllers
             ViewData["Title"] = "SharePoint graph call demo";
 
             return View();
+        }
+
+        private string GetParameterValue(IEnumerable<string> parameters, string keyToLook)
+        {
+            char[] pc = new char[2] { ' ', '\"' };
+
+            if (parameters.Count() > 0)
+            {
+                foreach (string parameter in parameters)
+                {
+                    int i = parameter.IndexOf('=');
+
+                    if (i > 0 && i < (parameter.Length - 1))
+                    {
+                        string key = parameter.Substring(0, i).Trim(pc).ToLower();
+                        string value = parameter.Substring(i + 1).Trim(pc);
+
+                        if (key == keyToLook)
+                        {
+                            return value;
+                        }
+                    }
+                }
+            }
+
+            return string.Empty;
         }
 
         public IActionResult Privacy()
