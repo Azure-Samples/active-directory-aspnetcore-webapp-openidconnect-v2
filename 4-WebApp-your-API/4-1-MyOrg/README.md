@@ -211,6 +211,10 @@ Explore the sample by signing in into the TodoList client, adding items to the T
 
 > [Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbRz0h_jLR5HNJlvkZAewyoWxUNEFCQ0FSMFlPQTJURkJZMTRZWVJRNkdRMC4u)
 
+## Variation: web app using client certificates
+
+Follow [README-use-certificate.md](README-use-certificate.md) to know how to use this option.
+
 ## How was the code created
 
 ### Creating the client web app (TodoListClient)
