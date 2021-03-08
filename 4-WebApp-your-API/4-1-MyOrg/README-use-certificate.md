@@ -4,17 +4,17 @@ There are different approaches to [use certificates with Microsoft.Identity.Web]
 
 ## Use Self Signed Certificate from a path
 
-To use certificates instead of an application secret you will need to do little changes to what you have done so far:
+To use certificates instead of an application secret you will need to do some changes to what you have done so far:
 
 - generate a certificate and export it, if you don't have one already
 - register the certificate with your application in the Azure AD portal
 - Update appsettings.json
 
-### Generate a certificate
+### Generate a Self Signed certificate
 
-#### On Windows
+#### with Powershell
 
-To complete this step, you will use the `New-SelfSignedCertificate` Powershell command. You can find more information about the New-SelfSignedCertificat command [here](https://docs.microsoft.com/powershell/module/pkiclient/new-selfsignedcertificate).
+To complete this step, you will use the `New-SelfSignedCertificate` Powershell command. You can find more information about the New-SelfSignedCertificate command [here](https://docs.microsoft.com/powershell/module/pkiclient/new-selfsignedcertificate).
 
 1. Open PowerShell and run New-SelfSignedCertificate with the following parameters to create a self-signed certificate in the user certificate store on your computer:
 
@@ -29,31 +29,33 @@ Alternatively you can use an existing certificate if you have one (just be sure 
 
 Export one with private key as WebAppCert.pfx and another as WebAppCert.cer without private key.
 
-#### On other Operating Systems
-
-Build and install **OpenSSL** for your **OS** following the guide at [github.com/openssl](https://github.com/openssl/openssl#build-and-install). If you like to skip building and get a binary distributable from the community instead, check the [OpenSSL Wiki: Binaries](https://wiki.openssl.org/index.php/Binaries) page.
-
-Afterwards, add the path to `OpenSSL` to your **environment variables** so that you can call it from anywhere.
+#### with OpenSSL
 
 Type the following in a terminal. You will be prompted to enter some identifying information and a *passphrase*:
 
 ```console
-    openssl req -x509 -newkey rsa:4096 -sha256 -days 365 -keyout example.key -out WebAppCert.cer -subj "/CN=example.com" -addext "subjectAltName=DNS:example.com"
+    openssl req -x509 -newkey rsa:4096 -sha256 -days 365 -keyout webapp.key -out webapp.cer -subj "/CN=webapp.com" -addext "subjectAltName=DNS:webapp.com"
 
     Generating a RSA private key
     ...........................................................................................................................................................................................................................................................++++
     ......................................................................................................++++
-    writing new private key to 'example.key'
+    writing new private key to 'webapp.key'
     Enter PEM pass phrase:
     Verifying - Enter PEM pass phrase:
     ----- 
 ```
 
-After that, the following files should be generated: `example.key`, `WebAppCert.cer`.
+Generate the webapp.pfx certificate with below command:
+
+```console
+  openssl pkcs12 -export -out webapp.pfx -inkey webapp.key -in webapp.cer
+```
+
+After that, the following files should be generated: `webapp.key`, `webapp.cer` and `webapp.pfx`.
 
 ### Add the certificate for the web application in Azure AD
 
-1. Navigate back to to the [Azure portal](https://portal.azure.com).
+1. Navigate back to the [Azure portal](https://portal.azure.com).
 In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations**.
 1. In the resultant screen, select the `TodoListClient-aspnetcore-webapi` application.
 1. In the **Certificates & secrets** tab, go to **Certificates** section:
