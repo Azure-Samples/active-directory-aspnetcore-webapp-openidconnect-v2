@@ -8,29 +8,26 @@ service: ASP.NET Core Web API
 endpoint: Microsoft identity platform
 ---
 
-# How to secure a Web API built with ASP.NET Core using the Microsoft identity platform (formerly Azure Active Directory for developers)
+# How to secure a Web API built with ASP.NET Core using the Microsoft identity platform
 
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
-> The sample in this folder is part of a multi-chapter tutorial. The first phase is available at [An ASP.NET Core Web app signing-in users with the Microsoft identity platform in your organization](../1-WebApp-OIDC/1-1-MyOrg).
->
-> This article (README.md) contains the full instructions on how to configure the sample. If you have gone through the [first chapter](../1-WebApp-OIDC/1-1-MyOrg) and already configured the client web application to sigh-in users, read through the [README-incremental-instructions.md](README-incremental-instructions.md) instead.
-
 ## About this sample
 
-This sample is essentially a guide for developers who want to secure their Web APIs using the Microsoft identity platform (formerly Azure Active Directory for developers). This sample lays down all the steps developers need to take to secure their web api with the Microsoft identity platform. Additionally it also explains the steps and processes for a client to obtain the necessary permissions and tokens to make successful calls to this secured web api.  
+This sample is essentially a guide for developers who want to secure their Web APIs using the Microsoft identity platform (formerly Azure Active Directory for developers). This sample lays down all the steps developers need to take to secure their Web APIs with the Microsoft identity platform.
+Additionally it also explains the steps and processes for a client to obtain the necessary permissions and tokens to make successful calls to this secured web api.  
 
 ### Scenario
 
-This sample has a web api and a client web app, both built using the asp.net core platform. The client app signs in users using the [OpenID Connect protocol](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc) flow and in this process obtains (and caches) an [access token](https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens) for the web api. The client app has a ToDo list that the web app users can work with. This ToDo list is maintained in an in-memory list on the Web API. The client app calls the webApi for all operations on the ToDo list.
+This sample has a web api and a client web app, both are using the asp.net core framework. The client app signs in users using the [OAuth 2.0](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow) flow and in this process obtains (and caches) an [Access Tokens](https://aka.ms/access-tokens) for the web api. The client app has a To-Do list that the web app users can work with. This To-Do list is maintained in an in-memory list on the Web API. The client app calls the webApi for all operations on the ToDo list.
 
 ### Overview
 
-This sample presents a Web API running on ASP.NET Core, protected by [Azure AD OAuth Bearer](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-protocols) Authentication. The client application uses [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) library to obtain a JWT access token through using the [OAuth 2.0](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow) protocol flow. 
+This sample presents a Web API built withASP.NET Core, and protected by [Azure AD OAuth Bearer](https://docs.microsoft.com/azure/active-directory/develop/active-directory-v2-protocols) authentication. The client application uses the Microsoft Authentication Library for .NET ([MSAL.NET](http://aka.ms/msal-net)) and [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) libraries to obtain a JWT access token using the [OAuth 2.0](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow) protocol flow.
 
-The client web application essentially takes the following steps to sign-in the user and obtain a bearer token for the Web API:
+The client web application takes the following steps to sign-in the user and obtain a bearer token for the Web API:
 
-1. Signs-in the user. When the user signs-in for the first time , a consent screen is presented. This consent screen lets the user consent for the application to access the web API( TodoListService).
+1. Signs-in the user. When the user signs-in for the first time, a consent screen is presented. This consent screen lets the user consent for the application to access the web API( TodoListService).
 1. Acquires an access token for the Web API.
 1. Calls the Web API using the access token as a bearer token in the authentication header of the Http request. The Web API validates the caller using the ASP.NET JWT Bearer Authentication middleware.
 
@@ -50,9 +47,11 @@ The client web application (TodoListClient) enables a user to:
 
 ### Pre-requisites
 
-- Install .NET Core for Windows by following the instructions at [dot.net/core](https://dot.net/core), which will include [Visual Studio 2017](https://aka.ms/vsdownload).
+- Install .NET Core for Windows by following the instructions at [dot.net/core](https://dot.net/core), which will include [Visual Studio](https://aka.ms/vsdownload).
 - An Internet connection
-- An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/en-us/documentation/articles/active-directory-howto-tenant/)
+- An **Azure AD** tenant. For more information see: [How to get an Azure AD tenant](https://docs.microsoft.com/azure/active-directory/develop/quickstart-create-new-tenant)
+- A user account in your **Azure AD** tenant. This sample will not work with a **personal Microsoft account**. Therefore, if you signed in to the [Azure portal](https://portal.azure.com) with a personal account and have never created a user account in your directory before, you need to do that now.
+
 - A user account in your Azure AD tenant.
 
 ### Step 1:  Clone or download this repository
@@ -291,6 +290,7 @@ Follow [README-use-certificate.md](README-use-certificate.md) to know how to use
              .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Configuration["TodoList:TodoListScope"] })
              .AddInMemoryTokenCaches();
     ```
+
 1. Update the `Configure` method to include **app.UseAuthentication();** before **app.UseMvc();**  
 
   ```Csharp
@@ -341,6 +341,7 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
   ```Csharp
     services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
   ```
+
 - Add the method **app.UseAuthentication()** before **app.UseMvc()** in the `Configure` method
 
   ```Csharp
@@ -449,15 +450,15 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 For more information, visit the following links:
 
 - Articles about the Microsoft identity platform are at [http://aka.ms/aaddevv2](http://aka.ms/aaddevv2), with a focus on:
-  - [Azure AD OAuth Bearer protocol](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-protocols)
-  - [The OAuth 2.0 protocol in Azure AD](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
-  - [Access token](https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens)
-  - [The OpenID Connect protocol](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc)
+  - [Azure AD OAuth Bearer protocol](https://docs.microsoft.com/azure/active-directory/develop/active-directory-v2-protocols)
+  - [The OAuth 2.0 protocol in Azure AD](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow)
+  - [Access token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens)
+  - [The OpenID Connect protocol](https://docs.microsoft.com/azure/active-directory/develop/v2-protocols-oidc)
 
 - To lean more about the application registration, visit:
-  - [Quickstart: Register an application with the Microsoft identity platform (Preview)](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
-  - [Quickstart: Configure a client application to access web APIs (Preview)](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
-  - [Quickstart: Configure an application to expose web APIs (Preview)](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-configure-app-expose-web-apis)
+  - [Quickstart: Register an application with the Microsoft identity platform (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
+  - [Quickstart: Configure a client application to access web APIs (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
+  - [Quickstart: Configure an application to expose web APIs (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-expose-web-apis)
 
 - To learn more about the code, visit:
   - [Conceptual documentation for MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki#conceptual-documentation) and in particular:
@@ -465,6 +466,6 @@ For more information, visit the following links:
   - [Customizing Token cache serialization](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/token-cache-serialization)
 
 - To learn more about security in aspnetcore,
-  - [Introduction to Identity on ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-2.1&tabs=visual-studio%2Caspnetcore2x)
-  - [AuthenticationBuilder](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.authentication.authenticationbuilder?view=aspnetcore-2.0)
-  - [Azure Active Directory with ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/azure-active-directory/?view=aspnetcore-2.1)
+  - [Introduction to Identity on ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authentication/identity?view=aspnetcore-2.1&tabs=visual-studio%2Caspnetcore2x)
+  - [AuthenticationBuilder](https://docs.microsoft.com/dotnet/api/microsoft.aspnetcore.authentication.authenticationbuilder?view=aspnetcore-2.0)
+  - [Azure Active Directory with ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authentication/azure-active-directory/?view=aspnetcore-2.1)
