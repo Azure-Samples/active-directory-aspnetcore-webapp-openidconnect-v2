@@ -108,6 +108,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
 1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of the application copied from the Azure portal.
 1. Find the key `SignUpSignInPolicyId` and replace with the name of the `Sign up and sign in` policy you created.
+1. Find the key `ReadScope` and update the value with scope name. For example, `access_as_user`.
 
 ### Register the client app (TodoListClient-aspnetcore-webapi)
 
@@ -116,15 +117,15 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. In the **Register an application page** that appears, enter your application's registration information:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `TodoListClient-aspnetcore-webapi`.
    - Under **Supported account types**, select **Accounts in any identity provider or organizational directory (for authenticating users with user flows)**.
-   - In the **Redirect URI (optional)** section, select **Web** in the combo-box and enter the following redirect URI: `https://localhost:44321/`.
+   - In the **Redirect URI (optional)** section, select **Web** in the combo-box and enter the following redirect URI: `https://localhost:5000/`.
      > Note that there are more than one redirect URIs used in this sample. You'll need to add them from the **Authentication** tab later after the app has been created successfully.
 1. Select **Register** to create the application.
 1. In the app's registration screen, find and note the **Application (client) ID**. You use this value in your app's configuration file(s) later in your code.
 1. In the app's registration screen, select **Authentication** in the menu.
    - If you don't have a platform added, select **Add a platform** and select the **Web** option.
    - In the **Redirect URIs** section, enter the following redirect URIs.
-      - `https://localhost:44321/signin-oidc`
-   - In the **Front-channel logout URL** section, set it to `https://localhost:44321/signout-oidc`.
+      - `https://localhost:5000/signin-oidc`
+   - In the **Front-channel logout URL** section, set it to `https://localhost:5000/signout-oidc`.
 1. Select **Save** to save your changes.
 1. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
 1. In the **Client secrets** section, select **New client secret**:
@@ -154,7 +155,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. Find the key `ResetPasswordPolicyId` and replace with the name of the `Password reset` policy you created.
 1. Find the key `EditProfilePolicyId` and replace with the name of the `Profile editing` policy you created.
 1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of the app, in the Azure portal.
-1. Find the key `TodoListScope` and replace the existing value with Scope.
+1. Find the key `TodoListScope` and replace the existing value with the service Scope. For example, `https://{tenantName}.onmicrosoft.com/{service_clientId}/access_as_user`.
 
 ## Running the sample
 
@@ -201,7 +202,7 @@ In both the console windows execute the below command:
 
 ## Explore the sample
 
-1. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. Click on **SignIn/Up** button.
+1. Open your web browser and navigate to https://localhost:5000. Accept the IIS Express SSL certificate if needed. Click on **Sign In** button.
 1. If you don't have an account registered on the **Azure AD B2C** used in this sample, follow the sign up process. Otherwise, input the email and password for your account and click on **Sign in**.
 
 When you start the Web API from Visual Studio, depending on the browser you use, you'll get:
