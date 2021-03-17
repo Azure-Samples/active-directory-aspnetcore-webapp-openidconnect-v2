@@ -21,32 +21,6 @@ param(
  There are four ways to run this script. For more information, read the AppCreationScripts.md file in the same folder as this script.
 #>
 
-# Create a password that can be used as an application key
-Function ComputePassword
-{
-    $aesManaged = New-Object "System.Security.Cryptography.AesManaged"
-    $aesManaged.Mode = [System.Security.Cryptography.CipherMode]::CBC
-    $aesManaged.Padding = [System.Security.Cryptography.PaddingMode]::Zeros
-    $aesManaged.BlockSize = 128
-    $aesManaged.KeySize = 256
-    $aesManaged.GenerateKey()
-    return [System.Convert]::ToBase64String($aesManaged.Key)
-}
-
-# Create an application key
-# See https://www.sabin.io/blog/adding-an-azure-active-directory-application-and-key-using-powershell/
-Function CreateAppKey([DateTime] $fromDate, [double] $durationInYears, [string]$pw)
-{
-    $endDate = $fromDate.AddYears($durationInYears) 
-    $keyId = (New-Guid).ToString();
-    $key = New-Object Microsoft.Open.AzureAD.Model.PasswordCredential
-    $key.StartDate = $fromDate
-    $key.EndDate = $endDate
-    $key.Value = $pw
-    $key.KeyId = $keyId
-    return $key
-}
-
 # Adds the requiredAccesses (expressed as a pipe separated string) to the requiredAccess structure
 # The exposed permissions are in the $exposedPermissions collection, and the type of permission (Scope | Role) is 
 # described in $permissionType
@@ -291,19 +265,50 @@ Function ConfigureApplications
 
    # Create the client AAD application
    Write-Host "Creating the AAD application (TodoListClient-aspnetcore-webapi)"
-   # Get a 2 years application key for the client Application
-   $pw = ComputePassword
-   $fromDate = [DateTime]::Now;
-   $key = CreateAppKey -fromDate $fromDate -durationInYears 2 -pw $pw
-   $clientAppKey = $pw
    # create the application 
    $clientAadApplication = New-AzureADApplication -DisplayName "TodoListClient-aspnetcore-webapi" `
                                                   -HomePage "https://localhost:44321/" `
                                                   -LogoutUrl "https://localhost:44321/signout-oidc" `
                                                   -ReplyUrls "https://localhost:44321/", "https://localhost:44321/signin-oidc" `
                                                   -IdentifierUris "https://$tenantName/TodoListClient-aspnetcore-webapi" `
-                                                  -PasswordCredentials $key `
                                                   -PublicClient $False
+
+   # Generate a certificate
+   Write-Host "Creating the client application (TodoListClient-aspnetcore-webapi)"
+
+   $isOpenSSL = Read-Host ' By default certificate is generated using New-SelfSignedCertificate. Do you want to generate cert using OpenSSL(Y/N)?'
+
+   if($isOpenSSL -eq 'Y')
+   {
+        $certificate=openssl req -x509 -newkey rsa:4096 -sha256 -days 365 -keyout webapp.key -out webapp.cer -nodes -batch
+        openssl pkcs12 -export -out webapp.pfx -inkey webapp.key -in webapp.cer
+   }
+   else
+   {
+        $certificate=New-SelfSignedCertificate -Subject webapp `
+                                                -CertStoreLocation "Cert:\CurrentUser\My" `
+                                                -KeyExportPolicy Exportable `
+                                                -KeySpec Signature
+        $certKeyId = [Guid]::NewGuid()
+        $certBase64Value = [System.Convert]::ToBase64String($certificate.GetRawCertData())
+        $certBase64Thumbprint = [System.Convert]::ToBase64String($certificate.GetCertHash())
+
+        $thum=$certificate.Thumbprint
+        $SSpwd = Read-Host 'What is private key?'  -AsSecureString
+        $path = Read-Host 'What is path to export certificate(default path is C:\)?'
+        $exportPath= "$path\webapp.pfx"
+        Export-PfxCertificate -cert "Cert:\CurrentUser\My\$thum" -FilePath $exportPath -Password $SSpwd
+        
+        # Add a Azure Key Credentials from the certificate for the daemon application
+        $clientKeyCredentials = New-AzureADApplicationKeyCredential -ObjectId $clientAadApplication.ObjectId `
+                                                                    -CustomKeyIdentifier "webapp" `
+                                                                    -Type AsymmetricX509Cert `
+                                                                    -Usage Verify `
+                                                                    -Value $certBase64Value `
+                                                                    -StartDate $certificate.NotBefore `
+                                                                    -EndDate $certificate.NotAfter
+   }
+  
 
    # create the service principal of the newly created application 
    $currentAppId = $clientAadApplication.AppId
@@ -347,9 +352,15 @@ Function ConfigureApplications
    # Update config file for 'client'
    $configFile = $pwd.Path + "\..\Client\appsettings.json"
    Write-Host "Updating the sample code ($configFile)"
-   $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $clientAadApplication.AppId;"ClientSecret" = $clientAppKey;"TodoListScope" = ("api://"+$serviceAadApplication.AppId+"/access_as_user");"TodoListBaseAddress" = $serviceAadApplication.HomePage };
+   $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $clientAadApplication.AppId;"TodoListScope" = ("api://"+$serviceAadApplication.AppId+"/access_as_user");"TodoListBaseAddress" = $serviceAadApplication.HomePage };
    UpdateTextFile -configFilePath $configFile -dictionary $dictionary
-  
+   if($isOpenSSL -eq 'Y')
+   {
+        Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+        Write-Host "You have generated certificate using OpenSSL so follow below steps: "
+        Write-Host "Install the certificate on your system from current folder."
+        Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+   }
    Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  
 }
 
