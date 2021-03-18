@@ -108,7 +108,6 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
 1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of the application copied from the Azure portal.
 1. Find the key `SignUpSignInPolicyId` and replace with the name of the `Sign up and sign in` policy you created.
-1. Find the key `ReadScope` and update the value with scope name. For example, `access_as_user`.
 
 ### Register the client app (TodoListClient-aspnetcore-webapi)
 
@@ -356,7 +355,20 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
 ### Create the TodoListController.cs file
 
 1. Add a folder named `Models` and then create a new  file named `TodoItem.cs`. Copy the contents of the TodoListClient\Models\TodoItem.cs in this file.
-1. Create a new Controller named `TodoListController` and copy and paste the code from the sample (\TodoListService\Controllers\TodoListController.cs) to this controller.
+1. Create a new Controller named `TodoListController` and copy and paste the code from the sample (\TodoListService\Controllers\TodoListController.cs) to this controller. TodoListController requires below code:
+
+```csharp
+   [Authorize]
+   [RequiredScope(scopeRequiredByAPI)]
+    public class TodoListController : Controller
+    {
+        const string scopeRequiredByAPI = "access_as_user" ;
+        ...
+    }
+      
+```
+
+The RequiredScopes attribute validates if token contains the scopes required by a web API. Value for scopeRequiredByAPI is the required scope.
 
 ## About the code
 
