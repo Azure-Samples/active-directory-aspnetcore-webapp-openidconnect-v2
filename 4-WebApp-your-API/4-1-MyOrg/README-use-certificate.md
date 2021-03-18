@@ -27,7 +27,8 @@ If you want to use the automation script:
 
 Since we'd be using certificate instead of a client secret in this sample, we'd first create a new self signed certificate. If you have an actual valid certificate available, then skip the following step.
 
-#### **with Powershell**
+<details>
+<summary>Click here to use Powershell</summary>
 
 To generate a new self-signed certificate, we will use the [New-SelfSignedCertificate](https://docs.microsoft.com/powershell/module/pkiclient/new-selfsignedcertificate) Powershell command.
 
@@ -40,8 +41,10 @@ $cert=New-SelfSignedCertificate -Subject "/CN=webapp" -CertStoreLocation "Cert:\
 1. Export this certificate using the "Manage User Certificate" MMC snap-in accessible from the Windows Control Panel. You can also add other options to generate the certificate in a different store such as the **Computer** or **service** store (See [How to: View Certificates with the MMC Snap-in](https://docs.microsoft.com/dotnet/framework/wcf/feature-details/how-to-view-certificates-with-the-mmc-snap-in)) for more details.
 
 Export one with private key as webapp.pfx and another as webapp.cer without private key.
+</details>
 
-#### with OpenSSL
+<details>
+<summary>Click here to use OpenSSL</summary>
 
 Type the following in a terminal.
 
@@ -52,8 +55,6 @@ Generating a RSA private key
 ...........................................................................................................................................................................................................................................................++++
 ......................................................................................................++++
 writing new private key to 'webapp.key'
-Enter PEM pass phrase:
-Verifying - Enter PEM pass phrase:
 ----- 
 ```
 
@@ -66,8 +67,9 @@ openssl pkcs12 -export -out webapp.pfx -inkey webapp.key -in webapp.cer
 Enter an export password when prompted and make a note of it.
 
 The following files should be generated: `webapp.key`, `webapp.cer` and `webapp.pfx`.
+</details>
 
-### Add the certificate for the web application in the application's registration page
+### Add the certificate for the TodoListClient-aspnetcore-webapi application in the application's registration page
 
 1. Navigate back to the [Azure portal](https://portal.azure.com).
 In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations**.
@@ -83,19 +85,21 @@ To change the visual studio project to enable certificates you need to:
 1. Open the `Client\appsettings.json` file
 1. Find the app key `ClientCertificates` and add the keys as displayed below:
 
+    ```json
     "ClientCertificates": [
-      {
+     {
         "SourceType": "",
         "CertificateDiskPath": "",
         "CertificatePassword": ""
       }
     ]
+    ```
 
     Update values of the keys:
 
     `SourceType` to `Path`.
 
-    `CertificateDiskPath` to the path where certificate exported with private key (webapp.pfx) is stored.
+    `CertificateDiskPath` to the path where certificate exported with private key (webapp.pfx) is stored. For example, `C:\\active-directory-aspnetcore-webapp-openidconnect-v2\\4-WebApp-your-API\\4-1-MyOrg\\AppCreationScripts-withCert\\webapp.pfx`
 
     `CertificatePassword` add the password used while exporting the certificate.
 1. If you had set `ClientSecret` previously, set its value to empty string, `""`.

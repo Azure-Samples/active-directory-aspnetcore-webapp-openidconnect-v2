@@ -295,7 +295,7 @@ Function ConfigureApplications
 
         $thum=$certificate.Thumbprint
         $SSpwd = Read-Host 'What is private key?'  -AsSecureString
-        $path = Read-Host 'What is path to export certificate(default path is C:\)?'
+        $path = Get-Location
         $exportPath= "$path\webapp.pfx"
         Export-PfxCertificate -cert "Cert:\CurrentUser\My\$thum" -FilePath $exportPath -Password $SSpwd
         
