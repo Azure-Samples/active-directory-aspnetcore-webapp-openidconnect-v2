@@ -23,8 +23,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="3.1.1" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="1.8.0" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.8.0" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="1.9.0" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.9.0" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
 
