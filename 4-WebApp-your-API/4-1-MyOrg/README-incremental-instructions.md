@@ -182,6 +182,10 @@ NOTE: Remember, the To-Do list is stored in memory in this `TodoListService` app
 
 > [Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbRz0h_jLR5HNJlvkZAewyoWxUNEFCQ0FSMFlPQTJURkJZMTRZWVJRNkdRMC4u)
 
+## Variation: web app using client certificates
+
+Follow [README-use-certificate.md](README-use-certificate.md) to know how to use this option.
+
 ## How was the code created
 
 For details about the way the code to sign-in users was created, see [Create the sample from command line](../1-WebApp-OIDC/1-1-MyOrg/README.md#option-2-create-the-sample-from-the-command-line) section, of the README.md file located in the sibling folder named **1. Enable your Web Apps to sign-in users**.

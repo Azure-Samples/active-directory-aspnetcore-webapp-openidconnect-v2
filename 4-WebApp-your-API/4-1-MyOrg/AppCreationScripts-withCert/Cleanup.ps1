@@ -91,6 +91,8 @@ Function Cleanup
     # also remove service principals of this app
     Get-AzureADServicePrincipal -filter "DisplayName eq 'TodoListClient-aspnetcore-webapi'" | ForEach-Object {Remove-AzureADServicePrincipal -ObjectId $_.Id -Confirm:$false}
     
+     # remove self-signed certificate
+     Get-ChildItem -Path Cert:\CurrentUser\My | where { $_.subject -eq "webapp" } | Remove-Item
 }
 
 Cleanup -Credential $Credential -tenantId $TenantId
