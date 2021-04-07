@@ -125,6 +125,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
    - In the **Redirect URIs** section, enter the following redirect URIs.
       - `https://localhost:5000/signin-oidc`
    - In the **Front-channel logout URL** section, set it to `https://localhost:5000/signout-oidc`.
+   - In **Implicit grant** section,  select the check boxes for **Access tokens** and **ID tokens**.
 1. Select **Save** to save your changes.
 1. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
 1. In the **Client secrets** section, select **New client secret**:
