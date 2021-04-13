@@ -163,7 +163,7 @@ namespace ToDoListService.Controllers
             }
             catch (MsalUiRequiredException ex)
             {
-                await _tokenAcquisition.ReplyForbiddenWithWwwAuthenticateHeaderAsync(scopes, ex);
+                _tokenAcquisition.ReplyForbiddenWithWwwAuthenticateHeader(scopes, ex);
                 throw ex;
             }
         }
