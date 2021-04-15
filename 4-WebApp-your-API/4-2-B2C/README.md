@@ -71,6 +71,8 @@ As a first step you'll need to:
 
 Please refer to: [Tutorial: Create user flows in Azure Active Directory B2C](https://docs.microsoft.com/azure/active-directory-b2c/tutorial-create-user-flows)
 
+> Current sample uses the [self-service password reset](https://docs.microsoft.com/azure/active-directory-b2c/add-password-reset-policy?pivots=b2c-user-flow#self-service-password-reset-recommended) experience that is configured for **Sign up and sign in (Recommended)** user flow.
+
 ### Add External Identity Providers
 
 Please refer to: [Tutorial: Add identity providers to your applications in Azure Active Directory B2C](https://docs.microsoft.com/azure/active-directory-b2c/tutorial-add-identity-providers)
@@ -152,10 +154,11 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
 1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of the application copied from the Azure portal.
 1. Find the key `SignUpSignInPolicyId` and replace with the name of the `Sign up and sign in` policy you created.
-1. Find the key `ResetPasswordPolicyId` and replace with the name of the `Password reset` policy you created.
 1. Find the key `EditProfilePolicyId` and replace with the name of the `Profile editing` policy you created.
 1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of the app, in the Azure portal.
 1. Find the key `TodoListScope` and replace the existing value with the service Scope. For example, `https://{tenantName}.onmicrosoft.com/{service_clientId}/access_as_user`.
+
+ This sample is configured with the password reset experience that is a part of the sign-up or sign-in policy. If separate password reset flow is required then add the key `ResetPasswordPolicyId` under **AzureAdB2C** section, and value of the key as the name of the `Password reset` policy you created.
 
 ## Running the sample
 
