@@ -8,10 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using TodoListService.AuthorizationPolicies;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
-using Microsoft.Extensions.Options;
 
 namespace TodoListService
 {
@@ -44,12 +40,6 @@ namespace TodoListService
             options => { Configuration.Bind("AzureAdB2C", options); });
 
             services.AddControllers();
-            services.AddAuthorization(options =>
-            {
-                // Create policy to check for the scope 'read'
-                options.AddPolicy("ReadScope",
-                    policy => policy.Requirements.Add(new ScopesRequirement("read")));
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

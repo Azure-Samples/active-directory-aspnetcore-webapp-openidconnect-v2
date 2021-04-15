@@ -25,6 +25,7 @@ SOFTWARE.
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web.Resource;
 using System.Collections.Generic;
 using System.Linq;
 using TodoListService.Models;
@@ -33,13 +34,15 @@ namespace TodoListService.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
+    [RequiredScope(scopeRequiredByAPI)]
     public class TodoListController : Controller
     {
+        const string scopeRequiredByAPI = "access_as_user" ;
         // In-memory TodoList
         private static readonly Dictionary<int, Todo> TodoStore = new Dictionary<int, Todo>();
 
         private readonly IHttpContextAccessor _contextAccessor;
-
+     
         public TodoListController(IHttpContextAccessor contextAccessor)
         {
             this._contextAccessor = contextAccessor;
@@ -54,7 +57,6 @@ namespace TodoListService.Controllers
 
         // GET: api/values
         [HttpGet]
-        [Authorize(Policy = "ReadScope")]
         public IEnumerable<Todo> Get()
         {
             string owner = User.Identity.Name;
@@ -63,7 +65,6 @@ namespace TodoListService.Controllers
 
         // GET: api/values
         [HttpGet("{id}", Name = "Get")]
-        [Authorize(Policy = "ReadScope")]
         public Todo Get(int id)
         {
             return TodoStore.Values.FirstOrDefault(t => t.Id == id);
