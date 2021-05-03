@@ -1,0 +1,20 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "https://localhost:44316/",
+      "sslPort": 44316
+    }
+  },
+    "profiles": {
+        "WebApp_OpenIDConnect_DotNet": {
+            "commandName": "Project",
+            "launchBrowser": true,
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "applicationUrl": "https://localhost:44316/;http://localhost:3110"
+        }
+    }
+}
