@@ -20,7 +20,6 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         }
         
         [AllowAnonymous]
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Privacy()
         {
             return View();
