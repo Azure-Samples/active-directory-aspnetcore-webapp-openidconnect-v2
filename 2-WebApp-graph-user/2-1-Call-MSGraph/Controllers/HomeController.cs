@@ -1,13 +1,13 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using _2_1_Call_MSGraph.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Identity.Web;
-using Microsoft.Graph;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using _2_1_Call_MSGraph.Models;
+using Microsoft.Graph;
+using Microsoft.Identity.Web;
+using System;
+using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace _2_1_Call_MSGraph.Controllers
 {
@@ -18,18 +18,21 @@ namespace _2_1_Call_MSGraph.Controllers
 
         private readonly GraphServiceClient _graphServiceClient;
 
+        private readonly MicrosoftIdentityConsentAndConditionalAccessHandler _consentHandler;
+
         public HomeController(ILogger<HomeController> logger,
-                          GraphServiceClient graphServiceClient)
+                          GraphServiceClient graphServiceClient,
+                          MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler)
         {
             _logger = logger;
             _graphServiceClient = graphServiceClient;
+            this._consentHandler = consentHandler;
         }
 
         [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var user = await _graphServiceClient.Me.Request().GetAsync();
-            ViewData["ApiResult"] = user.DisplayName;
+            ViewData["ApiResult"] = HttpContext.User.Identity.Name;
 
             return View();
         }
@@ -37,25 +40,72 @@ namespace _2_1_Call_MSGraph.Controllers
         [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
         public async Task<IActionResult> Profile()
         {
-            var me = await _graphServiceClient.Me.Request().GetAsync();
-            ViewData["Me"] = me;
+            Microsoft.Graph.User currentUser = null;
 
             try
             {
-                // Get user photo
-                using (var photoStream = await _graphServiceClient.Me.Photo.Content.Request().GetAsync())
-                {
-                    byte[] photoByte = ((MemoryStream)photoStream).ToArray();
-                    ViewData["Photo"] = Convert.ToBase64String(photoByte);
-                }
+                currentUser = await _graphServiceClient.Me.Request().GetAsync();
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
-                ViewData["Photo"] = null;
-            }
+                if (ex is WebApiMsalUiRequiredException || (ex is ServiceException && ex.Message.Trim().Contains("Continuous access evaluation resulted in claims challenge")))
+                {
+                    if (ex is WebApiMsalUiRequiredException)
+                    {
+                        try
+                        {
+                            WebApiMsalUiRequiredException hex = ex as WebApiMsalUiRequiredException;
+                            Console.WriteLine($"{hex}");
 
+                            var claimChallenge = AuthenticationHeaderHelper.ExtractHeaderValues(hex);
+                            _consentHandler.ChallengeUser(new string[] { "user.read" }, claimChallenge);
+
+                            return new EmptyResult();
+                        }
+                        catch (Exception ex2)
+                        {
+                            _consentHandler.HandleException(ex2);
+                        }
+                    }
+
+                    if (ex is ServiceException)
+                    {
+                        try
+                        {
+                            ServiceException svcex = ex as ServiceException;
+                            Console.WriteLine($"{svcex}");
+                            var claimChallenge = AuthenticationHeaderHelper.ExtractHeaderValues(svcex.ResponseHeaders);
+                            _consentHandler.ChallengeUser(new string[] { "user.read" }, claimChallenge);
+                            return new EmptyResult();
+                        }
+                        catch (Exception ex2)
+                        {
+                            _consentHandler.HandleException(ex2);
+                        }
+                    }
+                }
+
+
+                try
+                {
+                    // Get user photo
+                    using (var photoStream = await _graphServiceClient.Me.Photo.Content.Request().GetAsync())
+                    {
+                        byte[] photoByte = ((MemoryStream)photoStream).ToArray();
+                        ViewData["Photo"] = Convert.ToBase64String(photoByte);
+                    }
+                }
+                catch (Exception pex)
+                {
+                    Console.WriteLine($"{pex}");
+                    ViewData["Photo"] = null;
+                }
+               
+            }
+            ViewData["Me"] = currentUser;
             return View();
         }
+
         public IActionResult Privacy()
         {
             return View();
