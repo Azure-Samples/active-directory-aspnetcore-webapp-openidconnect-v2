@@ -12,7 +12,7 @@ endpoint: Microsoft identity platform
 
 ## Scenario
 
-This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect to sign in users in **Azure AD B2C** using the embedded sign-in experience. It assumes you have some familiarity with **Azure AD B2C**. If you'd like to learn all that B2C has to offer, start with our documentation at https://aka.ms/aadb2c.
+This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect to sign in users in **Azure AD B2C** using the embedded sign-in experience. It assumes you have some familiarity with **Azure AD B2C**. If you'd like to learn all that B2C has to offer, start with our documentation at [https://aka.ms/aadb2c](https://aka.ms/aadb2c).
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
 
@@ -54,7 +54,7 @@ If you don't have an Azure AD B2C tenant yet, you'll need to create an Azure AD 
 
 To use Azure AD B2C Embedded sign-in, you need to first enable a custom domain with your Azure AD B2C account, and configure it with a custom domain which is on the same domain as your published application, i.e. **Same Origin**. This is required because Azure AD B2C should not allow you to load the sign-in experience in an iframe unless you enable CORS for the source domains loading the iframe using a custom policy. So first, enable a custom domain similar to **login.yourcustomdomain.com** if your application is published on something similar to **www.yourcustomdomain.com**. [Tutorial: Enable custom domains for Azure Active Directory B2C](https://docs.microsoft.com/en-us/azure/active-directory-b2c/custom-domain?pivots=b2c-custom-policy).
 
->Note: This will effectively disallow you from using sign-in if the application is run from a development machine. To get around that, you may want to create a separate Azure AD Tenant for development, with a development version of the custom policy which has CORS enabled for **https://localhost:XXXX**. Also note that this may result in an undesirable user experience Because Azure AD B2C session cookies within an iframe are considered third-party cookies, certain browsers (for example Safari or Chrome in incognito mode) either block or clear these cookies. This should never be done in your production Azure AD B2C tenant.
+>Note: This will effectively disallow you from using sign-in if the application is run from a development machine. To get around that, you may want to create a separate Azure AD Tenant for development, with a development version of the custom policy which has CORS enabled for **<https://localhost:XXXX>**. Also note that this may result in an undesirable user experience Because Azure AD B2C session cookies within an iframe are considered third-party cookies, certain browsers (for example Safari or Chrome in incognito mode) either block or clear these cookies. This should never be done in your production Azure AD B2C tenant.
 
 ### Step 4: Create your SignUp/SignIn, Password Reset, and Profile Edit policies (custom policy)
 
@@ -74,7 +74,7 @@ In your policy, aside from the normal steps in customizing the policy, make sure
 </RelyingParty> -->
 ```
 
->Note: If you want to allow the custom policies to be used with your development environment, make sure you add **https://localhost:xxxx** to the list of sources in the `<JourneyFraming>' tag.
+>Note: If you want to allow the custom policies to be used with your development environment, make sure you add **<https://localhost:xxxx>** to the list of sources in the `<JourneyFraming>' tag.
 
 Additionally, make sure the `PublicPolicyUri` element in the `<TrustFrameworkPolicy>` in all policy xml files (including **TrustedFramewordBase.xml** and **TrustedFrameworkExtensions.xml**) is referncing your custom domain, not the instance name. The example below is for **SignUpOrSignin.xml**.
 
@@ -136,6 +136,7 @@ Blocked autofocusing on a <input> element in a cross-origin subframe.
 ### Defining the Login Modal Dialog
 
 In **_Layout.cshtml**, note the modal dialog definition:
+
 ```html
 <!-- Modal dialog for loading the login iframe -->
 <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModal" aria-hidden="true">
@@ -185,18 +186,20 @@ ASP.NET core applications create session cookies that represent the identity of 
 If your web site needs to be accessed from users using iOS 12, you probably want to disable the SameSite protection, but also ensure that state changes are protected with CSRF anti-forgery mechanism. See the how to fix section of [Microsoft Security Advisory: iOS12 breaks social, WSFed and OIDC logins #4647](https://github.com/aspnet/AspNetCore/issues/4647)
 
 > Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
-
 > [Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbRz0h_jLR5HNJlvkZAewyoWxUNEFCQ0FSMFlPQTJURkJZMTRZWVJRNkdRMC4u)
 
 ## About The code
 
-#### Where is MSAL?
+### Where is MSAL?
+
 This sample does NOT use MSAL as it only signs-in users (it does not call a Web API). It uses the built-in ASP.NET Core middleware. MSAL is used for fetching access  for accessing protected APIs (not shown here), as well as ID tokens. For logging-in purposes, it is sufficient to obtain an ID Token, and the middleware is capable of doing this on its own.
 
-#### Where is the Account controller?
+### Where is the Account controller?
+
 The `AccountController.cs` used in this sample is part of `Microsoft.Identity.Web.UI` NuGet package, and you can find its implementation [here](https://github.com/AzureAD/microsoft-identity-web/blob/master/src/Microsoft.Identity.Web.UI/Areas/MicrosoftIdentity/Controllers/AccountController.cs). If you want to customize the **Sign-in**, **Sign-up** or **Sign-out** actions, you are encouraged to create your own controller.
 
-#### B2C middleware
+### B2C middleware
+
 This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Azure AD B2C tenant. The middleware is initialized in the `Startup.cs` file by passing the default authentication scheme and `OpenIdConnectOptions.cs` options. The options are read from the `appsettings.json` file. The middleware takes care of:
 
 - Requesting OpenID Connect sign-in using the policy from the `appsettings.json` file.
