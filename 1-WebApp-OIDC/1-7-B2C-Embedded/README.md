@@ -2,7 +2,7 @@
 services: active-directory
 platforms: dotnet
 author: helshabini
-level: 100
+level: 200
 client: ASP.NET Core Web App
 endpoint: Microsoft identity platform
 ---
