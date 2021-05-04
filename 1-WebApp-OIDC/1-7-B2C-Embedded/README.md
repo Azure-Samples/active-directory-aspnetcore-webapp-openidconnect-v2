@@ -38,7 +38,13 @@ Navigate to the `"1-7-B2C-Embedded"` folder
   cd "1-7-B2C-Embedded"
   ```
 
-## Configure the sample with your own B2C app
+## Option 1 - Run the pre-configured sample
+
+1. Build the solution and run it.
+1. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. Click on SignIn/Up button.
+1. Click on Sign-In
+
+## Option 2 (Recommended) - Configure the sample with your own B2C app
 
 ### Step 2: Get your own Azure AD B2C tenant
 
@@ -113,7 +119,7 @@ Your web application registration should include the following information:
 
 For a better user experience, you may want to customize the sign-in UI to be more minimal. I chose not to get into those details in this demo, but you can learn more about to [Customize the user interface in Azure Active Directory B2C](https://docs.microsoft.com/en-us/azure/active-directory-b2c/customize-ui?pivots=b2c-custom-policy).
 
->Note: You may find a JavaScript error `Blocked autofocusing on a <input> element in a cross-origin subframe.` in your browser's console. This is because the default behavior of the sign-in experience attempts to focus the user input on the first available user input in the sign-in page, which is not allowed inside an iframe for security reasons. You may want to attempt to override this behavior
+>Note: You may find a JavaScript error `Blocked autofocusing on a <input> element in a cross-origin subframe.` in your browser's console. This is because the default behavior of the sign-in experience attempts to focus the user input on the first available user input in the sign-in page, which is not allowed inside an iframe for security reasons. You may want to attempt to override this behavior in your custom UI.
 
 ```error
 Blocked autofocusing on a <input> element in a cross-origin subframe.
