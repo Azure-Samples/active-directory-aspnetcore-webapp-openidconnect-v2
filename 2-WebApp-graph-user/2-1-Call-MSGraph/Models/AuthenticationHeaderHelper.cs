@@ -4,46 +4,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
 
-namespace _2_1_Call_MSGraph.Models
+namespace CallMSGraph.Models
 {
     public class AuthenticationHeaderHelper
     {
         /// <summary>
-        /// Extract claims from WwwAuthenticate header and returns the value.
+        /// Extracts the claim challenge from HTTP header.
         /// </summary>
-        /// <param name="response"></param>
+        /// <param name="httpResponseHeaders">The HTTP response headers.</param>
         /// <returns></returns>
-        internal static string ExtractHeaderValues(WebApiMsalUiRequiredException response)
-        {
-            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized && response.Headers.WwwAuthenticate.Any())
-            {
-                AuthenticationHeaderValue bearer = response.Headers.WwwAuthenticate.First(v => v.Scheme == "Bearer");
-                IEnumerable<string> parameters = bearer.Parameter.Split(',').Select(v => v.Trim()).ToList();
-                var errorValue = GetParameterValue(parameters, "error");
-
-                try
-                {
-                    // read the header and checks if it conatins error with insufficient_claims value.
-                    if (null != errorValue && "insufficient_claims" == errorValue)
-                    {
-                        var claimChallengeParameter = GetParameterValue(parameters, "claims");
-                        if (null != claimChallengeParameter)
-                        {
-                            var claimChallenge = ConvertBase64String(claimChallengeParameter);
-
-                            return claimChallenge;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            }
-            return null;
-        }
-
-        internal static string ExtractHeaderValues(HttpResponseHeaders httpResponseHeaders)
+        internal static string ExtractClaimChallengeFromHttpHeader(HttpResponseHeaders httpResponseHeaders)
         {
             if (httpResponseHeaders.WwwAuthenticate.Any())
             {

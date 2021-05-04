@@ -1,6 +1,7 @@
-﻿using _2_1_Call_MSGraph.Models;
+﻿using CallMSGraph.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using Microsoft.Identity.Web;
@@ -9,7 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace _2_1_Call_MSGraph.Controllers
+namespace CallMSGraph.Controllers
 {
     [Authorize]
     public class HomeController : Controller
@@ -20,13 +21,18 @@ namespace _2_1_Call_MSGraph.Controllers
 
         private readonly MicrosoftIdentityConsentAndConditionalAccessHandler _consentHandler;
 
+        private string[] _graphScopes = new[] { "user.read" };
+
         public HomeController(ILogger<HomeController> logger,
-                          GraphServiceClient graphServiceClient,
-                          MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler)
+                            IConfiguration configuration,
+                            GraphServiceClient graphServiceClient,
+                            MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler)
         {
             _logger = logger;
             _graphServiceClient = graphServiceClient;
             this._consentHandler = consentHandler;
+
+            _graphScopes = configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
         }
 
         [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
@@ -40,51 +46,29 @@ namespace _2_1_Call_MSGraph.Controllers
         [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
         public async Task<IActionResult> Profile()
         {
-            Microsoft.Graph.User currentUser = null;
+            User currentUser = null;
 
             try
             {
                 currentUser = await _graphServiceClient.Me.Request().GetAsync();
             }
-            catch (System.Exception ex)
+            catch (System.Exception ex) // Catch CAE exception from Graph SDK
             {
-                if (ex is WebApiMsalUiRequiredException || (ex is ServiceException && ex.Message.Trim().Contains("Continuous access evaluation resulted in claims challenge")))
+                if (ex is ServiceException && ex.Message.Trim().Contains("Continuous access evaluation resulted in claims challenge"))
                 {
-                    if (ex is WebApiMsalUiRequiredException)
+                    try
                     {
-                        try
-                        {
-                            WebApiMsalUiRequiredException hex = ex as WebApiMsalUiRequiredException;
-                            Console.WriteLine($"{hex}");
-
-                            var claimChallenge = AuthenticationHeaderHelper.ExtractHeaderValues(hex);
-                            _consentHandler.ChallengeUser(new string[] { "user.read" }, claimChallenge);
-
-                            return new EmptyResult();
-                        }
-                        catch (Exception ex2)
-                        {
-                            _consentHandler.HandleException(ex2);
-                        }
+                        ServiceException svcex = ex as ServiceException;
+                        Console.WriteLine($"{svcex}");
+                        var claimChallenge = AuthenticationHeaderHelper.ExtractClaimChallengeFromHttpHeader(svcex.ResponseHeaders);
+                        _consentHandler.ChallengeUser(_graphScopes, claimChallenge);
+                        return new EmptyResult();
                     }
-
-                    if (ex is ServiceException)
+                    catch (Exception ex2)
                     {
-                        try
-                        {
-                            ServiceException svcex = ex as ServiceException;
-                            Console.WriteLine($"{svcex}");
-                            var claimChallenge = AuthenticationHeaderHelper.ExtractHeaderValues(svcex.ResponseHeaders);
-                            _consentHandler.ChallengeUser(new string[] { "user.read" }, claimChallenge);
-                            return new EmptyResult();
-                        }
-                        catch (Exception ex2)
-                        {
-                            _consentHandler.HandleException(ex2);
-                        }
+                        _consentHandler.HandleException(ex2);
                     }
                 }
-
 
                 try
                 {
@@ -100,7 +84,6 @@ namespace _2_1_Call_MSGraph.Controllers
                     Console.WriteLine($"{pex}");
                     ViewData["Photo"] = null;
                 }
-               
             }
             ViewData["Me"] = currentUser;
             return View();

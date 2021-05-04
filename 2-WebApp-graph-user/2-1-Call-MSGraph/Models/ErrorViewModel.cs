@@ -1,4 +1,4 @@
-namespace _2_1_Call_MSGraph.Models
+namespace CallMSGraph.Models
 {
     public class ErrorViewModel
     {

@@ -11,7 +11,7 @@ urlFragment: active-directory-aspnetcore-webapp-openidconnect-v2
 description: "This sample demonstrates a ASP.NET Core Web App calling the Microsoft Graph"
 ---
 
-# Using the Microsoft identity platform to call the Microsoft Graph API from an ASP.NET Core Web App, on behalf of a user signing-in using their work and school account
+# # Enable your ASP.NET Core web app to sign in users and call Microsoft Graph with the Microsoft identity platform
 
  1. [Overview](#overview)
  1. [Scenario](#scenario)
@@ -31,12 +31,12 @@ description: "This sample demonstrates a ASP.NET Core Web App calling the Micros
 
 ## Overview
 
-This sample demonstrates a ASP.NET Core Web App calling the Microsoft Graph on behalf of a signed-in user.
+This sample demonstrates an ASP.NET Core web app that calls the Microsoft Graph API for a signed-in user.
 
 ## Scenario
 
-1. The client ASP.NET Core Web App uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign-in and obtain a JWT [access Tokens](https://aka.ms/access-tokens) from **Azure AD**.
-2. The access token is used as a bearer token to authorize the user to call the Microsoft Graph API.
+1. The ASP.NET Core client web app uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign a user in, and obtain a JWT [access Tokens](https://aka.ms/access-tokens) from **Azure AD**.
+1. The access token is used by the client app as a bearer token to call Microsoft Graph.
 
 ![Sign in with the Microsoft identity platform and call Graph](ReadmeFiles/sign-in.png)
 
@@ -45,7 +45,7 @@ This sample demonstrates a ASP.NET Core Web App calling the Microsoft Graph on b
 
 - Either [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/download) and [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
 - An **Azure AD** tenant. For more information see: [How to get an Azure AD tenant](https://docs.microsoft.com/azure/active-directory/develop/quickstart-create-new-tenant)
-- A user account in your **Azure AD** tenant. This sample will not work with a **personal Microsoft account**. Therefore, if you signed in to the [Azure portal](https://portal.azure.com) with a personal account and have never created a user account in your directory before, you need to do that now.
+- A user account in _your_ **Azure AD** tenant. This sample will not work with a **personal Microsoft account**.  If you're signed in to the [Azure portal](https://portal.azure.com) with a personal account and have not created a _user account in your directory_ before, you will need need to create one before proceeding.
 
 ## Setup
 
@@ -72,7 +72,7 @@ Go to the `"2-WebApp-graph-user\2-1-Call-MSGraph"` folder
 ### Step 2: Install project dependencies
 
 ```console
-    dotnet restore WebApp-OpenIDConnect-DotNet.csproj
+    dotnet restore WebApp-OpenIDConnect-DotNet-graph.csproj
 ```
 
 ### Register the sample application(s) with your Azure Active Directory tenant
@@ -117,7 +117,7 @@ As a first step you'll need to:
 1. Sign in to the [Azure portal](https://portal.azure.com).
 1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant.
 
-### Register the webApp app (WebApp-OpenIDConnect-DotNet-graph-v2)
+### ### Register the client web app (WebApp-OpenIDConnect-DotNet-graph-v2)
 
 1. Navigate to the [Azure portal](https://portal.azure.com) and select the **Azure AD** service.
 1. Select the **App Registrations** blade on the left, then select **New registration**.
@@ -127,7 +127,7 @@ As a first step you'll need to:
    - In the **Redirect URI (optional)** section, select **Web** in the combo-box and enter the following redirect URI: `https://localhost:44321/`.
      > Note that there are more than one redirect URIs used in this sample. You'll need to add them from the **Authentication** tab later after the app has been created successfully.
 1. Select **Register** to create the application.
-1. In the app's registration screen, find and note the **Application (client) ID**. You use this value in your app's configuration file(s) later in your code.
+1. In the app's registration screen, find and note the **Application (client) ID**. You'll need to use this value in your app's configuration files.
 1. In the app's registration screen, select **Authentication** in the menu.
    - If you don't have a platform added, select **Add a platform** and select the **Web** option.
    - In the **Redirect URIs** section, enter the following redirect URIs.
@@ -138,7 +138,7 @@ As a first step you'll need to:
 1. In the **Client secrets** section, select **New client secret**:
    - Type a key description (for instance `app secret`),
    - Select one of the available key durations (**6 months**, **12 months** or **Custom**) as per your security posture.
-   - The generated key value will be displayed when you select the **Add** button. Copy the generated value for use in the steps later.
+   - The generated key value will be displayed when you select the **Add** button. Copy and save the generated value for use in later steps.
    - You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
 1. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
    - Select the **Add a permission** button and then,
@@ -147,11 +147,10 @@ As a first step you'll need to:
    - In the **Delegated permissions** section, select the **User.Read** in the list. Use the search box if necessary.
    - Select the **Add permissions** button at the bottom.
 
-#### Configure the webApp app (WebApp-OpenIDConnect-DotNet-graph-v2) to use your app registration
+#### Configure the client web app (WebApp-OpenIDConnect-DotNet-graph-v2) to use your app registration
 
 Open the project in your IDE (like Visual Studio or Visual Studio Code) to configure the code.
 
-Open the project in your IDE (like Visual Studio) to configure the code.
 >In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
 1. Open the `appsettings.json` file.
@@ -160,10 +159,11 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
 1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of `WebApp-OpenIDConnect-DotNet-graph-v2` copied from the Azure portal.
 
-- In case you want to deploy your app in Sovereign or national clouds, ensure the `GraphApiUrl` option matches the one you want. By default this is Microsoft Graph in the Azure public cloud
+- In case you want to deploy your app in [Sovereign or national clouds](https://docs.microsoft.com/graph/deployments), ensure the `GraphApiUrl` and `Instance` option matches the your requirements. The default values are set to Microsoft Graph in the Azure public cloud. You may skip this point if it does not apply to you.
 
-  ```JSon
-   "GraphApiUrl": "https://graph.microsoft.com/v1.0"
+  ```Json
+  "Instance": "https://login.microsoftonline.com/",
+  "GraphApiUrl": "https://graph.microsoft.com/v1.0"
   ```
 
 ## Running the sample
@@ -178,30 +178,30 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 
 ## Explore the sample
 
-1. Open your web browser and make a request to the app at url `https://localhost:44321`. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in with a work or school account.
+1. Open your web browser and make a request to the app at url `https://localhost:44321`. The app immediately attempts to authenticate you via the Microsoft identity platform. Sign in with a work or school account.
 
-1. Provide consent to the screen presented
+2. Provide consent to the screen presented.
 
-1. Click on the **Profile** link on the top menu, you should now see all kind of information about yourself as well as your picture (a call was made to the Microsoft Graph */me* endpoint)
+3. Click on the **Profile** link on the top menu. The web app will make a call to the Microsoft Graph */me* endpoint. You should see information about the signed-in user's account, as well as its picture, if these values are set in the account's profile.
 
-> Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
+> Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../../issues) page.
 
 > [Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbRz0h_jLR5HNJlvkZAewyoWxUNEFCQ0FSMFlPQTJURkJZMTRZWVJRNkdRMC4u)
 
 ## About The code
 
-1. In your aspnet core web project, add the `Microsoft.Identity.Web` and `Microsoft.Identity.Web.UI` NuGet packages. It's used to simplify signing-in and acquiring tokens for Microsoft Graph.
+1. In this aspnetcore web project, first the packages `Microsoft.Identity.Web` and `Microsoft.Identity.Web.UI` were added from NuGet. These libraries are used to simplify the process of signing-in a user and acquiring tokens for Microsoft Graph.
 
-1. Open the **Startup.cs** file and:
+1. In the **Startup.cs** file :
 
-   - at the top of the file, add the following using directive:
+   - at the top of the file, the following two using directives were added:
 
      ```CSharp
       using Microsoft.Identity.Web;
       using Microsoft.Identity.Web.UI;
       ```
 
-   - in the `ConfigureServices` method, replace the  following lines:
+   - in the `ConfigureServices` method, the following code was added, replacing any existing `AddAuthentication()` code.:
 
      ```CSharp
            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
@@ -210,37 +210,17 @@ Open the project in your IDE (like Visual Studio) to configure the code.
                 .AddInMemoryTokenCaches();
      ```
 
-     These enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts (if required).
+     These enable your application to sign-in a user with the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts (if required).
 
-    1. Change the `Properties\launchSettings.json` file to ensure that you start your web app from <https://localhost:44321> as registered. For this:
+### Update launchSetting.json
+
+Change the following values in the `Properties\launchSettings.json` file to ensure that you start your web app from `https://localhost:44321`:
     - update the `sslPort` of the `iisSettings` section to be `44321`
-    - in the `applicationUrl` property of use `https://localhost:44321`
-
-### Update the `Startup.cs` file to enable TokenAcquisition by [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web)
-
-After the following lines in the ConfigureServices(IServiceCollection services) method, replace `services.AddMicrosoftIdentityPlatformAuthentication(Configuration);`, by the following lines:
-
-```CSharp
- public void ConfigureServices(IServiceCollection services)
-{
-    . . .
-    string[] initialScopes = Configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
-
-    // Add Graph
-    services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-        .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
-        .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
-        .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
-        .AddInMemoryTokenCaches();
-```
-
-### Add additional files to call Microsoft Graph
-
-Add the `Microsoft.Identity.Web.MicrosoftGraph` package, to use [Microsoft Graph SDK](https://github.com/microsoftgraph/msgraph-sdk-dotnet/blob/dev/docs/overview.md).
+    - update the `applicationUrl` property to `https://localhost:44321`
 
 ### Update the `Startup.cs` file to enable the Microsoft Graph custom service
 
-Still in the `Startup.cs` file, add the following `AddMicrosoftGraph` extension method. This lines ensures that the GraphAPIService benefits from the optimized `HttpClient` management by ASP.NET Core.
+After adding the `Microsoft.Identity.Web.MicrosoftGraph` package, to use [Microsoft Graph SDK](https://github.com/microsoftgraph/msgraph-sdk-dotnet/blob/dev/docs/overview.md),  in the `Startup.cs` file, add the following `AddMicrosoftGraph` extension method. This lines ensures that the GraphAPIService benefits from the optimized `HttpClient` management by ASP.NET Core.
 
 ```CSharp
     // Add Graph
@@ -251,24 +231,29 @@ Still in the `Startup.cs` file, add the following `AddMicrosoftGraph` extension 
         .AddInMemoryTokenCaches();
 ```
 
-### Change the controller code to acquire a token and call Microsoft Graph
+### The controller code to acquire a token and call Microsoft Graph
 
-In the `Controllers\HomeController.cs`file:
-
-1. Add a constructor to HomeController, making the ITokenAcquisition service available (used by the ASP.NET dependency injection mechanism)
+1. In the `Controllers\HomeController.cs`file, the following code is added to allow calling MS Graph
 
 ```CSharp
+        private readonly ILogger<HomeController> _logger;
+        private readonly GraphServiceClient _graphServiceClient;
+        private readonly MicrosoftIdentityConsentAndConditionalAccessHandler _consentHandler;
+
 private readonly GraphServiceClient _graphServiceClient;
 
-public HomeController(ILogger<HomeController> logger,
-                    GraphServiceClient graphServiceClient)
+        public HomeController(ILogger<HomeController> logger,
+                            IConfiguration configuration,
+                            GraphServiceClient graphServiceClient,
+                            MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler)
 {
-    _logger = logger;
-    _graphServiceClient = graphServiceClient;
+            _logger = logger;
+            _graphServiceClient = graphServiceClient;
+            this._consentHandler = consentHandler;
 }
 ```
 
-1. Add a `Profile()` action so that it calls the Microsoft Graph *me* endpoint. In case a token cannot be acquired, a challenge is attempted to re-sign-in the user, and have them consent to the requested scopes. This is expressed declaratively by the `AuthorizeForScopes`attribute. This attribute is part of the `Microsoft.Identity.Web` project and automatically manages incremental consent.
+1. In the `Profile()` action we  make a call to the Microsoft Graph *me* endpoint. In case a token cannot be acquired, a challenge is attempted to re-sign-in the user, and have them consent to the requested scopes. This is expressed declaratively by the `AuthorizeForScopes`attribute. This attribute is part of the `Microsoft.Identity.Web` project and automatically manages incremental consent.
 
 ```CSharp
 [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
@@ -295,67 +280,6 @@ public async Task<IActionResult> Profile()
 }
 ```
 
-### Add a Profile view to display the *me* object
-
-Add a new view `Views\Home\Profile.cshtml` and insert the following code, which creates an
-HTML table displaying the properties of the *me* object as returned by Microsoft Graph.
-
-```CSharp
-@using Newtonsoft.Json.Linq
-@{
-    ViewData["Title"] = "Profile";
-}
-<h2>@ViewData["Title"]</h2>
-<h3>@ViewData["Message"]</h3>
-
-<table class="table table-striped table-condensed" style="font-family: monospace">
-    <tr>
-        <th>Property</th>
-        <th>Value</th>
-    </tr>
-    <tr>
-        <td>photo</td>
-        <td>
-            @{
-                if (ViewData["photo"] != null)
-                {
-                    <img style="margin: 5px 0; width: 150px" src="data:image/jpeg;base64, @ViewData["photo"]" />
-                }
-                else
-                {
-                    <h3>NO PHOTO</h3>
-                    <p>Check user profile in Azure Active Directory to add a photo.</p>
-                }
-            }
-        </td>
-    </tr>
-    @{       
-        var me = ViewData["me"] as Microsoft.Graph.User;
-        var properties = me.GetType().GetProperties();
-        foreach (var child in properties)
-        {
-            object value = child.GetValue(me);
-            string stringRepresentation;
-            if (!(value is string) && value is IEnumerable<string>)
-            {
-                stringRepresentation = "["
-                    + string.Join(", ", (value as IEnumerable<string>).OfType<object>().Select(c => c.ToString()))
-                    + "]";
-            }
-            else
-            {
-                stringRepresentation = value?.ToString();
-            }
-
-            <tr>
-                <td> @child.Name </td>
-                <td> @stringRepresentation </td>
-            </tr>
-        }      
-    }
-</table>
-```
-
 ## Deployment
 
 ### Deploying web app to Azure App Services
@@ -374,41 +298,36 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 
 ##### Publish using Visual Studio Code
 
+1. Open an instance of Visual Studio code set to the `WebApp-OpenIDConnect-DotNet-graph-v2` project folder.
 1. Install the VS Code extension [Azure App Service](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureappservice).
-1. Sign-in to App Service using Azure AD Account.
-1. Open the WebApp-OpenIDConnect-DotNet-graph-v2 project folder.
-1. Choose View > Terminal from the main menu.
-1. The terminal opens in the WebApp-OpenIDConnect-DotNet-graph-v2 folder.
-1. Run the following command:
+1. Using the extension you just installed, sign in to **Azure App Service** using your Azure AD account.
+1. Choose `View > Terminal` from the VS Code menu to open a new terminal window in the project directory.
+1. Run the following command
 
     ```console
-    dotnet publish --configuration Release
+    dotnet publish WebApp-OpenIDConnect-DotNet-graph.csproj --configuration Release
     ```
 
 1. Publish folder is created under path ``bin/Release/<Enter_Framework_FolderName>``.
-1. Right Click on **Publish** folder and select **Deploy to Web App**.
-1. Select **Create New Web App**, enter unique name for the app.
-1. Select Windows as the OS. Press Enter.
-
-#### Disable Azure App Services default authentication (WebApp-OpenIDConnect-DotNet-graph-v2)
-
-1. Go to [Azure portal](https://portal.azure.com), and locate your project there.
-    - On the Settings tab, select **Authentication/Authorization**. Make sure **App Service Authentication** is `off` (as we are using our own **custom** authentication logic). 
-    - Select **Save**.
-1. Browse your website. If you see the default web page of the project, then the publication was successful.
+1. From the VS Code file explorer, right-click on the **Publish** folder and select **Deploy to Web App**.
+1. Select **Create New Web App**.
+1. Enter a unique name for the app, for example, `WebApp-OpenIDConnect-DotNet-graph-v2`. If you chose `example-domain` for your app name, your app's domain name will be `https://example-domain.azurewebsites.net`.
+1. Select **Windows** as the OS. Press Enter.
+1. Select **.NET Core 3.1 (LTS)** as runtime stack.
+1. Select `Free` or any other option for your pricing tier.
 
 #### Update the Azure AD app registration (WebApp-OpenIDConnect-DotNet-graph-v2)
 
 1. Navigate back to to the [Azure portal](https://portal.azure.com).
-In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations**.
+1. Go to the **Azure Active Directory** section, and then select **App registrations**.
 1. In the resulting screen, select the `WebApp-OpenIDConnect-DotNet-graph-v2` application.
 1. In the app's registration screen, select **Authentication** in the menu.
-   - In the **Redirect URIs** section, update the reply URLs to match the site URL of your Azure deployment. For example:
-      - `https://WebApp-OpenIDConnect-DotNet-graph-v2.azurewebsites.net/`
-      - `https://WebApp-OpenIDConnect-DotNet-graph-v2.azurewebsites.net/signin-oidc`
-   - Update the **Front-channel logout URL** fields with the address of your service, for example [https://WebApp-OpenIDConnect-DotNet-graph-v2.azurewebsites.net](https://WebApp-OpenIDConnect-DotNet-graph-v2.azurewebsites.net)
+   - In the **Redirect URIs** section, update both of the reply URLs to match the site URL of your Azure deployment. Using the following examples as a guide, **replace** the text `<replace-this-with-the-app-name-you-created-when-deploying-in-the-previous-step>` with the app name you created while deploying, for example:
+   - `https://<replace-this-with-the-app-name-you-created-when-deploying-in-the-previous-step>.azurewebsites.net/`
+   - `https://<replace-this-with-the-app-name-you-created-when-deploying-in-the-previous-step>.azurewebsites.net/signin-oidc`
+1. Update the **Front-channel logout URL** fields with the address of your service, for example `https://<replace-this-with-the-app-name-you-created-when-deploying-in-the-previous-step>.azurewebsites.net`.
 
-> :warning: If your app is using an *in-memory* storage, **Azure App Services** will spin down your web site if it is inactive, and any records that your app was keeping will emptied. In addition, if you increase the instance count of your website, requests will be distributed among the instances. Your app's records, therefore, will not be the same on each instance.
+> :warning: If your app is using *in-memory* storage, **Azure App Services** will spin down your web site if it is inactive, and any records that your app was keeping will emptied. In addition, if you increase the instance count of your website, requests will be distributed among the instances. Your app's records, therefore, will not be the same on each instance.
 
 ## More information
 

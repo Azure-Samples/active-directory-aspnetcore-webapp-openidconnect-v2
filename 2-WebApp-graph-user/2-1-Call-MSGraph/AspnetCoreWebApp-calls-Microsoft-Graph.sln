@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApp-OpenIDConnect-DotNet", "WebApp-OpenIDConnect-DotNet.csproj", "{76F9C1E5-3CF7-4C9A-A0EC-D15B5F11022D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApp-OpenIDConnect-DotNet-graph", "WebApp-OpenIDConnect-DotNet-graph.csproj", "{76F9C1E5-3CF7-4C9A-A0EC-D15B5F11022D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

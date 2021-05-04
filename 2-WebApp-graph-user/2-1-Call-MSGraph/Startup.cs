@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace _2_1_Call_MSGraph
+namespace CallMSGraph
 {
     public class Startup
     {
