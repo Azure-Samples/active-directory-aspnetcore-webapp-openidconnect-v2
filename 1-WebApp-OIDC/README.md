@@ -15,7 +15,8 @@ In this chapter of the tutorial, You'll learn how to use the [Microsoft.Identity
    1. If you are an an ISV building a software-as-a-service (SaaS) application who wish to sign-in users from both Azure AD tenants and Microsoft consumer Accounts (MSA) you'll want to [sign-in users with their work and school accounts or Microsoft personal accounts](./1-3-AnyOrgOrPersonal/README-1-1-to-1-3.md).
    1. If your application needs to sign-in users in Azure AD tenants in [national and sovereign clouds](./1-4-Sovereign/README.md).
    1. If you application wants to connect with your customers, or with small business partners, you can have your application [sign-in users with their social identities](./1-5-B2C/README.md) using Microsoft Azure AD B2C.
-   1. Finally, you'll want to let users [sign-out](./1-6-SignOut/README.md) from your application, or globally from their browser session.
+   1. Aditionally, you'll want to let users [sign-out](./1-6-SignOut/README.md) from your application, or globally from their browser session.
+   1. Finally, you can opt in to [embedd the sign-in experience](./1-7-B2C-Embedded/README.md) with an iframe in your application.
 
 > [Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbRz0h_jLR5HNJlvkZAewyoWxUNEFCQ0FSMFlPQTJURkJZMTRZWVJRNkdRMC4u)
 
