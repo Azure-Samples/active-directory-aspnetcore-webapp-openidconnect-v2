@@ -1,6 +1,7 @@
+using Azure;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,8 +9,13 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.UI;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
-namespace CallMSGraph
+namespace WebApp_OpenIDConnect_DotNet_graph
 {
     public class Startup
     {
@@ -26,37 +32,14 @@ namespace CallMSGraph
             string[] initialScopes = Configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
 
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+                .AddMicrosoftIdentityWebApp(Configuration)
                 .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
                 .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
                 .AddInMemoryTokenCaches();
 
-            /*
-               // or use a distributed Token Cache by adding 
-                    .AddDistributedTokenCaches();
-
-               // and then choose your implementation. 
-               // See https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed?view=aspnetcore-2.2#distributed-memory-cache
-
-               // For instance the distributed in memory cache
-                services.AddDistributedMemoryCache()
-
-               // Or a Redis cache
-               services.AddStackExchangeRedisCache(options =>
-                    {
-                        options.Configuration = "localhost";
-                        options.InstanceName = "SampleInstance";
-                    });
-
-               // Or even a SQL Server token cache
-               services.AddDistributedSqlServerCache(options =>
-                {
-                    options.ConnectionString = 
-                        _config["DistCache_ConnectionString"];
-                    options.SchemaName = "dbo";
-                    options.TableName = "TestCache";
-                });
-            */
+            // client secret is picked from KeyVault
+            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme,
+                options => { options.ClientSecret = GetSecretFromKeyVault(); });
 
             services.AddControllersWithViews(options =>
             {
@@ -65,8 +48,9 @@ namespace CallMSGraph
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
+
             services.AddRazorPages()
-                    .AddMicrosoftIdentityUI();
+                  .AddMicrosoftIdentityUI();
 
             // Add the UI support to handle claims challenges
             services.AddServerSideBlazor()
@@ -101,6 +85,23 @@ namespace CallMSGraph
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+        }
+
+        /// <summary>
+        /// Gets the secret from key vault via an enabled Managed Identity.
+        /// </summary>
+        /// <remarks>https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet/blob/master/README.md</remarks>
+        /// <returns></returns>
+        private string GetSecretFromKeyVault()
+        {
+            // this should point to your vault's URI, like https://<yourkeyvault>.vault.azure.net/
+            string uri = Environment.GetEnvironmentVariable("KEY_VAULT_URI");
+            SecretClient client = new SecretClient(new Uri(uri), new DefaultAzureCredential());
+
+            // The secret name, for example if the full url to the secret is https://<yourkeyvault>.vault.azure.net/secrets/Graph-App-Secret
+            Response<KeyVaultSecret> secret = client.GetSecretAsync("Graph-App-Secret").Result;
+
+            return secret.Value.Value;
         }
     }
 }

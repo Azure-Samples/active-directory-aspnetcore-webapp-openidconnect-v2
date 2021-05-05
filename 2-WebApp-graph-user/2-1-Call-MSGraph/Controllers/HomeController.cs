@@ -1,4 +1,7 @@
-﻿using CallMSGraph.Models;
+﻿using Azure;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using CallMSGraph.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -9,8 +12,9 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using WebApp_OpenIDConnect_DotNet_graph.Models;
 
-namespace CallMSGraph.Controllers
+namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
 {
     [Authorize]
     public class HomeController : Controller
@@ -38,8 +42,6 @@ namespace CallMSGraph.Controllers
         [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
         public IActionResult Index()
         {
-            ViewData["ApiResult"] = HttpContext.User.Identity.Name;
-
             return View();
         }
 
@@ -69,22 +71,23 @@ namespace CallMSGraph.Controllers
                         _consentHandler.HandleException(ex2);
                     }
                 }
+            }
 
-                try
+            try
+            {
+                // Get user photo
+                using (var photoStream = await _graphServiceClient.Me.Photo.Content.Request().GetAsync())
                 {
-                    // Get user photo
-                    using (var photoStream = await _graphServiceClient.Me.Photo.Content.Request().GetAsync())
-                    {
-                        byte[] photoByte = ((MemoryStream)photoStream).ToArray();
-                        ViewData["Photo"] = Convert.ToBase64String(photoByte);
-                    }
-                }
-                catch (Exception pex)
-                {
-                    Console.WriteLine($"{pex}");
-                    ViewData["Photo"] = null;
+                    byte[] photoByte = ((MemoryStream)photoStream).ToArray();
+                    ViewData["Photo"] = Convert.ToBase64String(photoByte);
                 }
             }
+            catch (Exception pex)
+            {
+                Console.WriteLine($"{pex}");
+                ViewData["Photo"] = null;
+            }
+
             ViewData["Me"] = currentUser;
             return View();
         }
@@ -99,6 +102,16 @@ namespace CallMSGraph.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        private string GetSecretFromKeyVault()
+        {
+            string uri = Environment.GetEnvironmentVariable("KEY_VAULT_URI");
+            SecretClient client = new SecretClient(new Uri(uri), new DefaultAzureCredential());
+
+            Response<KeyVaultSecret> secret = client.GetSecretAsync("Graph-App-Secret").Result;
+
+            return secret.Value.Value;
         }
     }
 }

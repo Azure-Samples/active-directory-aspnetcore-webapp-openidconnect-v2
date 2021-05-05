@@ -4,8 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
 
-namespace CallMSGraph.Models
+namespace CallMSGraph.Helpers
 {
+    /// <summary>
+    /// Helper methods to work with data in WWW-Authentication header
+    /// </summary>
     public class AuthenticationHeaderHelper
     {
         /// <summary>

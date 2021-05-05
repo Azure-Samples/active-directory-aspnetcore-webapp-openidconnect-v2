@@ -11,7 +11,7 @@ urlFragment: active-directory-aspnetcore-webapp-openidconnect-v2
 description: "This sample demonstrates a ASP.NET Core Web App calling the Microsoft Graph"
 ---
 
-# # Enable your ASP.NET Core web app to sign in users and call Microsoft Graph with the Microsoft identity platform
+# Enable your ASP.NET Core web app to sign in users and call Microsoft Graph with the Microsoft identity platform
 
  1. [Overview](#overview)
  1. [Scenario](#scenario)
@@ -39,7 +39,6 @@ This sample demonstrates an ASP.NET Core web app that calls the Microsoft Graph 
 1. The access token is used by the client app as a bearer token to call Microsoft Graph.
 
 ![Sign in with the Microsoft identity platform and call Graph](ReadmeFiles/sign-in.png)
-
 
 ## Prerequisites
 
@@ -192,7 +191,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 
 1. In this aspnetcore web project, first the packages `Microsoft.Identity.Web` and `Microsoft.Identity.Web.UI` were added from NuGet. These libraries are used to simplify the process of signing-in a user and acquiring tokens for Microsoft Graph.
 
-1. In the **Startup.cs** file :
+1. Staring with the **Startup.cs** file :
 
    - at the top of the file, the following two using directives were added:
 
@@ -358,4 +357,3 @@ To provide feedback on or suggest features for Azure Active Directory, visit [Us
 If you'd like to contribute to this sample, see [CONTRIBUTING.MD](/CONTRIBUTING.md).
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information, see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
-
