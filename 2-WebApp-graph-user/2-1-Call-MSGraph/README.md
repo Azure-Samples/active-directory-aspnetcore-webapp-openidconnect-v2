@@ -328,6 +328,59 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 
 > :warning: If your app is using *in-memory* storage, **Azure App Services** will spin down your web site if it is inactive, and any records that your app was keeping will emptied. In addition, if you increase the instance count of your website, requests will be distributed among the instances. Your app's records, therefore, will not be the same on each instance.
 
+### Enabling your code to pick secrets from Key Vault using a Managed Identity
+
+One of the uber principals of security and Zero Trust is to place credentials out of your code and used in a manner that allows for credentials to be replaced or rotated without incurring a downtime.
+To achieve this we'd place our application's credentials in [Azure Key Vault](https://azure.microsoft.com/services/key-vault/) and access it via [Managed Identities for Azure resources](https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/overview).
+
+We will follow the steps broadly outlined in [Use Key Vault from App Service with Azure Managed Identity](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet/blob/master/README.md)
+
+#### Set up your managed Identity and Key vault
+
+1. You would need an [Azure Subscription](https://azure.microsoft.com/free/) first.
+1. You should have a working and deployed application as an Azure App Service following the steps in [Deploying web app to Azure App Services](#deploying-web-app-to-azure-app-services) above.
+1. [Set up your Key Vault](https://docs.microsoft.com/azure/key-vault/secrets/quick-create-portal) and move the 'ClientSecret' from `appsettings.json` to the Key Vault. Delete the 'ClientSecret' entry in the `appsettings.json`. Note the Key Vault Uri , e.g. **https://<my key vault.azure.net>**.
+2. Make 
+3. In the Properties\launchSettings.json file add the following entry
+
+  > "KEY_VAULT_URI": "https://keyvault0417.vault.azure.net/" under `environmentVariables`
+
+1. Add the `Azure.Identity` package to the solution.
+1. In `startup.cs` add the following method:
+
+```CSharp
+        /// Gets the secret from key vault via an enabled Managed Identity.
+        /// </summary>
+        /// <remarks>https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet/blob/master/README.md</remarks>
+        /// <returns></returns>
+        private string GetSecretFromKeyVault(string tenantId)
+        {
+            // this should point to your vault's URI, like https://<yourkeyvault>.vault.azure.net/
+            string uri = Environment.GetEnvironmentVariable("KEY_VAULT_URI");
+            DefaultAzureCredentialOptions options = new DefaultAzureCredentialOptions();
+
+            // Specify the tenant ID to use the dev credentials when running the app locally
+            options.VisualStudioTenantId = tenantId;
+            options.SharedTokenCacheTenantId = tenantId;
+            SecretClient client = new SecretClient(new Uri(uri), new DefaultAzureCredential(options));
+
+            // The secret name, for example if the full url to the secret is https://<yourkeyvault>.vault.azure.net/secrets/Graph-App-Secret
+            Response<KeyVaultSecret> secret = client.GetSecretAsync("Graph-App-Secret").Result;
+
+            return secret.Value.Value;
+        }
+```
+
+1. In ConfugureServices method, add the following lines of code 
+
+```CSharp
+            // client secret is picked from KeyVault
+            string tenantId = Configuration.GetValue<string>("AzureAd:TenantId");
+            services.Configure<MicrosoftIdentityOptions>(
+                options => { options.ClientSecret = GetSecretFromKeyVault(tenantId); });
+
+```
+
 ## More information
 
 - [Microsoft identity platform (Azure Active Directory for developers)](https://docs.microsoft.com/azure/active-directory/develop/)
@@ -339,8 +392,10 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 - [Application and service principal objects in Azure Active Directory](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals)
 - [National Clouds](https://docs.microsoft.com/azure/active-directory/develop/authentication-national-cloud#app-registration-endpoints)
 - [MSAL code samples](https://docs.microsoft.com/azure/active-directory/develop/sample-v2-code)
-
+- [Managed Identities for Azure resources](https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/overview)
 For more information about how OAuth 2.0 protocols work in this scenario and other scenarios, see [Authentication Scenarios for Azure AD](https://docs.microsoft.com/azure/active-directory/develop/authentication-flows-app-scenarios).
+[Azure Key Vault](https://azure.microsoft.com/services/key-vault/)
+[Use Key Vault from App Service with Azure Managed Identity](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet/blob/master/README.md)
 
 ## Community Help and Support
 

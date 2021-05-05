@@ -38,8 +38,9 @@ namespace WebApp_OpenIDConnect_DotNet_graph
                 .AddInMemoryTokenCaches();
 
             // client secret is picked from KeyVault
-            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme,
-                options => { options.ClientSecret = GetSecretFromKeyVault(); });
+            string tenantId = Configuration.GetValue<string>("AzureAd:TenantId");
+            services.Configure<MicrosoftIdentityOptions>(
+                options => { options.ClientSecret = GetSecretFromKeyVault(tenantId); });
 
             services.AddControllersWithViews(options =>
             {
@@ -87,16 +88,20 @@ namespace WebApp_OpenIDConnect_DotNet_graph
             });
         }
 
-        /// <summary>
         /// Gets the secret from key vault via an enabled Managed Identity.
         /// </summary>
         /// <remarks>https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet/blob/master/README.md</remarks>
         /// <returns></returns>
-        private string GetSecretFromKeyVault()
+        private string GetSecretFromKeyVault(string tenantId)
         {
             // this should point to your vault's URI, like https://<yourkeyvault>.vault.azure.net/
             string uri = Environment.GetEnvironmentVariable("KEY_VAULT_URI");
-            SecretClient client = new SecretClient(new Uri(uri), new DefaultAzureCredential());
+            DefaultAzureCredentialOptions options = new DefaultAzureCredentialOptions();
+
+            // Specify the tenant ID to use the dev credentials when running the app locally
+            options.VisualStudioTenantId = tenantId;
+            options.SharedTokenCacheTenantId = tenantId;
+            SecretClient client = new SecretClient(new Uri(uri), new DefaultAzureCredential(options));
 
             // The secret name, for example if the full url to the secret is https://<yourkeyvault>.vault.azure.net/secrets/Graph-App-Secret
             Response<KeyVaultSecret> secret = client.GetSecretAsync("Graph-App-Secret").Result;
