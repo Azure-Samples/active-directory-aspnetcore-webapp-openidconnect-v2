@@ -6,7 +6,7 @@ products:
   - aspnet-core
   - ms-graph
   - azure-active-directory
-name: Using the Microsoft identity platform to call the Microsoft Graph API from an ASP.NET Core Web App, on behalf of a user signing-in using their work and school account
+name: Enable your ASP.NET Core web app to sign in users and call Microsoft Graph with the Microsoft identity platform
 urlFragment: active-directory-aspnetcore-webapp-openidconnect-v2
 description: "This sample demonstrates a ASP.NET Core Web App calling the Microsoft Graph"
 ---
@@ -70,7 +70,7 @@ Go to the `"2-WebApp-graph-user\2-1-Call-MSGraph"` folder
   cd "2-WebApp-graph-user\2-1-Call-MSGraph"
   ```
 
-> Developers who wish to gain good familiarity of programming for Microsoft Graph are advised to go through the [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A) recorded session.
+> Developers who wish to increase their familiarity with programming for Microsoft Graph are advised to go through the [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A) recorded session.
 
 ### Step 2: Install project dependencies
 
@@ -92,18 +92,18 @@ There is one project in this sample. To register it, you can:
 
 > :warning: If you have never used **Azure AD Powershell** before, we recommend you go through the [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
 
-1. On Windows, run PowerShell as **Administrator** and navigate to the root of the cloned directory
+1. On Windows, run PowerShell as **Administrator** and navigate to the folder that contains this readme file.
 1. If you have never used Azure AD Powershell before, we recommend you go through the [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
 1. In PowerShell run:
 
-   ```PowerShell
+  ```PowerShell
    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
   ```
 
 1. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
 1. In PowerShell run:
 
-   ```PowerShell
+  ```PowerShell
    cd .\AppCreationScripts\
    .\Configure.ps1
   ```
@@ -182,12 +182,10 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 ## Explore the sample
 
 1. Open your web browser and make a request to the app at url `https://localhost:44321`. The app immediately attempts to authenticate you via the Microsoft identity platform. Sign in with a work or school account.
-
 2. Provide consent to the screen presented.
+3. Click on the **Profile** link on the top menu. The web app will make a call to the Microsoft Graph `/me` endpoint. You should see information about the signed-in user's account, as well as its picture, if these values are set in the account's profile.
 
-3. Click on the **Profile** link on the top menu. The web app will make a call to the Microsoft Graph */me* endpoint. You should see information about the signed-in user's account, as well as its picture, if these values are set in the account's profile.
-
-> Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../../issues) page.
+> Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
 
 > [Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbRz0h_jLR5HNJlvkZAewyoWxUNEFCQ0FSMFlPQTJURkJZMTRZWVJRNkdRMC4u)
 
@@ -204,7 +202,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
       using Microsoft.Identity.Web.UI;
       ```
 
-   - in the `ConfigureServices` method, the following code was added, replacing any existing `AddAuthentication()` code.:
+   - in the `ConfigureServices` method, the following code was added, replacing any existing `AddAuthentication()` code:
 
      ```CSharp
 
@@ -302,7 +300,7 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
     dotnet publish WebApp-OpenIDConnect-DotNet-graph.csproj --configuration Release
     ```
 
-1. Publish folder is created under path ``bin/Release/<Enter_Framework_FolderName>``.
+1. Publish folder is created under path `bin/Release/netcoreapp3.1`.
 1. From the VS Code file explorer, right-click on the **Publish** folder and select **Deploy to Web App**.
 1. Select **Create New Web App**.
 1. Enter a unique name for the app, for example, `WebApp-OpenIDConnect-DotNet-graph-v2`. If you chose `example-domain` for your app name, your app's domain name will be `https://example-domain.azurewebsites.net`.
@@ -316,27 +314,28 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 1. Go to the **Azure Active Directory** section, and then select **App registrations**.
 1. In the resulting screen, select the `WebApp-OpenIDConnect-DotNet-graph-v2` application.
 1. In the app's registration screen, select **Authentication** in the menu.
-   - In the **Redirect URIs** section, update both of the reply URLs to match the site URL of your Azure deployment. Using the following examples as a guide, **replace** the text `<replace-this-with-the-app-name-you-created-when-deploying-in-the-previous-step>` with the app name you created while deploying, for example:
-   - `https://<replace-this-with-the-app-name-you-created-when-deploying-in-the-previous-step>.azurewebsites.net/`
-   - `https://<replace-this-with-the-app-name-you-created-when-deploying-in-the-previous-step>.azurewebsites.net/signin-oidc`
-1. Update the **Front-channel logout URL** fields with the address of your service, for example `https://<replace-this-with-the-app-name-you-created-when-deploying-in-the-previous-step>.azurewebsites.net`.
+   - In the **Redirect URIs** section, update both of the reply URLs to match the site URL of your Azure deployment. Using the following examples as a guide, **replace** the text `<replace_this_with_the_app_name_you_created_when_deploying_in_the_previous_step>` with the app name you created while deploying, for example:
+   - `https://<replace_this_with_the_app_name_you_created_when_deploying_in_the_previous_step>.azurewebsites.net/`
+   - `https://<replace_this_with_the_app_name_you_created_when_deploying_in_the_previous_step>.azurewebsites.net/signin-oidc`
+1. Update the **Front-channel logout URL** fields with the address of your service, for example `https://<replace_this_with_the_app_name_you_created_when_deploying_in_the_previous_step>.azurewebsites.net`.
 
 > :warning: If your app is using *in-memory* storage, **Azure App Services** will spin down your web site if it is inactive, and any records that your app was keeping will emptied. In addition, if you increase the instance count of your website, requests will be distributed among the instances. Your app's records, therefore, will not be the same on each instance.
 
-### Enabling your code to pick secrets from Key Vault using a Managed Identity
+### Enabling your code to get secrets from Key Vault using a Managed Identity
 
-One of the uber principals of security and Zero Trust is to place credentials out of your code and used in a manner that allows for credentials to be replaced or rotated without incurring a downtime.
-To achieve this we'd place our application's credentials in [Azure Key Vault](https://azure.microsoft.com/services/key-vault/) and access it via [Managed Identities for Azure resources](https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/overview).
+One of the uber principals of security and **Zero Trust** is to place credentials out of your code and use in a manner that allows for credentials to be replaced or rotated without incurring a downtime.
 
-We will follow the steps broadly outlined in [Use Key Vault from App Service with Azure Managed Identity](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet/blob/master/README.md)
+To achieve this we'd place our application's credentials in [Azure Key Vault](https://azure.microsoft.com/services/key-vault/) and access it via [managed Identities for Azure resources](https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/overview).
+
+We will follow the steps broadly outlined in the guide: [Use Key Vault from App Service with Azure Managed Identity](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet/blob/master/README.md)
 
 ### Set up your managed Identity and Key vault
 
 1. You would need an [Azure Subscription](https://azure.microsoft.com/free/) first.
 1. You should have a working and deployed application as an Azure App Service following the steps listed at [Deploying web app to Azure App Services](#deploying-web-app-to-azure-app-services) above.
-1. [Set up your Key Vault](https://docs.microsoft.com/azure/key-vault/secrets/quick-create-portal) and move the 'ClientSecret' from `appsettings.json` to the Key Vault as a **Secret**. Delete the 'ClientSecret' entry in the `appsettings.json`. Note the Key Vault Uri , e.g. **https://mykeyvault.azure.net/**.
-1. Make sure that your deployed web app [System assigned managed identity has access to this secret](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet/blob/master/README.md#grant-yourself-data-plane-access-to-the-key-vault).
-1. In the Properties\launchSettings.json file add the following entry to enable local testing. also make sure you are signed into Visual Studio Code using the same account that you've used to set up key vault.
+1. [Set up your Key Vault](https://docs.microsoft.com/azure/key-vault/secrets/quick-create-portal) and move the `ClientSecret` from `appsettings.json` to the Key Vault as a **Secret**. Delete the `ClientSecret` entry in the `appsettings.json`. Note the Key Vault Uri , e.g. **https://mykeyvault.azure.net/**.
+1. Make sure that your deployed web app's [system assigned managed identity has access to this secret](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet/blob/master/README.md#grant-yourself-data-plane-access-to-the-key-vault).
+1. In the `Properties\launchSettings.json` file, add the following entry to enable local testing. Also, make sure you are signed into Visual Studio Code using the same account that you've used to set up Key Vault.
 
   > "KEY_VAULT_URI": "https://keyvault0417.vault.azure.net/" under `environmentVariables`
 
@@ -363,7 +362,7 @@ We will follow the steps broadly outlined in [Use Key Vault from App Service wit
         }
 ```
 
-3. In `ConfigureServices` method, add the following lines of code, right after `services.AddAuthentication`
+3. In `ConfigureServices` method, add the following lines of code, right after `services.AddAuthentication`:
 
 ```CSharp
             // The client secret is picked from KeyVault instead
@@ -373,7 +372,7 @@ We will follow the steps broadly outlined in [Use Key Vault from App Service wit
 
 ```
 
-4. Your `ConfigureServices` method should look like the following now
+4. Your `ConfigureServices` method should look like the following now:
 
 ```CSharp
        public void ConfigureServices(IServiceCollection services)
@@ -394,7 +393,7 @@ We will follow the steps broadly outlined in [Use Key Vault from App Service wit
  // redacted the rest
 ```
 
-5. Add the following in the top of your `startup.cs`
+5. Add the following in the top of your `startup.cs`:
 
 ```CSharp
 using Azure;
@@ -426,7 +425,7 @@ Use [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) to get supp
 Ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
 Make sure that your questions or comments are tagged with [`azure-active-directory` `azure-ad-b2c` `ms-identity` `adal` `msal`].
 
-If you find a bug in the sample, raise the issue on [GitHub Issues](../../../issues).
+If you find a bug in the sample, raise the issue on [GitHub Issues](../../../../issues).
 
 To provide feedback on or suggest features for Azure Active Directory, visit [User Voice page](https://feedback.azure.com/forums/169401-azure-active-directory).
 
