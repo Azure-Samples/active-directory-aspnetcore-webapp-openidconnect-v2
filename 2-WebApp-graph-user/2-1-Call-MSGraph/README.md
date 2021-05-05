@@ -92,7 +92,7 @@ There is one project in this sample. To register it, you can:
 
 > :warning: If you have never used **Azure AD Powershell** before, we recommend you go through the [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
 
-1. On Windows, run PowerShell as **Administrator** and navigate to the root of the cloned directory
+1. On Windows, run PowerShell as **Administrator** and navigate to the folder that contains this readme file.
 1. If you have never used Azure AD Powershell before, we recommend you go through the [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
 1. In PowerShell run:
 
