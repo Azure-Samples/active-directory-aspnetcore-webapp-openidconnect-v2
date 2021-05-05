@@ -70,7 +70,7 @@ Go to the `"2-WebApp-graph-user\2-1-Call-MSGraph"` folder
   cd "2-WebApp-graph-user\2-1-Call-MSGraph"
   ```
 
-> Developers who wish to gain good familiarity of programming for Microsoft Graph are advised to go through the [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A) recorded session.
+> Developers who wish to increase their familiarity with programming for Microsoft Graph are advised to go through the [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A) recorded session.
 
 ### Step 2: Install project dependencies
 
