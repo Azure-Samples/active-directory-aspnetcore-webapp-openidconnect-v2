@@ -12,7 +12,8 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "KEY_VAULT_URI": "https://keyvault0417.vault.azure.net/"
       }
     },
     "WebApp_OpenIDConnect_DotNet_graph": {
@@ -20,7 +21,8 @@
       "launchBrowser": true,
       "applicationUrl": "https://localhost:44321;http://localhost:5000",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "KEY_VAULT_URI": "https://keyvault0417.vault.azure.net/"
       }
     }
   }
