@@ -7,7 +7,6 @@ products:
   - ms-graph
   - azure-active-directory
 name: Enable your ASP.NET Core web app to sign in users and call Microsoft Graph with the Microsoft identity platform
-``` #Resolved
 urlFragment: active-directory-aspnetcore-webapp-openidconnect-v2
 description: "This sample demonstrates a ASP.NET Core Web App calling the Microsoft Graph"
 ---
