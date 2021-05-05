@@ -37,10 +37,10 @@ namespace WebApp_OpenIDConnect_DotNet_graph
                 .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
                 .AddInMemoryTokenCaches();
 
-            // client secret is picked from KeyVault
-            string tenantId = Configuration.GetValue<string>("AzureAd:TenantId");
-            services.Configure<MicrosoftIdentityOptions>(
-                options => { options.ClientSecret = GetSecretFromKeyVault(tenantId); });
+            // uncomment the following to pick client secret is picked from KeyVault
+            //string tenantId = Configuration.GetValue<string>("AzureAd:TenantId");
+            //services.Configure<MicrosoftIdentityOptions>(
+            //    options => { options.ClientSecret = GetSecretFromKeyVault(tenantId); });
 
             services.AddControllersWithViews(options =>
             {
