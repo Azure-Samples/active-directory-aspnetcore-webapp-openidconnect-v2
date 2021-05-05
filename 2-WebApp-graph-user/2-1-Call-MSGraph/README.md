@@ -6,7 +6,8 @@ products:
   - aspnet-core
   - ms-graph
   - azure-active-directory
-name: Using the Microsoft identity platform to call the Microsoft Graph API from an ASP.NET Core Web App, on behalf of a user signing-in using their work and school account
+name: Enable your ASP.NET Core web app to sign in users and call Microsoft Graph with the Microsoft identity platform
+``` #Resolved
 urlFragment: active-directory-aspnetcore-webapp-openidconnect-v2
 description: "This sample demonstrates a ASP.NET Core Web App calling the Microsoft Graph"
 ---
@@ -69,7 +70,7 @@ Go to the `"2-WebApp-graph-user\2-1-Call-MSGraph"` folder
   cd "2-WebApp-graph-user\2-1-Call-MSGraph"
   ```
 
-> Developers who wish to gain good familiarity of programming for Microsoft Graph are advised to go through the [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A) recorded session.
+> Developers who wish to increase their familiarity with programming for Microsoft Graph are advised to go through the [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A) recorded session.
 
 ### Step 2: Install project dependencies
 
@@ -91,7 +92,7 @@ There is one project in this sample. To register it, you can:
 
 > :warning: If you have never used **Azure AD Powershell** before, we recommend you go through the [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
 
-1. On Windows, run PowerShell as **Administrator** and navigate to the root of the cloned directory
+1. On Windows, run PowerShell as **Administrator** and navigate to the folder that contains this readme file.
 1. If you have never used Azure AD Powershell before, we recommend you go through the [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
 1. In PowerShell run:
 
