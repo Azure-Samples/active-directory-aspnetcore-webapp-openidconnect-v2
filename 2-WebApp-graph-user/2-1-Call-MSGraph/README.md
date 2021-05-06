@@ -296,8 +296,8 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
     dotnet publish WebApp-OpenIDConnect-DotNet-graph.csproj --configuration Release
     ```
 
-1. Publish folder is created under path `bin/Release/netcoreapp3.1`.
-1. From the VS Code file explorer, right-click on the **Publish** folder and select **Deploy to Web App**.
+1. A `publish` folder is created within the following folder: `bin/Release/netcoreapp3.1/`.
+1. From the VS Code file explorer, right-click on the **publish** folder and select **Deploy to Web App**.
 1. Select **Create New Web App**.
 1. Enter a unique name for the app, for example, `WebApp-OpenIDConnect-DotNet-graph-v2`. If you chose `example-domain` for your app name, your app's domain name will be `https://example-domain.azurewebsites.net`.
 1. Select **Windows** as the OS. Press Enter.
@@ -310,10 +310,10 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 1. Go to the **Azure Active Directory** section, and then select **App registrations**.
 1. In the resulting screen, select the `WebApp-OpenIDConnect-DotNet-graph-v2` application.
 1. In the app's registration screen, select **Authentication** in the menu.
-   - In the **Redirect URIs** section, update both of the reply URLs to match the site URL of your Azure deployment. Using the following examples as a guide, **replace** the text `<replace_this_with_the_app_name_you_created_when_deploying_in_the_previous_step>` with the app name you created while deploying, for example:
-   - `https://<replace_this_with_the_app_name_you_created_when_deploying_in_the_previous_step>.azurewebsites.net/`
-   - `https://<replace_this_with_the_app_name_you_created_when_deploying_in_the_previous_step>.azurewebsites.net/signin-oidc`
-1. Update the **Front-channel logout URL** fields with the address of your service, for example `https://<replace_this_with_the_app_name_you_created_when_deploying_in_the_previous_step>.azurewebsites.net`.
+   - In the **Redirect URIs** section, update both of the reply URLs to match the site URL of your Azure deployment. Using the following examples as a guide, **replace** the text `example-domain` with the app name you created while deploying, for example:
+   - `https://example-domain.azurewebsites.net/`
+   - `https://example-domain.azurewebsites.net/signin-oidc`
+1. Update the **Front-channel logout URL** fields with the address of your service, for example `https://example-domain.azurewebsites.net`.
 
 > :warning: If your app is using *in-memory* storage, **Azure App Services** will spin down your web site if it is inactive, and any records that your app was keeping will emptied. In addition, if you increase the instance count of your website, requests will be distributed among the instances. Your app's records, therefore, will not be the same on each instance.
 
@@ -397,7 +397,9 @@ Before starting here, make sure:
   }
 ```
 
-1. In your `Startup.cs` file, find the `ConfigureServices` method and add the following lines of code, right after `services.AddAuthentication`. :information_source: You must **uncomment** the commented section that contains this code in the sample project. :warning: be sure to replace the string `ENTER_YOUR_SECRET_NAME_HERE` with the name of the secret you entered into Azure Key Vault, for example `myClientSecret`
+1. In your `Startup.cs` file, find the `ConfigureServices` method and add the following lines of code, right after `services.AddAuthentication`.
+    :information_source: You must **uncomment** the commented section that contains this code in the sample project.
+    :warning: be sure to replace the string `ENTER_YOUR_SECRET_NAME_HERE` with the name of the secret you entered into Azure Key Vault, for example `myClientSecret`
 
     ```CSharp
     // uncomment the following 3 lines to get ClientSecret from KeyVault
@@ -427,21 +429,22 @@ Before starting here, make sure:
      // redacted the rest of the code here
     ```
 
-7. Now you need to re-deploy your project again to the Azure web app. We'd use the same  deployment slot as we used earlier. First, run the command below:
-
-    ```console
-    dotnet publish WebApp-OpenIDConnect-DotNet-graph.csproj --configuration Release
-    ```
-
-Then, from the VS Code file explorer, right-click on the **Publish** folder and select **Deploy to Web App**. If you are prompted to select a deployment, select the same one that you have created before. This will simply update deployed the files.
-
-8. Finally, you need to add environment variables to the App Service where you deployed your web app.
+1. Finally, you need to add an environment variable to your App Service to tell your web app where its key vault is.
 
 - In the [Azure portal](https://portal.azure.com), search for and select **App Service**, and then select your app.
 - Select **Configuration** blade on the left, then select **New Application Settings**. Add the following variable:
       - **KEY_VAULT_URI**: the URI of the key vault you've created, for example: `https://example-vault.vault.azure.net/`
 
-Wait for a few minutes for your changes on **App Service** to take effect. You should then be able to visit your published website and sign-in accordingly.
+1. Finally, re-deploy your project to Azure App Service.
+    - Run the following command:
+
+        ```console
+        dotnet publish WebApp-OpenIDConnect-DotNet-graph.csproj --configuration Release
+        ```
+
+    - Then, from the VS Code file explorer, right-click on the **publish** folder and select **Deploy to Web App**. If you are prompted to select an app, select one you created during this sample.
+
+1. The output window can display the deployment status. Within a few minutes you'll be able to visit your now-secure app and sign in.
 
 ## More information
 
