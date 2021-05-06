@@ -289,7 +289,7 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 1. Open an instance of Visual Studio code set to the `WebApp-OpenIDConnect-DotNet-graph-v2` project folder.
 1. Install the VS Code extension [Azure App Service](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureappservice).
 1. Using the extension you just installed, sign in to **Azure App Service** using your Azure AD account.
-1. Choose `View > Terminal` from the VS Code menu to open a new terminal window in the project directory.
+1. Choose `Terminal > New Terminal` from the VS Code menu to open a new terminal window in the project directory.
 1. Run the following command
 
     ```console
@@ -367,8 +367,12 @@ Before starting here, make sure:
 
 1. In the `appsettings.json` file, find and delete the `ClientSecret` property and its value.
 1. In the `Properties\launchSettings.json` file, find the string `ENTER_YOUR_KEY_VAULT_URI` and replace it with the URI of your Key Vault, for example: `https://example-vault.vault.azure.net/`
-1. Add the `Azure.Identity` package to the solution. :information_source: this has been already added in the sample project.
-1. Add the following in the top of your `startup.cs`. :information_source: this has been already added in the sample project.
+1. Add the `Azure.Identity` package to the solution.
+    &nbsp;
+    :information_source: this has been already added in the sample project.
+1. Add the following in the top of your `startup.cs`.
+    &nbsp;
+    :information_source: this has been already added in the sample project.
 
       ```CSharp
       using Azure;
@@ -376,7 +380,9 @@ Before starting here, make sure:
       using Azure.Security.KeyVault.Secrets;
       ```
 
-1. In your `Startup.cs` file, you must create a `GetSecretFromKeyVault` method. This method sets up the Azure Key Vault client and makes returns the secret that is required. :information_source: this has already been added in the sample project.
+1. In your `Startup.cs` file, you must create a `GetSecretFromKeyVault` method. This method sets up the Azure Key Vault client and makes returns the secret that is required.
+    &nbsp;
+    :information_source: this has already been added in the sample project.
 
 ```CSharp
   private string GetSecretFromKeyVault(string tenantId, string secretName)
@@ -398,7 +404,9 @@ Before starting here, make sure:
 ```
 
 1. In your `Startup.cs` file, find the `ConfigureServices` method and add the following lines of code, right after `services.AddAuthentication`.
+    &nbsp;
     :information_source: You must **uncomment** the commented section that contains this code in the sample project.
+    &nbsp;
     :warning: be sure to replace the string `ENTER_YOUR_SECRET_NAME_HERE` with the name of the secret you entered into Azure Key Vault, for example `myClientSecret`
 
     ```CSharp
@@ -408,7 +416,7 @@ Before starting here, make sure:
         options => { options.ClientSecret = GetSecretFromKeyVault(tenantId, "ENTER_YOUR_SECRET_NAME_HERE"); });
     ```
 
-1. Your `ConfigureServices` method should look like the following now:
+1. Your `ConfigureServices` method should look like the following snippet:
 
     ```CSharp
     public void ConfigureServices(IServiceCollection services)
@@ -426,25 +434,26 @@ Before starting here, make sure:
         services.Configure<MicrosoftIdentityOptions>(
             options => { options.ClientSecret = GetSecretFromKeyVault(tenantId, "myClientSecret"); });
 
-     // redacted the rest of the code here
+     // ... code continues below
     ```
 
-1. Finally, you need to add an environment variable to your App Service to tell your web app where its key vault is.
+1. Add an environment variable to your App Service so your web app can find its key vault.
 
-- In the [Azure portal](https://portal.azure.com), search for and select **App Service**, and then select your app.
-- Select **Configuration** blade on the left, then select **New Application Settings**. Add the following variable:
-      - **KEY_VAULT_URI**: the URI of the key vault you've created, for example: `https://example-vault.vault.azure.net/`
+    1. Go to the [Azure portal](https://portal.azure.com). Search for and select **App Service**, and then select your app.
+    1. Select **Configuration** blade on the left, then select **New Application Settings**.
+    1. Add a new variable, naming it **KEY_VAULT_URI**. Populate the value with the URI of your key vault, for example: `https://example-vault.vault.azure.net/`
 
-1. Finally, re-deploy your project to Azure App Service.
-    - Run the following command:
+1. Re-deploy your project to Azure App Service.
+
+    1. Run the following command:
 
         ```console
         dotnet publish WebApp-OpenIDConnect-DotNet-graph.csproj --configuration Release
         ```
 
-    - Then, from the VS Code file explorer, right-click on the **publish** folder and select **Deploy to Web App**. If you are prompted to select an app, select one you created during this sample.
+    1. Then, from the VS Code file explorer, right-click on the **bin/Release/netcoreapp3.1/publish** folder and select **Deploy to Web App**. If you are prompted to select an app, select one you created during this sample.
 
-1. The output window can display the deployment status. Within a few minutes you'll be able to visit your now-secure app and sign in.
+1. The deployment status is available from the output window. Within a few minutes you'll be able to visit your now-secure app and sign in.
 
 ## More information
 
