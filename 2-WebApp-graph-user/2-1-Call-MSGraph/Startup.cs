@@ -37,10 +37,10 @@ namespace WebApp_OpenIDConnect_DotNet_graph
                 .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
                 .AddInMemoryTokenCaches();
 
-            // uncomment the following to pick client secret is picked from KeyVault
-            //string tenantId = Configuration.GetValue<string>("AzureAd:TenantId");
-            //services.Configure<MicrosoftIdentityOptions>(
-            //    options => { options.ClientSecret = GetSecretFromKeyVault(tenantId); });
+            // uncomment the following 3 lines to get ClientSecret from KeyVault
+            // string tenantId = Configuration.GetValue<string>("AzureAd:TenantId");
+            // services.Configure<MicrosoftIdentityOptions>(
+            //    options => { options.ClientSecret = GetSecretFromKeyVault(tenantId, "ENTER_YOUR_SECRET_NAME_HERE"); });
 
             services.AddControllersWithViews(options =>
             {
@@ -92,7 +92,7 @@ namespace WebApp_OpenIDConnect_DotNet_graph
         /// </summary>
         /// <remarks>https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet/blob/master/README.md</remarks>
         /// <returns></returns>
-        private string GetSecretFromKeyVault(string tenantId)
+        private string GetSecretFromKeyVault(string tenantId, string secretName)
         {
             // this should point to your vault's URI, like https://<yourkeyvault>.vault.azure.net/
             string uri = Environment.GetEnvironmentVariable("KEY_VAULT_URI");
@@ -104,7 +104,7 @@ namespace WebApp_OpenIDConnect_DotNet_graph
             SecretClient client = new SecretClient(new Uri(uri), new DefaultAzureCredential(options));
 
             // The secret name, for example if the full url to the secret is https://<yourkeyvault>.vault.azure.net/secrets/ENTER_YOUR_SECRET_NAME_HERE
-            Response<KeyVaultSecret> secret = client.GetSecretAsync("ENTER_YOUR_SECRET_NAME_HERE").Result;
+            Response<KeyVaultSecret> secret = client.GetSecretAsync(secretName).Result;
 
             return secret.Value.Value;
         }

@@ -400,7 +400,7 @@ Before starting here, make sure:
 1. In your `Startup.cs` file, find the `ConfigureServices` method and add the following lines of code, right after `services.AddAuthentication`. :information_source: You must **uncomment** the commented section that contains this code in the sample project. :warning: be sure to replace the string `ENTER_YOUR_SECRET_NAME_HERE` with the name of the secret you entered into Azure Key Vault, for example `myClientSecret`
 
     ```CSharp
-    // The client secret is picked from KeyVault instead
+    // uncomment the following 3 lines to get ClientSecret from KeyVault
     string tenantId = Configuration.GetValue<string>("AzureAd:TenantId");
     services.Configure<MicrosoftIdentityOptions>(
         options => { options.ClientSecret = GetSecretFromKeyVault(tenantId, "ENTER_YOUR_SECRET_NAME_HERE"); });
@@ -419,7 +419,7 @@ Before starting here, make sure:
             .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
             .AddInMemoryTokenCaches();
 
-        // client secret is picked from KeyVault
+        // uncomment the following 3 lines to get ClientSecret from KeyVault
         string tenantId = Configuration.GetValue<string>("AzureAd:TenantId");
         services.Configure<MicrosoftIdentityOptions>(
             options => { options.ClientSecret = GetSecretFromKeyVault(tenantId, "myClientSecret"); });
