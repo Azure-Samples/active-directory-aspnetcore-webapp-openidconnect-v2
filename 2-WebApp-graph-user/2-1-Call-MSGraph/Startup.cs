@@ -103,8 +103,8 @@ namespace WebApp_OpenIDConnect_DotNet_graph
             options.SharedTokenCacheTenantId = tenantId;
             SecretClient client = new SecretClient(new Uri(uri), new DefaultAzureCredential(options));
 
-            // The secret name, for example if the full url to the secret is https://<yourkeyvault>.vault.azure.net/secrets/Graph-App-Secret
-            Response<KeyVaultSecret> secret = client.GetSecretAsync("Graph-App-Secret").Result;
+            // The secret name, for example if the full url to the secret is https://<yourkeyvault>.vault.azure.net/secrets/ENTER_YOUR_SECRET_NAME_HERE
+            Response<KeyVaultSecret> secret = client.GetSecretAsync("ENTER_YOUR_SECRET_NAME_HERE").Result;
 
             return secret.Value.Value;
         }

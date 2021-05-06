@@ -204,7 +204,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 
    - in the `ConfigureServices` method, the following code was added, replacing any existing `AddAuthentication()` code:
 
-     ```CSharp
+    ```CSharp
 
     services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
@@ -212,34 +212,33 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
         .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
         .AddInMemoryTokenCaches();
 
-     ```
+    ```
 
      `AddMicrosoftIdentityWebApp()` enables your application to sign-in a user with the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts (if required).
 
     `EnableTokenAcquisitionToCallDownstreamApi()` and `AddMicrosoftGraph` adds support to call Microsoft Graph. This lines ensures that the GraphAPIService benefits from the optimized `HttpClient` management by ASP.NET Core.
 
-
-1. In the `Controllers\HomeController.cs`file, the following code is added to allow calling MS Graph
+3. In the `Controllers\HomeController.cs`file, the following code is added to allow calling MS Graph:
 
 ```CSharp
-        private readonly ILogger<HomeController> _logger;
-        private readonly GraphServiceClient _graphServiceClient;
-        private readonly MicrosoftIdentityConsentAndConditionalAccessHandler _consentHandler;
+  private readonly ILogger<HomeController> _logger;
+  private readonly GraphServiceClient _graphServiceClient;
+  private readonly MicrosoftIdentityConsentAndConditionalAccessHandler _consentHandler;
 
 private readonly GraphServiceClient _graphServiceClient;
 
-        public HomeController(ILogger<HomeController> logger,
-                            IConfiguration configuration,
-                            GraphServiceClient graphServiceClient,
-                            MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler)
+  public HomeController(ILogger<HomeController> logger,
+                      IConfiguration configuration,
+                      GraphServiceClient graphServiceClient,
+                      MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler)
 {
-            _logger = logger;
-            _graphServiceClient = graphServiceClient;
-            this._consentHandler = consentHandler;
+  _logger = logger;
+  _graphServiceClient = graphServiceClient;
+  this._consentHandler = consentHandler;
 }
 ```
 
-4. In the `Profile()` action we  make a call to the Microsoft Graph *me* endpoint. In case a token cannot be acquired, a challenge is attempted to re-sign-in the user, and have them consent to the requested scopes. This is expressed declaratively by the `AuthorizeForScopes`attribute. This attribute is part of the `Microsoft.Identity.Web` project and automatically manages incremental consent.
+4. In the `Profile()` action we make a call to the Microsoft Graph `/me` endpoint. In case a token cannot be acquired, a challenge is attempted to re-sign-in the user, and have them consent to the requested scopes. This is expressed declaratively by the `AuthorizeForScopes`attribute. This attribute is part of the `Microsoft.Identity.Web` project and automatically manages incremental consent.
 
 ```CSharp
 [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
@@ -266,9 +265,7 @@ public async Task<IActionResult> Profile()
 }
 ```
 
-5. Update launchSetting.json
-
-Change the following values in the `Properties\launchSettings.json` file to ensure that you start your web app from `https://localhost:44321`:
+5. Update `launchSetting.json`. Change the following values in the `Properties\launchSettings.json` file to ensure that you start your web app from `https://localhost:44321`:
     - update the `sslPort` of the `iisSettings` section to be `44321`
     - update the `applicationUrl` property to `https://localhost:44321`
 
@@ -282,7 +279,7 @@ There is one web app in this sample. To deploy it to **Azure App Services**, you
 - publish the projects to the **App Services**, and
 - update its client(s) to call the website instead of the local environment.
 
-#### Publish your files (WebApp-OpenIDConnect-DotNet-graph-v2)
+#### Publish your files
 
 ##### Publish using Visual Studio
 
@@ -321,7 +318,7 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 
 > :warning: If your app is using *in-memory* storage, **Azure App Services** will spin down your web site if it is inactive, and any records that your app was keeping will emptied. In addition, if you increase the instance count of your website, requests will be distributed among the instances. Your app's records, therefore, will not be the same on each instance.
 
-### Enabling your code to get secrets from Key Vault using a Managed Identity
+### Enabling your code to get secrets from Key Vault using Managed Identity
 
 One of the uber principals of security and **Zero Trust** is to place credentials out of your code and use in a manner that allows for credentials to be replaced or rotated without incurring a downtime.
 
@@ -329,50 +326,88 @@ To achieve this we'd place our application's credentials in [Azure Key Vault](ht
 
 We will follow the steps broadly outlined in the guide: [Use Key Vault from App Service with Azure Managed Identity](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet/blob/master/README.md)
 
-### Set up your managed Identity and Key vault
+#### Set up your Managed Identity
 
-1. You would need an [Azure Subscription](https://azure.microsoft.com/free/) first.
-1. You should have a working and deployed application as an Azure App Service following the steps listed at [Deploying web app to Azure App Services](#deploying-web-app-to-azure-app-services) above.
-1. [Set up your Key Vault](https://docs.microsoft.com/azure/key-vault/secrets/quick-create-portal) and move the `ClientSecret` from `appsettings.json` to the Key Vault as a **Secret**. Delete the `ClientSecret` entry in the `appsettings.json`. Note the Key Vault Uri. It should look like `https://example-key-vault.azure.net/`.
-1. Make sure that your deployed web app's [system assigned managed identity has access to this secret](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet/blob/master/README.md#grant-yourself-data-plane-access-to-the-key-vault).
-1. In the `Properties\launchSettings.json` file, add the following entry to enable local testing. Also, make sure you are signed into Visual Studio Code using the same account that you've used to set up Key Vault.
+1. Navigate to [Azure portal](https://portal.azure.com) and select the **Azure App Service**.
+1. Find and select the App Service you've created previously.
+1. On App Service portal, select **Identity**.
+1. Within the **System assigned** tab, switch **Status** to **On**. Click **Save**.
+1. Record the **Object Id** that will appear, as you will need it in the next step.
 
-  > "KEY_VAULT_URI": "https:/example-key-vault.vault.azure.net/" under `environmentVariables`. Make sure to substitute the URI of your key vault.
+For more information, see [Add a system-assigned identity](https://docs.microsoft.com/azure/app-service/overview-managed-identity?tabs=dotnet#add-a-system-assigned-identity)
 
-1. Add the `Azure.Identity` package to the solution.
-1. In `startup.cs` add the following method:
+#### Set up your Key vault
+
+Before starting here, make sure:
+
+- You have an [Azure Subscription](https://azure.microsoft.com/free/).
+- You have a working and deployed application as an Azure App Service following the steps listed at [Deploying web app to Azure App Services](#deploying-web-app-to-azure-app-services) above.
+- Follow the guide to [create an Azure Key Vault](https://docs.microsoft.com/azure/key-vault/general/quick-create-portal).
+
+##### Generate a secret
+
+1. Navigate to your new key vault in the Azure portal
+1. On the Key Vault settings pages, select **Secrets**.
+1. Click on **Generate/Import**.
+1. On the **Create a secret** screen choose the following values:
+    - **Upload options**: Manual.
+    - **Name**: Type a name for the secret. The secret name must be unique within a Key Vault.
+    - **Value**: Copy paste here the `ClientSecret` in the `appsettings.json`.
+    - Leave the other values to their defaults. Click **Create**.
+
+##### Grant access to Key Vault for Managed Identity
+
+Still in the Key Vault portal, follow the steps below:
+
+1. Select **Overview** > **Access policies**
+1. Click on **Add Access Policy** > **Secret permissions** > **Get**
+1. Click on **Select Principal**, add your account and the **system-assigned managed identity** that you have created in the [steps before](#set-up-your-managed-identity). You can use the **Object Id** you have recorded previously to search for it.
+1. Click on **OK** to add the new Access Policy, then click **Save** to save the Access Policy.
+
+#### Modify your code to connect to Key Vault
+
+1. In the `appsettings.json` file, delete the `ClientSecret` entry.
+1. In the `Properties\launchSettings.json` file, find the string `ENTER_YOUR_KEY_VAULT_URI` and replace it with the URI of your Key Vault, for example: `https://example-vault.vault.azure.net/`
+1. Add the `Azure.Identity` package to the solution (:information_source: this has been already added in the sample project):
+1. Add the following in the top of your `startup.cs` (:information_source: this has been already added in the sample project):
 
 ```CSharp
-
-        private string GetSecretFromKeyVault(string tenantId)
-        {
-            // this should point to your vault's URI, like https://<yourkeyvault>.vault.azure.net/
-            string uri = Environment.GetEnvironmentVariable("KEY_VAULT_URI");
-            DefaultAzureCredentialOptions options = new DefaultAzureCredentialOptions();
-
-            // Specify the tenant ID to use the dev credentials when running the app locally
-            options.VisualStudioTenantId = tenantId;
-            options.SharedTokenCacheTenantId = tenantId;
-            SecretClient client = new SecretClient(new Uri(uri), new DefaultAzureCredential(options));
-
-            // The secret name, for example if the full url to the secret is https://<yourkeyvault>.vault.azure.net/secrets/Graph-App-Secret
-            Response<KeyVaultSecret> secret = client.GetSecretAsync("Graph-App-Secret").Result;
-
-            return secret.Value.Value;
-        }
+using Azure;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 ```
 
-3. In `ConfigureServices` method, add the following lines of code, right after `services.AddAuthentication`:
+3. In `Startup.cs` add the following method. Be sure to replace the string `ENTER_YOUR_SECRET_NAME_HERE`:
 
 ```CSharp
-            // The client secret is picked from KeyVault instead
-            string tenantId = Configuration.GetValue<string>("AzureAd:TenantId");
-            services.Configure<MicrosoftIdentityOptions>(
-                options => { options.ClientSecret = GetSecretFromKeyVault(tenantId); });
+  private string GetSecretFromKeyVault(string tenantId)
+  {
+      // this should point to your vault's URI, like https://<yourkeyvault>.vault.azure.net/
+      string uri = Environment.GetEnvironmentVariable("KEY_VAULT_URI");
+      DefaultAzureCredentialOptions options = new DefaultAzureCredentialOptions();
 
+      // Specify the tenant ID to use the dev credentials when running the app locally
+      options.VisualStudioTenantId = tenantId;
+      options.SharedTokenCacheTenantId = tenantId;
+      SecretClient client = new SecretClient(new Uri(uri), new DefaultAzureCredential(options));
+
+      // The secret name, for example if the full url to the secret is https://<yourkeyvault>.vault.azure.net/secrets/Graph-App-Secret
+      Response<KeyVaultSecret> secret = client.GetSecretAsync("ENTER_YOUR_SECRET_NAME_HERE").Result;
+
+      return secret.Value.Value;
+  }
 ```
 
-4. Your `ConfigureServices` method should look like the following now:
+4. Still in In `Startup.cs`, find `ConfigureServices` method and add the following lines of code, right after `services.AddAuthentication`:
+
+```CSharp
+  // The client secret is picked from KeyVault instead
+  string tenantId = Configuration.GetValue<string>("AzureAd:TenantId");
+  services.Configure<MicrosoftIdentityOptions>(
+      options => { options.ClientSecret = GetSecretFromKeyVault(tenantId); });
+```
+
+Your `ConfigureServices` method should look like the following now:
 
 ```CSharp
        public void ConfigureServices(IServiceCollection services)
@@ -393,15 +428,21 @@ We will follow the steps broadly outlined in the guide: [Use Key Vault from App 
  // redacted the rest
 ```
 
-5. Add the following in the top of your `startup.cs`:
+5. Now you need to re-deploy your project again, using the same deployment slot as previous. First, run the command below:
 
-```CSharp
-using Azure;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
-```
+    ```console
+    dotnet publish WebApp-OpenIDConnect-DotNet-graph.csproj --configuration Release
+    ```
 
-6. Run the project again, this time the client secret is fetched from Key vault and your app runs as before.
+Then, from the VS Code file explorer, right-click on the **Publish** folder and select **Deploy to Web App**. If you are prompted to select a deployment, select the same one that you have created before. This will simply update deployed the files.
+
+6. Finally, you need to add environment variables to the App Service where you deployed your web app.
+
+- In the [Azure portal](https://portal.azure.com), search for and select **App Service**, and then select your app.
+- Select **Configuration** blade on the left, then select **New Application Settings**. Add the following variable:
+      - **KEY_VAULT_URI**: the URI of the key vault you've created, for example: `https://example-vault.vault.azure.net/`
+
+Wait for a few minutes for your changes on **App Service** to take effect. You should then be able to visit your published website and sign-in accordingly.
 
 ## More information
 
@@ -415,8 +456,8 @@ using Azure.Security.KeyVault.Secrets;
 - [National Clouds](https://docs.microsoft.com/azure/active-directory/develop/authentication-national-cloud#app-registration-endpoints)
 - [Azure AD code samples](https://docs.microsoft.com/azure/active-directory/develop/sample-v2-code)
 - [Managed Identities for Azure resources](https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/overview)
-[Azure Key Vault](https://azure.microsoft.com/services/key-vault/)
-[Use Key Vault from App Service with Azure Managed Identity](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet/blob/master/README.md)
+- [Azure Key Vault](https://azure.microsoft.com/services/key-vault/)
+- [Use Key Vault from App Service with Azure Managed Identity](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet/blob/master/README.md)
 - [Authentication Scenarios for Azure AD](https://docs.microsoft.com/azure/active-directory/develop/authentication-flows-app-scenarios).
 
 ## Community Help and Support
