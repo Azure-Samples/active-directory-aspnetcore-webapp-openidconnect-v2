@@ -345,41 +345,41 @@ Before starting here, make sure:
 
 ##### Upload a secret to KeyVault
 
-1. Navigate to your new key vault in the Azure portal
+1. Navigate to your new key vault in the Azure portal.
 1. On the Key Vault settings pages, select **Secrets**.
 1. Click on **Generate/Import**.
 1. On the **Create a secret** screen choose the following values:
     - **Upload options**: Manual.
-    - **Name**: Type a name for the secret. The secret name must be unique within a Key Vault.
-    - **Value**: Copy paste here the `ClientSecret` in the `appsettings.json`.
+    - **Name**: Type a name for the secret. The secret name must be unique within a Key Vault. For example, `myClientSecret`
+    - **Value**: Copy and paste the value for the `ClientSecret` property (without quotes!) from your `appsettings.json` file.
     - Leave the other values to their defaults. Click **Create**.
 
 ##### Provide the managed identity access to Key Vault
 
-Still in the Key Vault portal, follow the steps below:
-
-1. Select **Overview** > **Access policies**
-1. Click on **Add Access Policy** > **Secret permissions** > **Get**
-1. Click on **Select Principal**, add your account and the **system-assigned managed identity** that you have created in the [steps before](#set-up-your-managed-identity). You can use the **Object Id** you have recorded previously to search for it.
+1. Navigate to your Key Vault in the portal.
+1. Select **Overview** > **Access policies**.
+1. Click on **Add Access Policy**.
+1. In the input box for **Secret permissions**, select **Get**.
+1. Click on **Select Principal**, add the **system-assigned managed identity** that you have created in the [steps before](#set-up-your-managed-identity). You can use the **Object Id** you have recorded previously to search for it.
 1. Click on **OK** to add the new Access Policy, then click **Save** to save the Access Policy.
 
 #### Modify your code to connect to Key Vault
 
-1. In the `appsettings.json` file, delete the `ClientSecret` entry.
+1. In the `appsettings.json` file, find and delete the `ClientSecret` property and its value.
 1. In the `Properties\launchSettings.json` file, find the string `ENTER_YOUR_KEY_VAULT_URI` and replace it with the URI of your Key Vault, for example: `https://example-vault.vault.azure.net/`
-1. Add the `Azure.Identity` package to the solution (:information_source: this has been already added in the sample project):
-1. Add the following in the top of your `startup.cs` (:information_source: this has been already added in the sample project):
+1. Add the `Azure.Identity` package to the solution. :information_source: this has been already added in the sample project.
+1. Add the following in the top of your `startup.cs`. :information_source: this has been already added in the sample project.
+
+      ```CSharp
+      using Azure;
+      using Azure.Identity;
+      using Azure.Security.KeyVault.Secrets;
+      ```
+
+1. In your `Startup.cs` file, you must create a `GetSecretFromKeyVault` method. This method sets up the Azure Key Vault client and makes returns the secret that is required. :information_source: this has already been added in the sample project.
 
 ```CSharp
-using Azure;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
-```
-
-5. In `Startup.cs` add the following method. Be sure to replace the string `ENTER_YOUR_SECRET_NAME_HERE`:
-
-```CSharp
-  private string GetSecretFromKeyVault(string tenantId)
+  private string GetSecretFromKeyVault(string tenantId, string secretName)
   {
       // this should point to your vault's URI, like https://<yourkeyvault>.vault.azure.net/
       string uri = Environment.GetEnvironmentVariable("KEY_VAULT_URI");
@@ -391,41 +391,41 @@ using Azure.Security.KeyVault.Secrets;
       SecretClient client = new SecretClient(new Uri(uri), new DefaultAzureCredential(options));
 
       // The secret name, for example if the full url to the secret is https://<yourkeyvault>.vault.azure.net/secrets/Graph-App-Secret
-      Response<KeyVaultSecret> secret = client.GetSecretAsync("ENTER_YOUR_SECRET_NAME_HERE").Result;
+      Response<KeyVaultSecret> secret = client.GetSecretAsync(secretName).Result;
 
       return secret.Value.Value;
   }
 ```
 
-6. Still in In `Startup.cs`, find `ConfigureServices` method and add the following lines of code, right after `services.AddAuthentication`:
+1. In your `Startup.cs` file, find the `ConfigureServices` method and add the following lines of code, right after `services.AddAuthentication`. :information_source: You must **uncomment** the commented section that contains this code in the sample project. :warning: be sure to replace the string `ENTER_YOUR_SECRET_NAME_HERE` with the name of the secret you entered into Azure Key Vault, for example `myClientSecret`
 
-```CSharp
-  // The client secret is picked from KeyVault instead
-  string tenantId = Configuration.GetValue<string>("AzureAd:TenantId");
-  services.Configure<MicrosoftIdentityOptions>(
-      options => { options.ClientSecret = GetSecretFromKeyVault(tenantId); });
-```
+    ```CSharp
+    // The client secret is picked from KeyVault instead
+    string tenantId = Configuration.GetValue<string>("AzureAd:TenantId");
+    services.Configure<MicrosoftIdentityOptions>(
+        options => { options.ClientSecret = GetSecretFromKeyVault(tenantId, "ENTER_YOUR_SECRET_NAME_HERE"); });
+    ```
 
-Your `ConfigureServices` method should look like the following now:
+1. Your `ConfigureServices` method should look like the following now:
 
-```CSharp
-       public void ConfigureServices(IServiceCollection services)
-        {
-            string[] initialScopes = Configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
+    ```CSharp
+    public void ConfigureServices(IServiceCollection services)
+    {
+        string[] initialScopes = Configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
 
-            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApp(Configuration)
-                .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
-                .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
-                .AddInMemoryTokenCaches();
+        services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+            .AddMicrosoftIdentityWebApp(Configuration)
+            .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
+            .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
+            .AddInMemoryTokenCaches();
 
-            // client secret is picked from KeyVault
-            string tenantId = Configuration.GetValue<string>("AzureAd:TenantId");
-            services.Configure<MicrosoftIdentityOptions>(
-                options => { options.ClientSecret = GetSecretFromKeyVault(tenantId); });
+        // client secret is picked from KeyVault
+        string tenantId = Configuration.GetValue<string>("AzureAd:TenantId");
+        services.Configure<MicrosoftIdentityOptions>(
+            options => { options.ClientSecret = GetSecretFromKeyVault(tenantId, "myClientSecret"); });
 
- // redacted the rest of the code here
-```
+     // redacted the rest of the code here
+    ```
 
 7. Now you need to re-deploy your project again to the Azure web app. We'd use the same  deployment slot as we used earlier. First, run the command below:
 
