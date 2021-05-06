@@ -432,7 +432,8 @@ Before starting here, make sure:
         services.Configure<MicrosoftIdentityOptions>(
             options => { options.ClientSecret = GetSecretFromKeyVault(tenantId, "myClientSecret"); });
 
-      // ... code continues below
+      // ... more method code continues below
+    }
     ```
 
 1. Add an environment variable to your App Service so your web app can find its key vault.
