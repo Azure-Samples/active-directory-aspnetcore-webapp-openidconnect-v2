@@ -242,6 +242,87 @@ HTML table displaying the properties of the *me* object as returned by Microsoft
 </table>
 ```
 
+## Optional - be ready for Continuous Access Evaluation
+
+Continuous access evaluation (CAE) enables web APIs to do just-in time token validation, for instance enforcing user session revocation in the case of password change/reset but there are other benefits. For details, see [Continuous access evaluation](https://docs.microsoft.com/azure/active-directory/conditional-access/concept-continuous-access-evaluation).
+
+Microsoft Graph is now CAE-enabled in Preview. This means that it can ask its clients for more claims when conditional access policies require it. Your can enable your application to be ready to consume CAE-enabled APIs by:
+
+1. Declaring that it is capable of handling challenges from the web API itself
+1. Processing these challenges
+
+### Declare the CAE capability in the configuration
+
+This sample declares that it's CAE-capable by adding a `ClientCapabilities` property in the configuration, which value is `[ "cp1" ]`.
+
+```JSon
+{
+  "AzureAd": {
+    // ...
+    // the following is required to handle Continuous Access Evaluation challenges
+    "ClientCapabilities": [ "cp1" ],
+    // ...
+  },
+  // ...
+}
+```
+
+### Process the CAE challenge from Microsoft Graph
+
+To process the CAE challenge from Microsoft Graph, the controller actions need to extract it from the wwwAuthenticate header returned in case of error when calling Microsoft Graph. For this you need to:
+
+1. Inject and instance of `MicrosoftIdentityConsentAndConditionalAccessHandler` in the controller constructor. The beginning of the HomeController becomes:
+
+   ```CSharp
+   public class HomeController : Controller
+   {
+    private readonly ILogger<HomeController> _logger;
+    private readonly GraphServiceClient _graphServiceClient;
+    private readonly MicrosoftIdentityConsentAndConditionalAccessHandler _consentHandler;
+
+    private string[] _graphScopes = new[] { "user.read" };
+
+    public HomeController(ILogger<HomeController> logger,
+                          IConfiguration configuration,
+                          GraphServiceClient graphServiceClient,
+                          MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler)
+    {
+      _logger = logger;
+      _graphServiceClient = graphServiceClient;
+      this._consentHandler = consentHandler;
+
+      _graphScopes = configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
+    }
+    
+    // more code here
+    ```
+
+1. Catch a Microsoft Graph `ServiceException`, extract the require the claims, and challenge the user so that they provide these claims (for instance that they re-sign-in and/or do multi-factor authentication). You do this by wrapping the call to Microsoft Graph `currentUser = await _graphServiceClient.Me.Request().GetAsync();` into a try/catch block that processes the challenge:
+
+  ```CSharp
+    try
+    {
+        currentUser = await _graphServiceClient.Me.Request().GetAsync();
+    }
+    // Catch CAE exception from Graph SDK
+    catch (ServiceException svcex) when (svcex.Message.Contains("Continuous access evaluation resulted in claims challenge"))
+    {
+      try
+      {
+        Console.WriteLine($"{svcex}");
+        var claimChallenge = AuthenticationHeaderHelper.ExtractClaimChallengeFromHttpHeader(svcex.ResponseHeaders);
+        _consentHandler.ChallengeUser(_graphScopes, claimChallenge);
+        return new EmptyResult();
+      }
+      catch (Exception ex2)
+      {
+        _consentHandler.HandleException(ex2);
+      }
+    }        
+  ```
+
+   The `AuthenticationHeaderHelper` class is available from the `Helpers\AuthenticationHeaderHelper.cs file`.
+
 ## Next steps
 
 - Learn how to enable distributed caches in [token cache serialization](../2-2-TokenCache)
