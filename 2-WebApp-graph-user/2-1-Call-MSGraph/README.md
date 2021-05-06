@@ -368,10 +368,10 @@ Before starting here, make sure:
 1. In the `appsettings.json` file, find and delete the `ClientSecret` property and its value.
 1. In the `Properties\launchSettings.json` file, find the string `ENTER_YOUR_KEY_VAULT_URI` and replace it with the URI of your Key Vault, for example: `https://example-vault.vault.azure.net/`
 1. Add the `Azure.Identity` package to the solution.
-    &nbsp;
+    </p>
     :information_source: this has been already added in the sample project.
 1. Add the following in the top of your `startup.cs`.
-    &nbsp;
+    </p>
     :information_source: this has been already added in the sample project.
 
       ```CSharp
@@ -381,32 +381,32 @@ Before starting here, make sure:
       ```
 
 1. In your `Startup.cs` file, you must create a `GetSecretFromKeyVault` method. This method sets up the Azure Key Vault client and makes returns the secret that is required.
-    &nbsp;
+    </p>
     :information_source: this has already been added in the sample project.
 
-```CSharp
-  private string GetSecretFromKeyVault(string tenantId, string secretName)
-  {
-      // this should point to your vault's URI, like https://<yourkeyvault>.vault.azure.net/
-      string uri = Environment.GetEnvironmentVariable("KEY_VAULT_URI");
-      DefaultAzureCredentialOptions options = new DefaultAzureCredentialOptions();
+    ```CSharp
+    private string GetSecretFromKeyVault(string tenantId, string secretName)
+    {
+        // this should point to your vault's URI, like https://<yourkeyvault>.vault.azure.net/
+        string uri = Environment.GetEnvironmentVariable("KEY_VAULT_URI");
+        DefaultAzureCredentialOptions options = new DefaultAzureCredentialOptions();
+    
+        // Specify the tenant ID to use the dev credentials when running the app locally
+        options.VisualStudioTenantId = tenantId;
+        options.SharedTokenCacheTenantId = tenantId;
+        SecretClient client = new SecretClient(new Uri(uri), new DefaultAzureCredential(options));
 
-      // Specify the tenant ID to use the dev credentials when running the app locally
-      options.VisualStudioTenantId = tenantId;
-      options.SharedTokenCacheTenantId = tenantId;
-      SecretClient client = new SecretClient(new Uri(uri), new DefaultAzureCredential(options));
+        // The secret name, for example if the full url to the secret is https://<yourkeyvault>.vault.azure.net/secrets/Graph-App-Secret
+        Response<KeyVaultSecret> secret = client.GetSecretAsync(secretName).Result;
 
-      // The secret name, for example if the full url to the secret is https://<yourkeyvault>.vault.azure.net/secrets/Graph-App-Secret
-      Response<KeyVaultSecret> secret = client.GetSecretAsync(secretName).Result;
-
-      return secret.Value.Value;
-  }
-```
+        return secret.Value.Value;
+      }
+    ```
 
 1. In your `Startup.cs` file, find the `ConfigureServices` method and add the following lines of code, right after `services.AddAuthentication`.
-    &nbsp;
+    </p>
     :information_source: You must **uncomment** the commented section that contains this code in the sample project.
-    &nbsp;
+    </p>
     :warning: be sure to replace the string `ENTER_YOUR_SECRET_NAME_HERE` with the name of the secret you entered into Azure Key Vault, for example `myClientSecret`
 
     ```CSharp
@@ -434,7 +434,7 @@ Before starting here, make sure:
         services.Configure<MicrosoftIdentityOptions>(
             options => { options.ClientSecret = GetSecretFromKeyVault(tenantId, "myClientSecret"); });
 
-     // ... code continues below
+      // ... code continues below
     ```
 
 1. Add an environment variable to your App Service so your web app can find its key vault.
