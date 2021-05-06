@@ -367,10 +367,8 @@ Before starting here, make sure:
 
 1. In the `appsettings.json` file, find and delete the `ClientSecret` property and its value.
 1. In the `Properties\launchSettings.json` file, find the string `ENTER_YOUR_KEY_VAULT_URI` and replace it with the URI of your Key Vault, for example: `https://example-vault.vault.azure.net/`
-1. Add the `Azure.Identity` package to the solution.
-    </p>
-    :information_source: this has been already added in the sample project.
-1. Add the following in the top of your `startup.cs`.
+1. Add the `Azure.Identity` NuGet package to the solution. This sample project has already added this package.
+1. Add the following directives to your `startup.cs`.
     </p>
     :information_source: this has been already added in the sample project.
 
@@ -380,7 +378,7 @@ Before starting here, make sure:
       using Azure.Security.KeyVault.Secrets;
       ```
 
-1. In your `Startup.cs` file, you must create a `GetSecretFromKeyVault` method. This method sets up the Azure Key Vault client and makes returns the secret that is required.
+1. In your `Startup.cs` file, you must create a `GetSecretFromKeyVault` method. This method sets up the Azure Key Vault client and returns the secret that is required.
     </p>
     :information_source: this has already been added in the sample project.
 
@@ -403,11 +401,11 @@ Before starting here, make sure:
       }
     ```
 
-1. In your `Startup.cs` file, find the `ConfigureServices` method and add the following lines of code, right after `services.AddAuthentication`.
+1. In your `Startup.cs` file, find the `ConfigureServices` method. Add the following code to call the GetSecretFromKeyVault method, right after `services.AddAuthentication`.
     </p>
-    :information_source: You must **uncomment** the commented section that contains this code in the sample project.
+    :information_source: In the sample project, this code is present but commented out by default. Uncomment it.
     </p>
-    :warning: be sure to replace the string `ENTER_YOUR_SECRET_NAME_HERE` with the name of the secret you entered into Azure Key Vault, for example `myClientSecret`
+    :warning: Replace the string `ENTER_YOUR_SECRET_NAME_HERE` with the name of the client secret you entered into Azure Key Vault, for example `myClientSecret`.
 
     ```CSharp
     // uncomment the following 3 lines to get ClientSecret from KeyVault
@@ -416,7 +414,7 @@ Before starting here, make sure:
         options => { options.ClientSecret = GetSecretFromKeyVault(tenantId, "ENTER_YOUR_SECRET_NAME_HERE"); });
     ```
 
-1. Your `ConfigureServices` method should look like the following snippet:
+1. Your `ConfigureServices` method should now look like the following snippet:
 
     ```CSharp
     public void ConfigureServices(IServiceCollection services)
