@@ -14,7 +14,7 @@ endpoint: Microsoft identity platform
 
 ## Scenario
 
-Starting from a .NET Core MVC Web app that uses OpenID Connect to sign in users, this phase of the tutorial shows how to call  Microsoft Graph /me endpoint on behalf of the signed-in user. It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). Their complexities where encapsulated into the `Microsoft.Identity.Web` reusable library project part of this tutorial. Once again the notion of ASP.NET services injected by dependency injection is heavily used.
+Starting from a .NET Core MVC Web app that uses OpenID Connect to sign in users, this phase of the tutorial shows how to call  Microsoft Graph /me endpoint on behalf of the signed-in user. It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). Their complexities where encapsulated into the [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web/wiki/Microsoft-Identity-Web-basics). Once again the notion of ASP.NET services injected by dependency injection is heavily used.
 
 ![Sign in with the Microsoft identity platform](ReadmeFiles/sign-in.png)
 
@@ -98,7 +98,7 @@ Starting from the [previous phase of the tutorial](../../1-WebApp-OIDC), the cod
 
 ### Update the `Startup.cs` file to enable TokenAcquisition by a MSAL.NET based service
 
-After the following lines in the ConfigureServices(IServiceCollection services) method, replace `services.AddMicrosoftIdentityPlatformAuthentication(Configuration);`, by the following lines:
+After the following lines in the ConfigureServices(IServiceCollection services) method, replace `services.AddMicrosoftIdentityWebApp(Configuration);`, by the following lines:
 
 ```CSharp
  public void ConfigureServices(IServiceCollection services)
@@ -109,51 +109,16 @@ After the following lines in the ConfigureServices(IServiceCollection services) 
     // Add Graph
     services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
-        .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
-        .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
-        .AddInMemoryTokenCaches();
+          .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
+            .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
+            .AddInMemoryTokenCaches();
 ```
 
 The two new lines of code:
 
 - enable MSAL.NET to hook-up to the OpenID Connect events and redeem the authorization code obtained by the ASP.NET Core middleware and after obtaining a token, saves it into the token cache, for use by the Controllers.
-- Decide which token cache implementation to use. In this part of the phase, we'll use a simple in memory token cache, but next steps will show you other implementations you can benefit from, including distributed token caches based on a SQL database, or a Redis cache.
-
-  > Note that you can replace the *in memory token cache* serialization by a *session token cache*  (stored in a session cookie). To do this replacement, change the following in **Startup.cs**:
-  > - replace `using Microsoft.Identity.Web.TokenCacheProviders.InMemory` by `using Microsoft.Identity.Web.TokenCacheProviders.Session`
-  > - Replace `.AddInMemoryTokenCaches()` by `.AddSessionTokenCaches()`
-  > add `app.UseSession();` in the `Configure(IApplicationBuilder app, IHostingEnvironment env)` method, for instance after `app.UseCookiePolicy();`
-  >
-  >
-  > You can also use a distributed token cache, and choose the serialization implementation. For this,  in **Startup.cs**:
-  > - replace `using Microsoft.Identity.Web.TokenCacheProviders.InMemory` by `using Microsoft.Identity.Web.TokenCacheProviders.Distributed`
-  > - Replace `.AddInMemoryTokenCaches()` by `.AddDistributedTokenCaches()`
-  > - Then choose the distributed cache implementation. For details, see https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed?view=aspnetcore-2.2#distributed-memory-cache
-  >
-  >   ```CSharp
-  >   // use a distributed Token Cache by adding
-  >      .AddDistributedTokenCaches();
-  >
-  >   // and then choose your implementation.
-  >  
-  >   // For instance the distributed in memory cache (not cleaned when you stop the app)
-  >   services.AddDistributedMemoryCache()
-  >
-  >   // Or a Redis cache
-  >   services.AddStackExchangeRedisCache(options =>
-  >   {
-  >    options.Configuration = "localhost";
-  >    options.InstanceName = "SampleInstance";
-  >   });
-  >
-  >   // Or even a SQL Server token cache
-  >   services.AddDistributedSqlServerCache(options =>
-  >   {
-  >    options.ConnectionString =_config["DistCache_ConnectionString"];
-  >    options.SchemaName = "dbo";
-  >    options.TableName = "TestCache";
-  >   });
-  >   ```
+- Decide which token cache implementation to use. In this part of the phase, we'll use a simple in memory token cache, but next steps will show you other implementations you can benefit from, including distributed token caches based on a SQL database, Cosmos DB or a Redis cache.
+  For details see [Token cache serialization](https://github.com/AzureAD/microsoft-identity-web/wiki/token-cache-serialization).
 
 ### Add additional files to call Microsoft Graph
 
@@ -286,5 +251,5 @@ HTML table displaying the properties of the *me* object as returned by Microsoft
 
 ## Learn more
 
-- Learn how [Microsoft.Identity.Web](../../Microsoft.Identity.Web) works, in particular hooks-up to the ASP.NET Core OIDC events
+- Learn about [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web/wiki/Microsoft-Identity-Web-basics) works, in particular hooks-up to the ASP.NET Core OIDC events
 - [Use HttpClientFactory to implement resilient HTTP requests](https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests) used by the Graph custom service
