@@ -333,11 +333,11 @@ We will follow the steps broadly outlined in the guide: [Use Key Vault from App 
 
 1. You would need an [Azure Subscription](https://azure.microsoft.com/free/) first.
 1. You should have a working and deployed application as an Azure App Service following the steps listed at [Deploying web app to Azure App Services](#deploying-web-app-to-azure-app-services) above.
-1. [Set up your Key Vault](https://docs.microsoft.com/azure/key-vault/secrets/quick-create-portal) and move the `ClientSecret` from `appsettings.json` to the Key Vault as a **Secret**. Delete the `ClientSecret` entry in the `appsettings.json`. Note the Key Vault Uri , e.g. **https://mykeyvault.azure.net/**.
+1. [Set up your Key Vault](https://docs.microsoft.com/azure/key-vault/secrets/quick-create-portal) and move the `ClientSecret` from `appsettings.json` to the Key Vault as a **Secret**. Delete the `ClientSecret` entry in the `appsettings.json`. Note the Key Vault Uri. It should look like `https://example-key-vault.azure.net/`.
 1. Make sure that your deployed web app's [system assigned managed identity has access to this secret](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet/blob/master/README.md#grant-yourself-data-plane-access-to-the-key-vault).
 1. In the `Properties\launchSettings.json` file, add the following entry to enable local testing. Also, make sure you are signed into Visual Studio Code using the same account that you've used to set up Key Vault.
 
-  > "KEY_VAULT_URI": "https://keyvault0417.vault.azure.net/" under `environmentVariables`
+  > "KEY_VAULT_URI": "https:/example-key-vault.vault.azure.net/" under `environmentVariables`. Make sure to substitute the URI of your key vault.
 
 1. Add the `Azure.Identity` package to the solution.
 1. In `startup.cs` add the following method:
