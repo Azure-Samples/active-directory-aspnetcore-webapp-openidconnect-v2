@@ -25,8 +25,7 @@ description: "This sample demonstrates a ASP.NET Core Web App calling the Micros
 - [About The code](#about-the-code)
 - [Deployment](#deployment)
   - [Deploying web app to Azure App Services](#deploying-web-app-to-azure-app-services)
-  - [Enabling your code to pick secrets from Key Vault using a Managed Identity](#enabling-your-code-to-pick-secrets-from-key-vault-using-a-managed-identity)
-  - [Set up your managed Identity and Key vault](#set-up-your-managed-identity-and-key-vault)
+  - [Enabling your code to get secrets from Key Vault using Managed Identity](#enabling-your-code-to-get-secrets-from-key-vault-using-managed-identity)
 - [More information](#more-information)
 - [Community Help and Support](#community-help-and-support)
 - [Contributing](#contributing)
@@ -344,7 +343,7 @@ Before starting here, make sure:
 - You have a working and deployed application as an Azure App Service following the steps listed at [Deploying web app to Azure App Services](#deploying-web-app-to-azure-app-services) above.
 - Follow the guide to [create an Azure Key Vault](https://docs.microsoft.com/azure/key-vault/general/quick-create-portal).
 
-##### Generate a secret
+##### Upload a secret to KeyVault
 
 1. Navigate to your new key vault in the Azure portal
 1. On the Key Vault settings pages, select **Secrets**.
@@ -355,7 +354,7 @@ Before starting here, make sure:
     - **Value**: Copy paste here the `ClientSecret` in the `appsettings.json`.
     - Leave the other values to their defaults. Click **Create**.
 
-##### Grant access to Key Vault for Managed Identity
+##### Provide the managed identity access to Key Vault
 
 Still in the Key Vault portal, follow the steps below:
 
@@ -377,7 +376,7 @@ using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 ```
 
-3. In `Startup.cs` add the following method. Be sure to replace the string `ENTER_YOUR_SECRET_NAME_HERE`:
+5. In `Startup.cs` add the following method. Be sure to replace the string `ENTER_YOUR_SECRET_NAME_HERE`:
 
 ```CSharp
   private string GetSecretFromKeyVault(string tenantId)
@@ -398,7 +397,7 @@ using Azure.Security.KeyVault.Secrets;
   }
 ```
 
-4. Still in In `Startup.cs`, find `ConfigureServices` method and add the following lines of code, right after `services.AddAuthentication`:
+6. Still in In `Startup.cs`, find `ConfigureServices` method and add the following lines of code, right after `services.AddAuthentication`:
 
 ```CSharp
   // The client secret is picked from KeyVault instead
@@ -425,10 +424,10 @@ Your `ConfigureServices` method should look like the following now:
             services.Configure<MicrosoftIdentityOptions>(
                 options => { options.ClientSecret = GetSecretFromKeyVault(tenantId); });
 
- // redacted the rest
+ // redacted the rest of the code here
 ```
 
-5. Now you need to re-deploy your project again, using the same deployment slot as previous. First, run the command below:
+7. Now you need to re-deploy your project again to the Azure web app. We'd use the same  deployment slot as we used earlier. First, run the command below:
 
     ```console
     dotnet publish WebApp-OpenIDConnect-DotNet-graph.csproj --configuration Release
@@ -436,7 +435,7 @@ Your `ConfigureServices` method should look like the following now:
 
 Then, from the VS Code file explorer, right-click on the **Publish** folder and select **Deploy to Web App**. If you are prompted to select a deployment, select the same one that you have created before. This will simply update deployed the files.
 
-6. Finally, you need to add environment variables to the App Service where you deployed your web app.
+8. Finally, you need to add environment variables to the App Service where you deployed your web app.
 
 - In the [Azure portal](https://portal.azure.com), search for and select **App Service**, and then select your app.
 - Select **Configuration** blade on the left, then select **New Application Settings**. Add the following variable:
