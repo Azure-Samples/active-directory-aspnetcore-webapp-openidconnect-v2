@@ -1,8 +1,8 @@
 {
   "Sample": {
-    "Title": "Using the Microsoft identity platform to call the Microsoft Graph API from an An ASP.NET Core 2.x Web App, on behalf of a user signing-in using their work and school or Microsoft personal account",
+    "Title": "Enable your ASP.NET Core web app to sign in users and call Microsoft Graph with the Microsoft identity platform",
     "Level": 200,
-    "Client": "ASP.NET Core 2.x Web App",
+    "Client": "ASP.NET Core Web App",
     "Service": "Microsoft Graph",
     "RepositoryUrl": "active-directory-aspnetcore-webapp-openidconnect-v2",
     "Endpoint": "AAD v2.0"
@@ -14,7 +14,7 @@
   "AADApps": [
     {
       "Id": "webApp",
-      "Name": "WebApp-OpenIDConnect-DotNet-code-v2",
+      "Name": "WebApp-OpenIDConnect-DotNet-graph-v2",
       "Kind": "WebApp",
       "HomePage": "https://localhost:44321/",
       "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc",
@@ -38,7 +38,7 @@
   "CodeConfiguration": [
     {
       "App": "webApp",
-      "SettingKind": "JSon",
+      "SettingKind": "Text",
       "SettingFile": "\\..\\appsettings.json",
       "Mappings": [
         {

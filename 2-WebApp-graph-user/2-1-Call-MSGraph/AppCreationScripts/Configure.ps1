@@ -2,7 +2,9 @@
 param(
     [PSCredential] $Credential,
     [Parameter(Mandatory=$False, HelpMessage='Tenant ID (This is a GUID which represents the "Directory ID" of the AzureAD tenant into which you want to create the apps')]
-    [string] $tenantId
+    [string] $tenantId,
+    [Parameter(Mandatory=$False, HelpMessage='Azure environment to use while running the script (it defaults to AzureCloud)')]
+    [string] $azureEnvironmentName
 )
 
 #Requires -Modules AzureAD -RunAsAdministrator
@@ -149,6 +151,11 @@ Function ConfigureApplications
    so that they are consistent with the Applications parameters
 #> 
     $commonendpoint = "common"
+    
+    if (!$azureEnvironmentName)
+    {
+        $azureEnvironmentName = "AzureCloud"
+    }
 
     # $tenantId is the Active Directory Tenant. This is a GUID which represents the "Directory ID" of the AzureAD tenant
     # into which you want to create the apps. Look it up in the Azure portal in the "Properties" of the Azure AD.
@@ -157,17 +164,17 @@ Function ConfigureApplications
     # you'll need to sign-in with creds enabling your to create apps in the tenant)
     if (!$Credential -and $TenantId)
     {
-        $creds = Connect-AzureAD -TenantId $tenantId
+        $creds = Connect-AzureAD -TenantId $tenantId -AzureEnvironmentName $azureEnvironmentName
     }
     else
     {
         if (!$TenantId)
         {
-            $creds = Connect-AzureAD -Credential $Credential
+            $creds = Connect-AzureAD -Credential $Credential -AzureEnvironmentName $azureEnvironmentName
         }
         else
         {
-            $creds = Connect-AzureAD -TenantId $tenantId -Credential $Credential
+            $creds = Connect-AzureAD -TenantId $tenantId -Credential $Credential -AzureEnvironmentName $azureEnvironmentName
         }
     }
 
@@ -176,6 +183,8 @@ Function ConfigureApplications
         $tenantId = $creds.Tenant.Id
     }
 
+    
+
     $tenant = Get-AzureADTenantDetail
     $tenantName =  ($tenant.VerifiedDomains | Where { $_._Default -eq $True }).Name
 
@@ -183,21 +192,19 @@ Function ConfigureApplications
     $user = Get-AzureADUser -ObjectId $creds.Account.Id
 
    # Create the webApp AAD application
-   Write-Host "Creating the AAD application (WebApp-OpenIDConnect-DotNet-code-v2)"
+   Write-Host "Creating the AAD application (WebApp-OpenIDConnect-DotNet-graph-v2)"
    # Get a 2 years application key for the webApp Application
    $pw = ComputePassword
    $fromDate = [DateTime]::Now;
    $key = CreateAppKey -fromDate $fromDate -durationInYears 2 -pw $pw
    $webAppAppKey = $pw
    # create the application 
-   $webAppAadApplication = New-AzureADApplication -DisplayName "WebApp-OpenIDConnect-DotNet-code-v2" `
+   $webAppAadApplication = New-AzureADApplication -DisplayName "WebApp-OpenIDConnect-DotNet-graph-v2" `
                                                   -HomePage "https://localhost:44321/" `
                                                   -LogoutUrl "https://localhost:44321/signout-oidc" `
                                                   -ReplyUrls "https://localhost:44321/", "https://localhost:44321/signin-oidc" `
-                                                  -IdentifierUris "https://$tenantName/WebApp-OpenIDConnect-DotNet-code-v2" `
-                                                  -AvailableToOtherTenants $True `
+                                                  -IdentifierUris "https://$tenantName/WebApp-OpenIDConnect-DotNet-graph-v2" `
                                                   -PasswordCredentials $key `
-                                                  -Oauth2AllowImplicitFlow $true `
                                                   -PublicClient $False
 
    # create the service principal of the newly created application 
@@ -213,12 +220,12 @@ Function ConfigureApplications
    }
 
 
-   Write-Host "Done creating the webApp application (WebApp-OpenIDConnect-DotNet-code-v2)"
+   Write-Host "Done creating the webApp application (WebApp-OpenIDConnect-DotNet-graph-v2)"
 
    # URL of the AAD application in the Azure portal
    # Future? $webAppPortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$webAppAadApplication.AppId+"/objectId/"+$webAppAadApplication.ObjectId+"/isMSAApp/"
    $webAppPortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$webAppAadApplication.AppId+"/objectId/"+$webAppAadApplication.ObjectId+"/isMSAApp/"
-   Add-Content -Value "<tr><td>webApp</td><td>$currentAppId</td><td><a href='$webAppPortalUrl'>WebApp-OpenIDConnect-DotNet-code-v2</a></td></tr>" -Path createdApps.html
+   Add-Content -Value "<tr><td>webApp</td><td>$currentAppId</td><td><a href='$webAppPortalUrl'>WebApp-OpenIDConnect-DotNet-graph-v2</a></td></tr>" -Path createdApps.html
 
    $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.RequiredResourceAccess]
 
@@ -238,7 +245,13 @@ Function ConfigureApplications
    Write-Host "Updating the sample code ($configFile)"
    $dictionary = @{ "ClientId" = $webAppAadApplication.AppId;"TenantId" = $tenantId;"Domain" = $tenantName;"ClientSecret" = $webAppAppKey };
    UpdateTextFile -configFilePath $configFile -dictionary $dictionary
-  
+   if($isOpenSSL -eq 'Y')
+   {
+        Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+        Write-Host "You have generated certificate using OpenSSL so follow below steps: "
+        Write-Host "Install the certificate on your system from current folder."
+        Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+   }
    Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  
 }
 

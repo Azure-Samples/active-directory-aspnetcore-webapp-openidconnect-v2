@@ -114,4 +114,4 @@ An example of code for `ValidateSpecificIssuers` is the following:
 
 - Learn how to enable [any Microsoft accounts](../1-3-AnyOrgOrPersonal) to sign-in to your application
 - Learn how to enable users from [National clouds](../1-4-Sovereign) to sign-in to your application
-- Learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user)
+- Learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user/README-incremental-instructions.md)

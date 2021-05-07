@@ -1,4 +1,6 @@
-namespace _2_1_Call_MSGraph.Models
+using System;
+
+namespace WebApp_OpenIDConnect_DotNet_graph.Models
 {
     public class ErrorViewModel
     {

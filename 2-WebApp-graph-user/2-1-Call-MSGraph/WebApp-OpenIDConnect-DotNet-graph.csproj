@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>aspnet-WebApp_OpenIDConnect_DotNet_graph-0701D544-D6FC-4E5A-84E4-B8DD052BA93F</UserSecretsId>
+    <WebProject_DirectoryAccessLevelKey>0</WebProject_DirectoryAccessLevelKey>
+    <RootNamespace>CallMSGraph</RootNamespace>
+    <AssemblyName>CallMSGraph</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="3.1.14" />
+    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.9.2" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.9.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
+  </ItemGroup>
+
+</Project>

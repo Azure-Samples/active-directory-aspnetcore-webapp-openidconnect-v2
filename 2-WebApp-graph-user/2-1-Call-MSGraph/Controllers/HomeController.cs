@@ -1,15 +1,20 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using Azure;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using CallMSGraph.Helpers;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Identity.Web;
-using Microsoft.Graph;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using _2_1_Call_MSGraph.Models;
+using Microsoft.Graph;
+using Microsoft.Identity.Web;
+using System;
+using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
+using WebApp_OpenIDConnect_DotNet_graph.Models;
 
-namespace _2_1_Call_MSGraph.Controllers
+namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
 {
     [Authorize]
     public class HomeController : Controller
@@ -18,27 +23,55 @@ namespace _2_1_Call_MSGraph.Controllers
 
         private readonly GraphServiceClient _graphServiceClient;
 
+        private readonly MicrosoftIdentityConsentAndConditionalAccessHandler _consentHandler;
+
+        private string[] _graphScopes = new[] { "user.read" };
+
         public HomeController(ILogger<HomeController> logger,
-                          GraphServiceClient graphServiceClient)
+                            IConfiguration configuration,
+                            GraphServiceClient graphServiceClient,
+                            MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler)
         {
             _logger = logger;
             _graphServiceClient = graphServiceClient;
+            this._consentHandler = consentHandler;
+
+            _graphScopes = configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
         }
 
         [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var user = await _graphServiceClient.Me.Request().GetAsync();
-            ViewData["ApiResult"] = user.DisplayName;
-
             return View();
         }
 
         [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
         public async Task<IActionResult> Profile()
         {
-            var me = await _graphServiceClient.Me.Request().GetAsync();
-            ViewData["Me"] = me;
+            User currentUser = null;
+
+            try
+            {
+                currentUser = await _graphServiceClient.Me.Request().GetAsync();
+            }
+            catch (System.Exception ex) // Catch CAE exception from Graph SDK
+            {
+                if (ex is ServiceException && ex.Message.Trim().Contains("Continuous access evaluation resulted in claims challenge"))
+                {
+                    try
+                    {
+                        ServiceException svcex = ex as ServiceException;
+                        Console.WriteLine($"{svcex}");
+                        var claimChallenge = AuthenticationHeaderHelper.ExtractClaimChallengeFromHttpHeader(svcex.ResponseHeaders);
+                        _consentHandler.ChallengeUser(_graphScopes, claimChallenge);
+                        return new EmptyResult();
+                    }
+                    catch (Exception ex2)
+                    {
+                        _consentHandler.HandleException(ex2);
+                    }
+                }
+            }
 
             try
             {
@@ -49,13 +82,16 @@ namespace _2_1_Call_MSGraph.Controllers
                     ViewData["Photo"] = Convert.ToBase64String(photoByte);
                 }
             }
-            catch (System.Exception)
+            catch (Exception pex)
             {
+                Console.WriteLine($"{pex}");
                 ViewData["Photo"] = null;
             }
 
+            ViewData["Me"] = currentUser;
             return View();
         }
+
         public IActionResult Privacy()
         {
             return View();
@@ -66,6 +102,16 @@ namespace _2_1_Call_MSGraph.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        private string GetSecretFromKeyVault()
+        {
+            string uri = Environment.GetEnvironmentVariable("KEY_VAULT_URI");
+            SecretClient client = new SecretClient(new Uri(uri), new DefaultAzureCredential());
+
+            Response<KeyVaultSecret> secret = client.GetSecretAsync("Graph-App-Secret").Result;
+
+            return secret.Value.Value;
         }
     }
 }
