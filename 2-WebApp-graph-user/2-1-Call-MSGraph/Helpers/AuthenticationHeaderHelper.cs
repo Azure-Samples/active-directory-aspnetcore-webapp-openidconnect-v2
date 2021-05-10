@@ -32,7 +32,7 @@ namespace CallMSGraph.Helpers
                         var claimChallengeParameter = GetParameterValue(parameters, "claims");
                         if (null != claimChallengeParameter)
                         {
-                            var claimChallenge = ConvertBase64String(claimChallengeParameter);
+                            var claimChallenge = ConvertFromBase64StringWhenNeeded(claimChallengeParameter);
 
                             return claimChallenge;
                         }
@@ -57,7 +57,7 @@ namespace CallMSGraph.Helpers
         /// </summary>
         /// <param name="inputString"></param>
         /// <returns></returns>
-        private static string ConvertBase64String(string inputString)
+        private static string ConvertFromBase64StringWhenNeeded(string inputString)
         {
             if (inputString == null || inputString.Length == 0 || inputString.Length % 4 != 0 || inputString.Contains(" ") || inputString.Contains("\t") || inputString.Contains("\r") || inputString.Contains("\n"))
             {
