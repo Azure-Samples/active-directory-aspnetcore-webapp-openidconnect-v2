@@ -1,7 +1,4 @@
-﻿using Azure;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
-using CallMSGraph.Helpers;
+﻿using CallMSGraph.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -36,6 +33,8 @@ namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
             _graphServiceClient = graphServiceClient;
             this._consentHandler = consentHandler;
 
+            // Capture the Scopes for Graph that were used in the original request for an Access token (AT) for MS Graph as
+            // they'd be needed again when requesting a fresh AT for Graph during claims challenge processing
             _graphScopes = configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
         }
 
@@ -57,7 +56,6 @@ namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
             // Catch CAE exception from Graph SDK
             catch (ServiceException svcex) when (svcex.Message.Contains("Continuous access evaluation resulted in claims challenge"))
             {
-
                 try
                 {
                     Console.WriteLine($"{svcex}");

@@ -13,38 +13,25 @@ description: "This sample demonstrates a ASP.NET Core Web App calling the Micros
 
 # Enable your ASP.NET Core web app to sign in users and call Microsoft Graph with the Microsoft identity platform
 
-- [Enable your ASP.NET Core web app to sign in users and call Microsoft Graph with the Microsoft identity platform](#enable-your-aspnet-core-web-app-to-sign-in-users-and-call-microsoft-graph-with-the-microsoft-identity-platform)
-  - [Overview](#overview)
-  - [Scenario](#scenario)
-  - [Prerequisites](#prerequisites)
-  - [Setup](#setup)
-    - [Step 1: Clone or download this repository](#step-1-clone-or-download-this-repository)
-    - [Step 2: Install project dependencies](#step-2-install-project-dependencies)
-    - [Step 3: Register the sample application(s) with your Azure Active Directory tenant](#step-3-register-the-sample-applications-with-your-azure-active-directory-tenant)
-      - [Choose the Azure AD tenant where you want to create your applications](#choose-the-azure-ad-tenant-where-you-want-to-create-your-applications)
-      - [Register the client web app (WebApp-OpenIDConnect-DotNet-graph-v2)](#register-the-client-web-app-webapp-openidconnect-dotnet-graph-v2)
-      - [Configure the client web app (WebApp-OpenIDConnect-DotNet-graph-v2) to use your app registration](#configure-the-client-web-app-webapp-openidconnect-dotnet-graph-v2-to-use-your-app-registration)
-  - [Run the sample](#run-the-sample)
-  - [Explore the sample](#explore-the-sample)
-  - [About The code](#about-the-code)
-  - [Deployment](#deployment)
-    - [Deploying web app to Azure App Services](#deploying-web-app-to-azure-app-services)
-      - [Publish your files](#publish-your-files)
-        - [Publish using Visual Studio](#publish-using-visual-studio)
-        - [Publish using Visual Studio Code](#publish-using-visual-studio-code)
-      - [Update the Azure AD app registration (WebApp-OpenIDConnect-DotNet-graph-v2)](#update-the-azure-ad-app-registration-webapp-openidconnect-dotnet-graph-v2)
-    - [Enabling your code to get secrets from Key Vault using Managed Identity](#enabling-your-code-to-get-secrets-from-key-vault-using-managed-identity)
-      - [Set up your Managed Identity](#set-up-your-managed-identity)
-      - [Set up your Key vault](#set-up-your-key-vault)
-        - [Upload a secret to KeyVault](#upload-a-secret-to-keyvault)
-        - [Provide the managed identity access to Key Vault](#provide-the-managed-identity-access-to-key-vault)
-      - [Modify your code to connect to Key Vault](#modify-your-code-to-connect-to-key-vault)
-  - [Optional - be ready for Continuous Access Evaluation](#optional---be-ready-for-continuous-access-evaluation)
-    - [Declare the CAE capability in the configuration](#declare-the-cae-capability-in-the-configuration)
-    - [Process the CAE challenge from Microsoft Graph](#process-the-cae-challenge-from-microsoft-graph)
-  - [More information](#more-information)
-  - [Community Help and Support](#community-help-and-support)
-  - [Contributing](#contributing)
+- [Overview](#overview)
+- [Scenario](#scenario)
+- [Prerequisites](#prerequisites)
+- [Setup](#setup)
+  - [Step 1: Clone or download this repository](#step-1-clone-or-download-this-repository)
+  - [Step 2: Install project dependencies](#step-2-install-project-dependencies)
+  - [Step 3: Register the sample application(s) with your Azure Active Directory tenant](#step-3-register-the-sample-applications-with-your-azure-active-directory-tenant)
+- [Run the sample](#run-the-sample)
+- [Explore the sample](#explore-the-sample)
+- [About The code](#about-the-code)
+- [Deployment](#deployment)
+  - [Deploying web app to Azure App Services](#deploying-web-app-to-azure-app-services)
+  - [Enabling your code to get secrets from Key Vault using Managed Identity](#enabling-your-code-to-get-secrets-from-key-vault-using-managed-identity)
+- [Optional - Handle Continuous Access Evaluation (CAE) challenge from Microsoft Graph](#optional---handle-continuous-access-evaluation-cae-challenge-from-microsoft-graph)
+  - [Declare the CAE capability in the configuration](#declare-the-cae-capability-in-the-configuration)
+  - [Process the CAE challenge from Microsoft Graph](#process-the-cae-challenge-from-microsoft-graph)
+- [More information](#more-information)
+- [Community Help and Support](#community-help-and-support)
+- [Contributing](#contributing)
 
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
@@ -467,20 +454,20 @@ using Azure.Security.KeyVault.Secrets;
 
 1. The deployment status is available from the output window. Within a few minutes you'll be able to visit your now-secure app and sign in.
 
-## Optional - be ready for Continuous Access Evaluation
+## Optional - Handle Continuous Access Evaluation (CAE) challenge from Microsoft Graph
 
 Continuous access evaluation (CAE) enables web APIs to do just-in time token validation, for instance enforcing user session revocation in the case of password change/reset but there are other benefits. For details, see [Continuous access evaluation](https://docs.microsoft.com/azure/active-directory/conditional-access/concept-continuous-access-evaluation).
 
 Microsoft Graph is now CAE-enabled in Preview. This means that it can ask its clients for more claims when conditional access policies require it. Your can enable your application to be ready to consume CAE-enabled APIs by:
 
-1. Declaring that it is capable of handling challenges from the web API itself
-1. Processing these challenges
+1. Declaring that the client app is capable of handling claims challenges from the web API.
+2. Processing these challenges when thrown.
 
 ### Declare the CAE capability in the configuration
 
-This sample declares that it's CAE-capable by adding a `ClientCapabilities` property in the configuration, which value is `[ "cp1" ]`.
+This sample declares that it's CAE-capable by adding a `ClientCapabilities` property in the configuration, whose value is `[ "cp1" ]`.
 
-```JSon
+```Json
 {
   "AzureAd": {
     // ...
@@ -494,7 +481,7 @@ This sample declares that it's CAE-capable by adding a `ClientCapabilities` prop
 
 ### Process the CAE challenge from Microsoft Graph
 
-To process the CAE challenge from Microsoft Graph, the controller actions need to extract it from the wwwAuthenticate header returned in case of error when calling Microsoft Graph. For this you need to:
+To process the CAE challenge from Microsoft Graph, the controller actions need to extract it from the `wwwAuthenticate` header. It is returned when MS Graph rejects a seemingly valid Access tokens for MS Graph. For this you need to:
 
 1. Inject and instance of `MicrosoftIdentityConsentAndConditionalAccessHandler` in the controller constructor. The beginning of the HomeController becomes:
 
@@ -516,13 +503,22 @@ To process the CAE challenge from Microsoft Graph, the controller actions need t
       _graphServiceClient = graphServiceClient;
       this._consentHandler = consentHandler;
 
+      // Capture the Scopes for Graph that were used in the original request for an Access token (AT) for MS Graph as
+      // they'd be needed again when requesting a fresh AT for Graph during claims challenge processing
       _graphScopes = configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
     }
     
     // more code here
     ```
 
-1. Catch a Microsoft Graph `ServiceException`, extract the require the claims, and challenge the user so that they provide these claims (for instance that they re-sign-in and/or do multi-factor authentication). You do this by wrapping the call to Microsoft Graph `currentUser = await _graphServiceClient.Me.Request().GetAsync();` into a try/catch block that processes the challenge:
+1. The process to handle CAE challenges from MS Graph comprises of the following steps:
+    1. Catch a Microsoft Graph SDK's `ServiceException` and extract the required `claims`. This is done by wrapping the call to Microsoft Graph into a try/catch block that processes the challenge:
+
+    ```CSharp
+    currentUser = await _graphServiceClient.Me.Request().GetAsync();
+    ```
+
+    1. Then redirect the user back to Azure AD with the new requested `claims`. Azure AD will use this `claims` payload to discern what or if any additional processing is required, example being the user needs to sign-in again or do multi-factor authentication.
 
   ```CSharp
     try
