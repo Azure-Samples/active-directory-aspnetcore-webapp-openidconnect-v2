@@ -21,7 +21,7 @@
       "applicationUrl": "https://localhost:44321;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "KEY_VAULT_URI": "https://keyvault0417.vault.azure.net/"
+        "KEY_VAULT_URI": "ENTER_YOUR_KEY_VAULT_URI"
       }
     }
   }

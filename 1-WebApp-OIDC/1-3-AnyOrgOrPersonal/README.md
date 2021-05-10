@@ -18,7 +18,7 @@ This sample shows how to build an ASP.NET Core MVC Web app that uses OpenID Conn
 
 ![Sign in with Azure AD](ReadmeFiles/sign-in.png)
 
-> This is the first chapter of this ASP.NET Core Web App tutorial. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user) in a later chapter.
+> This is the first chapter of this ASP.NET Core Web App tutorial. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user/README-incremental-instructions.md) in a later chapter.
 You can also sign-in users in your own Azure Active Directory organizations, any organization and even with social identities. For more details the parent directory's [Readme.md](../Readme.md)
 
 ## How to run this sample
@@ -259,10 +259,12 @@ These steps are encapsulated in the [Microsoft.Identity.Web](..\..\Microsoft.Ide
 
 Learn how to:
 
-- enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user)
+- enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user/README-incremental-instructions.md)
 
 ## Learn more
+
 To understand more about token validation, see
+
 - [Validating tokens](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki/ValidatingTokens)
 
 To understand more about app registration, see:
@@ -271,5 +273,6 @@ To understand more about app registration, see:
 - [Quickstart: Configure a client application to access web APIs (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
 
 ## Previous steps
+
 - enable [your organization](../1-1-MyOrg) only or [any Microsoft accounts](../1-3-AnyOrgOrPersonal) to sign-in to your Web app
 - restrict users from [specific organizations](./README-1-1-to-1-2.md#How-to-restrict-users-from-specific-organizations-to-sign-in-to-your-web-app) to sign-in to your web app

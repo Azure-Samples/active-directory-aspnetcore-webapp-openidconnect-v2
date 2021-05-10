@@ -187,7 +187,7 @@ These steps are encapsulated in the [Microsoft.Identity.Web](..\..\Microsoft.Ide
 ## Next steps
 
 - Learn how to enable [any organization](../1-2-AnyOrg) or [any Microsoft accounts](../1-3-AnyOrgOrPersonal) to sign in
-- Learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user)
+- Learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user/README-incremental-instructions.md)
 
 ## Learn more
 
