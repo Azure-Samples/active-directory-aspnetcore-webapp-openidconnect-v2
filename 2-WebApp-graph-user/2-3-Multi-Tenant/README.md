@@ -94,7 +94,7 @@ cd "2-WebApp-graph-user\2-3-Multi-Tenant"
 
 or download and extract the repository .zip file.
 
-> Given that the name of the sample is quiet long, and so are the names of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
+> Given that the name of the sample is quiet long, and so are the names of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid path length limitations on Windows.
 
 ### Step 2:  Register the sample application with your Azure Active Directory tenant
 
