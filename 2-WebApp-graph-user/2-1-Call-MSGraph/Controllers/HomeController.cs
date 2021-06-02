@@ -36,6 +36,8 @@ namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
             _graphServiceClient = graphServiceClient;
             this._consentHandler = consentHandler;
 
+            // Capture the Scopes for Graph that were used in the original request for an Access token (AT) for MS Graph as
+            // they'd be needed again when requesting a fresh AT for Graph during claims challenge processing
             _graphScopes = configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
         }
 
@@ -54,22 +56,19 @@ namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
             {
                 currentUser = await _graphServiceClient.Me.Request().GetAsync();
             }
-            catch (System.Exception ex) // Catch CAE exception from Graph SDK
+            // Catch CAE exception from Graph SDK
+            catch (ServiceException svcex) when (svcex.Message.Contains("Continuous access evaluation resulted in claims challenge"))
             {
-                if (ex is ServiceException && ex.Message.Trim().Contains("Continuous access evaluation resulted in claims challenge"))
+                try
                 {
-                    try
-                    {
-                        ServiceException svcex = ex as ServiceException;
-                        Console.WriteLine($"{svcex}");
-                        var claimChallenge = AuthenticationHeaderHelper.ExtractClaimChallengeFromHttpHeader(svcex.ResponseHeaders);
-                        _consentHandler.ChallengeUser(_graphScopes, claimChallenge);
-                        return new EmptyResult();
-                    }
-                    catch (Exception ex2)
-                    {
-                        _consentHandler.HandleException(ex2);
-                    }
+                    Console.WriteLine($"{svcex}");
+                    var claimChallenge = AuthenticationHeaderHelper.ExtractClaimChallengeFromHttpHeader(svcex.ResponseHeaders);
+                    _consentHandler.ChallengeUser(_graphScopes, claimChallenge);
+                    return new EmptyResult();
+                }
+                catch (Exception ex2)
+                {
+                    _consentHandler.HandleException(ex2);
                 }
             }
 
@@ -84,7 +83,7 @@ namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
             }
             catch (Exception pex)
             {
-                Console.WriteLine($"{pex}");
+                Console.WriteLine($"{pex.Message}");
                 ViewData["Photo"] = null;
             }
 
