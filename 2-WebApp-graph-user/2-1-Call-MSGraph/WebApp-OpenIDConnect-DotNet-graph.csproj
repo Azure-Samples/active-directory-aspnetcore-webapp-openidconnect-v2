@@ -10,8 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="3.1.14" />
-    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.12.0" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.12.0" />
+    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.13.0" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.13.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
   </ItemGroup>
 
