@@ -97,7 +97,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             var userTenant = User.GetTenantId();
 
             // Acquiring token for graph in the signed-in users tenant, so it can be used to retrieve all the users from their tenant
-            var graphAccessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { GraphScope.UserReadAll }, userTenant);
+            var graphAccessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { GraphScope.UserReadAll }, tenantId: userTenant);
 
             TempData["UsersDropDown"] = (await _msGraphService.GetUsersAsync(graphAccessToken))
                 .Select(u => new SelectListItem
