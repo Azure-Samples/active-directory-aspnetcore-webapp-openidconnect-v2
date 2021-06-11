@@ -261,8 +261,8 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
     }
 
     return View();
-}
-```
+   }
+   ```
 
 5. Update `launchSetting.json`. Change the following values in the `Properties\launchSettings.json` file to ensure that you start your web app from `https://localhost:44321`:
     - update the `sslPort` of the `iisSettings` section to be `44321`
