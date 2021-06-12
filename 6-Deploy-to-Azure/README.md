@@ -13,6 +13,7 @@ This tutorial has one WebApp and some chapters have a Web API project. To deploy
 1. Thereafter select the `Subscription`, `Resource Group`, `App service plan and Location`. `OS` will be **Windows** and `Publish` will be **Code**.
 1. Click `Create` and wait for the App Service to be created.
 1. Once you get the `Deployment succeeded` notification, then click on `Go to resource` to navigate to the newly created App service.
+1. Do not activate App service authentication: your application handles everything by itself
 
 ### If your project uses **SQL Server**, please follow these steps
 
@@ -158,6 +159,19 @@ For UNC share, configure the system with [PersistKeysToFileSystem](https://docs.
 services.AddDataProtection()
 .PersistKeysToFileSystem(new DirectoryInfo(@"\\server\share\directory\"));
 ```
+
+#### If you (really) want to enable App services authentication
+
+You don't need to enable app service authentication. If you do, depending on whether you enable or not App service authentication, the redirect URI will be different:
+
+ Scenario |  Redirect URI
+-----------   | -----------  
+Run on your developer box with IIS |  ` https://localhost:44321/signin-oidc`
+Run on your developer box with Kestrel profile |  ` https://localhost:5001/signin-oidc`
+Deployed to app service without app service authentication | `https://appServiceBaseUri/signin-oidc`
+Deployed to app service **with** app service authentication | `https://appServiceBaseUri/.auth/login/aad/callback`
+
+Therefore depending on the scenarios you want to run, you should add the corresponding redirect URI to the app registration
 
 ## Community Help and Support
 
