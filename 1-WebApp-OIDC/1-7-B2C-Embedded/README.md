@@ -35,7 +35,7 @@ git clone https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-op
 Navigate to the `"1-7-B2C-Embedded"` folder
 
  ```Sh
-  cd "1-7-B2C-Embedded"
+  cd "1-WebApp-OIDC\1-7-B2C-Embedded"
   ```
 
 ## Option 1 - Run the pre-configured sample
