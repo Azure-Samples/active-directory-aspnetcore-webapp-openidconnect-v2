@@ -42,7 +42,7 @@ Navigate to the `"1-7-B2C-Embedded"` folder
 
 1. Build the solution and run it.
 1. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. Click on SignIn/Up button.
-1. Click on Sign-In
+1. Click on Sign-In.
 
 ## Option 2 (Recommended) - Configure the sample with your own B2C app
 
