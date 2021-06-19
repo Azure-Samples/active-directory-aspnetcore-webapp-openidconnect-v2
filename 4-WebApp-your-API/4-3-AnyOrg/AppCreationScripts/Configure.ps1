@@ -197,7 +197,7 @@ Function ConfigureApplications
     # into which you want to create the apps. Look it up in the Azure portal in the "Properties" of the Azure AD.
 
     # Login to Azure PowerShell (interactive if credentials are not already provided:
-    # you'll need to sign-in with creds enabling your to create apps in the tenant)
+    # you'll need to sign-in with creds enabling you to create apps in the tenant)
     if (!$Credential -and $TenantId)
     {
         $creds = Connect-AzureAD -TenantId $tenantId -AzureEnvironmentName $azureEnvironmentName
