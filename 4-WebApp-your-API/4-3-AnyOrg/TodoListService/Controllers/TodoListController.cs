@@ -210,7 +210,7 @@ namespace ToDoListService.Controllers
                                                                          }));
                 return graphServiceClient;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;   
             }
