@@ -23,8 +23,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="5.0.4" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="1.13.0" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.13.0" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="1.14.0" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.14.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
