@@ -248,7 +248,7 @@ An example of code for `ValidateSpecificIssuers` is the following:
     {
         var validIssuers = GetAcceptedTenantIds()
                              .Select(tid => $"https://login.microsoftonline.com/{tid}");
-        if (validIssuers.Contains(issuer))
+        if (validIssuers.Any(vi => issuer.StartsWith(vi)))
         {
             return issuer;
         }
