@@ -27,6 +27,7 @@ namespace WebApp_OpenIDConnect_DotNet
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
+        // <Configure_service>
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
@@ -42,6 +43,7 @@ namespace WebApp_OpenIDConnect_DotNet
            services.AddRazorPages()
                 .AddMicrosoftIdentityUI();
         }
+        // </ Configure_service >
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
