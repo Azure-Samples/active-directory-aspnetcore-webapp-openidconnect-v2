@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using Microsoft.IdentityModel.Logging;
+using MyMiddleware;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -54,6 +56,7 @@ namespace WebApp_OpenIDConnect_DotNet
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                IdentityModelEventSource.ShowPII = true;
             }
             else
             {
@@ -61,6 +64,8 @@ namespace WebApp_OpenIDConnect_DotNet
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            //app.UseMiddleware<MiddlewareSimple>();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
