@@ -27,7 +27,7 @@ namespace WebApp_OpenIDConnect_DotNet
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        // <Configure_service>
+        // <Configure_service_ref_for_docs_ms>
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
@@ -43,7 +43,7 @@ namespace WebApp_OpenIDConnect_DotNet
            services.AddRazorPages()
                 .AddMicrosoftIdentityUI();
         }
-        // </ Configure_service >
+        // </ Configure_service_ref_for_docs_ms >
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -62,7 +62,7 @@ namespace WebApp_OpenIDConnect_DotNet
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            // <endpoint_map_ref_for_docs_ms>
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -73,6 +73,7 @@ namespace WebApp_OpenIDConnect_DotNet
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+            // </endpoint_map_ref_for_docs_ms>
         }
     }
 }
