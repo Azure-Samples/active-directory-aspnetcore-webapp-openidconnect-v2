@@ -50,6 +50,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             this.dbContext = dbContext;
             this.microsoftIdentityOptions = microsoftIdentityOptions.Value;
             this.configuration = configuration;
+            configuration.Bind("AzureAd", this.microsoftIdentityOptions);
         }
 
         [HttpGet]
