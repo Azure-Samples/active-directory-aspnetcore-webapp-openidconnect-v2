@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
+using Microsoft.Identity.Client;
 using Microsoft.Identity.Web;
 using System;
 using System.Diagnostics;
@@ -62,7 +63,7 @@ namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
                 try
                 {
                     Console.WriteLine($"{svcex}");
-                    var claimChallenge = AuthenticationHeaderHelper.ExtractClaimChallengeFromHttpHeader(svcex.ResponseHeaders);
+                    string claimChallenge = WwwAuthenticateParameters.GetClaimChallengeFromResponseHeaders(svcex.ResponseHeaders);
                     _consentHandler.ChallengeUser(_graphScopes, claimChallenge);
                     return new EmptyResult();
                 }
