@@ -25,7 +25,7 @@ namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
 
         private readonly MicrosoftIdentityConsentAndConditionalAccessHandler _consentHandler;
 
-        private string[] _graphScopes = new[] { "user.read" };
+        private string[] _graphScopes; // = new[] { "user.read" };
 
         public HomeController(ILogger<HomeController> logger,
                             IConfiguration configuration,
