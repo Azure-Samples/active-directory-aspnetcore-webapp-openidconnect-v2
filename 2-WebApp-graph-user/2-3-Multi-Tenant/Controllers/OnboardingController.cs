@@ -45,12 +45,11 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         private readonly MicrosoftIdentityOptions microsoftIdentityOptions;
         private readonly IConfiguration configuration;
 
-        public OnboardingController(SampleDbContext dbContext, IOptions<MicrosoftIdentityOptions> microsoftIdentityOptions, IConfiguration configuration)
+        public OnboardingController(SampleDbContext dbContext, IOptionsMonitor<MicrosoftIdentityOptions> microsoftIdentityOptions, IConfiguration configuration)
         {
             this.dbContext = dbContext;
-            this.microsoftIdentityOptions = microsoftIdentityOptions.Value;
+            this.microsoftIdentityOptions = microsoftIdentityOptions.Get(OpenIdConnectDefaults.AuthenticationScheme);
             this.configuration = configuration;
-            configuration.Bind("AzureAd", this.microsoftIdentityOptions);
         }
 
         [HttpGet]
@@ -74,10 +73,6 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                 TempAuthorizationCode = stateMarker //Use the stateMarker as a tempCode, so we can locate this entity in the ProcessCode method
             };
 
-            // Saving a temporary tenant to validate the stateMarker on the admin consent response
-            dbContext.AuthorizedTenants.Add(authorizedTenant);
-            dbContext.SaveChanges();
-
             string currentUri = UriHelper.BuildAbsolute(
                 this.Request.Scheme,
                 this.Request.Host,
@@ -92,6 +87,9 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                 Uri.EscapeDataString(currentUri + "Onboarding/ProcessCode"),    // Uri that the admin will be redirected to after the consent
                 Uri.EscapeDataString(stateMarker),                              // The state parameter is used to validate the response, preventing a man-in-the-middle attack, and it will also be used to identify this request in the ProcessCode action.
                 Uri.EscapeDataString(configuration.GetValue<string>("GraphAPI:StaticScope")));  // The scopes to be presented to the admin to consent. Here we are using the static scope '/.default' (https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent#the-default-scope).
+                                                                                                // Saving a temporary tenant to validate the stateMarker on the admin consent response
+            dbContext.AuthorizedTenants.Add(authorizedTenant);
+            dbContext.SaveChanges();
 
             return Redirect(authorizationRequest);
         }
