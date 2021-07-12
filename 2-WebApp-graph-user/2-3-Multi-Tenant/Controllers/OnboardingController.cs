@@ -78,6 +78,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                 this.Request.Host,
                 this.Request.PathBase);
 
+
             // Create an OAuth2 request, using the web app as the client. This will trigger a consent flow that will provision the app in the target tenant.
             // Refer to https://docs.microsoft.com/azure/active-directory/develop/v2-admin-consent for details about the Url format being constructed below
             string authorizationRequest = string.Format(
@@ -92,7 +93,12 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             dbContext.AuthorizedTenants.Add(authorizedTenant);
             dbContext.SaveChanges();
 
+            // Saving a temporary tenant to validate the stateMarker on the admin consent response
+            dbContext.AuthorizedTenants.Add(authorizedTenant);
+            dbContext.SaveChanges();
+
             return Redirect(authorizationRequest);
+
         }
 
         /// <summary>
