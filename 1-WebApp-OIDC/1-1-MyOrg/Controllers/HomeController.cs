@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.Identity.Web;
 using MyMiddleware;
 using System.Diagnostics;
 using WebApp_OpenIDConnect_DotNet.Models;

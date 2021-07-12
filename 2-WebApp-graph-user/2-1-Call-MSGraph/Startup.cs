@@ -29,16 +29,17 @@ namespace WebApp_OpenIDConnect_DotNet_graph
         {
             string[] initialScopes = Configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
 
-            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApp(Configuration)
+            services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+                //.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                //.AddMicrosoftIdentityWebApp(Configuration)
                 .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
                 .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
                 .AddInMemoryTokenCaches();
 
             // uncomment the following 3 lines to get ClientSecret from KeyVault
-            // string tenantId = Configuration.GetValue<string>("AzureAd:TenantId");
-            // services.Configure<MicrosoftIdentityOptions>(
-            //    options => { options.ClientSecret = GetSecretFromKeyVault(tenantId, "ENTER_YOUR_SECRET_NAME_HERE"); });
+            //string tenantId = Configuration.GetValue<string>("AzureAd:TenantId");
+            //services.Configure<MicrosoftIdentityOptions>(
+            //   options => { options.ClientSecret = GetSecretFromKeyVault(tenantId, "ApiSecret"); });
 
             services.AddControllersWithViews(options =>
             {

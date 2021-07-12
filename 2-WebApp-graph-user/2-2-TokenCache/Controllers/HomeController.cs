@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using _2_1_Call_MSGraph.Models;
 using System.IO;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace _2_1_Call_MSGraph.Controllers
 {
@@ -18,11 +19,14 @@ namespace _2_1_Call_MSGraph.Controllers
 
         private readonly GraphServiceClient _graphServiceClient;
 
+        private IDistributedCache _cache;
+
         public HomeController(ILogger<HomeController> logger,
-                          GraphServiceClient graphServiceClient)
+                          GraphServiceClient graphServiceClient, IDistributedCache cache)
         {
             _logger = logger;
             _graphServiceClient = graphServiceClient;
+            _cache = cache;
         }
 
         [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
@@ -30,6 +34,7 @@ namespace _2_1_Call_MSGraph.Controllers
         {
             var user = await _graphServiceClient.Me.Request().GetAsync();
             ViewData["ApiResult"] = user.DisplayName;
+            var encodedCachedTimeUTC = await _cache.GetAsync("cachedTimeUTC");
 
             return View();
         }
