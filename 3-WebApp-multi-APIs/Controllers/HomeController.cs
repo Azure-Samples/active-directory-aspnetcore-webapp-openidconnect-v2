@@ -21,11 +21,11 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         private readonly IGraphApiOperations graphApiOperations;
         private readonly IArmOperations armOperations;
 
-        public HomeController(ITokenAcquisition   tokenAcquisition,
+        public HomeController(ITokenAcquisition tokenAcquisition,
                               IGraphApiOperations graphApiOperations,
                               IArmOperations armOperations)
         {
-            this.tokenAcquisition   = tokenAcquisition;
+            this.tokenAcquisition = tokenAcquisition;
             this.graphApiOperations = graphApiOperations;
             this.armOperations = armOperations;
         }
@@ -35,11 +35,11 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View();
         }
 
-        [AuthorizeForScopes(Scopes = new[] { WebApp_OpenIDConnect_DotNet.Infrastructure.Constants.ScopeUserRead})]
+        [AuthorizeForScopes(Scopes = new[] { WebApp_OpenIDConnect_DotNet.Infrastructure.Constants.ScopeUserRead })]
         public async Task<IActionResult> Profile()
         {
             var accessToken =
-                await tokenAcquisition.GetAccessTokenForUserAsync(new[] { WebApp_OpenIDConnect_DotNet.Infrastructure.Constants.ScopeUserRead});
+                await tokenAcquisition.GetAccessTokenForUserAsync(new[] { WebApp_OpenIDConnect_DotNet.Infrastructure.Constants.ScopeUserRead });
 
             var me = await graphApiOperations.GetUserInformation(accessToken);
             var photo = await graphApiOperations.GetPhotoAsBase64Async(accessToken);
@@ -74,7 +74,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         {
             string message = "Blob failed to create";
             // replace the URL below with your storage account URL
-            Uri blobUri = new Uri("https://blobstorageazuread.blob.core.windows.net/sample-container/Blob1.txt");
+            Uri blobUri = new Uri("https://aadsamplesstorageaccount.blob.core.windows.net/sample-apiaccess/sampleblob1.txt");
             BlobClient blobClient = new BlobClient(blobUri, new TokenAcquisitionTokenCredential(tokenAcquisition));
 
             string blobContents = "Blob created by Azure AD authenticated user.";
@@ -115,7 +115,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
