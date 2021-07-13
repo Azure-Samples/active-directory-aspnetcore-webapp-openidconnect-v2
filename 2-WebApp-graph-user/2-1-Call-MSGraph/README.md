@@ -524,7 +524,7 @@ To process the CAE challenge from Microsoft Graph, the controller actions need t
       try
       {
         Console.WriteLine($"{svcex}");
-        var claimChallenge = AuthenticationHeaderHelper.ExtractClaimChallengeFromHttpHeader(svcex.ResponseHeaders);
+        string claimChallenge = WwwAuthenticateParameters.GetClaimChallengeFromResponseHeaders(svcex.ResponseHeaders);
         _consentHandler.ChallengeUser(_graphScopes, claimChallenge);
         return new EmptyResult();
       }
