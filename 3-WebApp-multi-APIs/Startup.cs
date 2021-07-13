@@ -13,8 +13,6 @@ using WebApp_OpenIDConnect_DotNet.Services.Arm;
 using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web.UI;
-using Constants = WebApp_OpenIDConnect_DotNet.Infrastructure.Constants;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
