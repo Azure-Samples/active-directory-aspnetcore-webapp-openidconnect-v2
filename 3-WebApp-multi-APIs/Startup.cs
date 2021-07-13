@@ -39,7 +39,7 @@ namespace WebApp_OpenIDConnect_DotNet
             });
 
             services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
-                .EnableTokenAcquisitionToCallDownstreamApi(new[] { "https://storage.azure.com/user_impersonation" })
+                .EnableTokenAcquisitionToCallDownstreamApi()
                 .AddInMemoryTokenCaches();
 
             // Add APIs
