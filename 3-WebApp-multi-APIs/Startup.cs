@@ -38,9 +38,8 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.HandleSameSiteCookieCompatibility();
             });
 
-            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
-                .EnableTokenAcquisitionToCallDownstreamApi()
+            services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+                .EnableTokenAcquisitionToCallDownstreamApi(new[] { "https://storage.azure.com/user_impersonation" })
                 .AddInMemoryTokenCaches();
 
             // Add APIs
