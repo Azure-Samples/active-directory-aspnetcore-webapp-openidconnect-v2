@@ -1,7 +1,6 @@
 ﻿using Azure;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
-using CallMSGraph.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
