@@ -12,8 +12,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
 
 namespace WebApp_OpenIDConnect_DotNet_graph
 {
