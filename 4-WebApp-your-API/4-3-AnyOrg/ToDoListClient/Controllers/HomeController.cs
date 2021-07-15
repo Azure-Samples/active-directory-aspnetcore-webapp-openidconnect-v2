@@ -27,7 +27,7 @@ namespace ToDoListClient.Controllers
             {
                 if (!_RedirectUri.EndsWith("/"))
                 {
-                    _RedirectUri = _RedirectUri + "/";
+                    _RedirectUri += "/";
                 }
             }
         }
@@ -49,11 +49,11 @@ namespace ToDoListClient.Controllers
         /// <returns></returns>
         public IActionResult AdminConsentApi()
         {
-            string adminConsent1 = "https://login.microsoftonline.com/organizations/v2.0/adminconsent?client_id=" + _ApiClientId
+            string adminConsent = "https://login.microsoftonline.com/organizations/v2.0/adminconsent?client_id=" + _ApiClientId
                 + "&redirect_uri=" + _ApiRedirectUri
                 + "&state=" + _RedirectUri + "Home/AdminConsentClient" + "&scope=" + _ApiScope;
 
-            return Redirect(adminConsent1);
+            return Redirect(adminConsent);
         }
 
         /// <summary>
@@ -62,11 +62,11 @@ namespace ToDoListClient.Controllers
         /// <returns></returns>
         public IActionResult AdminConsentClient()
         {
-            string adminConsent2 = "https://login.microsoftonline.com/organizations/v2.0/adminconsent?client_id=" + _ClientId
+            string adminConsent = "https://login.microsoftonline.com/organizations/v2.0/adminconsent?client_id=" + _ClientId
                 + "&redirect_uri=" + _RedirectUri
                 + "&state=123&scope=" + _TodoListScope;
 
-            return Redirect(adminConsent2);
+            return Redirect(adminConsent);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
