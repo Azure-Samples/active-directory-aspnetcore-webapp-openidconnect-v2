@@ -67,8 +67,6 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
             return View();
         }
-
-
 		
 		[AuthorizeForScopes(Scopes = new[] { "https://storage.azure.com/user_impersonation" })]
 
@@ -88,7 +86,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                     await blobClient.UploadAsync(stream);
                     message = "Blob successfully created";
                 }
-	        catch (MicrosoftIdentityWebChallengeUserException ex)
+	            catch (MicrosoftIdentityWebChallengeUserException ex)
                 {
                     throw ex;
                 }	
@@ -96,8 +94,16 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                 {
                     throw ex;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    try
+                    {
+                        message += $". Reason - {((Azure.RequestFailedException)ex).ErrorCode}";
+                    }
+                    catch (Exception)
+                    {
+                        message += $". Reason - {ex.Message}";
+                    }
                 }
             }
 
