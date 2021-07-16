@@ -93,10 +93,6 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             dbContext.AuthorizedTenants.Add(authorizedTenant);
             dbContext.SaveChanges();
 
-            // Saving a temporary tenant to validate the stateMarker on the admin consent response
-            dbContext.AuthorizedTenants.Add(authorizedTenant);
-            dbContext.SaveChanges();
-
             return Redirect(authorizationRequest);
 
         }
