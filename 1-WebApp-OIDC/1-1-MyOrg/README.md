@@ -138,37 +138,13 @@ cd "1-WebApp-OIDC\1-1-MyOrg"
 1. Run the following command to create a sample from the command line using the `SingleOrg` template:
 
     ```Sh
-    dotnet new mvc --auth SingleOrg --client-id <Enter_the_Application_Id_here> --tenant-id <yourTenantId>
+    dotnet new mvc --auth SingleOrg --client-id <Enter_the_Application_Id_here> --tenant-id <yourTenantId> --domain <domainName.onmicrosoft.com>
     ```
 
-    > Note: Replace *`Enter_the_Application_Id_here`* with the *Application Id* from the application Id you just registered in the Application Registration Portal and *`<yourTenantId>`* with the *Directory (tenant) ID* where you created your application.
+    > Note: Replace *`Enter_the_Application_Id_here`* with the *Application Id* from the application Id you just registered in the Application Registration Portal and *`<yourTenantId>`* with the *Directory (tenant) ID* where you created your application. Specify your actual domain name instead of domainName.onmicrosoft.com
 
 1. Open the generated project (.csproj) in Visual Studio, and save the solution.
-1. Add the `Microsoft.Identity.Web` NuGet package. It's used to simplify signing-in and, in the next tutorial phases, to get a token.
-1. Open the **Startup.cs** file and:
-
-   - at the top of the file, add the following using directive:
-
-     ```CSharp
-      using Microsoft.Identity.Web;
-      ```
-
-   - in the `ConfigureServices` method, replace the two following lines:
-
-     ```CSharp
-      services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
-              .AddAzureAD(options => Configuration.Bind("AzureAd", options));
-     ```
-
-     by this line:
-
-     ```CSharp
-       services.AddMicrosoftIdentityWebAppAuthentication(Configuration);
-     ```
-
-     This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
-
-    1. Change the `Properties\launchSettings.json` file to ensure that you start your web app from <https://localhost:44321> as registered. For this:
+1. Change the `Properties\launchSettings.json` file to ensure that you start your web app from <https://localhost:44321> as registered. For this:
     - update the `sslPort` of the `iisSettings` section to be `44321`
     - in the `applicationUrl` property of use `https://localhost:44321`
 
