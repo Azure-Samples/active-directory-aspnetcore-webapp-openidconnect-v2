@@ -11,6 +11,7 @@ using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 using Microsoft.IdentityModel.Logging;
 using MyMiddleware;
+using System.Diagnostics;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -37,7 +38,34 @@ namespace WebApp_OpenIDConnect_DotNet
 
             // Sign-in users with the Microsoft identity platform
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-            .AddMicrosoftIdentityWebApp(options => Configuration.Bind("AzureAd", options));
+            .AddMicrosoftIdentityWebApp(options =>
+            {
+                Configuration.Bind("AzureAd", options);
+                options.Events.OnTokenValidated = context => {
+                    Debug.WriteLine("*** Validated token");
+                    return System.Threading.Tasks.Task.CompletedTask;
+                };
+                options.Events.OnRedirectToIdentityProvider = (context) =>
+                {
+                    Debug.WriteLine("*** RedirectToIdentityProvider");
+                    return System.Threading.Tasks.Task.CompletedTask;
+                };
+                options.Events.OnMessageReceived = (context) =>
+                {
+                    Debug.WriteLine("*** MessageReceived");
+                    return System.Threading.Tasks.Task.CompletedTask;
+                };                               
+                options.Events.OnAuthorizationCodeReceived = (context) =>
+                {
+                    Debug.WriteLine("*** AuthorizationCodeReceived");
+                    return System.Threading.Tasks.Task.CompletedTask;
+                };
+                options.Events.OnAuthenticationFailed = (context) =>
+                {
+                    Debug.WriteLine("*** AuthenticationFailed");
+                    return System.Threading.Tasks.Task.CompletedTask;
+                };
+            });
 
             services.AddControllersWithViews(options =>
             {
