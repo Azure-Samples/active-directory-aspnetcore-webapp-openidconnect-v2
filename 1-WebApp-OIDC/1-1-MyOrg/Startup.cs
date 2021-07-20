@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -33,8 +34,8 @@ namespace WebApp_OpenIDConnect_DotNet
             });
 
             // Sign-in users with the Microsoft identity platform
-            services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
-            .AddAzureAD(options => Configuration.Bind("AzureAd", options));
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+            .AddMicrosoftIdentityWebApp(options => Configuration.Bind("AzureAd", options));
 
             services.AddControllersWithViews(options =>
             {
