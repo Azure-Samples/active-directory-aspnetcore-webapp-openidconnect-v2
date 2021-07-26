@@ -24,19 +24,9 @@ This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect 
 
 ## How to run this sample
 
-To run this sample:
+To run this sample see [Pre-Requisites](../../ReadmeFiles/1-WebApp-OIDC-prereq.md)
 
-> Pre-requisites: Install .NET Core 3.0 or later (for example for Windows) by following the instructions at [.NET and C# - Get Started in 10 Minutes](https://www.microsoft.com/net/core). In addition to developing on Windows, you can develop on [Linux](https://www.microsoft.com/net/core#linuxredhat), [Mac](https://www.microsoft.com/net/core#macos), or [Docker](https://www.microsoft.com/net/core#dockercmd).
-
-### Step 1: Register the sample with your Azure AD tenant
-
-There is one project in this sample. To register it, you can:
-
-- either follow [PowerShell Script Instructions](../../ReadmeFiles/ConfigureAppWithPowerShell.md) that **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you and modify the Visual Studio projects' configuration files.
-
-- **OR**, if you want to register your application with the Azure portal, follow the [Register Web Application Instructions](../../ReadmeFiles/RegisterWebApps.md)
-
-### Step 2: Download/ Clone this sample code or build the application using a template
+### Step 1: Download/ Clone this sample code or build the application using a template
 
 This sample was created from the dotnet core 2.2 [dotnet new mvc](https://docs.microsoft.com/dotnet/core/tools/dotnet-new?tabs=netcore2x) template with `SingleOrg` authentication, and then tweaked to let it support tokens for the Microsoft identity platform endpoint. You can clone/download this repository or create the sample from the command line:
 
@@ -93,6 +83,14 @@ cd "1-WebApp-OIDC\1-1-MyOrg"
       ```
 
     - in **Views/Shared/_LoginPartial.cshtml**, change the **asp-area** tag to: `asp-area="MicrosoftIdentity"`
+
+### Step 2: Register the sample with your Azure AD tenant
+
+There is one project in this sample. To register it, you can:
+
+- either follow [Automate with PowerShell Instructions](../../ReadmeFiles/ConfigureAppWithPowerShell.md) to **automatically** create the Azure AD applications and related objects (passwords, permissions, dependencies) for you and modify the Visual Studio projects' configuration files.
+
+- **OR**, if you want to register your application with the Azure portal, follow the [Register Web Application Manually](../../ReadmeFiles/RegisterWebApps.md)
 
 ### Step 3: Run the sample
 
