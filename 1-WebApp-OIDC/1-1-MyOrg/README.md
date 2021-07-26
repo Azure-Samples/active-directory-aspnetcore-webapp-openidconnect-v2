@@ -32,33 +32,11 @@ To run this sample:
 
 There is one project in this sample. To register it, you can:
 
-- either use PowerShell scripts that **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you and modify the Visual Studio projects' configuration files.
+[Relative Test](wiki/Configure-you-application-with-PowerShell#1-on-windows-run-powershell-and-navigate-to-the-solutions-folderappcreationscripts)
 
-  <details>
-  <summary>Expand to see how to use this automation</summary>
+- either follow [PowerShell Script](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/wiki/Configure-you-application-with-PowerShell#1-on-windows-run-powershell-and-navigate-to-the-solutions-folderappcreationscripts) that **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you and modify the Visual Studio projects' configuration files.
 
-    1. On Windows run PowerShell and navigate to the solution's folder
-
-    2. In PowerShell run:
-
-       ```PowerShell
-       Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
-       ```
-
-    3. Run the script to create your Azure AD application and configure the code of the sample application accordingly
-
-       ```PowerShell
-       cd .\AppCreationScripts\ 
-   .\Configure.ps1
-       ```
-
-       > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
-
-    4. Open the Visual Studio solution and click start. That's it!
-
-    </details>
-
-- or, if you want to register your application with the Azure portal, follow the steps below:
+- OR, if you want to register your application with the Azure portal, follow the steps below:
 
 #### Choose the Azure AD tenant where you want to create your applications
 
