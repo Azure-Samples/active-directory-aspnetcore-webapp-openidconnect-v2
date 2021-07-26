@@ -32,62 +32,9 @@ To run this sample:
 
 There is one project in this sample. To register it, you can:
 
-[Relative Test](wiki/Configure-you-application-with-PowerShell#1-on-windows-run-powershell-and-navigate-to-the-solutions-folderappcreationscripts)
+- either follow [PowerShell Script Instructions](../../ReadmeFiles/ConfigureAppWithPowerShell.md) that **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you and modify the Visual Studio projects' configuration files.
 
-- either follow [PowerShell Script](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/wiki/Configure-you-application-with-PowerShell#1-on-windows-run-powershell-and-navigate-to-the-solutions-folderappcreationscripts) that **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you and modify the Visual Studio projects' configuration files.
-
-- OR, if you want to register your application with the Azure portal, follow the steps below:
-
-#### Choose the Azure AD tenant where you want to create your applications
-
-As a first step you'll need to:
-
-1. Sign in to the [Azure portal](https://portal.azure.com) using either a work or school account or a personal Microsoft account.
-1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory**.
-   Change your portal session to the desired Azure AD tenant.
-
-#### Register the webApp app (WebApp)
-
-1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
-1. Select **New registration**.
-1. When the **Register an application page** appears, enter your application's registration information:
-   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp`.
-   - In the **Supported account types** section, select **Accounts in this organizational directory only ({tenant name})**.
-     <details open=true>
-     <summary>Expand/collapse screenshot</summary>
-
-       ![Register app](../../ReadmeFiles/screenshot-register-app.png)
-
-     </details>
-     > Note that there are more than one redirect URIs. You'll need to add them from the **Authentication** tab later after the app has been created successfully.
-     
-1. Select **Register** to create the application.
-1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the Visual Studio configuration file for this project.
-   <details open=true>
-   <summary>Expand/collapse screenshot</summary>
-
-     ![OVerview page](../../ReadmeFiles/screenshot-overview.png)
-
-   </details>
-
-1. In the list of pages for the app, select **Authentication**..
-   - In the Redirect URIs section, select **Web** in the combo-box and enter the following redirect URIs.
-       - `https://localhost:44321/`
-       - `https://localhost:44321/signin-oidc`
-   - In the **Advanced settings** section set **Logout URL** to `https://localhost:44321/signout-oidc`
-   - In the **Advanced settings** | **Implicit grant** section, check **ID tokens** as this sample requires
-     the [ID Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) to be enabled to
-     sign-in the user.
-     <details open=true>
-     <summary>Expand/collapse screenshot</summary>
-
-       ![Authentication page](../../ReadmeFiles/screenshot-authentication.png)
-
-     </details>
-
-1. Select **Save**.
-
-> Note that unless the Web App calls a Web API, no certificate or secret is needed.
+- **OR**, if you want to register your application with the Azure portal, follow the [Register Web Application Instructions](../../ReadmeFiles/RegisterWebApps.md)
 
 ### Step 2: Download/ Clone this sample code or build the application using a template
 
