@@ -50,11 +50,16 @@ cd "1-WebApp-OIDC\1-1-MyOrg"
     dotnet new mvc --auth SingleOrg --client-id <Enter_the_Application_Id_here> --tenant-id <yourTenantId> --domain <domainName.onmicrosoft.com>
     ```
 
-    > Note: Replace *`Enter_the_Application_Id_here`* with the *Application Id* from the application Id you just registered in the Application Registration Portal and *`<yourTenantId>`* with the *Directory (tenant) ID* where you created your application. Specify your actual domain name instead of domainName.onmicrosoft.com
+   **If you already have a Web App registered**, then replace:
+    - *`<Enter_the_Application_Id_here>`* with the *Application Id* from the application Id
+    - *`<yourTenantId>`* with the *Directory (tenant) ID*
+    - *`<domainName.onmicrosoft.com>`* with actual domain name
+
+   **In case you don't have Web App registered**, then just continue with the next steps and you will be able to replace the fields once the information will become available.
 
 1. Open the generated project (.csproj) in Visual Studio, and save the solution.
 1. Change the `Properties\launchSettings.json` file to ensure that you start your web app from <https://localhost:44321> as registered. For this:
-    - Under iisExpress section:
+    - Under **iisExpress** section:
         - update the `sslPort` of the `iisSettings` section to be `44321`
         - in the `applicationUrl` property of use `https://localhost:44321`
 
@@ -65,6 +70,7 @@ cd "1-WebApp-OIDC\1-1-MyOrg"
       ```CSharp
         using Microsoft.Identity.Web.UI;
       ```
+
     - in the `ConfigureServices` method, change the **AddControllersWithView** code snippet to this:
 
       ```CSharp
