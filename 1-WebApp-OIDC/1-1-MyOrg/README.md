@@ -40,13 +40,7 @@ cd webapp
 cd "1-WebApp-OIDC\1-1-MyOrg"
   ```
 
-> Given that the name of the sample is very long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
-
-  In the **appsettings.json** file:
-  
-  - replace the `ClientID` value with the *Application ID* from the application you registered in Application Registration portal on *Step 1*.
-  - replace the `TenantId` value with the *Tenant ID* where you registered your Application on *Step 1*.
-  - replace the `Domain` value with the *Azure AD domain name*,  e.g. contoso.onmicrosoft.com where you registered your Application on *Step 1*.
+> Given that the name of the sample is very long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.  
 
 #### Option 2: Create the sample from the command line
 
@@ -60,8 +54,9 @@ cd "1-WebApp-OIDC\1-1-MyOrg"
 
 1. Open the generated project (.csproj) in Visual Studio, and save the solution.
 1. Change the `Properties\launchSettings.json` file to ensure that you start your web app from <https://localhost:44321> as registered. For this:
-    - update the `sslPort` of the `iisSettings` section to be `44321`
-    - in the `applicationUrl` property of use `https://localhost:44321`
+    - Under iisExpress section:
+        - update the `sslPort` of the `iisSettings` section to be `44321`
+        - in the `applicationUrl` property of use `https://localhost:44321`
 
 1. (Optional) If you don't have a custom `AccountController` to handle the *sign-in* and *sign-out* requests, you can use the `Microsoft.Identity.Web.UI` built-in one. For that, please include this change in **Startup.cs**:
 

@@ -47,4 +47,10 @@ As a first step you'll need to:
 
 ##### 7. Select **Save**.
 
+##### 8. In Visual Studio, **appsettings.json** file:
+  
+  - replace the `ClientID` value with the *Application ID* from the application you just registered.
+  - replace the `TenantId` value with the *Tenant ID*.
+  - replace the `Domain` value with the *Azure AD domain name*,  e.g. contoso.onmicrosoft.com.
+  
 > Note that unless the Web App calls a Web API, no certificate or secret is needed.
