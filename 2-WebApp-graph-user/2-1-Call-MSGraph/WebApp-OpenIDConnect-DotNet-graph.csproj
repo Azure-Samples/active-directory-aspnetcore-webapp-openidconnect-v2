@@ -10,9 +10,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="3.1.14" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.35.0" />
-    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.15.0" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.15.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.35.1" />
+    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.16.0" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.16.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
   </ItemGroup>
 
