@@ -20,14 +20,17 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         readonly ITokenAcquisition tokenAcquisition;
         private readonly IGraphApiOperations graphApiOperations;
         private readonly IArmOperations armOperations;
+        private readonly IArmOperationsWithImplicitAuth armOperationsWithImplicitAuth;
 
         public HomeController(ITokenAcquisition   tokenAcquisition,
                               IGraphApiOperations graphApiOperations,
-                              IArmOperations armOperations)
+                              IArmOperations armOperations,
+                              IArmOperationsWithImplicitAuth armOperationsWithImplicitAuth)
         {
             this.tokenAcquisition   = tokenAcquisition;
             this.graphApiOperations = graphApiOperations;
             this.armOperations = armOperations;
+            this.armOperationsWithImplicitAuth = armOperationsWithImplicitAuth;
         }
 
         public IActionResult Index()
@@ -67,9 +70,23 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
             return View();
         }
-		
-		[AuthorizeForScopes(Scopes = new[] { "https://storage.azure.com/user_impersonation" })]
 
+        // Requires that the app has added the Azure Service Management / user_impersonation scope, and that
+        // the admin tenant does not require admin consent for ARM.
+        [AuthorizeForScopes(Scopes = new[] { "https://management.core.windows.net/user_impersonation" })]
+        public async Task<IActionResult> TenantsWithImplicitAuth()
+        {
+            var tenantIds = await armOperationsWithImplicitAuth.EnumerateTenantsIds();
+            /*
+                        var tenantsIdsAndNames =  await graphApiOperations.EnumerateTenantsIdAndNameAccessibleByUser(tenantIds,
+                            async tenantId => { return await tokenAcquisition.GetAccessTokenForUserAsync(new string[] { "Directory.Read.All" }, tenantId); });
+            */
+            ViewData["tenants"] = tenantIds;
+
+            return View(nameof(Tenants));
+        }
+
+        [AuthorizeForScopes(Scopes = new[] { "https://storage.azure.com/user_impersonation" })]
         public async Task<IActionResult> Blob()
         {
             string message = "Blob failed to create";
