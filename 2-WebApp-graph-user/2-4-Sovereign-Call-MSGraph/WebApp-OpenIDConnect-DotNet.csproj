@@ -18,7 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Identity.Web" Version="1.16.1" />
     <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.16.1" />
 	  <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.16.1" />
   </ItemGroup>
