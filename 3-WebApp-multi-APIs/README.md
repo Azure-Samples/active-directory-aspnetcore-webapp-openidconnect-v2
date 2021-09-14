@@ -191,6 +191,39 @@ insert
   <li><a asp-area="" asp-controller="Home" asp-action="Blob">Blob</a></li>
 ```
 
+### Using implicit authentication (ArmApiOperationsServiceWithImplicitAuth)
+When calling an API, instead of explicitly giving the token in each call you can use a delegating handler on your HTTP client to automatically inject the access token.
+
+In `Startup.cs` after `services.AddHttpClient<IArmOperations, ArmApiOperationService>();` add `.services.AddHttpClient<IArmOperationsWithImplicitAuth, ArmApiOperationServiceWithImplicitAuth>()...`:
+
+```CSharp
+public void ConfigureServices(IServiceCollection services)
+{
+    . . .
+    services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+        .EnableTokenAcquisitionToCallDownstreamApi( new string[] { Constants.ScopeUserRead })
+        .AddInMemoryTokenCaches();
+    services.AddHttpClient<IArmOperations, ArmApiOperationService>();
+    services.AddHttpClient<IArmOperationsWithImplicitAuth, ArmApiOperationServiceWithImplicitAuth>()
+        .AddMicrosoftIdentityUserAuthenticationHandler(
+            "arm", 
+            options => options.Scopes = $"{ArmApiOperationService.ArmResource}user_impersonation");
+```
+
+In `HomeController.cs` add `TenantsWithImplicitAuth`:
+```CSharp
+    // Requires that the app has added the Azure Service Management / user_impersonation scope, and that
+    // the admin tenant does not require admin consent for ARM.
+    [AuthorizeForScopes(Scopes = new[] { "https://management.core.windows.net/user_impersonation" })]
+    public async Task<IActionResult> TenantsWithImplicitAuth()
+    {
+        var tenantIds = await armOperationsWithImplicitAuth.EnumerateTenantsIds();
+        ViewData["tenants"] = tenantIds;
+
+        return View(nameof(Tenants));
+    }
+```
+
 ## Troubleshooting
 
 To access Azure Resource Management (ARM), you'll need a work or school account (AAD account) and an Azure subscription. If your Azure subscription is for a Microsoft personal account, just create a new user in your directory, and use this user to run the sample

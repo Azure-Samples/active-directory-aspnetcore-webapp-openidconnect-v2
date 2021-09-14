@@ -46,6 +46,10 @@ namespace WebApp_OpenIDConnect_DotNet
             // Add APIs
             services.AddGraphService(Configuration);
             services.AddHttpClient<IArmOperations, ArmApiOperationService>();
+            services.AddHttpClient<IArmOperationsWithImplicitAuth, ArmApiOperationServiceWithImplicitAuth>()
+                .AddMicrosoftIdentityUserAuthenticationHandler(
+                    "arm", 
+                    options => options.Scopes = $"{ArmApiOperationService.ArmResource}user_impersonation");
 
             services.AddControllersWithViews(options =>
             {
