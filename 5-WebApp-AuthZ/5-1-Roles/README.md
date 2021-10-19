@@ -152,7 +152,7 @@ As a first step you'll need to:
    - Click the **Add a permission** button and then,
    - Ensure that the **Microsoft APIs** tab is selected.
    - In the *Commonly used Microsoft APIs* section, click on **Microsoft Graph**
-   - In the **Delegated permissions** section, select the **User.Read**, **User.ReadBasic.All**, **Directory.Read.All** in the list. Use the search box if necessary.
+   - In the **Delegated permissions** section, select the **User.Read**, **User.ReadBasic.All** in the list. Use the search box if necessary.
    - Click on the **Add permissions** button at the bottom.
 
 ##### Define your Application Roles
@@ -221,9 +221,9 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 
 1. There also are two links provided on the home page under the **Try one of the following Azure App Role driven operations** heading. These links will result in an access denied error if the signed-in user is not present in the expected role. Sign-out and sign-in with a user account with the correct role assignment to view the contents of these pages.
 
-> Note: You need to be a tenant admin to view the page that lists all the groups and roles the signed-in user is assigned to. It requires the **Directory.Read.All** permission to work. If you run into the **AADSTS65001: The user or administrator has not consented to use the application** error, provide [admin consent](https://docs.microsoft.com/azure/active-directory/manage-apps/configure-user-consent#grant-admin-consent-when-registering-an-app-in-the-azure-portal) to your app in the portal. Sign-out and sign-in again to make the page work as expected.
+> Note: You need to be a tenant admin to view the page that lists all the groups and roles the signed-in user is assigned to. It requires the **User.Read** permission to work. If you run into the **AADSTS65001: The user or administrator has not consented to use the application** error, provide [admin consent](https://docs.microsoft.com/azure/active-directory/manage-apps/configure-user-consent#grant-admin-consent-when-registering-an-app-in-the-azure-portal) to your app in the portal. Sign-out and sign-in again to make the page work as expected.
 
-When you click on the page that fetches the signed-in user's roles and group assignments, the sample will attempt to obtain consent from you for the **Directory.Read.All** permission using [incremental consent](https://docs.microsoft.com/azure/active-directory/develop/azure-ad-endpoint-comparison#incremental-and-dynamic-consent).
+When you click on the page that fetches the signed-in user's roles and group assignments, the sample will attempt to obtain consent from you for the **User.Read** permission using [incremental consent](https://docs.microsoft.com/azure/active-directory/develop/azure-ad-endpoint-comparison#incremental-and-dynamic-consent).
 
 > Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
 

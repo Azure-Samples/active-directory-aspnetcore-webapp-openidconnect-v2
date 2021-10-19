@@ -8,12 +8,14 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using System.IdentityModel.Tokens.Jwt;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Services;
 using Constants = WebApp_OpenIDConnect_DotNet.Infrastructure.Constants;
 using Microsoft.Identity.Web.UI;
+using System.Net;
+using Microsoft.AspNetCore.Diagnostics;
+using System;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -86,7 +88,40 @@ namespace WebApp_OpenIDConnect_DotNet
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                app.UseExceptionHandler(errorApp =>
+                {
+                    errorApp.Run(async context =>
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError; ;
+                        context.Response.ContentType = "text/html";
+
+                        await context.Response.WriteAsync("<html lang=\"en\"><body>\r\n");
+                        await context.Response.WriteAsync("<h2>Exception Details</h2><br><br>\r\n");
+
+                        var exceptionHandlerPathFeature =
+                            context.Features.Get<IExceptionHandlerPathFeature>();
+                        if (exceptionHandlerPathFeature?.Error is Exception)
+                        {
+                            if ((exceptionHandlerPathFeature?.Error.InnerException.Message.Contains(Constants.UserConsentDeclinedErrorMessage)).Value)
+                            {
+                                await context.Response.WriteAsync($"<h3>{Constants.UserConsentDeclinedErrorMessage}</h3><br><br>\r\n");
+                            }
+                            else if ((exceptionHandlerPathFeature?.Error.InnerException.Message.Contains(Constants.NoUserRole)).Value)
+                            {
+                                await context.Response.WriteAsync($"<h3>{exceptionHandlerPathFeature?.Error.InnerException.Message}</h3><br><br>\r\n");
+                            }
+                            else
+                            {
+                                await context.Response.WriteAsync($"<h3>{exceptionHandlerPathFeature?.Error.Message}</h3><br><br>\r\n");
+                            }
+                        }
+
+                        await context.Response.WriteAsync(
+                                   "<a href=\"/\">Home</a><br>\r\n");
+                        await context.Response.WriteAsync("</body></html>\r\n");
+                        await context.Response.WriteAsync(new string(' ', 512));
+                    });
+                });
             }
             else
             {
