@@ -57,7 +57,7 @@ NOTE: Role claims will not be present for guest users in a tenant if the `https:
 
 To run this sample, you'll need:
 
-- [Visual Studio 2017](https://aka.ms/vsdownload) or just the [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
+- [Visual Studio 2019](https://aka.ms/vsdownload) or just the [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
 - An Internet connection
 - A Windows machine (necessary if you want to run the app on Windows)
 - An OS X machine (necessary if you want to run the app on Mac)
