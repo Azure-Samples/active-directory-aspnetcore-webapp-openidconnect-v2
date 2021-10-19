@@ -96,30 +96,37 @@ namespace WebApp_OpenIDConnect_DotNet
                         context.Response.ContentType = "text/html";
 
                         await context.Response.WriteAsync("<html lang=\"en\"><body>\r\n");
-                        await context.Response.WriteAsync("<h2>Exception Details</h2><br><br>\r\n");
+                        await context.Response.WriteAsync(
+                                   "<a href=\"/\">Back to Home</a><br>\r\n");
+
+                        await context.Response.WriteAsync("<h2>Exception Overview</h2><br><br>\r\n");
 
                         var exceptionHandlerPathFeature =
                             context.Features.Get<IExceptionHandlerPathFeature>();
                         if (exceptionHandlerPathFeature?.Error is Exception)
                         {
-                            if ((exceptionHandlerPathFeature?.Error.InnerException.Message.Contains(Constants.UserConsentDeclinedErrorMessage)).Value)
+                            if (exceptionHandlerPathFeature.Error.InnerException != null)
                             {
-                                await context.Response.WriteAsync($"<h3>{Constants.UserConsentDeclinedErrorMessage}</h3><br><br>\r\n");
-                            }
-                            else if ((exceptionHandlerPathFeature?.Error.InnerException.Message.Contains(Constants.NoUserRole)).Value)
-                            {
-                                await context.Response.WriteAsync($"<h3>{exceptionHandlerPathFeature?.Error.InnerException.Message}</h3><br><br>\r\n");
+                                if (exceptionHandlerPathFeature.Error.InnerException.Message.Contains(Constants.UserConsentDeclinedErrorMessage))
+                                {
+                                    await context.Response.WriteAsync($"<h3>{Constants.UserConsentDeclinedErrorMessage}</h3><br><br>\r\n");
+                                }
+
+                                await context.Response.WriteAsync($"<h3>{exceptionHandlerPathFeature?.Error.InnerException?.Message}</h3><br><br>\r\n");
                             }
                             else
                             {
                                 await context.Response.WriteAsync($"<h3>{exceptionHandlerPathFeature?.Error.Message}</h3><br><br>\r\n");
                             }
+
+                            await context.Response.WriteAsync("<h2>Exception Full Stack</h2><br><br>\r\n");
+
+                            await context.Response.WriteAsync(exceptionHandlerPathFeature?.Error.StackTrace);
                         }
 
-                        await context.Response.WriteAsync(
-                                   "<a href=\"/\">Home</a><br>\r\n");
+
+
                         await context.Response.WriteAsync("</body></html>\r\n");
-                        await context.Response.WriteAsync(new string(' ', 512));
                     });
                 });
             }
