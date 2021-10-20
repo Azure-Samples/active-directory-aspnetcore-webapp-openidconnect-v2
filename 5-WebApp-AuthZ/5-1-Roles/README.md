@@ -24,13 +24,13 @@ description: "Add authorization using app roles & roles claims to an ASP.NET Cor
 
 ### Overview
 
-This sample shows how a .NET Core MVC Web app that uses [OpenID Connect](https://docs.microsoft.com/azure/active-directory/develop/v1-protocols-openid-connect-code) to sign in users and use Azure AD Application Roles (app roles) for authorization. App roles, along with Security groups are popular means to implement authorization.
+This sample shows how a .NET Core MVC Web app that uses [OpenID Connect](https://docs.microsoft.com/azure/active-directory/develop/v1-protocols-openid-connect-code) to sign in users and use Azure AD [App Roles](aka.ms/approles) for authorization. [App Roles](aka.ms/approles), along with Security groups are popular means to implement authorization.
 
-This application implements RBAC using Azure AD's Application Roles & Role Claims feature. Another approach is to use Azure AD Groups and Group Claims, as shown in [WebApp-GroupClaims](../../5-WebApp-AuthZ/5-2-Groups/README.md). Azure AD Groups and Application Roles are by no means mutually exclusive; they can be used in tandem to provide even finer grained access control.
+This application implements RBAC using Azure AD's App roles & Role Claims feature. Another approach is to use Azure AD Groups and Group Claims, as shown in [WebApp-GroupClaims](../../5-WebApp-AuthZ/5-2-Groups/README.md). Azure AD Groups and [App Roles](aka.ms/approles) are by no means mutually exclusive; they can be used in tandem to provide even finer grained access control.
 
-Using RBAC with Application Roles and Role Claims, developers can securely enforce authorization policies with minimal effort on their part.
+Using RBAC with App roles and Role Claims, developers can securely enforce authorization policies with minimal effort on their part.
 
-- A Microsoft Identity Platform Office Hours session covered Azure AD App roles and security groups, featuring this scenario and this sample. A recording of the session is is provided in this video [Using Security Groups and Application Roles in your apps](https://www.youtube.com/watch?v=LRoc-na27l0)
+- A Microsoft Identity Platform Office Hours session covered Azure AD App roles and security groups, featuring this scenario and this sample. A recording of the session is is provided in this video [Using Security Groups and App roles in your apps](https://www.youtube.com/watch?v=LRoc-na27l0)
 
 For more information about how the protocols work in this scenario and other scenarios, see [Authentication Scenarios for Azure AD](http://go.microsoft.com/fwlink/?LinkId=394414).
 
@@ -38,18 +38,18 @@ For more information about how the protocols work in this scenario and other sce
 
 This sample first leverages the ASP.NET Core OpenID Connect middleware to sign in the user. On the home page it displays the various `claims` that the user's [ID Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) contained. The ID token is used by the asp.net security middleware to build the [ClaimsPrincipal](https://docs.microsoft.com/dotnet/api/system.security.claims.claimsprincipal), accessible via **HttpContext.User** in the code.
 
-This web application allows users to list all users in their tenant or a list of all the app roles and groups the signed in user is assigned to depending on the app role they have been assigned to. The idea is to provide an example of how, within an application, access to certain functionality is restricted to subsets of users depending on which role they belong to. The sample also shows how to use the [Policy-based authorization in ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authorization/policies).
+This web application allows users to list all users in their tenant or a list of all the app roles and groups the signed in user is assigned to. The idea is to provide an example of how, within an application, access to certain functionality is restricted to subsets of users based on which role they belong to. The sample also shows how to use the app roles in [Policy-based authorization in ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authorization/policies).
 
-This kind of authorization is implemented using role-based access control (RBAC). When using RBAC, an administrator grants permissions to roles, not to individual users or groups. The administrator can then assign roles to different users and groups to control who has then access to certain content and functionality.  
+This type of authorization is implemented using role-based access control (RBAC). When using RBAC, an administrator grants permissions to roles, not to individual users or groups. The administrator can then assign roles to different users and groups to control who has then access to certain content and functionality within the application.  
 
-This sample application defines the following two *Application Roles*:
+This sample application defines the following two *App roles*:
 
 - `DirectoryViewers`: Have the ability to view any directory user's roles and security group assignments.
 - `UserReaders`: Have the ability to view a list of users in the directory.
 
-These application roles are defined in the [Azure portal](https://portal.azure.com) in the application's registration manifest.  When a user signs into the application, Azure AD emits a `roles` claim for each role that the user has been granted individually to the user in the from of role membership.  Assignment of users and groups to roles can be done through the portal's UI, or programmatically using the [Microsoft Graph](https://graph.microsoft.com) and [Azure AD PowerShell](https://docs.microsoft.com/powershell/module/azuread/?view=azureadps-2.0).  In this sample, application role management is done through the Azure portal or using PowerShell.
+These App roles are defined in the [Azure portal](https://portal.azure.com) in the application's registration manifest.  When a user signs into the application, Azure AD emits a `roles` claim for each role that the user has been granted individually to the user in the from of role membership. Assignment of users and groups to roles can be done through the portal's UI, or programmatically using the [Microsoft Graph](https://graph.microsoft.com) and [Azure AD PowerShell](https://docs.microsoft.com/powershell/module/azuread).  In this sample, application role management is done through the Azure portal or using PowerShell.
 
-NOTE: Role claims will not be present for guest users in a tenant if the `https://login.microsoftonline.com/common/` endpoint is used as the authority to sign in users.
+NOTE: Role claims will not be present for guest users in a tenant if the `https://login.microsoftonline.com/common/` endpoint is used as the authority to sign in users. Azure AD can emit app roles only if the tenanted end point `https://login.microsoftonline.com/{tenant Id}/` is being used.
 
 ![Sign in with the Microsoft identity platform](ReadmeFiles/sign-in.png)
 
@@ -76,6 +76,11 @@ git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcor
 or download and extract the repository .zip file.
 
 > Given that the name of the sample is quiet long, and so are the names of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
+
+Navigate to the `"5-WebApp-AuthZ"` folder
+
+ ```Sh
+  cd "5-WebApp-AuthZ\5-1-Roles"
 
 ### Step 2:  Register the sample application with your Azure Active Directory tenant
 
@@ -155,10 +160,10 @@ As a first step you'll need to:
    - In the **Delegated permissions** section, select the **User.Read**, **User.ReadBasic.All** in the list. Use the search box if necessary.
    - Click on the **Add permissions** button at the bottom.
 
-##### Define your Application Roles
+##### Define your App roles
 
 1. In the blade for your  application in Azure Portal, click **Manifest**.
-1. Edit the manifest by locating the `appRoles` setting and adding the two Application Roles.  The role definitions are provided in the JSON code block below.  Leave the `allowedMemberTypes` to **User** only.  Each role definition in this manifest must have a different valid **Guid** for the "id" property. Note that the `"value"` property of each role is set to the exact strings **DirectoryViewers** and **UserReaders** (as these strings are used in the code in the application).
+1. Edit the manifest by locating the `appRoles` setting and adding the two App roles.  The role definitions are provided in the JSON code block below.  Leave the `allowedMemberTypes` to **User** only.  Each role definition in this manifest must have a different valid **Guid** for the "id" property. Note that the `"value"` property of each role is set to the exact strings **DirectoryViewers** and **UserReaders** (as these strings are used in the code in the application).
 1. Save the manifest.
 
 The content of `appRoles` should be the following (the `id` should be a unique Guid)
@@ -196,7 +201,9 @@ The content of `appRoles` should be the following (the `id` should be a unique G
 }
 ```
 
-> Note:  To receive the `roles` claim with the name of the app roles this user is assigned to, make sure that the user accounts you plan to sign-in to this app is assigned to the app roles of this app. The guide, [Assign a user or group to an enterprise app in Azure Active Directory](https://docs.microsoft.com/azure/active-directory/manage-apps/assign-user-or-group-access-portal#assign-a-user-to-an-app---portal) provides step by step instructions.
+##### Assign users to the app roles
+
+To receive the `roles` claim with the name of the app roles this user is assigned to, make sure that the user accounts you plan to sign-in to this app is assigned to the app roles of this app. The guide, [Assign a user or group to an enterprise app in Azure Active Directory](https://docs.microsoft.com/azure/active-directory/manage-apps/assign-user-or-group-access-portal#assign-a-user-to-an-app---portal) provides step by step instructions.
 
 ##### Configure the  webApp app (WebApp-RolesClaims) to use your app registration
 
@@ -213,15 +220,13 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 
 1. Clean the solution, rebuild the solution, and run it.
 
-1. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in using a user account of that tenant.
+1. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in using an user account in that tenant.
 
 ![First time Consent](ReadmeFiles/Sign-in-Consent.png)
 
 1. On the home page, the app lists the various claims it obtained from your [ID token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens). You'd notice a claim named `roles`. There will be one `roles` claim for each app role the signed-in use is assigned to.
 
 1. There also are two links provided on the home page under the **Try one of the following Azure App Role driven operations** heading. These links will result in an access denied error if the signed-in user is not present in the expected role. Sign-out and sign-in with a user account with the correct role assignment to view the contents of these pages.
-
-> Note: You need to be a tenant admin to view the page that lists all the groups and roles the signed-in user is assigned to. It requires the **User.Read** permission to work. If you run into the **AADSTS65001: The user or administrator has not consented to use the application** error, provide [admin consent](https://docs.microsoft.com/azure/active-directory/manage-apps/configure-user-consent#grant-admin-consent-when-registering-an-app-in-the-azure-portal) to your app in the portal. Sign-out and sign-in again to make the page work as expected.
 
 When you click on the page that fetches the signed-in user's roles and group assignments, the sample will attempt to obtain consent from you for the **User.Read** permission using [incremental consent](https://docs.microsoft.com/azure/active-directory/develop/azure-ad-endpoint-comparison#incremental-and-dynamic-consent).
 
@@ -238,7 +243,7 @@ The ASP.NET middleware supports roles populated from claims by specifying the cl
 // Startup.cs
 public void ConfigureServices(IServiceCollection services)
 {
-            // [removed for] brevity
+            // [removed for brevity]
 
             // This is required to be instantiated before the OpenIdConnectOptions starts getting configured.
             // By default, the claims mapping will map claim names in the old format to accommodate older SAML applications.
@@ -261,7 +266,7 @@ public void ConfigureServices(IServiceCollection services)
                 options.AddPolicy(AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired, policy => policy.RequireRole(AppRole.DirectoryViewers));
             });
 
-            // [removed for] brevity
+            // [removed for brevity]
 }
 
 // In code..(Controllers & elsewhere)
@@ -294,8 +299,11 @@ This project was created using the following command.
      ```CSharp
       services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
               .AddAzureAD(options => Configuration.Bind("AzureAd", options));
+
      ```
+
       have been replaced by these lines:
+
      ```CSharp
      //This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
             services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
@@ -423,7 +431,7 @@ To understand more about groups roles and the various claims in tokens, see:
 - [Azure Active Directory access tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens)
 - [Microsoft Graph permissions reference](https://docs.microsoft.com/graph/permissions-reference)
 - [user: getMemberObjects function](https://docs.microsoft.com/graph/api/user-getmemberobjects)
-- [Application roles](https://docs.microsoft.com/azure/architecture/multitenant-identity/app-roles)
+- [App roles](https://docs.microsoft.com/azure/architecture/multitenant-identity/app-roles)
 - [Token validation](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki/ValidatingTokens)
 
 ## Contributing
