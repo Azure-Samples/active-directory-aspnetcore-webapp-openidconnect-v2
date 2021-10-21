@@ -160,52 +160,28 @@ As a first step you'll need to:
    - In the **Delegated permissions** section, select the **User.Read**, **User.ReadBasic.All** in the list. Use the search box if necessary.
    - Click on the **Add permissions** button at the bottom.
 
-##### Define your App roles
+#### Define your Application Roles
 
-1. In the blade for your  application in Azure Portal, click **Manifest**.
-1. Edit the manifest by locating the `appRoles` setting and adding the two App roles.  The role definitions are provided in the JSON code block below.  Leave the `allowedMemberTypes` to **User** only.  Each role definition in this manifest must have a different valid **Guid** for the "id" property. Note that the `"value"` property of each role is set to the exact strings **DirectoryViewers** and **UserReaders** (as these strings are used in the code in the application).
-1. Save the manifest.
+ 1. Still on the same app registration, select the **App roles** blade to the left.
+    1. Select **Create app role**:
+       - For **Display name**, enter a suitable name, for instance **UserReaders**.
+       - For **Allowed member types**, choose **User**.
+       - For **Value**, enter **UserReaders**.
+       - For **Description**, enter **User readers can read basic profiles of all users in the directory.**.
+    1. Select **Create app role**:
+       - For **Display name**, enter a suitable name, for instance **DirectoryViewers**.
+       - For **Allowed member types**, choose **User**.
+       - For **Value**, enter **DirectoryViewers**.
+       - For **Description**, enter **Directory viewers can view objects in the whole directory.**.
+    1. Select **Apply** to save your changes.
 
-The content of `appRoles` should be the following (the `id` should be a unique Guid)
-
-```JSon
-{
-  ...
-    "appRoles": [
-        {
-            "allowedMemberTypes": [
-                "User"
-            ],
-            "description": "User readers can read basic profiles of all users in the directory",
-            "displayName": "UserReaders",
-            "id": "a816142a-2e8e-46c4-9997-f984faccb625",
-            "isEnabled": true,
-            "lang": null,
-            "origin": "Application",
-            "value": "UserReaders"
-        },
-        {
-            "allowedMemberTypes": [
-                "User"
-            ],
-            "description": "Directory viewers can view objects in the whole directory.",
-            "displayName": "DirectoryViewers",
-            "id": "72ff9f52-8011-49e0-a4f4-cc1bb26206fa",
-            "isEnabled": true,
-            "lang": null,
-            "origin": "Application",
-            "value": "DirectoryViewers"
-        }
-    ],
- ...
-}
-```
+   To add users to this app role, follow the guidelines here: [Assign users and groups to roles](https://docs.microsoft.com/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps#assign-users-and-groups-to-roles).
 
 ##### Assign users to the app roles
 
 To receive the `roles` claim with the name of the app roles this user is assigned to, make sure that the user accounts you plan to sign-in to this app is assigned to the app roles of this app. The guide, [Assign a user or group to an enterprise app in Azure Active Directory](https://docs.microsoft.com/azure/active-directory/manage-apps/assign-user-or-group-access-portal#assign-a-user-to-an-app---portal) provides step by step instructions.
 
-##### Configure the  webApp app (WebApp-RolesClaims) to use your app registration
+#### Configure the  webApp app (WebApp-RolesClaims) to use your app registration
 
 Open the project in your IDE (like Visual Studio) to configure the code.
 >In the steps below, "ClientID" is the same as "Application ID" or "AppId".
@@ -216,7 +192,7 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
 1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp-RolesClaims` app, in the Azure portal.
 
-### Step 4: Run the sample
+### Step 3: Run the sample
 
 1. Clean the solution, rebuild the solution, and run it.
 

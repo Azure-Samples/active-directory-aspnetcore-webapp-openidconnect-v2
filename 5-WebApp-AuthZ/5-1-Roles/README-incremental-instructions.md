@@ -85,56 +85,27 @@ or download and extract the repository .zip file.
 
 > Given that the name of the sample is quiet long, and so are the names of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
-Navigate to the `"5-WebApp-AuthZ"` folder
+Navigate to the `"5-WebApp-AuthZ/5-1-Roles"` folder
 
- ```Sh
-  cd "5-1-Roles"
-  ```
+### Step 2: Define your Application Roles
 
-### Step 2: Configure your application to receive the **roles** claims
+ 1. Still on the same app registration, select the **App roles** blade to the left.
+    1. Select **Create app role**:
+       - For **Display name**, enter a suitable name, for instance **UserReaders**.
+       - For **Allowed member types**, choose **User**.
+       - For **Value**, enter **UserReaders**.
+       - For **Description**, enter **User readers can read basic profiles of all users in the directory.**.
+    1. Select **Create app role**:
+       - For **Display name**, enter a suitable name, for instance **DirectoryViewers**.
+       - For **Allowed member types**, choose **User**.
+       - For **Value**, enter **DirectoryViewers**.
+       - For **Description**, enter **Directory viewers can view objects in the whole directory.**.
+    1. Select **Apply** to save your changes.
 
-1. In the blade for your  application in Azure Portal, click **Manifest**.
-1. Edit the manifest by locating the `appRoles` setting and adding the two App roles.  The role definitions are provided in the JSON code block below.  Leave the `allowedMemberTypes` to **User** only.  Each role definition in this manifest must have a different valid **Guid** for the "id" property. Note that the `"value"` property of each role is set to the exact strings **DirectoryViewers** and **UserReaders** (as these strings are used in the code in the application).
-1. Save the manifest.
+   To add users to this app role, follow the guidelines here: [Assign users and groups to roles](https://docs.microsoft.com/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps#assign-users-and-groups-to-roles).
 
-The content of `appRoles` should be the following (the `id` should be a unique Guid)
 
-```JSon
-{
-  ...
-    "appRoles": [
-        {
-            "allowedMemberTypes": [
-                "User"
-            ],
-            "description": "User readers can read basic profiles of all users in the directory",
-            "displayName": "UserReaders",
-            "id": "a816142a-2e8e-46c4-9997-f984faccb625",
-            "isEnabled": true,
-            "lang": null,
-            "origin": "Application",
-            "value": "UserReaders"
-        },
-        {
-            "allowedMemberTypes": [
-                "User"
-            ],
-            "description": "Directory viewers can view objects in the whole directory.",
-            "displayName": "DirectoryViewers",
-            "id": "72ff9f52-8011-49e0-a4f4-cc1bb26206fa",
-            "isEnabled": true,
-            "lang": null,
-            "origin": "Application",
-            "value": "DirectoryViewers"
-        }
-    ],
- ...
-}
-```
-
-1. Follow the steps in the document [Assign users and groups to an application in Azure Active Directory](https://docs.microsoft.com/azure/active-directory/manage-apps/methods-for-assigning-users-and-groups#assign-users) to assign users to these roles.
-
-### Step 4: Run the sample
+### Step 3: Run the sample
 
 1. Clean the solution, rebuild the solution, and run it.
 
