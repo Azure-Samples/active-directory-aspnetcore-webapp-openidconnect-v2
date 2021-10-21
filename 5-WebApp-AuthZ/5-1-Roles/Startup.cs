@@ -95,11 +95,13 @@ namespace WebApp_OpenIDConnect_DotNet
                         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError; ;
                         context.Response.ContentType = "text/html";
 
-                        await context.Response.WriteAsync("<html lang=\"en\"><body>\r\n");
-                        await context.Response.WriteAsync(
-                                   "<a href=\"/\">Back to Home</a><br>\r\n");
+                        await context.Response.WriteAsync("<html lang=\"en\"><head>\r\n");
 
-                        await context.Response.WriteAsync("<h2>Exception Overview</h2><br><br>\r\n");
+                        await context.Response.WriteAsync("</head>\r\n");
+                        await context.Response.WriteAsync("<meta name=\"viewport\" content=\"width = device - width, initial - scale = 1\"><style>.collapsible{color: #777;cursor: pointer;padding: 18px;width: 100%;border: none;text-align: left;outline: none;font-size: 15px;}.active, .collapsible:hover {background-color: #555;}.collapsible:after {content: '\\002B';color: #777;font-weight: bold;float: right;margin-left: 5px;}.active:after {content: \"\\2212\";}.content {padding: 0 18px;max-height: 0;overflow: hidden;transition: max-height 0.2s ease-out;background-color: #f1f1f1;}</style>");
+                        await context.Response.WriteAsync("<body>\r\n");
+                        await context.Response.WriteAsync("<a href=\"/\">Back to Home</a><br>\r\n");
+                        await context.Response.WriteAsync("<h2>Exception Overview</h2><br>\r\n");
 
                         var exceptionHandlerPathFeature =
                             context.Features.Get<IExceptionHandlerPathFeature>();
@@ -107,25 +109,28 @@ namespace WebApp_OpenIDConnect_DotNet
                         {
                             if (exceptionHandlerPathFeature.Error.InnerException != null)
                             {
-                                if (exceptionHandlerPathFeature.Error.InnerException.Message.Contains(Constants.UserConsentDeclinedErrorMessage))
+                                if (exceptionHandlerPathFeature.Error.InnerException.Message.Contains(Constants.UserConsentDeclinedError))
                                 {
-                                    await context.Response.WriteAsync($"<h3>{Constants.UserConsentDeclinedErrorMessage}</h3><br><br>\r\n");
+                                    await context.Response.WriteAsync($"<h3>{Constants.UserConsentDeclinedErrorMessage}</h3><br>\r\n");
                                 }
+                                else
+                                {
+                                    await context.Response.WriteAsync($"<h3>{exceptionHandlerPathFeature?.Error.InnerException?.Message}</h3><br>\r\n");
 
-                                await context.Response.WriteAsync($"<h3>{exceptionHandlerPathFeature?.Error.InnerException?.Message}</h3><br><br>\r\n");
+                                }
                             }
                             else
                             {
-                                await context.Response.WriteAsync($"<h3>{exceptionHandlerPathFeature?.Error.Message}</h3><br><br>\r\n");
+                                await context.Response.WriteAsync($"<h3>{exceptionHandlerPathFeature?.Error.Message}</h3><br>\r\n");
                             }
 
-                            await context.Response.WriteAsync("<h2>Exception Full Stack</h2><br><br>\r\n");
-
+                            await context.Response.WriteAsync("<button class=\"collapsible\">Click for Exception Full Stack</button>\r\n");
+                            await context.Response.WriteAsync("<div class=\"content\"><p>");
                             await context.Response.WriteAsync(exceptionHandlerPathFeature?.Error.StackTrace);
+                            await context.Response.WriteAsync("</p></div>");
                         }
 
-
-
+                        await context.Response.WriteAsync("<script>var coll = document.getElementsByClassName(\"collapsible\");var i;for (i = 0; i < coll.length; i++) {coll[i].addEventListener(\"click\", function() {this.classList.toggle(\"active\");var content = this.nextElementSibling;if (content.style.maxHeight){content.style.maxHeight = null;} else {content.style.maxHeight = content.scrollHeight + \"px\";}});}</script>");
                         await context.Response.WriteAsync("</body></html>\r\n");
                     });
                 });
