@@ -160,7 +160,7 @@ As a first step you'll need to:
    - In the **Delegated permissions** section, select the **User.Read**, **User.ReadBasic.All** in the list. Use the search box if necessary.
    - Click on the **Add permissions** button at the bottom.
 
-#### Define your Application Roles
+#### Define your App Roles
 
  1. Still on the same app registration, select the **App roles** blade to the left.
     1. Select **Create app role**:

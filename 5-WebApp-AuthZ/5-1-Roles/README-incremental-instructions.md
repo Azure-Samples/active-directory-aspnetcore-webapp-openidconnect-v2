@@ -87,7 +87,7 @@ or download and extract the repository .zip file.
 
 Navigate to the `"5-WebApp-AuthZ/5-1-Roles"` folder
 
-### Step 2: Define your Application Roles
+### Step 2: Define your App Roles
 
  1. Still on the same app registration, select the **App roles** blade to the left.
     1. Select **Create app role**:
