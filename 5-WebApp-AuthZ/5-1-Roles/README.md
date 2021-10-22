@@ -77,10 +77,7 @@ or download and extract the repository .zip file.
 
 > Given that the name of the sample is quiet long, and so are the names of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
-Navigate to the `"5-WebApp-AuthZ"` folder
-
- ```Sh
-  cd "5-WebApp-AuthZ\5-1-Roles"
+Navigate to the `"5-WebApp-AuthZ\5-1-Roles"` folder
 
 ### Step 2:  Register the sample application with your Azure Active Directory tenant
 
@@ -89,7 +86,7 @@ There is one project in this sample. To register it, you can:
 - either follow the steps [Step 2: Register the sample with your Azure Active Directory tenant](#step-2--register-the-sample-application-with-your-azure-active-directory-tenant) and [Step 3:  Configure the sample to use your Azure AD tenant](#configure-the--webapp-app-webapp-rolesclaims-to-use-your-app-registration)
 - or use PowerShell scripts that:
   - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you. Note that this works for Visual Studio only.
-  - modify the Visual Studio projects' configuration files.
+  - modify the Visual Studio projects configuration files.
 
 <details>
   <summary>Expand this section if you want to use this automation:</summary>
