@@ -20,8 +20,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="3.1.8" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.20.1" />
-    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.20.1" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.21.0" />
+    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.21.0" />
   </ItemGroup>
   
 
