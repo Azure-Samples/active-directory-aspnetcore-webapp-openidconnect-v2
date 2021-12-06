@@ -170,7 +170,7 @@ As a first step you'll need to:
 1. In the app's registration screen, click on the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
 1. In the **Client secrets** section, click on **New client secret**:
    - Type a key description (for instance `app secret`),
-   - Select one of the available key durations (**In 1 year**, **In 2 years**, or **Never Expires**) as per your security posture.
+   - Select one of the available key durations as per your security posture.
    - The generated key value will be displayed when you click the **Add** button. Copy the generated value for use in the steps later.
    - You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
 1. In the app's registration screen, click on the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
@@ -179,12 +179,13 @@ As a first step you'll need to:
    - In the *Commonly used Microsoft APIs* section, click on **Microsoft Graph**
    - In the **Delegated permissions** section, select the **User.Read.All** in the list. Use the search box if necessary.
    - Click on the **Add permissions** button at the bottom.
+   - This specific permission requires **Admin Consent**, make sure to grant it
 1. In the app's registration screen, select the **Expose an API** blade to the left to open the page where you can declare the parameters to expose this app as an Api for which client applications can obtain [access tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) for.
 The first thing that we need to do is to declare the unique [resource](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow) URI that the clients will be using to obtain access tokens for this Api. To declare an resource URI, follow the following steps:
    - Click `Set` next to the **Application ID URI** to generate a URI that is unique for this app.
    - For this sample, accept the proposed Application ID URI (api://{clientId}) by selecting **Save**.
 1. All Apis have to publish a minimum of one [scope](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-authorization-code) for the client's to obtain an access token successfully. To publish a scope, follow the following steps:
-   - Select **Add a scope** button open the **Add a scope** screen and Enter the values as indicated below:
+   - While on **Expose an Api** screen, select **Add a scope** button open the **Add a scope** screen and Enter the values as indicated below:
         - For **Scope name**, use `access_as_user`.
         - Select **Admins and users** options for **Who can consent?**
         - For **Admin consent display name** type `Access WebApi-MultiTenant-ToDoListService-v2`
@@ -226,7 +227,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. In the app's registration screen, click on the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
 1. In the **Client secrets** section, click on **New client secret**:
    - Type a key description (for instance `app secret`),
-   - Select one of the available key durations (**In 1 year**, **In 2 years**, or **Never Expires**) as per your security posture.
+   - Select one of the available key durations as per your security posture.
    - The generated key value will be displayed when you click the **Add** button. Copy the generated value for use in the steps later.
    - You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
 1. In the app's registration screen, click on the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
@@ -248,7 +249,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
 1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp-MultiTenant-ToDoListClient-v2` app, in the Azure portal.
 1. Find the app key `RedirectUri` and replace the existing value with the base address of the WebApp-MultiTenant-ToDoListClient-v2 project (by default `https://localhost:44321/`).
-1. Find the app key `TodoListScope` and replace the existing value with ScopeDefault.
+1. Find the app key `TodoListScope` and replace the existing value with "api://\<your todo list service app client id\>/.default".
 1. Find the app key `TodoListAppId` and replace the existing value with the application ID (clientId) of the `WebApi-MultiTenant-ToDoListService-v2` application copied from the Azure portal.
 1. Find the app key `TodoListBaseAddress` and replace the existing value with the base address of the WebApi-MultiTenant-ToDoListService-v2 project (by default `https://localhost:44351/`).
 1. Find the app key `AdminConsentRedirectApi` and replace the existing value with "https://localhost:44351/api/Home"
