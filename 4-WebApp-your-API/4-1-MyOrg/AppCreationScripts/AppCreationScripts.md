@@ -77,21 +77,21 @@ The `Configure.ps1` will stop if it tries to create an Azure AD application whic
 
 ### (Optionally) install AzureAD PowerShell modules
 
-The scripts install the required PowerShell module (AzureAD) for the current user if needed. However, if you want to install if for all users on the machine, you can follow the following steps:
+The scripts install the required PowerShell module (Microsoft.Graph.Applications) for the current user if needed. However, if you want to install if for all users on the machine, you can follow the following steps:
 
-1. If you have never done it already, in the PowerShell window, install the AzureAD PowerShell modules. For this:
+1. If you have never done it already, in the PowerShell window, install the Graph PowerShell modules. For this:
 
    1. Open PowerShell as admin (On Windows, Search Powershell in the search bar, right click on it and select Run as administrator).
    2. Type:
  
       ```PowerShell
-      Install-Module AzureAD
+      Install-Module Microsoft.Graph.Applications
       ```
 
       or if you cannot be administrator on your machine, run:
  
       ```PowerShell
-      Install-Module AzureAD -Scope CurrentUser
+      Install-Module Microsoft.Graph.Applications -Scope CurrentUser
       ```
 
 ### Run the script and start running
