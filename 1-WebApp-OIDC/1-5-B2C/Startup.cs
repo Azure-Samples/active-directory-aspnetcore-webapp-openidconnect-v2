@@ -66,6 +66,7 @@ namespace WebApp_OpenIDConnect_DotNet
             app.UseCookiePolicy();
 
             app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
 

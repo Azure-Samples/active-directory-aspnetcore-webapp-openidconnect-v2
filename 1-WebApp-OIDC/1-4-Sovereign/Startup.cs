@@ -5,9 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Identity.Web;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 
 namespace WebApp_OpenIDConnect_DotNet
@@ -66,6 +65,7 @@ namespace WebApp_OpenIDConnect_DotNet
             app.UseCookiePolicy();
 
             app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
 
