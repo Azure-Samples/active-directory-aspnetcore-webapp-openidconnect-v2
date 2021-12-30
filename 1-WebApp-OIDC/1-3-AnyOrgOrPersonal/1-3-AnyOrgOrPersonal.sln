@@ -9,10 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web", ".
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web.UI", "..\..\..\..\AzureAD\microsoft-identity-web\src\Microsoft.Identity.Web.UI\Microsoft.Identity.Web.UI.csproj", "{20535D28-C2F4-4975-9982-A18E7141DA53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnonimusFuncs", "..\AnonimusFuncs\AnonimusFuncs.csproj", "{B85AA6AD-6DB7-4310-8B9B-7FC647677CBD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigurationStudies", "..\ConfigurationStudies\ConfigurationStudies.csproj", "{63B944DE-7DBD-492A-BB39-D8ACA7EF8E4D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,14 +27,6 @@ Global
 		{20535D28-C2F4-4975-9982-A18E7141DA53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20535D28-C2F4-4975-9982-A18E7141DA53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20535D28-C2F4-4975-9982-A18E7141DA53}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B85AA6AD-6DB7-4310-8B9B-7FC647677CBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B85AA6AD-6DB7-4310-8B9B-7FC647677CBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B85AA6AD-6DB7-4310-8B9B-7FC647677CBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B85AA6AD-6DB7-4310-8B9B-7FC647677CBD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{63B944DE-7DBD-492A-BB39-D8ACA7EF8E4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{63B944DE-7DBD-492A-BB39-D8ACA7EF8E4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{63B944DE-7DBD-492A-BB39-D8ACA7EF8E4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{63B944DE-7DBD-492A-BB39-D8ACA7EF8E4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
