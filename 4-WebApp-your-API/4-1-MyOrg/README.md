@@ -207,7 +207,7 @@ There are two projects in this sample. Each needs to be separately registered in
 
 ### Variation: web app using client certificates
 
-Follow [README-use-certificate.md](README-use-certificate.md) to know how to use this option.
+Follow [README-use-keyvault-certificate.md](README-use-keyvault-certificate.md) to know how to use this option.
 ### Step 4: Running the sample
 
     
