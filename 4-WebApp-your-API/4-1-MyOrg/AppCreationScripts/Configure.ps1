@@ -352,4 +352,4 @@ Function ConfigureApplications
 }
 
 # Run interactively (will ask you for the tenant ID)
-ConfigureApplications -tenantId $tenantId -environment $azureEnvironmentName
+ConfigureApplications -TenantId $tenantId -Environment $azureEnvironmentName
