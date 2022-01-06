@@ -195,7 +195,7 @@ There are two projects in this sample. Each needs to be separately registered in
     
        ```PowerShell
        cd .\AppCreationScripts\
-       .\Configure.ps1
+       .\Configure.ps1 -TenantId "your tenant id (required)" -Environment "Optional - Azure environment, defaults to 'Global'"
        ```
     
        > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
