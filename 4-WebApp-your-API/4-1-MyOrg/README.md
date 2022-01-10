@@ -17,7 +17,7 @@ This sample demonstrates a ASP.NET Core Web App calling a ASP.NET Core Web API t
 1. The client ASP.NET Core Web App uses the Microsoft Authentication Library (MSAL) to sign-in and obtain a JWT [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from **Azure AD**.
 1. The [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) is used as a bearer token to authorize the user to call the ASP.NET Core Web API protected by **Azure AD**.
 
-![Scenario Image](ReadmeFiles/topology.png)
+![Scenario Image](./ReadmeFiles/topology.png)
 
 
 ## Prerequisites
@@ -195,7 +195,7 @@ There are two projects in this sample. Each needs to be separately registered in
     
        ```PowerShell
        cd .\AppCreationScripts\
-       .\Configure.ps1 -TenantId "your tenant id (required)" -Environment "Optional - Azure environment, defaults to 'Global'"
+       .\Configure.ps1 -TenantId "Optional - your tenant id" -Environment "Optional - Azure environment, defaults to 'Global'"
        ```
     
        > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
@@ -245,7 +245,7 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
  <summary>Expand to see how to use the sample</summary>
  Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in using an user account in that tenant.
 
- ![First time Consent](ReadmeFiles/Sign-in-Consent.png)
+ ![First time Consent](./ReadmeFiles/Sign-in-Consent.png)
 
 1. On the home page, the app lists the various claims it obtained from your [ID token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens). You'd notice a claim named `roles`. There will be one `roles` claim for each app role the signed-in use is assigned to.
 
