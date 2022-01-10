@@ -64,7 +64,7 @@ Important things to notice:
 
 Learn how to:
 
-- Enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user/README-incremental-instructions.md)
+- Enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user/2-1-Call-MSGraph/README-incremental-instructions.md)
 
 ## Learn more
 
