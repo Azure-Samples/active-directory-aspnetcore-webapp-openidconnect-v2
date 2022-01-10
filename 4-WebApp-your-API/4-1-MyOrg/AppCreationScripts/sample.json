@@ -70,11 +70,7 @@
       "Kind": "WebApi",
       "Audience": "AzureADMyOrg",
       "HomePage": "https://localhost:44351",
-      "ManualSteps": [
-        {
-          "Comment": "You can run the ..\\CreateUsersAndAssignRoles.ps1 command to automatically create a number of users, and assign users to these roles or assign users to this application app roles using the portal.To receive the `roles` claim with the name of the app roles this user is assigned to, make sure that the user accounts you plan to sign-in to this app is assigned to the app roles of this app. The guide, https://docs.microsoft.com/azure/active-directory/manage-apps/assign-user-or-group-access-portal#assign-a-user-to-an-app---portal provides step by step instructions."
-        }
-      ],
+      "ManualSteps": [],
       "Sample": {
         "SampleSubPath": "4-WebApp-Your-API\\4-1-MyOrg",
         "ProjectDirectory": "\\TodoListService"
@@ -95,11 +91,7 @@
           "DelegatedPermissions": [ "access_as_user" ]
         }
       ],
-      "ManualSteps": [
-        {
-          "Comment": "You can run the ..\\CreateUsersAndAssignRoles.ps1 command to automatically create a number of users, and assign users to these roles or assign users to this application app roles using the portal.To receive the `roles` claim with the name of the app roles this user is assigned to, make sure that the user accounts you plan to sign-in to this app is assigned to the app roles of this app. The guide, https://docs.microsoft.com/azure/active-directory/manage-apps/assign-user-or-group-access-portal#assign-a-user-to-an-app---portal provides step by step instructions."
-        }
-      ],
+      "ManualSteps": [],
       "Sample": {
         "SampleSubPath": "4-WebApp-Your-API\\4-1-MyOrg",
         "ProjectDirectory": "\\Client"
