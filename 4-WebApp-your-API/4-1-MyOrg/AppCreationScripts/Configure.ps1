@@ -200,6 +200,7 @@ Function ConfigureApplications
     Write-Host "Connecting Microsoft Graph"
     if ($tenantId -eq "") {
         Connect-MgGraph -Scopes "Application.ReadWrite.All" -Environment $azureEnvironmentName
+        $tenantId = (Get-MgContext).TenantId
     }
     else {
         Connect-MgGraph -TenantId $tenantId -Scopes "Application.ReadWrite.All" -Environment $azureEnvironmentName
@@ -337,16 +338,7 @@ Function ConfigureApplications
     Write-Host "Updating the sample code ($configFile)"
 
     UpdateTextFile -configFilePath $configFile -dictionary $dictionary
-    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
-    Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
-    Write-Host "- For service"
-    Write-Host "  - Navigate to $servicePortalUrl"
-    Write-Host "  - You can run the ..\CreateUsersAndAssignRoles.ps1 command to automatically create a number of users, and assign users to these roles or assign users to this application app roles using the portal.To receive the `roles` claim with the name of the app roles this user is assigned to, make sure that the user accounts you plan to sign-in to this app is assigned to the app roles of this app. The guide, https://docs.microsoft.com/azure/active-directory/manage-apps/assign-user-or-group-access-portal#assign-a-user-to-an-app---portal provides step by step instructions." -ForegroundColor Red 
-    Write-Host "- For client"
-    Write-Host "  - Navigate to $clientPortalUrl"
-    Write-Host "  - You can run the ..\CreateUsersAndAssignRoles.ps1 command to automatically create a number of users, and assign users to these roles or assign users to this application app roles using the portal.To receive the `roles` claim with the name of the app roles this user is assigned to, make sure that the user accounts you plan to sign-in to this app is assigned to the app roles of this app. The guide, https://docs.microsoft.com/azure/active-directory/manage-apps/assign-user-or-group-access-portal#assign-a-user-to-an-app---portal provides step by step instructions." -ForegroundColor Red 
-    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
-       if($isOpenSSL -eq 'Y')
+    if($isOpenSSL -eq 'Y')
     {
         Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
         Write-Host "You have generated certificate using OpenSSL so follow below steps: "
@@ -358,3 +350,6 @@ Function ConfigureApplications
 
 # Run interactively (will ask you for the tenant ID)
 ConfigureApplications -TenantId $tenantId -Environment $azureEnvironmentName
+
+Write-Host "Disconnecting from tenant"
+Disconnect-MgGraph

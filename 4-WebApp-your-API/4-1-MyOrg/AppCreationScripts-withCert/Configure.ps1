@@ -173,6 +173,7 @@ Function ConfigureApplications
     Write-Host "Connecting Microsoft Graph"
     if ($tenantId -eq "") {
         Connect-MgGraph -Scopes "Application.ReadWrite.All" -Environment $azureEnvironmentName
+        $tenantId = (Get-MgContext).TenantId
     }
     else {
         Connect-MgGraph -TenantId $tenantId -Scopes "Application.ReadWrite.All" -Environment $azureEnvironmentName
@@ -349,3 +350,6 @@ Function ConfigureApplications
 
 # Run interactively (will ask you for the tenant ID)
 ConfigureApplications -TenantId $tenantId -Environment $azureEnvironmentName
+
+Write-Host "Disconnecting from tenant"
+Disconnect-MgGraph
