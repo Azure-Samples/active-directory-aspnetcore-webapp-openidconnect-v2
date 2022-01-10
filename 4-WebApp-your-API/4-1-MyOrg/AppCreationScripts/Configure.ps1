@@ -19,19 +19,6 @@ param(
  There are four ways to run this script. For more information, read the AppCreationScripts.md file in the same folder as this script.
 #>
 
-#OBSOLETE after migration to Graph API
-# Create a password that can be used as an application key
-Function ComputePassword
-{
-    $aesManaged = New-Object "System.Security.Cryptography.AesManaged"
-    $aesManaged.Mode = [System.Security.Cryptography.CipherMode]::CBC
-    $aesManaged.Padding = [System.Security.Cryptography.PaddingMode]::Zeros
-    $aesManaged.BlockSize = 128
-    $aesManaged.KeySize = 256
-    $aesManaged.GenerateKey()
-    return [System.Convert]::ToBase64String($aesManaged.Key)
-}
-
 # Create an application key
 # See https://www.sabin.io/blog/adding-an-azure-active-directory-application-and-key-using-powershell/
 Function CreateAppKey([DateTime] $fromDate, [double] $durationInMonths)
