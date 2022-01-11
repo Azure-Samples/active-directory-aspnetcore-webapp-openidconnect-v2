@@ -6,8 +6,11 @@
     "Client": "ASP.NET Core Web App",
     "Service": "ASP.NET Core Web API",
     "RepositoryUrl": "active-directory-aspnetcore-webapp-openidconnect-v2",
-    "Endpoint": "AAD v2.0"
+    "Endpoint": "AAD v2.0""Description": "This sample demonstrates a ASP.NET Core Web App calling a ASP.NET Core Web API that is secured using Azure AD",
+    "Languages":["csharp"],
+    "Products":["aspnet-core","azure-active-directory"]
   },
+  
   /*
     This section describes different regions of readme file
   */

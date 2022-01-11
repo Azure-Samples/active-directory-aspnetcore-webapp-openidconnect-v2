@@ -6,12 +6,6 @@ param(
     [string] $azureEnvironmentName
 )
 
-if ($null -eq (Get-Module -ListAvailable -Name "Microsoft.Graph.Applications")) { 
-    Install-Module "Microsoft.Graph.Applications" -Scope CurrentUser                                            
-} 
-Import-Module Microsoft.Graph.Applications
-$ErrorActionPreference = "Stop"
-
 Function Cleanup
 {
     if (!$azureEnvironmentName)
@@ -47,7 +41,7 @@ Function Cleanup
     }
     catch
     {
-	    Write-Host "Unable to remove the 'TodoListService-aspnetcore-webapi' . Try deleting manually." -ForegroundColor White -BackgroundColor Red
+	    Write-Host "Unable to remove the application 'TodoListService-aspnetcore-webapi' . Try deleting manually." -ForegroundColor White -BackgroundColor Red
     }
 
     Write-Host "Making sure there are no more (TodoListService-aspnetcore-webapi) applications found, will remove if needed..."
@@ -80,7 +74,7 @@ Function Cleanup
     }
     catch
     {
-	    Write-Host "Unable to remove the 'TodoListClient-aspnetcore-webapi' . Try deleting manually." -ForegroundColor White -BackgroundColor Red
+	    Write-Host "Unable to remove the application 'TodoListClient-aspnetcore-webapi' . Try deleting manually." -ForegroundColor White -BackgroundColor Red
     }
 
     Write-Host "Making sure there are no more (TodoListClient-aspnetcore-webapi) applications found, will remove if needed..."
@@ -109,6 +103,13 @@ Function Cleanup
      # remove self-signed certificate
      Get-ChildItem -Path Cert:\CurrentUser\My | where { $_.subject -eq "the certificate will be named by application name" } | Remove-Item
 }
+
+if ($null -eq (Get-Module -ListAvailable -Name "Microsoft.Graph.Applications")) { 
+    Install-Module "Microsoft.Graph.Applications" -Scope CurrentUser                                            
+} 
+Import-Module Microsoft.Graph.Applications
+$ErrorActionPreference = "Stop"
+
 
 Cleanup -tenantId $tenantId -environment $azureEnvironmentName
 
