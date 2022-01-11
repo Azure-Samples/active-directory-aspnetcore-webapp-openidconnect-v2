@@ -11,11 +11,8 @@ param(
  This script creates the Azure AD applications needed for this sample and updates the configuration files
  for the visual Studio projects from the data in the Azure AD applications.
 
- Before running this script you need to install the Graph cmdlets as an administrator. 
- For this:
- 1) Run Powershell as an administrator
- 2) in the PowerShell window, type: Install-Module Microsoft.Graph.Applications
-
+ In case you don't have Microsoft.Graph.Applications already installed, the script will automatically install it for the current user
+ 
  There are four ways to run this script. For more information, read the AppCreationScripts.md file in the same folder as this script.
 #>
 
@@ -158,18 +155,6 @@ Function CreateAppRole([string] $types, [string] $name, [string] $description)
     return $appRole
 }
 
-# Pre-requisites
-if ($null -eq (Get-Module -ListAvailable -Name "Microsoft.Graph.Applications")) {
-    Install-Module "Microsoft.Graph.Applications" -Scope CurrentUser 
-}
-
-Import-Module Microsoft.Graph.Applications
-
-Set-Content -Value "<html><body><table>" -Path createdApps.html
-Add-Content -Value "<thead><tr><th>Application</th><th>AppId</th><th>Url in the Azure portal</th></tr></thead><tbody>" -Path createdApps.html
-
-$ErrorActionPreference = "Stop"
-
 Function ConfigureApplications
 {
     <#.Description
@@ -207,7 +192,7 @@ Function ConfigureApplications
  
                                                          } `
                                                        -SignInAudience AzureADMyOrg `
-                                                       #-PublicClient $False
+                                                       #end of command
     $serviceIdentifierUri = 'api://'+$serviceAadApplication.AppId
     Update-MgApplication -ApplicationId $serviceAadApplication.Id -IdentifierUris @($serviceIdentifierUri)
     
@@ -273,7 +258,7 @@ Function ConfigureApplications
  
                                                         } `
                                                       -SignInAudience AzureADMyOrg `
-                                                      #-PublicClient $False
+                                                      #end of command
     #add password to the application
     $pwdCredential = Add-MgApplicationPassword -ApplicationId $clientAadApplication.Id -PasswordCredential $key
     $serviceAppKey = $pwdCredential.SecretText
@@ -335,8 +320,20 @@ Function ConfigureApplications
     Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  
 }
 
+# Pre-requisites
+if ($null -eq (Get-Module -ListAvailable -Name "Microsoft.Graph.Applications")) {
+    Install-Module "Microsoft.Graph.Applications" -Scope CurrentUser 
+}
+
+Import-Module Microsoft.Graph.Applications
+
+Set-Content -Value "<html><body><table>" -Path createdApps.html
+Add-Content -Value "<thead><tr><th>Application</th><th>AppId</th><th>Url in the Azure portal</th></tr></thead><tbody>" -Path createdApps.html
+
+$ErrorActionPreference = "Stop"
+
 # Run interactively (will ask you for the tenant ID)
-ConfigureApplications -TenantId $tenantId -Environment $azureEnvironmentName
+ConfigureApplications -tenantId $tenantId -environment $azureEnvironmentName
 
 Write-Host "Disconnecting from tenant"
 Disconnect-MgGraph
