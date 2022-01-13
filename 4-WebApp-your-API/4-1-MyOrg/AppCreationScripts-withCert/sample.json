@@ -1,22 +1,23 @@
 {
   "Sample": {
     "Author": "v-abeyderman",
-    "Title": "How to secure a Web API built with ASP.NET Core using the Microsoft identity platform (formerly Azure Active Directory for developers)",
+    "Title": "How to secure a Web API built with ASP.NET Core using the Microsoft identity platform",
     "Level": 200,
     "Client": "ASP.NET Core Web App",
     "Service": "ASP.NET Core Web API",
     "RepositoryUrl": "active-directory-aspnetcore-webapp-openidconnect-v2",
-    "Endpoint": "AAD v2.0""Description": "This sample demonstrates a ASP.NET Core Web App calling a ASP.NET Core Web API that is secured using Azure AD",
-    "Languages":["csharp"],
-    "Products":["aspnet-core","azure-active-directory"]
+    "Endpoint": "AAD v2.0",
+    "Description": "This sample demonstrates a ASP.NET Core Web App calling a ASP.NET Core Web API that is secured using Azure AD",
+    "Languages": [ "csharp" ],
+    "Products": [ "aspnet-core", "azure-active-directory" ]
   },
-  
+
   /*
     This section describes different regions of readme file
   */
   "ReadmeScenario": {
-    "MainText": "This sample demonstrates a ASP.NET Core Web App calling a ASP.NET Core Web API that is secured using Azure AD.\n\n1. The client ASP.NET Core Web App uses the Microsoft Authentication Library (MSAL) to sign-in and obtain a JWT [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from **Azure AD**.\n1. The [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) is used as a bearer token to authorize the user to call the ASP.NET Core Web API protected by **Azure AD**.\n",
-    "Image": "ReadmeFiles/topology.png",
+    "MainText": "This sample demonstrates a ASP.NET Core Web App calling a ASP.NET Core Web API that is secured using Azure AD.\n\n1. The client ASP.NET Core Web App uses the Microsoft.Identity.Web to sign-in and obtain a JWT [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from **Azure AD**.\n1. The [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) is used as a bearer token to authorize the user to call the ASP.NET Core Web API protected by **Azure AD**.\n",
+    "Image": "./ReadmeFiles/topology.png",
 
     /* put additional notes, will be displayed right after image*/
     "AdditionalNotes": "\n"
@@ -27,7 +28,7 @@
   },
 
   "ReadmeSetup": {
-    "FreeText": "\n> For Visual Studio users\n>\n> Clean the solution, rebuild the solution, and run it.\n\n For command line run the next commands:\n",
+    "FreeText": "\n For command line run the next commands:\n",
     "UseNewSetup": "1", /* when set to 0, only legacy setup will be used */
     "CertificateOption": "1" /* 1 when a certificate can be used instead of secret*/
   },
@@ -39,7 +40,7 @@
 
   /* It either can be a text or link to another readme file */
   "ReadmeNextSteps": {
-    "FreeText": "- Learn how to use app groups. [Add authorization using security groups & groups claims to a Web app thats signs-in users with the Microsoft identity platform](../../5-WebApp-AuthZ/5-2-Groups/README.md)."
+    "FreeText": ""
   },
 
   /* It either can be a text or link to another readme file */
@@ -54,7 +55,7 @@
 
   /* It either can be a text or link to another readme file */
   "ReadmeUsingTheSample": {
-    "FreeText": "Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in using an user account in that tenant.\n\n ![First time Consent](ReadmeFiles/Sign-in-Consent.png)\n\n1. On the home page, the app lists the various claims it obtained from your [ID token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens). You'd notice a claim named `roles`. There will be one `roles` claim for each app role the signed-in use is assigned to.\n\n1. There also are two links provided on the home page under the **Try one of the following Azure App Role driven operations** heading. These links will result in an access denied error if the signed-in user is not present in the expected role. Sign-out and sign-in with a user account with the correct role assignment to view the contents of these pages.\n\nWhen you click on the page that fetches the signed-in user's roles and group assignments, the sample will attempt to obtain consent from you for the **User.Read** permission using [incremental consent](https://docs.microsoft.com/azure/active-directory/develop/azure-ad-endpoint-comparison#incremental-and-dynamic-consent).\n\n> Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.\n\n > [Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbRz0h_jLR5HNJlvkZAewyoWxUNEFCQ0FSMFlPQTJURkJZMTRZWVJRNkdRMC4u)"
+    "FreeText": "Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in using an user account in that tenant.\n\n> Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.\n\n > [Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbRz0h_jLR5HNJlvkZAewyoWxUNEFCQ0FSMFlPQTJURkJZMTRZWVJRNkdRMC4u)"
   },
 
   /* It either can be a text or link to another readme file */
