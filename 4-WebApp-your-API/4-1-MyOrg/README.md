@@ -1,6 +1,6 @@
 ---
 page_type: sample
-name: How to secure a Web API built with ASP&#46;NET Core using the Microsoft identity platform (formerly Azure Active Directory for developers)
+name: How to secure a Web API built with ASP&#46;NET Core using the Microsoft identity platform
 services: active-directory
 platforms: dotnet
 urlFragment: active-directory-aspnetcore-webapp-openidconnect-v2
@@ -12,7 +12,7 @@ products:
  - azure-active-directory
 ---
 
-# How to secure a Web API built with ASP&#46;NET Core using the Microsoft identity platform (formerly Azure Active Directory for developers)
+# How to secure a Web API built with ASP&#46;NET Core using the Microsoft identity platform
 
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 ## Scenario
