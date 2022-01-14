@@ -173,9 +173,6 @@ Function ConfigureApplications
                                                        -Web `
                                                        @{ `
                                                            HomePageUrl = "https://localhost:44351"; `
-
-                                                           ImplicitGrantSettings = @{EnableIdTokenIssuance=$true;EnableAccessTokenIssuance=$false} ` 
- 
                                                          } `
                                                        -SignInAudience AzureADMyOrg `
                                                        #end of command
@@ -235,9 +232,6 @@ Function ConfigureApplications
                                                           RedirectUris = "https://localhost:44321/", "https://localhost:44321/signin-oidc"; `
                                                           HomePageUrl = "https://localhost:44321/"; `
                                                           LogoutUrl = "https://localhost:44321/signout-oidc"; `
-
-                                                          ImplicitGrantSettings = @{EnableIdTokenIssuance=$true;EnableAccessTokenIssuance=$false} ` 
- 
                                                         } `
                                                       -SignInAudience AzureADMyOrg `
                                                       #end of command

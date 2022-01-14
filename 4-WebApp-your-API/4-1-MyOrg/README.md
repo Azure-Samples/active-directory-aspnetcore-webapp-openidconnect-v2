@@ -15,6 +15,18 @@ products:
 # How to secure a Web API built with ASP&#46;NET Core using the Microsoft identity platform
 
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
+
+Table Of Contents
+* [Scenario](#Scenario)
+* [Prerequisites](#Prerequisites)
+* [Setup the sample](#Setup-the-sample)
+* [Troubleshooting](#Troubleshooting)
+* [Using the sample](#Using-the-sample)
+* [About the code](#About-the-code)
+* [How to deploy this sample to Azure](#How-to-deploy-this-sample-to-Azure)
+* [Next Steps](#Next-Steps)
+* [Learn More](#Learn-More)
+
 ## Scenario
 
 This sample demonstrates a ASP.NET Core Web App calling a ASP.NET Core Web API that is secured using Azure AD.
