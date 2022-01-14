@@ -17,6 +17,7 @@ products:
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 Table Of Contents
+
 * [Scenario](#Scenario)
 * [Prerequisites](#Prerequisites)
 * [Setup the sample](#Setup-the-sample)
@@ -25,6 +26,7 @@ Table Of Contents
 * [About the code](#About-the-code)
 * [How to deploy this sample to Azure](#How-to-deploy-this-sample-to-Azure)
 * [Next Steps](#Next-Steps)
+* [Contributing](#Contributing)
 * [Learn More](#Learn-More)
 
 ## Scenario
@@ -250,7 +252,12 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
 
 <details>
  <summary>Expand to see how to use the sample</summary>
- Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in using an user account in that tenant.
+ Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in using an user account in that tenant.Open your browser and navigate to `https://localhost:44321` and sign-in using the link on top-right.
+
+1. Click on `TodoList`, you can click on `Create New` link. It will redirect to create task screen where you can add a new task and assign it to any user from the list.
+1. The `TodoList` screen also displays tasks that are assigned to and created by signed-in user. The user can edit and delete the created tasks but can only view the assigned tasks.
+
+> NOTE: Remember, the TodoList is stored in memory in this `TodoListService` app. Each time you run the projects, your TodoList will get emptied.
 
 > Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
 
@@ -486,9 +493,13 @@ Change your app to sign-in users from any organization or any Microsoft accounts
 Enable users from National clouds to sign-in to your application
 enable your Web App to call a Web API on behalf of the signed-in user
  
+## Contributing
+
+If you'd like to contribute to this sample, see [CONTRIBUTING.MD](/CONTRIBUTING.md).
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information, see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+ 
 ## Learn More
-
-
 
 For more information, visit the following links:
 
@@ -506,5 +517,4 @@ For more information, visit the following links:
   - [Introduction to Identity on ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authentication/identity?view=aspnetcore-2.1&tabs=visual-studio%2Caspnetcore2x)
   - [AuthenticationBuilder](https://docs.microsoft.com/dotnet/api/microsoft.aspnetcore.authentication.authenticationbuilder?view=aspnetcore-2.0)
   - [Azure Active Directory with ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authentication/azure-active-directory/?view=aspnetcore-2.1)
-
 
