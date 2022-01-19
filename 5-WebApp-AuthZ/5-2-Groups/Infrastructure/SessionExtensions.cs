@@ -12,26 +12,15 @@ namespace WebApp_OpenIDConnect_DotNet.Infrastructure
 {
     public static class SessionExtensions
     {
-        public static void SetAsByteArray(this ISession session, string key, object toSerialize)
+        public static void SetObjectAsJson(this ISession session, string key, object value)
         {
-            var binaryFormatter = new BinaryFormatter();
-            var memoryStream = new MemoryStream();
-            binaryFormatter.Serialize(memoryStream, toSerialize);
-
-            session.Set(key, memoryStream.ToArray());
+            session.SetString(key, JsonConvert.SerializeObject(value));
         }
 
-        public static object GetAsByteArray(this ISession session, string key)
+        public static T GetObjectFromJson<T>(this ISession session, string key)
         {
-            var memoryStream = new MemoryStream();
-            var binaryFormatter = new BinaryFormatter();
-
-            var objectBytes = session.Get(key) as byte[];
-            memoryStream.Write(objectBytes, 0, objectBytes.Length);
-            memoryStream.Position = 0;
-
-            return binaryFormatter.Deserialize(memoryStream);
-
+            var value = session.GetString(key);
+            return value == null ? default(T) : JsonConvert.DeserializeObject<T>(value);
         }
     }
 }

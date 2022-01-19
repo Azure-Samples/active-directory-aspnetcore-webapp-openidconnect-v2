@@ -53,7 +53,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
             // The data will exist for 'Group Overage' claim.
             if (_httpContextSession.Keys.Contains("groupClaims"))
             {
-                return _httpContextSession.GetAsByteArray("groupClaims") as List<string>;
+                return _httpContextSession.GetObjectFromJson<List<string>>("groupClaims");
             }
             return null;
         }
@@ -153,7 +153,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
                                     }
 
                                     // Here we add the groups in a session variable that is used in authorization policy handler.
-                                    context.HttpContext.Session.SetAsByteArray("groupClaims", groupClaims);
+                                    context.HttpContext.Session.SetObjectAsJson("groupClaims", groupClaims);
                                 }
                             }
                         }
