@@ -113,7 +113,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
                     }
 
                     // The properties that we want to retrieve from MemberOf endpoint.
-                    string select = "id,displayName,onPremisesNetBiosName,onPremisesDomainName,onPremisesSamAccountNameonPremisesSecurityIdentifier";
+                    string select = "id,displayName,onPremisesNetBiosName,onPremisesDomainName,onPremisesSamAccountName,onPremisesSecurityIdentifier";
 
                     IUserMemberOfCollectionWithReferencesPage memberPage = new UserMemberOfCollectionWithReferencesPage();
                     try
