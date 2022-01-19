@@ -26,7 +26,8 @@ namespace WebApp_OpenIDConnect_DotNet.Services
             List<string> groupClaims = new List<string>();
 
             // Checks if the incoming token contained a 'Group Overage' claim.
-            if (HasOverageOccurred(context.Principal))
+            //if (HasOverageOccurred(context.Principal))
+            if(true) // always query the name for the user group ids
             {
                 // Gets group values from session variable if exists.
                 groupClaims = GetUserGroupsFromSession(context.HttpContext.Session);
@@ -54,6 +55,16 @@ namespace WebApp_OpenIDConnect_DotNet.Services
             if (_httpContextSession.Keys.Contains("groupClaims"))
             {
                 return _httpContextSession.GetObjectFromJson<List<string>>("groupClaims");
+            }
+            return null;
+        }
+        public static List<Group> GetUserGroupsDetailsFromSession(ISession _httpContextSession)
+        {
+            // Checks if Session contains data for groupClaims.
+            // The data will exist for 'Group Overage' claim.
+            if (_httpContextSession.Keys.Contains("groupsDetails"))
+            {
+                return _httpContextSession.GetObjectFromJson<List<Group>>("groupsDetails");
             }
             return null;
         }
@@ -154,6 +165,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
 
                                     // Here we add the groups in a session variable that is used in authorization policy handler.
                                     context.HttpContext.Session.SetObjectAsJson("groupClaims", groupClaims);
+                                    context.HttpContext.Session.SetObjectAsJson("groupsDetails", allgroups);
                                 }
                             }
                         }

@@ -24,6 +24,12 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             {
                 ViewData.Add("groupClaims", groups );
             }
+            // Calls method GetSessionGroupList to get groups from session.
+            var groupDetails = GraphHelper.GetUserGroupsDetailsFromSession(HttpContext.Session);
+            if (groupDetails?.Count > 0)
+            {
+                ViewData.Add("groupDetails", groupDetails);
+            }
             return View();
         }
 

@@ -1,4 +1,5 @@
 ﻿@using System.Security.Claims
+@using Microsoft.Graph
 @{
     ViewData["Title"] = "Add authorization using groups & group claims";
 }
@@ -45,13 +46,20 @@
 </table>
 
 @{
-    List<string> groupClaims = new List<string>();
+    var groupClaims = new List<string>();
 
     if (ViewData.ContainsKey("groupClaims"))
     {
         groupClaims = ViewData["groupClaims"] as List<string>;
     }
+    
+    var groupDetails = new List<Group>();
 
+    if (ViewData.ContainsKey("groupDetails"))
+    {
+        groupDetails = ViewData["groupDetails"] as List<Group>;
+    }
+    
 }
 
 <table class="table table-striped table-bordered table-condensed table-hover">
@@ -62,7 +70,8 @@
     @foreach (var group in groupClaims)
     {
         <tr>
-            <td colspan="2">@group</td>
+            <td colspan="1">@group</td>
+            <td>@groupDetails.SingleOrDefault(g => g.Id == group).DisplayName</td>
         </tr>
     }
 
