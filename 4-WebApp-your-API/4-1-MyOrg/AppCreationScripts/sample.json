@@ -76,7 +76,6 @@
       "Id": "service",
       "Name": "TodoListService-aspnetcore-webapi",
       "Kind": "WebApi",
-      "Audience": "AzureADMyOrg",
       "HomePage": "https://localhost:44351",
       "ManualSteps": [],
       "Sample": {
@@ -88,7 +87,6 @@
       "Id": "client",
       "Name": "TodoListClient-aspnetcore-webapi",
       "Kind": "WebApp",
-      "Audience": "AzureADMyOrg",
       "HomePage": "https://localhost:44321/",
       "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc",
       "LogoutUrl": "https://localhost:44321/signout-oidc",

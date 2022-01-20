@@ -174,7 +174,7 @@ Function ConfigureApplications
                                                        @{ `
                                                            HomePageUrl = "https://localhost:44351"; `
                                                          } `
-                                                       -SignInAudience AzureADMyOrg `
+                                                        -SignInAudience AzureADandPersonalMicrosoftAccount `
                                                        #end of command
     $serviceIdentifierUri = 'api://'+$serviceAadApplication.AppId
     Update-MgApplication -ApplicationId $serviceAadApplication.Id -IdentifierUris @($serviceIdentifierUri)
@@ -233,7 +233,7 @@ Function ConfigureApplications
                                                           HomePageUrl = "https://localhost:44321/"; `
                                                           LogoutUrl = "https://localhost:44321/signout-oidc"; `
                                                         } `
-                                                      -SignInAudience AzureADMyOrg `
+                                                       -SignInAudience AzureADandPersonalMicrosoftAccount `
                                                       #end of command
     $tenantName = (Get-MgApplication -ApplicationId $clientAadApplication.Id).PublisherDomain
     Update-MgApplication -ApplicationId $clientAadApplication.Id -IdentifierUris @("https://$tenantName/TodoListClient-aspnetcore-webapi")
