@@ -188,7 +188,7 @@ Function ConfigureApplications
                                                        @{ `
                                                            HomePageUrl = "https://localhost:44351"; `
                                                          } `
-                                                       -SignInAudience AzureADMyOrg `
+                                                        -SignInAudience AzureADandPersonalMicrosoftAccount `
                                                        #end of command
     $serviceIdentifierUri = 'api://'+$serviceAadApplication.AppId
     Update-MgApplication -ApplicationId $serviceAadApplication.Id -IdentifierUris @($serviceIdentifierUri)
@@ -251,7 +251,7 @@ Function ConfigureApplications
                                                           HomePageUrl = "https://localhost:44321/"; `
                                                           LogoutUrl = "https://localhost:44321/signout-oidc"; `
                                                         } `
-                                                      -SignInAudience AzureADMyOrg `
+                                                       -SignInAudience AzureADandPersonalMicrosoftAccount `
                                                       #end of command
     #add password to the application
     $pwdCredential = Add-MgApplicationPassword -ApplicationId $clientAadApplication.Id -PasswordCredential $key
