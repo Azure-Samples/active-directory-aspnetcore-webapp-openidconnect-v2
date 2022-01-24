@@ -78,7 +78,7 @@ In the `HomeController.cs` file, replace the blob container `Uri` (line 77) with
 
 ## About The code
 
-Starting from the [previous phase of the tutorial](../../2-WebApp-graph-user/2-1-Call-MSGraph), the code was incrementally updated with the following steps:
+Starting from the [previous phase of the tutorial](../2-WebApp-graph-user/2-1-Call-MSGraph), the code was incrementally updated with the following steps:
 
 ### Update the `Startup.cs` file to enable TokenAcquisition by a MSAL.NET based service
 
