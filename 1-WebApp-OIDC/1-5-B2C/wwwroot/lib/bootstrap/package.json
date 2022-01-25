@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "markdown-it": ">=12.3.2",
+    "shelljs": ">=0.8.5"
+  }
+}
