@@ -15,7 +15,6 @@
       "Id": "service",
       "Name": "WebApi-MultiTenant-v2",
       "Kind": "WebApi",
-      "Audience": "AzureADMultipleOrgs",
       "HomePage": "https://localhost:44351/",
       "ReplyUrls": "https://localhost:44351/api/Home",
       "PasswordCredentials": "Auto",
@@ -30,7 +29,6 @@
       "Id": "client",
       "Name": "WebApp-MultiTenant-v2",
       "Kind": "WebApp",
-      "Audience": "AzureADMultipleOrgs",
       "HomePage": "https://localhost:44321/",
       "ReplyUrls": "https://localhost:44321/,https://localhost:44321/signin-oidc",
       "LogoutUrl": "https://localhost:44321/signout-oidc",
@@ -97,11 +95,11 @@
         },
         {
           "key": "ClientSecret",
-          "value": ".AppKey"
+          "value": "client.AppKey"
         },
         {
           "Key": "RedirectUri",
-          "value": "client.HomePage"
+          "value": "client.Web.HomePageUrl"
         },
         {
           "key": "TodoListScope",
@@ -113,11 +111,11 @@
         },
         {
           "Key": "TodoListBaseAddress",
-          "value": "service.HomePage"
+          "value": "service.Web.HomePageUrl"
         },
         {
           "Key": "AdminConsentRedirectApi",
-          "value": "service.ReplyUrls"
+          "value": "service.Web.RedirectUris"
         }
       ]
     }

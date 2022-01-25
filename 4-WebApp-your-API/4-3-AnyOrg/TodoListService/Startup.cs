@@ -10,6 +10,7 @@ using ToDoListService.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Linq;
 using System;
+using System.Threading.Tasks;
 
 namespace ToDoListService
 {
@@ -27,33 +28,36 @@ namespace ToDoListService
         {
             // Setting configuration for protected web api
 
-            services.AddMicrosoftIdentityWebApiAuthentication(Configuration)
-                    .EnableTokenAcquisitionToCallDownstreamApi()
-                    .AddInMemoryTokenCaches();
+            //services.AddMicrosoftIdentityWebApiAuthentication(Configuration)
+            //        .EnableTokenAcquisitionToCallDownstreamApi()
+            //.AddInMemoryTokenCaches();
 
             // Comment above lines of code and uncomment this section if you would like to validate ID tokens for allowed tenantIds
-            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //  .AddMicrosoftIdentityWebApi(options =>
-            //{
-            //    Configuration.Bind("AzureAd", options);
-            //    options.Events = new JwtBearerEvents();
-            //    options.Events.OnTokenValidated = async context =>
-            //    {
-            //        string[] allowedTenants = {/* list of tenant IDs */ };
-            //        string tenantId = context.Principal.Claims.FirstOrDefault(x => x.Type == "tid" || x.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+              .AddMicrosoftIdentityWebApi(options =>
+            {
+                Configuration.Bind("AzureAd", options);
+                options.Events = new JwtBearerEvents();
+                options.Events.OnTokenValidated = async context =>
+                {
+                    await Task.Run(() =>
+                    {
+                        string[] allowedTenants = {/* list of tenant IDs */ };
+                        string tenantId = context.Principal.Claims.FirstOrDefault(x => x.Type == "tid" || x.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
 
-            //        if (!allowedTenants.Contains(tenantId))
-            //        {
-            //            throw new Exception("This tenant is not authorized");
-            //        }
-            //    };
-            //}, options => { Configuration.Bind("AzureAd", options); })
-            //  .EnableTokenAcquisitionToCallDownstreamApi(
-            //        options =>
-            //        {
-            //             Configuration.Bind("AzureAd", options);
-            //        })
-            //    .AddInMemoryTokenCaches();
+                        if (!allowedTenants.Contains(tenantId))
+                        {
+                            throw new Exception("This tenant is not authorized");
+                        }
+                    });
+                };
+            }, options => { Configuration.Bind("AzureAd", options); })
+              .EnableTokenAcquisitionToCallDownstreamApi(
+                    options =>
+                    {
+                        Configuration.Bind("AzureAd", options);
+                    })
+                .AddInMemoryTokenCaches();
 
             // Creating policies that wraps the authorization requirements
             services.AddAuthorization();
@@ -61,7 +65,7 @@ namespace ToDoListService
             services.AddDbContext<TodoContext>(opt => opt.UseInMemoryDatabase("TodoList"));
 
             services.AddControllers();
-            
+
             // Allowing CORS for all domains and methods for the purpose of sample
             //services.AddCors(o => o.AddPolicy("default", builder =>
             //{
