@@ -89,6 +89,10 @@
           "key": "TenantId",
           "value": "'common'"
         },
+		{
+          "key": "AllowedTenants",
+          "value": "$tenantId"
+        },
         {
           "key": "Domain",
           "value": "$tenantName"

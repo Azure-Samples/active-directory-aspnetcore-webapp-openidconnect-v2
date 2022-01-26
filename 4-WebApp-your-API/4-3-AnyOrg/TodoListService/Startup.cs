@@ -26,13 +26,16 @@ namespace ToDoListService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //get list of allowed tenants from configuration
+            var allowed = Configuration.GetSection("AzureAd:AllowedTenants").Get<string[]>();
+
             // Setting configuration for protected web api
 
             //services.AddMicrosoftIdentityWebApiAuthentication(Configuration)
             //        .EnableTokenAcquisitionToCallDownstreamApi()
             //.AddInMemoryTokenCaches();
 
-            // Comment above lines of code and uncomment this section if you would like to validate ID tokens for allowed tenantIds
+            // Uncomment above lines of code and comment this section if you WOULDN'T like to validate ID tokens for allowed tenantIds
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
               .AddMicrosoftIdentityWebApi(options =>
             {
@@ -42,12 +45,12 @@ namespace ToDoListService
                 {
                     await Task.Run(() =>
                     {
-                        string[] allowedTenants = {/* list of tenant IDs */ };
-                        string tenantId = context.Principal.Claims.FirstOrDefault(x => x.Type == "tid" || x.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
+                        string[] allowedTenants = allowed;
+                        string tenantId = context.Principal.Claims.FirstOrDefault(x => x.Type == ClaimConstants.Tid || x.Type == ClaimConstants.TenantId)?.Value;
 
                         if (!allowedTenants.Contains(tenantId))
                         {
-                            throw new Exception("This tenant is not authorized");
+                            throw new UnauthorizedAccessException("This tenant is not authorized");
                         }
                     });
                 };
