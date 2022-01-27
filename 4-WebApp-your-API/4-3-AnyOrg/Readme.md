@@ -543,6 +543,8 @@ If a token has delegated permission scopes, they will be in the `scp` or `http:/
 
 By marking your application as multi-tenant, your application will be able to sign-in users from any Azure AD tenant out there. Now you would want to restrict the tenants you want to work with. For this, we will now extend token validation to only those Azure AD tenants registered in the application database. Below, the event handler `OnTokenValidated` was configured to grab the `tenantId` from the token claims and check if it has an entry on the records. If it doesn't, an exception is thrown, canceling the authentication.
 
+Another way to control who is allowed into API is to use Policies. This is configured as part of services.AddAuthorization call. See the code below.
+
 ```csharp
 //get list of allowed tenants from configuration
   var allowedTenants = Configuration.GetSection("AzureAd:AllowedTenants").Get<string[]>();
