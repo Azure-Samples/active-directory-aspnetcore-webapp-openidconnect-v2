@@ -27,37 +27,49 @@ namespace ToDoListService
         public void ConfigureServices(IServiceCollection services)
         {
             // Setting configuration for protected web api and extending it to control which tenant will be able to access the API
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApi(Configuration)
+                .EnableTokenAcquisitionToCallDownstreamApi()
+                .AddInMemoryTokenCaches();
 
             //get list of allowed tenants from configuration
-            var allowed = Configuration.GetSection("AzureAd:AllowedTenants").Get<string[]>();
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-              .AddMicrosoftIdentityWebApi(options =>
-            {
-                Configuration.Bind("AzureAd", options);
-                options.Events = new JwtBearerEvents();
-                options.Events.OnTokenValidated = async context =>
-                {
-                    await Task.Run(() =>
-                    {
-                        string[] allowedTenants = allowed;
-                        string tenantId = context.Principal.Claims.FirstOrDefault(x => x.Type == ClaimConstants.Tid || x.Type == ClaimConstants.TenantId)?.Value;
+            var allowedTenants = Configuration.GetSection("AzureAd:AllowedTenants").Get<string[]>();
 
-                        if (!allowedTenants.Contains(tenantId))
+            //configure OnTokenValidated event to filter the tenants
+            //you can use either this approach or the one below through policies
+            services.Configure<JwtBearerOptions>(
+                JwtBearerDefaults.AuthenticationScheme, options =>
+                {
+                    var existingOnTokenValidatedHandler = options.Events.OnTokenValidated;
+                    options.Events.OnTokenValidated = async context =>
+                    {
+                        await existingOnTokenValidatedHandler(context);
+                        if (!allowedTenants.Contains(context.Principal.GetTenantId())) 
                         {
                             throw new UnauthorizedAccessException("This tenant is not authorized");
                         }
-                    });
-                };
-            }, options => { Configuration.Bind("AzureAd", options); })
-              .EnableTokenAcquisitionToCallDownstreamApi(
-                    options =>
-                    {
-                        Configuration.Bind("AzureAd", options);
-                    })
-              .AddInMemoryTokenCaches();
+                    };
+                });
+
 
             // Creating policies that wraps the authorization requirements
-            services.AddAuthorization();
+            services.AddAuthorization(
+
+                //uncomment this part if you need to filter the tenants by a policy
+                //refer to https://github.com/AzureAD/microsoft-identity-web/wiki/authorization-policies#filtering-tenants
+
+                //builder =>
+                //{
+                //    string policyName = "User belongs to a specific tenant";
+                //    builder.AddPolicy(policyName, b =>
+                //    {
+                //        b.RequireClaim(ClaimConstants.TenantId, allowedTenants);
+                //    });
+                //    builder.DefaultPolicy = builder.GetPolicy(policyName);
+                //}
+
+            );
+
 
             services.AddDbContext<TodoContext>(opt => opt.UseInMemoryDatabase("TodoList"));
 
