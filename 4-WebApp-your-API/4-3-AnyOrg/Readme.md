@@ -29,8 +29,8 @@ description: "Protect a multi-tenant SaaS web application and a Web API which ca
   - [Overview](#overview)
   - [Pre-requisites](#pre-requisites)
   - [Setup](#setup)
-    - [Step 1:  Clone or download this repository](#step-1-clone-or-download-this-repository)
-    - [Step 2:  Register the sample applications with your Azure Active Directory tenant](#step-2-register-the-sample-applications-with-your-azure-active-directory-tenant)
+    - [Step 1:  Clone or download this repository](#step-1--clone-or-download-this-repository)
+    - [Step 2:  Register the sample applications with your Azure Active Directory tenant](#step-2--register-the-sample-applications-with-your-azure-active-directory-tenant)
       - [Choose the Azure AD tenant where you want to create your applications](#choose-the-azure-ad-tenant-where-you-want-to-create-your-applications)
       - [Register the service app (WebApi-MultiTenant-ToDoListService-v2)](#register-the-service-app-webapi-multitenant-todolistservice-v2)
       - [Configure the service app (WebApi-MultiTenant-ToDoListService-v2) to use your app registration](#configure-the-service-app-webapi-multitenant-todolistservice-v2-to-use-your-app-registration)
@@ -145,6 +145,8 @@ There are two projects in this sample. Each needs to be separately registered in
    > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
    > The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
 
+   > ***Inside TodoListService/appsettings.json, find the app key 'AllowedTenants' and add your tenant (for which you've registered the application). You can add as many tenants as you wish into this array and all of them will have access to the Web API***.
+
 </details>
 
 Follow the steps below to manually walk through the steps to register and configure the applications in the Azure portal.
@@ -205,6 +207,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. Find the app key `TenantId` and replace the existing value with 'common'.
 1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `WebApi-MultiTenant-ToDoListService-v2` application copied from the Azure portal.
 1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApi-MultiTenant-ToDoListService-v2` app, in the Azure portal.
+1. Find the app key `AllowedTenants` and add your tenant (for which you've registered the application). You can add as many tenants as you wish into this array and all of them will have access to Web API.
 
 #### Register the client app (WebApp-MultiTenant-ToDoListClient-v2)
 
@@ -541,23 +544,32 @@ If a token has delegated permission scopes, they will be in the `scp` or `http:/
 By marking your application as multi-tenant, your application will be able to sign-in users from any Azure AD tenant out there. Now you would want to restrict the tenants you want to work with. For this, we will now extend token validation to only those Azure AD tenants registered in the application database. Below, the event handler `OnTokenValidated` was configured to grab the `tenantId` from the token claims and check if it has an entry on the records. If it doesn't, an exception is thrown, canceling the authentication.
 
 ```csharp
+//get list of allowed tenants from configuration
+var allowed = Configuration.GetSection("AzureAd:AllowedTenants").Get<string[]>();
 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-  .AddMicrosoftWebApi(options =>
+  .AddMicrosoftIdentityWebApi(options =>
 {
     Configuration.Bind("AzureAd", options);
     options.Events = new JwtBearerEvents();
     options.Events.OnTokenValidated = async context =>
     {
-        string[] allowedTenants = {/* list of tenant IDs */ };
-        string tenantId = context.Principal.Claims.FirstOrDefault(x => x.Type == "tid" || x.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
-
-        if (!allowedTenants.Contains(tenantId))
+        await Task.Run(() =>
         {
-            throw new Exception("This tenant is not authorized");
-        }
+            string[] allowedTenants = allowed;
+            string tenantId = context.Principal.Claims.FirstOrDefault(x => x.Type == ClaimConstants.Tid || x.Type == ClaimConstants.TenantId)?.Value;
+
+            if (!allowedTenants.Contains(tenantId))
+            {
+                throw new UnauthorizedAccessException("This tenant is not authorized");
+            }
+        });
     };
 }, options => { Configuration.Bind("AzureAd", options); })
-  .AddMicrosoftWebApiCallsWebApi(Configuration)
+  .EnableTokenAcquisitionToCallDownstreamApi(
+        options =>
+        {
+            Configuration.Bind("AzureAd", options);
+        })
   .AddInMemoryTokenCaches();
 ```
 

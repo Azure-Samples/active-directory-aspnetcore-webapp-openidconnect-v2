@@ -26,16 +26,10 @@ namespace ToDoListService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Setting configuration for protected web api and extending it to control which tenant will be able to access the API
+
             //get list of allowed tenants from configuration
             var allowed = Configuration.GetSection("AzureAd:AllowedTenants").Get<string[]>();
-
-            // Setting configuration for protected web api
-
-            //services.AddMicrosoftIdentityWebApiAuthentication(Configuration)
-            //        .EnableTokenAcquisitionToCallDownstreamApi()
-            //.AddInMemoryTokenCaches();
-
-            // Uncomment above lines of code and comment this section if you WOULDN'T like to validate ID tokens for allowed tenantIds
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
               .AddMicrosoftIdentityWebApi(options =>
             {
@@ -60,7 +54,7 @@ namespace ToDoListService
                     {
                         Configuration.Bind("AzureAd", options);
                     })
-                .AddInMemoryTokenCaches();
+              .AddInMemoryTokenCaches();
 
             // Creating policies that wraps the authorization requirements
             services.AddAuthorization();
@@ -86,7 +80,7 @@ namespace ToDoListService
                 // Since IdentityModel version 5.2.1 (or since Microsoft.AspNetCore.Authentication.JwtBearer version 2.2.0),
                 // Personal Identifiable Information is not written to the logs by default, to be compliant with GDPR.
                 // For debugging/development purposes, one can enable additional detail in exceptions by setting IdentityModelEventSource.ShowPII to true.
-                // Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
+                //Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
                 app.UseDeveloperExceptionPage();
             }
             else
