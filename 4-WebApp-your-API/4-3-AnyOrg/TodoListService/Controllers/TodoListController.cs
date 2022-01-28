@@ -33,6 +33,7 @@ namespace ToDoListService.Controllers
 
         // GET: api/TodoItems
         [HttpGet]
+        [RequiredScope("access_as_user")]
         public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
         {
             string userTenantId = HttpContext.User.GetTenantId();
