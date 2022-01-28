@@ -145,7 +145,7 @@ There are two projects in this sample. Each needs to be separately registered in
    > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
    > The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
 
-   > ***Inside TodoListService/appsettings.json, find the app key 'AllowedTenants' and add your tenant (for which you've registered the application). You can add as many tenants as you wish into this array and all of them will have access to the Web API***.
+   > ***Inside TodoListService/appsettings.json, find the app key 'AllowedTenants' and add your tenant (for which you've registered the application). Add the Tenant/Directory Id that you've noted earlier during registering the app. You can also add more tenants into this array if you want apps from those tenant being able to access this Web API***.
 
 </details>
 
