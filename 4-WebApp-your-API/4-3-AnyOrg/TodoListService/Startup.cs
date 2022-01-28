@@ -44,33 +44,36 @@ namespace ToDoListService
                     options.Events.OnTokenValidated = async context =>
                     {
                         await existingOnTokenValidatedHandler(context);
-                        if (!allowedTenants.Contains(context.Principal.GetTenantId())) 
+                        string tenantid = context.Principal.GetTenantId();
+                        if (!allowedTenants.Contains(tenantid))
                         {
-                            throw new UnauthorizedAccessException("This tenant is not authorized");
+                            throw new UnauthorizedAccessException(@"Application from tenant '{tenantid}' are not authorized to call this Web API");
                         }
                     };
                 });
 
 
+            // You can also use custom logic if using the ASP.NET our Authorization policy framework
+            // the following example shows how you can filter apps from unwanted tenants using the policy framework
             // Creating policies that wraps the authorization requirements
             services.AddAuthorization(
 
-                //uncomment this part if you need to filter the tenants by a policy
-                //refer to https://github.com/AzureAD/microsoft-identity-web/wiki/authorization-policies#filtering-tenants
+            // uncomment this part if you need to filter the tenants by a policy
+            //refer to https://github.com/AzureAD/microsoft-identity-web/wiki/authorization-policies#filtering-tenants
 
-                //builder =>
-                //{
-                //    string policyName = "User belongs to a specific tenant";
-                //    builder.AddPolicy(policyName, b =>
-                //    {
-                //        b.RequireClaim(ClaimConstants.TenantId, allowedTenants);
-                //    });
-                //    builder.DefaultPolicy = builder.GetPolicy(policyName);
-                //}
+            //builder =>
+            //{
+            //    string policyName = "User belongs to a specific tenant";
+            //    builder.AddPolicy(policyName, b =>
+            //    {
+            //        b.RequireClaim(ClaimConstants.TenantId, allowedTenants);
+            //    });
+            //    builder.DefaultPolicy = builder.GetPolicy(policyName);
+            //}
 
             );
 
-
+            // Add and initialize the database used by this app
             services.AddDbContext<TodoContext>(opt => opt.UseInMemoryDatabase("TodoList"));
 
             services.AddControllers();

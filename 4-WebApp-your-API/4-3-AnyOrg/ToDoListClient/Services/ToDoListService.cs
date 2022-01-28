@@ -41,6 +41,7 @@ namespace ToDoListClient.Services
             _TodoListBaseAddress = configuration["TodoList:TodoListBaseAddress"];
             _RedirectUri = configuration["RedirectUri"];
             _ApiRedirectUri = configuration["TodoList:AdminConsentRedirectApi"];
+
             if (!string.IsNullOrEmpty(_TodoListBaseAddress))
             {
                 if (!_TodoListBaseAddress.EndsWith("/"))
@@ -156,6 +157,11 @@ namespace ToDoListClient.Services
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
+        /// <summary>
+        /// TODO: please comment 
+        /// </summary>
+        /// <param name="response"></param>
+        /// <exception cref="WebApiMsalUiRequiredException"></exception>
         private void HandleChallengeFromWebApi(HttpResponseMessage response)
         {
             //proposedAction="consent"
