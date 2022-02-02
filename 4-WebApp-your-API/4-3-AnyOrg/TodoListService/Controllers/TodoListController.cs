@@ -18,7 +18,6 @@ namespace ToDoListService.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
-    [RequiredScope("access_as_user")]
     [ApiController]
     public class TodoListController : ControllerBase
     {
@@ -33,7 +32,7 @@ namespace ToDoListService.Controllers
 
         // GET: api/TodoItems
         [HttpGet]
-        [RequiredScope("access_as_user")]
+        [RequiredScope("Read.User.Data")]
         public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
         {
             string userTenantId = HttpContext.User.GetTenantId();
@@ -52,6 +51,7 @@ namespace ToDoListService.Controllers
 
         // GET: api/TodoItems/5
         [HttpGet("{id}")]
+        [RequiredScope("Read.User.Data")]
         public async Task<ActionResult<TodoItem>> GetTodoItem(int id)
         { 
             var todoItem = await _context.TodoItems.FindAsync(id);
@@ -64,6 +64,7 @@ namespace ToDoListService.Controllers
             return todoItem;
         }
         [HttpGet("getallusers")]
+        [RequiredScope("Read.User.Data")]
         public async Task<ActionResult<IEnumerable<string>>> GetAllUsers()
         {
             try
@@ -84,6 +85,7 @@ namespace ToDoListService.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
+        [RequiredScope("Write.User.Data")]
         public async Task<IActionResult> PutTodoItem(int id, TodoItem todoItem)
         {
             if (id != todoItem.Id)
@@ -116,6 +118,7 @@ namespace ToDoListService.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
+        [RequiredScope("Write.User.Data")]
         public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
         {
             var random = new Random();
@@ -131,6 +134,7 @@ namespace ToDoListService.Controllers
 
         // DELETE: api/TodoItems/5
         [HttpDelete("{id}")]
+        [RequiredScope("Write.User.Data")]
         public async Task<ActionResult<TodoItem>> DeleteTodoItem(int id)
         {
             var todoItem = await _context.TodoItems.FindAsync(id);
@@ -149,7 +153,7 @@ namespace ToDoListService.Controllers
         {
             return _context.TodoItems.Any(e => e.Id == id);
         }
-        public async Task<List<string>> CallGraphApiOnBehalfOfUser()
+        private async Task<List<string>> CallGraphApiOnBehalfOfUser()
         {
             string[] scopes = { "user.read.all" };
 

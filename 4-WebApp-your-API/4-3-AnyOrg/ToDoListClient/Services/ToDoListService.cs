@@ -158,7 +158,8 @@ namespace ToDoListClient.Services
         }
 
         /// <summary>
-        /// TODO: please comment 
+        /// If signed-in user does not have consent for a permission on the Web API, for instance "user.read.all" in this sample, 
+        /// then Web API will throw MsalUiRequiredException. The response contains the details about consent Uri and proposed action. 
         /// </summary>
         /// <param name="response"></param>
         /// <exception cref="WebApiMsalUiRequiredException"></exception>

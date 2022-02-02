@@ -169,14 +169,23 @@ As a first step you'll need to:
 The first thing that we need to do is to declare the unique [resource](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow) URI that the clients will be using to obtain access tokens for this Api. To declare an resource URI, follow the following steps:
    - Click `Set` next to the **Application ID URI** to generate a URI that is unique for this app.
    - For this sample, accept the proposed Application ID URI (api://{clientId}) by selecting **Save**.
-1. All Apis have to publish a minimum of one [scope](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-authorization-code) for the client's to obtain an access token successfully. To publish a scope, follow the following steps:
+1. All Apis have to publish a minimum of two [scope](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-authorization-code) for the client's to obtain an access token successfully. To publish a scope, follow the following steps:
    - Select **Add a scope** button open the **Add a scope** screen and Enter the values as indicated below:
-        - For **Scope name**, use `access_as_user`.
+        - For **Scope name**, use `Read.User.Data`.
         - Select **Admins and users** options for **Who can consent?**
-        - For **Admin consent display name** type `Access WebApi-MultiTenant-ToDoListService-v2`
-        - For **Admin consent description** type `Allows the app to access WebApi-MultiTenant-ToDoListService-v2 as the signed-in user.`
-        - For **User consent display name** type `Access WebApi-MultiTenant-ToDoListService-v2`
-        - For **User consent description** type `Allow the application to access WebApi-MultiTenant-ToDoListService-v2 on your behalf.`
+        - For **Admin consent display name** type `Access WebApi-MultiTenant-v2`
+        - For **Admin consent description** type `Allows the app to have the same access to information in the directory on behalf of the signed-in user.`
+        - For **User consent display name** type `Access WebApi-MultiTenant-v2`
+        - For **User consent description** type `Allow the application to access WebApi-MultiTenant-v2 on your behalf.`
+        - Keep **State** as **Enabled**
+        - Click on the **Add scope** button on the bottom to save this scope.
+   - Select **Add a scope** button open the **Add a scope** screen and Enter the values as indicated below:
+        - For **Scope name**, use `Write.User.Data`.
+        - Select **Admins and users** options for **Who can consent?**
+        - For **Admin consent display name** type `Access WebApi-MultiTenant-v2`
+        - For **Admin consent description** type `Allows the app to have the same access to information in the directory on behalf of the signed-in user.`
+        - For **User consent display name** type `Access WebApi-MultiTenant-v2`
+        - For **User consent description** type `Allow the application to access WebApi-MultiTenant-v2 on your behalf.`
         - Keep **State** as **Enabled**
         - Click on the **Add scope** button on the bottom to save this scope.
 
@@ -542,7 +551,7 @@ Another way to control who is allowed into API is to use Policies. This is confi
           options.Events.OnTokenValidated = async context =>
           {
               await existingOnTokenValidatedHandler(context);
-              if (!allowedTenants.Contains(context.Principal.GetTenantId())) //TODO: efficient?
+              if (!allowedTenants.Contains(context.Principal.GetTenantId()))
               {
                   throw new UnauthorizedAccessException("This tenant is not authorized");
               }
@@ -567,6 +576,49 @@ Another way to control who is allowed into API is to use Policies. This is confi
       //}
 
   );
+```
+
+#### Controlling access to API actions with scopes
+
+During registaring Web API Application, two scopes were created **Read.User.Data** and **Write.User.Data**.
+For enhanced and secure access we can decide what scope can access what operation. For example Read.User.Data scope is required for GET:
+```csharp
+    // GET: api/TodoItems
+    [HttpGet]
+    [RequiredScope("Read.User.Data")]
+    public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
+    {
+        string userTenantId = HttpContext.User.GetTenantId();
+        var signedInUser = HttpContext.User.GetDisplayName();
+        try
+        {
+            await _context.TodoItems.ToListAsync();
+        }
+        catch(Exception)
+        {
+            throw;
+        }
+        return await _context.TodoItems.Where
+            (x => x.TenantId == userTenantId && (x.AssignedTo == signedInUser || x.Assignedby== signedInUser)).ToListAsync();
+    }
+```
+
+**Write.User.Data** will let user access POST:
+```csharp
+    [HttpPost]
+    [RequiredScope("Write.User.Data")]
+    public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
+    {
+        var random = new Random();
+        todoItem.Id = random.Next();
+
+            
+        _context.TodoItems.Add(todoItem);
+        await _context.SaveChangesAsync();
+
+        //return CreatedAtAction("GetTodoItem", new { id = todoItem.Id }, todoItem);
+        return Ok(todoItem);
+    }
 ```
 
 ## Community Help and Support
