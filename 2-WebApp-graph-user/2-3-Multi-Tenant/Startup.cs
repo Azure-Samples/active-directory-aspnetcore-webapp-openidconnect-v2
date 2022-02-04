@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -57,39 +58,40 @@ namespace WebApp_OpenIDConnect_DotNet
             // Sign-in users with the Microsoft identity platform
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                     .AddMicrosoftIdentityWebApp(options =>
-                {
-                    Configuration.Bind("AzureAd", options);
-                    options.Events.OnTokenValidated = async context =>
-                    {
-                        string tenantId = context.SecurityToken.Claims.FirstOrDefault(x => x.Type == "tid" || x.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
-
-                        if (string.IsNullOrWhiteSpace(tenantId))
-                            throw new UnauthorizedAccessException("Unable to get tenantId from token.");
-
-                        var dbContext = context.HttpContext.RequestServices.GetRequiredService<SampleDbContext>();
-
-                        var authorizedTenant = await dbContext.AuthorizedTenants.FirstOrDefaultAsync(t => t.TenantId == tenantId);
-
-                        if (authorizedTenant == null)
-                            throw new UnauthorizedTenantException("This tenant is not authorized");
-                    };
-                    options.Events.OnAuthenticationFailed = (context) =>
-                    {
-                        if (context.Exception != null && context.Exception is UnauthorizedTenantException)
                         {
-                            context.Response.Redirect("/Home/UnauthorizedTenant");
-                            context.HandleResponse(); // Suppress the exception
-                        }
+                            Configuration.Bind("AzureAd", options);
+                            options.Events.OnTokenValidated = async context =>
+                            {
+                                string tenantId = context.SecurityToken.Claims.FirstOrDefault(x => x.Type == "tid" || x.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
 
-                        return Task.FromResult(0);
-                    };
-                })
-                    .EnableTokenAcquisitionToCallDownstreamApi(
-                options =>
-                {
-                    Configuration.Bind("AzureAd", options);
-                },
-                new string[] { GraphScope.UserReadAll })
+                                if (string.IsNullOrWhiteSpace(tenantId))
+                                    throw new UnauthorizedAccessException("Unable to get tenantId from token.");
+
+                                var dbContext = context.HttpContext.RequestServices.GetRequiredService<SampleDbContext>();
+
+                                var authorizedTenant = await dbContext.AuthorizedTenants.FirstOrDefaultAsync(t => t.TenantId == tenantId);
+
+                                if (authorizedTenant == null)
+                                    throw new UnauthorizedTenantException("This tenant is not authorized");
+                            };
+                            options.Events.OnAuthenticationFailed = (context) =>
+                            {
+                                if (context.Exception != null && context.Exception is UnauthorizedTenantException)
+                                {
+                                    context.Response.Redirect("/Home/UnauthorizedTenant");
+                                    context.HandleResponse(); // Suppress the exception
+                                }
+
+                                return Task.FromResult(0);
+                            };
+                        }
+                    )
+                    .EnableTokenAcquisitionToCallDownstreamApi(options =>                
+                        {
+                            Configuration.Bind("AzureAd", options);
+                        },
+                        new string[] { GraphScope.UserReadAll }
+                    )
                     .AddInMemoryTokenCaches();
 
             services.AddControllersWithViews(options =>
