@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.Identity.Web;
-using MyMiddleware;
 using System.Diagnostics;
 using WebApp_OpenIDConnect_DotNet.Models;
 
@@ -21,12 +18,6 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
 
         public IActionResult Index()
-        {
-            return View();
-        }
-
-        [MiddlewareFilter(typeof(MyMiddlewareWrapper))]
-        public IActionResult Privacy()
         {
             return View();
         }

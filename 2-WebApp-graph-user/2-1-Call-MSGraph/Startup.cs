@@ -1,6 +1,7 @@
 using Azure;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,9 +29,8 @@ namespace WebApp_OpenIDConnect_DotNet_graph
         {
             string[] initialScopes = Configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
 
-            services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
-                //.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                //.AddMicrosoftIdentityWebApp(Configuration)
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApp(Configuration)
                 .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
                 .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
                 .AddInMemoryTokenCaches();
@@ -38,7 +38,7 @@ namespace WebApp_OpenIDConnect_DotNet_graph
             // uncomment the following 3 lines to get ClientSecret from KeyVault
             //string tenantId = Configuration.GetValue<string>("AzureAd:TenantId");
             //services.Configure<MicrosoftIdentityOptions>(
-            //   options => { options.ClientSecret = GetSecretFromKeyVault(tenantId, "ApiSecret"); });
+            //   options => { options.ClientSecret = GetSecretFromKeyVault(tenantId, "ENTER_YOUR_SECRET_NAME_HERE"); });
 
             services.AddControllersWithViews(options =>
             {

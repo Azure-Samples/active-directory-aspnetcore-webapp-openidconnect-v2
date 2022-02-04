@@ -104,9 +104,13 @@ Function GetRequiredPermissions([string] $applicationDisplayName, [string] $requ
 
 Function UpdateLine([string] $line, [string] $value)
 {
-    $index = $line.IndexOf(':')
-    $delimiter = ','
-
+    $index = $line.IndexOf('=')
+    $delimiter = ';'
+    if ($index -eq -1)
+    {
+        $index = $line.IndexOf(':')
+        $delimiter = ','
+    }
     if ($index -ige 0)
     {
         $line = $line.Substring(0, $index+1) + " "+'"'+$value+'"'+$delimiter

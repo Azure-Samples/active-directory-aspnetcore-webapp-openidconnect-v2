@@ -91,7 +91,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         {
             string message = "Blob failed to create";
             // replace the URL below with your storage account URL
-            Uri blobUri = new Uri("https://aadsamplesstorageaccount.blob.core.windows.net/sample-apiaccess/sampleblob1.txt");
+            Uri blobUri = new Uri("https://blobstorageazuread.blob.core.windows.net/sample-container/Blob1.txt");
             BlobClient blobClient = new BlobClient(blobUri, new TokenAcquisitionTokenCredential(tokenAcquisition));
 
             string blobContents = "Blob created by Azure AD authenticated user.";
