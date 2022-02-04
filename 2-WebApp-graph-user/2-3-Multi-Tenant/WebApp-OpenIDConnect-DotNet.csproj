@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>aspnet-WebApp_OpenIDConnect_DotNet-99C23405-82C0-4B27-8A15-F3B0744E06BE</UserSecretsId>
     <WebProject_DirectoryAccessLevelKey>0</WebProject_DirectoryAccessLevelKey>
     <RootNamespace>WebApp_OpenIDConnect_DotNet</RootNamespace>
@@ -23,16 +23,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.8" />
     <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.22.2" />
     <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.22.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\AzureAD\microsoft-identity-web\src\Microsoft.Identity.Web.UI\Microsoft.Identity.Web.UI.csproj" />
-    <ProjectReference Include="..\..\..\..\AzureAD\microsoft-identity-web\src\Microsoft.Identity.Web\Microsoft.Identity.Web.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\AzureAD\microsoft-identity-web\src\Microsoft.Identity.Web.UI\Microsoft.Identity.Web.UI.csproj" />
-    <ProjectReference Include="..\..\..\..\AzureAD\microsoft-identity-web\src\Microsoft.Identity.Web\Microsoft.Identity.Web.csproj" />
   </ItemGroup>
 
 </Project>
