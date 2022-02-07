@@ -1,10 +1,10 @@
 ---
 page_type: sample
-name: How to secure a Web API built with ASP&#46;NET Core using the Microsoft identity platform
+name: How to secure a ASP.NET Core Web API with the Microsoft identity platform
 services: active-directory
 platforms: dotnet
 urlFragment: active-directory-aspnetcore-webapp-openidconnect-v2
-description: This sample demonstrates a ASP.NET Core Web App calling a ASP.NET Core Web API that is secured using Azure AD
+description: This sample demonstrates an ASP.NET Core client Web App calling a ASP.NET Core Web API that is secured using Azure AD
 languages:
  - csharp
 products:
@@ -31,20 +31,18 @@ Table Of Contents
 
 ## Scenario
 
-This sample demonstrates a ASP.NET Core Web App calling a ASP.NET Core Web API that is secured using Azure AD.
+This sample demonstrates an ASP.NET Core client Web App calling an ASP.NET Core Web API that is secured using Azure AD.
 
-1. The client ASP.NET Core Web App uses the Microsoft.Identity.Web to sign-in and obtain a JWT [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from **Azure AD**.
-1. The [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) is used as a bearer token to authorize the user to call the ASP.NET Core Web API protected by **Azure AD**.
+1. The client ASP.NET Core Web App uses the[Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign-in and obtain a JWT [Access Token](https://aka.ms/access-tokens) from **Azure AD** for the Web Api.
+2. The [Access Token](https://aka.ms/access-tokens) is used as a bearer token to authorize the user to call the protected ASP.NET Core Web API.
 
-![Scenario Image](./ReadmeFiles/topology.png)
-
+![App topology](./ReadmeFiles/topology.png)
 
 ## Prerequisites
 
-- Either [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/download) and [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
-
-- An **Azure AD** tenant. For more information, see: [How to get an Azure AD tenant](https://docs.microsoft.com/azure/active-directory/develop/quickstart-create-new-tenant)
-- A user account in your **Azure AD** tenant. This sample will not work with a **personal Microsoft account**.  If you're signed in to the [Azure portal](https://portal.azure.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
+* Either [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/download) and [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
+* An **Azure AD** tenant. For more information, see: [How to get an Azure AD tenant](https://docs.microsoft.com/azure/active-directory/develop/quickstart-create-new-tenant)
+* A user account in your **Azure AD** tenant. This sample will not work with a **personal Microsoft account**.  If you're signed in to the [Azure portal](https://portal.azure.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
 
 ## Setup the sample
 
@@ -61,12 +59,12 @@ or download and extract the repository .zip file.
 >:warning: To avoid path length limitations on Windows, we recommend cloning into a directory near the root of your drive.
 
 ### Step 2: Navigate to project folder
+
 ```console
     cd 4-WebApp-Your-API\4-1-MyOrg
 ```
 
 ### Step 3: Application Registration
-
 
 There are two projects in this sample. Each needs to be separately registered in your Azure AD tenant. To register these projects:
 
@@ -75,64 +73,59 @@ You can use [manual steps](#Manual-steps)
 **OR**
 
 ### Run automation scripts
- 
-- use PowerShell scripts that:
-  - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you.
-  - modify the projects' configuration files.  
+
+* use PowerShell scripts that:
+  * **automatically** registers the Azure AD applications and related objects (passwords, permissions, dependencies) for you.
+  * populates the projects' configuration files.
+  
   <details>
    <summary>Expand this section if you want to use this automation:</summary>
-      
+
    > :warning: If you have never used **Azure AD Powershell** before, we recommend you go through the [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
-    
+
     1. On Windows, run PowerShell as **Administrator** and navigate to the root of the cloned directory
-    1. If you have never used Azure AD Powershell before, we recommend you go through the [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
     1. In PowerShell run:
-    
+
        ```PowerShell
        Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
        ```
-    
-    1. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
+
+    1. Run the script to create your Azure AD application and configure the code of the sample application.
     1. For interactive process - in PowerShell run:
-    
+
        ```PowerShell
        cd .\AppCreationScripts\
        .\Configure.ps1 -TenantId "[Optional] - your tenant id" -Environment "[Optional] - Azure environment, defaults to 'Global'"
        ```
-    
+
        > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
        > The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
-
 
   </details>
 
 ### Manual Steps
 
- > Note: skip this part if you've just used Automation steps
+ > Note: skip this part if you've already used Automation steps
 
-- follow the steps below for manually register your apps
-     
+* follow the steps below for manually register your apps
+
    1. Sign in to the [Azure portal](https://portal.azure.com).
    1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant.
-              
-   ### Register the service app (TodoListService-aspnetcore-webapi)
 
-   **For more information, visit** [Register Application AAD](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
+#### Register the service app (TodoListService-aspnetcore-webapi)
 
    1. Navigate to the [Azure portal](https://portal.azure.com) and select the **Azure AD** service.
    1. Select the **App Registrations** blade on the left, then select **New registration**.
    1. In the **Register an application page** that appears, enter your application's registration information:
-      - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `TodoListService-aspnetcore-webapi`.
+   1. In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `TodoListService-aspnetcore-webapi`.
    1. Under **Supported account types**, select **Accounts in this organizational directory only**
    1. Click **Register** to create the application.
-  
    1. In the app's registration screen, find and note the **Application (client) ID**. You use this value in your app's configuration file(s) later in your code.
    1. Click **Save** to save your changes.
-            
-   1. In the app's registration screen, select the **Expose an API** blade to the left to open the page where you can declare the parameters to expose this app as an API for which client applications can obtain [access tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) for.
+   1. In the app's registration screen, select the **Expose an API** blade to the left to open the page where you can declare the parameters to expose this app as an API for which client applications can obtain [access tokens](https://aka.ms/access-tokens) for.
    The first thing that we need to do is to declare the unique [resource](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow) URI that the clients will be using to obtain access tokens for this API. To declare an resource URI, follow the following steps:
-      - Select `Set` next to the **Application ID URI** to generate a URI that is unique for this app.
-      - For this sample, accept the proposed Application ID URI (`api://{clientId}`) by selecting **Save**.
+      * Select `Set` next to the **Application ID URI** to generate a URI that is unique for this app.
+      * For this sample, accept the proposed Application ID URI (`api://{clientId}`) by selecting **Save**.
    1. All APIs have to publish a minimum of one [scope](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-authorization-code) for the client's to obtain an access token successfully. To publish a scope, follow these steps:
          - Select **Add a scope** button open the **Add a scope** screen and Enter the values as indicated below:
            - For **Scope name**, use `access_as_user`.
@@ -155,42 +148,42 @@ You can use [manual steps](#Manual-steps)
    
    1. Open the `TodoListService\appsettings.json` file.
       1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
-      1. Find the key `TenantId` and replace the existing value with your Azure AD tenant ID.
-      1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `TodoListService-aspnetcore-webapi` app copied from the Azure portal.
+      2. Find the key `TenantId` and replace the existing value with your Azure AD tenant ID.
+      3. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `TodoListService-aspnetcore-webapi` app copied from the Azure portal.
       
    ### Register the client app (TodoListClient-aspnetcore-webapi)
 
    **For more information, visit** [Register Application AAD](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
 
    1. Navigate to the [Azure portal](https://portal.azure.com) and select the **Azure AD** service.
-   1. Select the **App Registrations** blade on the left, then select **New registration**.
-   1. In the **Register an application page** that appears, enter your application's registration information:
+   2. Select the **App Registrations** blade on the left, then select **New registration**.
+   3. In the **Register an application page** that appears, enter your application's registration information:
       - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `TodoListClient-aspnetcore-webapi`.
-   1. Under **Supported account types**, select **Accounts in this organizational directory only**
-   1. Click **Register** to create the application.
+   4. Under **Supported account types**, select **Accounts in this organizational directory only**
+   5. Click **Register** to create the application.
   
-   1. In the app's registration screen, find and note the **Application (client) ID**. You use this value in your app's configuration file(s) later in your code.
-   1. In the app's registration screen, select **Authentication** in the menu.
+   6. In the app's registration screen, find and note the **Application (client) ID**. You use this value in your app's configuration file(s) later in your code.
+   7. In the app's registration screen, select **Authentication** in the menu.
       - If you don't have a platform added, select **Add a platform** and select the **Web** option.
     
-   1. In the **Redirect URI** section enter the following redirect URIs: 
+   8. In the **Redirect URI** section enter the following redirect URIs: 
         
          - `https://localhost:44321/`
     
          - `https://localhost:44321/signin-oidc`
     
-   1. In the **Front-channel logout URL** section, set it to `https://localhost:44321/signout-oidc`.
+   9. In the **Front-channel logout URL** section, set it to `https://localhost:44321/signout-oidc`.
            1. Click **Save** to save your changes.
    
-   1. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where you can generate secrets and upload certificates.
-   1. In the **Client secrets** section, select **New client secret**:
+   10. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where you can generate secrets and upload certificates.
+   11. In the **Client secrets** section, select **New client secret**:
       - Type a key description (for instance `app secret`),
       - Select one of the available key durations (**6 months**, **12 months** or **Custom**) as per your security posture.
       - The generated key value will be displayed when you select the **Add** button. Copy and save the generated value for use in later steps.
       - You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
           > :bulb: For enhanced security, consider [using certificates](https://github.com/AzureAD/microsoft-identity-web/wiki/Certificates) instead of client secrets.
          
-   1. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
+   12. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
       - Select the **Add a permission** button and then,
       - Ensure that the **My APIs** tab is selected.
       - In the list of APIs, select the API `TodoListService-aspnetcore-webapi`.
@@ -205,11 +198,11 @@ You can use [manual steps](#Manual-steps)
    
    1. Open the `Client\appsettings.json` file.
       1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
-      1. Find the key `TenantId` and replace the existing value with your Azure AD tenant ID.
-      1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `TodoListClient-aspnetcore-webapi` app copied from the Azure portal.
-      1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of `TodoListClient-aspnetcore-webapi` copied from the Azure portal.
-      1. Find the key `TodoListScope` and replace the existing value with Scope.
-      1. Find the key `TodoListBaseAddress` and replace the existing value with the base address of `TodoListService-aspnetcore-webapi` (by default `https://localhost:44351`).
+      2. Find the key `TenantId` and replace the existing value with your Azure AD tenant ID.
+      3. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `TodoListClient-aspnetcore-webapi` app copied from the Azure portal.
+      4. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of `TodoListClient-aspnetcore-webapi` copied from the Azure portal.
+      5. Find the key `TodoListScope` and replace the existing value with Scope.
+      6. Find the key `TodoListBaseAddress` and replace the existing value with the base address of `TodoListService-aspnetcore-webapi` (by default `https://localhost:44351`).
             
    
 
