@@ -1,7 +1,7 @@
 {
   "Sample": {
     "Author": "v-abeyderman",
-    "Title": "How to secure a Web API built with ASP.NET Core using the Microsoft identity platform",
+    "Title": "This sample demonstrates a ASP.NET Core client Web App calling a ASP.NET Core Web API that is secured using Azure AD",
     "Level": 200,
     "Client": "ASP.NET Core Web App",
     "Service": "ASP.NET Core Web API",
@@ -16,11 +16,11 @@
     This section describes different regions of readme file
   */
   "ReadmeScenario": {
-    "MainText": "This sample demonstrates a ASP.NET Core Web App calling a ASP.NET Core Web API that is secured using Azure AD.\n\n1. The client ASP.NET Core Web App uses the Microsoft.Identity.Web to sign-in and obtain a JWT [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from **Azure AD**.\n1. The [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) is used as a bearer token to authorize the user to call the ASP.NET Core Web API protected by **Azure AD**.\n",
+    "MainText": "This sample demonstrates an ASP.NET Core client Web App calling an ASP.NET Core Web API that is secured using Azure AD.\n\n1. The client ASP.NET Core Web App uses the Microsoft.Identity.Web to sign-in and obtain a JWT [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from **Azure AD**.\n1. The [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) is used as a bearer token to authorize the user to call the ASP.NET Core Web API protected by **Azure AD**.\n",
     "Image": "./ReadmeFiles/topology.png",
 
     /* put additional notes, will be displayed right after image*/
-    "AdditionalNotes": "\n"
+    "AdditionalNotes": ""
   },
 
   "ReadmePrerequirements": {
@@ -88,7 +88,7 @@
       "Name": "TodoListClient-aspnetcore-webapi",
       "Kind": "WebApp",
       "HomePage": "https://localhost:44321/",
-      "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc",
+      "ReplyUrls": "https://localhost:44321/,https://localhost:44321/signin-oidc",
       "LogoutUrl": "https://localhost:44321/signout-oidc",
       "RequiredResourcesAccess": [
         {
