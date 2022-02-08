@@ -1,7 +1,7 @@
 {
   "Sample": {
     "Author": "v-abeyderman",
-    "Title": "This sample demonstrates a ASP.NET Core client Web App calling a ASP.NET Core Web API that is secured using Azure AD",
+    "Title": "How to secure an ASP.NET Core Web API with the Microsoft identity platform",
     "Level": 200,
     "Client": "ASP.NET Core Web App",
     "Service": "ASP.NET Core Web API",

@@ -1,7 +1,7 @@
 {
   "Sample": {
     "Author": "v-abeyderman",
-    "Title": "How to secure a ASP.NET Core Web API with the Microsoft identity platform",
+    "Title": "How to secure an ASP.NET Core Web API with the Microsoft identity platform",
     "Level": 200,
     "Client": "ASP.NET Core Web App",
     "Service": "ASP.NET Core Web API",
