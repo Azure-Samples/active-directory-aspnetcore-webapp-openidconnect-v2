@@ -15,14 +15,23 @@
       "Id": "service",
       "Name": "WebApi-MultiTenant-v2",
       "Kind": "WebApi",
-      "Audience": "AzureADMultipleOrgs",
       "HomePage": "https://localhost:44351/",
       "ReplyUrls": "https://localhost:44351/api/Home",
+      "Audience": "AzureADandPersonalMicrosoftAccount",
       "PasswordCredentials": "Auto",
       "RequiredResourcesAccess": [
         {
           "Resource": "Microsoft Graph",
           "DelegatedPermissions": [ "User.Read.All" ]
+        }
+      ],
+      "Scopes": [ "Read.User.Data", "Write.User.Data" ],
+      "ManualSteps": [
+        {
+          "Comment": "Navigate to the API Permissions page and select 'Grant admin consent for (your tenant)' to User.Read.All permission"
+        },
+        {
+          "Comment" : "Open Service's appsettings.json and update 'AllowedTenants' with your tenant id."
         }
       ]
     },
@@ -30,22 +39,18 @@
       "Id": "client",
       "Name": "WebApp-MultiTenant-v2",
       "Kind": "WebApp",
-      "Audience": "AzureADMultipleOrgs",
       "HomePage": "https://localhost:44321/",
       "ReplyUrls": "https://localhost:44321/,https://localhost:44321/signin-oidc",
       "LogoutUrl": "https://localhost:44321/signout-oidc",
+      "Audience": "AzureADandPersonalMicrosoftAccount",
       "PasswordCredentials": "Auto",
       "RequiredResourcesAccess": [
         {
           "Resource": "service",
-          "DelegatedPermissions": [ "access_as_user" ]
+          "DelegatedPermissions": [ "Write.User.Data", "Read.User.Data" ]
         }
       ],
-      "ManualSteps": [
-        {
-          "Comment": "[Optional] If you are a tenant admin, you can navigate to the API Permissions page and select 'Grant admin consent for (your tenant)'"
-        }
-      ]
+      "ManualSteps": []
     }
   ],
   /*
@@ -101,7 +106,7 @@
         },
         {
           "Key": "RedirectUri",
-          "value": "client.HomePage"
+          "value": "client.Web.HomePageUrl"
         },
         {
           "key": "TodoListScope",
@@ -113,11 +118,11 @@
         },
         {
           "Key": "TodoListBaseAddress",
-          "value": "service.HomePage"
+          "value": "service.Web.HomePageUrl"
         },
         {
           "Key": "AdminConsentRedirectApi",
-          "value": "service.ReplyUrls"
+          "value": "service.Web.RedirectUris"
         }
       ]
     }
