@@ -77,6 +77,7 @@
       "Name": "TodoListService-aspnetcore-webapi",
       "Kind": "WebApi",
       "HomePage": "https://localhost:44351",
+      "Audience": "AzureADMyOrg",
       "ManualSteps": [],
       "Sample": {
         "SampleSubPath": "4-WebApp-Your-API\\4-1-MyOrg",
@@ -90,6 +91,7 @@
       "HomePage": "https://localhost:44321/",
       "ReplyUrls": "https://localhost:44321/,https://localhost:44321/signin-oidc",
       "LogoutUrl": "https://localhost:44321/signout-oidc",
+      "Audience": "AzureADMyOrg",
       "PasswordCredentials": "Auto",
       "RequiredResourcesAccess": [
         {
