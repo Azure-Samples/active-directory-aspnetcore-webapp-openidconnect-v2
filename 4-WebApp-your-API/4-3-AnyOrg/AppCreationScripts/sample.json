@@ -106,7 +106,7 @@
         },
         {
           "Key": "RedirectUri",
-          "value": "client.Web.HomePageUrl"
+          "value": "client.HomePage"
         },
         {
           "key": "TodoListScope",
@@ -118,11 +118,11 @@
         },
         {
           "Key": "TodoListBaseAddress",
-          "value": "service.Web.HomePageUrl"
+          "value": "service.HomePage"
         },
         {
           "Key": "AdminConsentRedirectApi",
-          "value": "service.Web.RedirectUris"
+          "value": "service.ReplyUrls"
         }
       ]
     }
