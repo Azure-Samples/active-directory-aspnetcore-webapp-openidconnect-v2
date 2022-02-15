@@ -188,7 +188,7 @@ Function ConfigureApplications
                                                        @{ `
                                                            HomePageUrl = "https://localhost:44351"; `
                                                          } `
-                                                        -SignInAudience AzureADandPersonalMicrosoftAccount `
+                                                        -SignInAudience AzureADMyOrg `
                                                        #end of command
     $serviceIdentifierUri = 'api://'+$serviceAadApplication.AppId
     Update-MgApplication -ApplicationId $serviceAadApplication.Id -IdentifierUris @($serviceIdentifierUri)
@@ -208,16 +208,21 @@ Function ConfigureApplications
     # rename the user_impersonation scope if it exists to match the readme steps or add a new scope
        
     # delete default scope i.e. User_impersonation
+    # Alex: the scope deletion doesn't work - see open issue - https://github.com/microsoftgraph/msgraph-sdk-powershell/issues/1054
+    $scopes = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphPermissionScope]
     $scope = $serviceAadApplication.Api.Oauth2PermissionScopes | Where-Object { $_.Value -eq "User_impersonation" }
+    
     if($scope -ne $null)
-    {
+    {    
         # disable the scope
         $scope.IsEnabled = $false
-        Update-MgApplication -ApplicationId $serviceAadApplication.Id -Api @{Oauth2PermissionScopes = $($scope)}
+        $scopes.Add($scope)
+        Update-MgApplication -ApplicationId $serviceAadApplication.Id -Api @{Oauth2PermissionScopes = @($scopes)}
 
         # clear the scope
-        Update-MgApplication -ApplicationId $serviceAadApplication.Id -Api @{Oauth2PermissionScopes = $()}
+        Update-MgApplication -ApplicationId $serviceAadApplication.Id -Api @{Oauth2PermissionScopes = @()}
     }
+
     $scopes = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphPermissionScope]
     $scope = CreateScope -value access_as_user  `
     -userConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
@@ -228,7 +233,7 @@ Function ConfigureApplications
     $scopes.Add($scope)
     
     # add/update scopes
-    Update-MgApplication -ApplicationId $serviceAadApplication.Id -Api @{Oauth2PermissionScopes = $scopes}
+    Update-MgApplication -ApplicationId $serviceAadApplication.Id -Api @{Oauth2PermissionScopes = @($scopes)}
     Write-Host "Done creating the service application (TodoListService-aspnetcore-webapi)"
 
     # URL of the AAD application in the Azure portal
@@ -251,11 +256,11 @@ Function ConfigureApplications
                                                           HomePageUrl = "https://localhost:44321/"; `
                                                           LogoutUrl = "https://localhost:44321/signout-oidc"; `
                                                         } `
-                                                       -SignInAudience AzureADandPersonalMicrosoftAccount `
+                                                       -SignInAudience AzureADMyOrg `
                                                       #end of command
     #add password to the application
     $pwdCredential = Add-MgApplicationPassword -ApplicationId $clientAadApplication.Id -PasswordCredential $key
-    $serviceAppKey = $pwdCredential.SecretText
+    $clientAppKey = $pwdCredential.SecretText
     $tenantName = (Get-MgApplication -ApplicationId $clientAadApplication.Id).PublisherDomain
     Update-MgApplication -ApplicationId $clientAadApplication.Id -IdentifierUris @("https://$tenantName/TodoListClient-aspnetcore-webapi")
     
