@@ -120,7 +120,7 @@ You can use [manual steps](#Manual-steps)
   1. Select the **App Registrations** blade on the left, then select **New registration**.
   1. In the **Register an application page** that appears, enter your application's registration information:
      * In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `TodoListService-aspnetcore-webapi`.
-  1. Under **Supported account types**, select **Accounts in any organizational directory and personal Microsoft accounts (e.g. Skype, Xbox, Outlook.com)**
+  1.  Under **Supported account types**, select **Accounts in this organizational directory only**
   1. Click **Register** to create the application.
   1. In the app's registration screen, find and note the **Application (client) ID**. You use this value in your app's configuration file(s) later in your code.
 
@@ -142,7 +142,7 @@ You can use [manual steps](#Manual-steps)
      1. Select the `Manifest` blade on the left.
      * Set `accessTokenAcceptedVersion` property to **2**.
      * Click on **Save**.
-   
+
 ##### Configure the service app (TodoListService-aspnetcore-webapi) to use your app registration
 
   Open the project in your IDE (like Visual Studio or Visual Studio Code) to configure the code.
@@ -153,7 +153,7 @@ You can use [manual steps](#Manual-steps)
        1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
        1. Find the key `TenantId` and replace the existing value with your Azure AD tenant ID.
        1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `TodoListService-aspnetcore-webapi` app copied from the Azure portal.
-          
+
 #### Register the client app (TodoListClient-aspnetcore-webapi)
 
   **For more information, visit** [Register Application AAD](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
@@ -162,7 +162,7 @@ You can use [manual steps](#Manual-steps)
   1. Select the **App Registrations** blade on the left, then select **New registration**.
   1. In the **Register an application page** that appears, enter your application's registration information:
      * In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `TodoListClient-aspnetcore-webapi`.
-  1. Under **Supported account types**, select **Accounts in any organizational directory and personal Microsoft accounts (e.g. Skype, Xbox, Outlook.com)**
+  1.  Under **Supported account types**, select **Accounts in this organizational directory only**
   1. Click **Register** to create the application.
   1. In the app's registration screen, find and note the **Application (client) ID**. You use this value in your app's configuration file(s) later in your code.
   1. In the app's registration screen, select **Authentication** in the menu.
@@ -205,31 +205,29 @@ You can use [manual steps](#Manual-steps)
        1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of `TodoListClient-aspnetcore-webapi` copied from the Azure portal.
        1. Find the key `TodoListScope` and replace the existing value with Scope.
        1. Find the key `TodoListBaseAddress` and replace the existing value with the base address of `TodoListService-aspnetcore-webapi` (by default `https://localhost:44351`).
-         
+
 ### Variation: web app using client certificates
 
 Follow [README-use-keyvault-certificate.md](README-use-keyvault-certificate.md) to know how to use this option.
 
 ### Step 4: Running the sample
 
-    
  For command line run the next commands:
-
-    
 
 ```console
     cd 4-WebApp-Your-API\4-1-MyOrg\TodoListService
     dotnet run
 ```
+
 Then open a separate command line terminal and run
+
 ```console
     cd 4-WebApp-Your-API\4-1-MyOrg\Client
     dotnet run
 ```
 
-
-
 ## Troubleshooting
+
 <details>
  <summary>Expand for troubleshooting info</summary>
  
@@ -257,7 +255,6 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
 
  > [Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbRz0h_jLR5HNJlvkZAewyoWxUNEFCQ0FSMFlPQTJURkJZMTRZWVJRNkdRMC4u)
 </details>
-
 
 ## About the code
 
