@@ -82,7 +82,30 @@
       "Sample": {
         "SampleSubPath": "4-WebApp-Your-API\\4-1-MyOrg",
         "ProjectDirectory": "\\TodoListService"
-      }
+      },
+      "Scopes": [ "ToDoList.Read", "ToDoList.Write" ],
+      "AppRoles": [
+        {
+          "Types": [ "User" ],
+          "Name": "UserReaders",
+          "Description": "User readers can read basic profiles of all users in the directory."
+        },
+        {
+          "Types": [ "User" ],
+          "Name": "DirectoryViewers",
+          "Description": "Directory viewers can view objects in the whole directory."
+        },
+        {
+          "Types": [ "Application" ],
+          "Name": "ToDoList.Read.All",
+          "Description": "Read all ToDos as an application."
+        },
+        {
+          "Types": [ "Application" ],
+          "Name": "ToDoList.Write.All",
+          "Description": "Read and write all ToDos as an application."
+        }
+      ]
     },
     {
       "Id": "client",
@@ -96,11 +119,16 @@
       "RequiredResourcesAccess": [
         {
           "Resource": "service",
-          "DelegatedPermissions": [ "access_as_user" ]
+          "DelegatedPermissions": [ "ToDoList.Read", "ToDoList.Write" ],
+          "ApplicationPermissions": [ "ToDoList.Read.All", "ToDoList.Write.All" ]
         }
       ],
       "Certificate": "the certificate will be named by application name",
-      "ManualSteps": [],
+      "ManualSteps": [
+        {
+          "Comment": "Find the key TodoListScopes and replace the existing value with [\"api//<your_api_client_id>/ToDoList.Read\" , \"api://<your_api_client_id>/ToDoList.Write\"]"
+        }
+      ],
       "Sample": {
         "SampleSubPath": "4-WebApp-Your-API\\4-1-MyOrg",
         "ProjectDirectory": "\\Client"
@@ -157,8 +185,8 @@
           "value": "$certificateName"
         },
         {
-          "key": "TodoListScope",
-          "value": "service.Scope"
+          "key": "TodoListScopes",
+          "value": "service.RequiredScopes"
         },
         {
           "key": "TodoListBaseAddress",

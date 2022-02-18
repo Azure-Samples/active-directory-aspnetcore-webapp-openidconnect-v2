@@ -205,6 +205,18 @@ Function ConfigureApplications
         Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($serviceServicePrincipal.DisplayName)'"
     }
     
+    # Add application Roles
+    $appRoles = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphAppRole]
+    $newRole = CreateAppRole -types "User" -name "UserReaders" -description "User readers can read basic profiles of all users in the directory."
+    $appRoles.Add($newRole)
+    $newRole = CreateAppRole -types "User" -name "DirectoryViewers" -description "Directory viewers can view objects in the whole directory."
+    $appRoles.Add($newRole)
+    $newRole = CreateAppRole -types "Application" -name "ToDoList.Read.All" -description "Read all ToDos as an application."
+    $appRoles.Add($newRole)
+    $newRole = CreateAppRole -types "Application" -name "ToDoList.Write.All" -description "Read and write all ToDos as an application."
+    $appRoles.Add($newRole)
+    Update-MgApplication -ApplicationId $serviceAadApplication.Id -AppRoles $appRoles
+    
     # rename the user_impersonation scope if it exists to match the readme steps or add a new scope
        
     # delete default scope i.e. User_impersonation
@@ -224,7 +236,14 @@ Function ConfigureApplications
     }
 
     $scopes = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphPermissionScope]
-    $scope = CreateScope -value access_as_user  `
+    $scope = CreateScope -value ToDoList.Read  `
+    -userConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
+    -userConsentDescription "Allow the application to access TodoListService-aspnetcore-webapi on your behalf."  `
+    -adminConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
+    -adminConsentDescription "Allows the app to have the same access to information in the directory on behalf of the signed-in user."
+            
+    $scopes.Add($scope)
+    $scope = CreateScope -value ToDoList.Write  `
     -userConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
     -userConsentDescription "Allow the application to access TodoListService-aspnetcore-webapi on your behalf."  `
     -adminConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
@@ -287,7 +306,8 @@ Function ConfigureApplications
     # Add Required Resources Access (from 'client' to 'service')
     Write-Host "Getting access from 'client' to 'service'"
     $requiredPermissions = GetRequiredPermissions -applicationDisplayName "TodoListService-aspnetcore-webapi" `
-        -requiredDelegatedPermissions "access_as_user" `
+        -requiredDelegatedPermissions "ToDoList.Read|ToDoList.Write" `
+        -requiredApplicationPermissions "ToDoList.Read.All|ToDoList.Write.All" `
     
 
     $requiredResourcesAccess.Add($requiredPermissions)
@@ -304,12 +324,18 @@ Function ConfigureApplications
     
     # Update config file for 'client'
     $configFile = $pwd.Path + "\..\Client\appsettings.json"
-    $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $clientAadApplication.AppId;"ClientSecret" = $pwdCredential.SecretText;"TodoListScope" = ("api://"+$serviceAadApplication.AppId+"/access_as_user");"TodoListBaseAddress" = $serviceAadApplication.Web.HomePageUrl };
+    $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $clientAadApplication.AppId;"ClientSecret" = $pwdCredential.SecretText;"TodoListScopes" = "array of required scopes [api://[Enter_client_ID_Of_TodoListService-v2_from_Azure_Portal,_e.g._2ec40e65-ba09-4853-bcde-bcb60029e596]/access_as_user, ...]";"TodoListBaseAddress" = $serviceAadApplication.Web.HomePageUrl };
 
     Write-Host "Updating the sample code ($configFile)"
 
     UpdateTextFile -configFilePath $configFile -dictionary $dictionary
-    if($isOpenSSL -eq 'Y')
+    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+    Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
+    Write-Host "- For client"
+    Write-Host "  - Navigate to $clientPortalUrl"
+    Write-Host "  - Find the key TodoListScopes and replace the existing value with ["api//<your_api_client_id>/ToDoList.Read" , "api://<your_api_client_id>/ToDoList.Write"]" -ForegroundColor Red 
+    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+       if($isOpenSSL -eq 'Y')
     {
         Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
         Write-Host "You have generated certificate using OpenSSL so follow below steps: "

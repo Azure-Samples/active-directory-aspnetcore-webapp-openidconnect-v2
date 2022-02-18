@@ -41,7 +41,7 @@ namespace WebApp_OpenIDConnect_DotNet
             services.AddOptions();
 
             services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
-                    .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Configuration["TodoList:TodoListScope"] })
+                    .EnableTokenAcquisitionToCallDownstreamApi(Configuration.GetSection("TodoList:TodoListScopes").Get<string[]>())
                     .AddInMemoryTokenCaches();
 
             // Add APIs

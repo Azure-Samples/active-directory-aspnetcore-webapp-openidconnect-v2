@@ -131,7 +131,16 @@ You can use [manual steps](#Manual-steps)
       * For this sample, accept the proposed Application ID URI (`api://{clientId}`) by selecting **Save**.
   1. All APIs have to publish a minimum of one [scope](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-authorization-code) for the client's to obtain an access token successfully. To publish a scope, follow these steps:
      * Select **Add a scope** button open the **Add a scope** screen and Enter the values as indicated below:
-          * For **Scope name**, use `access_as_user`.
+          * For **Scope name**, use `ToDoList.Read`.
+          * Select **Admins and users** options for **Who can consent?**.
+          * For **Admin consent display name** type `Access TodoListService-aspnetcore-webapi`.
+          * For **Admin consent description** type `Allows the app to access TodoListService-aspnetcore-webapi as the signed-in user.`
+          * For **User consent display name** type `Access TodoListService-aspnetcore-webapi`.
+          * For **User consent description** type `Allow the application to access TodoListService-aspnetcore-webapi on your behalf.`
+          * Keep **State** as **Enabled**.
+          * Select the **Add scope** button on the bottom to save this scope.
+     * Select **Add a scope** button open the **Add a scope** screen and Enter the values as indicated below:
+          * For **Scope name**, use `ToDoList.Write`.
           * Select **Admins and users** options for **Who can consent?**.
           * For **Admin consent display name** type `Access TodoListService-aspnetcore-webapi`.
           * For **Admin consent description** type `Allows the app to access TodoListService-aspnetcore-webapi as the signed-in user.`
@@ -143,6 +152,24 @@ You can use [manual steps](#Manual-steps)
      * Set `accessTokenAcceptedVersion` property to **2**.
      * Click on **Save**.
 
+##### Define Application Roles
+
+  1. Still on the same app registration, select the **App roles** blade to the left.
+  1. Select **Create app role**:
+     * For **Display name**, enter a suitable name, for instance **UserReaders**.
+     * For **Allowed member types**, choose **User**.
+     * For **Value**, enter **UserReaders**.
+     * For **Description**, enter **User readers can read basic profiles of all users in the directory.**.
+     > Do the same steps above for **DirectoryViewers** , **ToDoList.Read.All** , **ToDoList.Write.All** roles
+
+  1. Select **Apply** to save your changes. 
+  To add users to this app role, follow the guidelines here: [Assign users and groups to roles](https://docs.microsoft.com/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps#assign-users-and-groups-to-roles).
+
+   > :bulb: **Important security tip**
+   >
+   > When you set **User assignment required?** to **Yes**, Azure AD will check that only users assigned to your application in the **Users and groups** blade are able to sign-in to your app. You can assign users directly or by assigning security groups they belong to.
+    For more information, see: [How to: Add app roles in your application and receive them in the token](https://docs.microsoft.com/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps)
+
 ##### Configure the service app (TodoListService-aspnetcore-webapi) to use your app registration
 
   Open the project in your IDE (like Visual Studio or Visual Studio Code) to configure the code.
@@ -150,9 +177,9 @@ You can use [manual steps](#Manual-steps)
    > In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
   1. Open the `TodoListService\appsettings.json` file.
-    1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
-    1. Find the key `TenantId` and replace the existing value with your Azure AD tenant ID.
-    1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `TodoListService-aspnetcore-webapi` app copied from the Azure portal.
+  1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
+  1. Find the key `TenantId` and replace the existing value with your Azure AD tenant ID.
+  1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `TodoListService-aspnetcore-webapi` app copied from the Azure portal.
 
 #### Register the client app (TodoListClient-aspnetcore-webapi)
 
@@ -188,7 +215,8 @@ You can use [manual steps](#Manual-steps)
       * Select the **Add a permission** button and then,
       * Ensure that the **My APIs** tab is selected.
       * In the list of APIs, select the API `TodoListService-aspnetcore-webapi`.
-      * In the **Delegated permissions** section, select the **Access 'TodoListService-aspnetcore-webapi'** in the list. Use the search box if necessary.
+      * In the **Delegated permissions** section, select the **ToDoList.Read**, **ToDoList.Write** in the list. Use the search box if necessary.
+      * In the **Application permissions** section, select the **ToDoList.Read.All**, **ToDoList.Write.All** in the list. Use the search box if necessary.
       * Select the **Add permissions** button at the bottom.
 
 ##### Configure the client app (TodoListClient-aspnetcore-webapi) to use your app registration
@@ -198,12 +226,12 @@ You can use [manual steps](#Manual-steps)
    > In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
   1. Open the `Client\appsettings.json` file.
-    1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
-    1. Find the key `TenantId` and replace the existing value with your Azure AD tenant ID.
-    1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `TodoListClient-aspnetcore-webapi` app copied from the Azure portal.
-    1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of `TodoListClient-aspnetcore-webapi` copied from the Azure portal.
-    1. Find the key `TodoListScope` and replace the existing value with Scope.
-    1. Find the key `TodoListBaseAddress` and replace the existing value with the base address of `TodoListService-aspnetcore-webapi` (by default `https://localhost:44351`).
+  1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
+  1. Find the key `TenantId` and replace the existing value with your Azure AD tenant ID.
+  1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `TodoListClient-aspnetcore-webapi` app copied from the Azure portal.
+  1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of `TodoListClient-aspnetcore-webapi` copied from the Azure portal.
+  1. Find the key `TodoListScopes` and replace the existing value with **"api://<your_api_client_id>/ToDoList.Read"** , **"api://<your_api_client_id>/ToDoList.Write"**.
+  1. Find the key `TodoListBaseAddress` and replace the existing value with the base address of `TodoListService-aspnetcore-webapi` (by default `https://localhost:44351`).
 
 ### Variation: web app using client certificates
 
