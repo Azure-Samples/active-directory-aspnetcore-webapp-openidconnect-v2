@@ -22,7 +22,7 @@ Function Cleanup
     # into which you want to create the apps. Look it up in the Azure portal in the "Properties" of the Azure AD. 
 
     # Connect to the Microsoft Graph API
-    Write-Host "Connecting Microsoft Graph"
+    Write-Host "Connecting to Microsoft Graph"
     if ($tenantId -eq "") {
         Connect-MgGraph -Scopes "Application.ReadWrite.All" -Environment $azureEnvironmentName
         $tenantId = (Get-MgContext).TenantId

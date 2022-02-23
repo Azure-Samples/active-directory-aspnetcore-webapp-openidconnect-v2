@@ -34,7 +34,7 @@ namespace TodoListService.Controllers
 
         // GET: api/values
         [HttpGet]
-        [RequiredScope("ToDoList.Read")]
+        [RequiredScope(new string[] { "ToDoList.Read", "ToDoList.Write" })]
         public IEnumerable<Todo> Get()
         {
             string owner = User.Identity.Name;
@@ -43,7 +43,7 @@ namespace TodoListService.Controllers
 
         // GET: api/values
         [HttpGet("{id}", Name = "Get")]
-        [RequiredScope("ToDoList.Read")]
+        [RequiredScope(new string[] { "ToDoList.Read", "ToDoList.Write" })]
         public Todo Get(int id)
         {
             return TodoStore.Values.FirstOrDefault(t => t.Id == id);

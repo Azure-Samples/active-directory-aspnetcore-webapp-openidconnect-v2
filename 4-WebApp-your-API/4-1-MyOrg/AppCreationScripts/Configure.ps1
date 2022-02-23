@@ -169,7 +169,7 @@ Function ConfigureApplications
     }
 
     # Connect to the Microsoft Graph API, non-interactive is not supported for the moment (Oct 2021)
-    Write-Host "Connecting Microsoft Graph"
+    Write-Host "Connecting to Microsoft Graph"
     if ($tenantId -eq "") {
         Connect-MgGraph -Scopes "Application.ReadWrite.All" -Environment $azureEnvironmentName
         $tenantId = (Get-MgContext).TenantId
@@ -207,10 +207,6 @@ Function ConfigureApplications
     
     # Add application Roles
     $appRoles = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphAppRole]
-    $newRole = CreateAppRole -types "User" -name "UserReaders" -description "User readers can read basic profiles of all users in the directory."
-    $appRoles.Add($newRole)
-    $newRole = CreateAppRole -types "User" -name "DirectoryViewers" -description "Directory viewers can view objects in the whole directory."
-    $appRoles.Add($newRole)
     $newRole = CreateAppRole -types "Application" -name "ToDoList.Read.All" -description "Read all ToDos as an application."
     $appRoles.Add($newRole)
     $newRole = CreateAppRole -types "Application" -name "ToDoList.Write.All" -description "Read and write all ToDos as an application."
@@ -333,7 +329,8 @@ Function ConfigureApplications
     Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
     Write-Host "- For client"
     Write-Host "  - Navigate to $clientPortalUrl"
-    Write-Host "  - Find the key TodoListScopes and replace the existing value with ["api//<your_api_client_id>/ToDoList.Read" , "api://<your_api_client_id>/ToDoList.Write"]" -ForegroundColor Red 
+    Write-Host "  - Find the key TodoListScopes and replace the existing value with ["api://<your_api_client_id>/ToDoList.Read" , "api://<your_api_client_id>/ToDoList.Write"]" -ForegroundColor Red 
+    Write-Host "  - Go to API Permissions and grant admin consent for your user." -ForegroundColor Red 
     Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
        if($isOpenSSL -eq 'Y')
     {
