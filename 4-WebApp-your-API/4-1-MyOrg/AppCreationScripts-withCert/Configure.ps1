@@ -205,14 +205,6 @@ Function ConfigureApplications
         Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($serviceServicePrincipal.DisplayName)'"
     }
     
-    # Add application Roles
-    $appRoles = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphAppRole]
-    $newRole = CreateAppRole -types "Application" -name "ToDoList.Read.All" -description "Read all ToDos as an application."
-    $appRoles.Add($newRole)
-    $newRole = CreateAppRole -types "Application" -name "ToDoList.Write.All" -description "Read and write all ToDos as an application."
-    $appRoles.Add($newRole)
-    Update-MgApplication -ApplicationId $serviceAadApplication.Id -AppRoles $appRoles
-    
     # rename the user_impersonation scope if it exists to match the readme steps or add a new scope
        
     # delete default scope i.e. User_impersonation
@@ -337,7 +329,6 @@ Function ConfigureApplications
     Write-Host "Getting access from 'client' to 'service'"
     $requiredPermissions = GetRequiredPermissions -applicationDisplayName "TodoListService-aspnetcore-webapi" `
         -requiredDelegatedPermissions "ToDoList.Read|ToDoList.Write" `
-        -requiredApplicationPermissions "ToDoList.Read.All|ToDoList.Write.All" `
     
 
     $requiredResourcesAccess.Add($requiredPermissions)

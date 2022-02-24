@@ -144,18 +144,6 @@ You can use [manual steps](#Manual-steps)
      * Set `accessTokenAcceptedVersion` property to **2**.
      * Click on **Save**.
 
-##### Define Application Permissions
-
-  1. Still on the same app registration, select the **App roles** blade to the left.
-  1. Select **Create app role**:
-     * For **Display name**, enter a suitable name, for instance **ToDoList.Read.All**.
-     * For **Allowed member types**, choose **Application**.
-     * For **Value**, enter **ToDoList.Read.All**.
-     * For **Description**, enter **Read all ToDos as an application.**.
-     > Repeat the steps above for permission **ToDoList.Write.All**
-
-  1. Select **Apply** to save your changes. 
-
 ##### Configure the service app (TodoListService-aspnetcore-webapi) to use your app registration
 
   Open the project in your IDE (like Visual Studio or Visual Studio Code) to configure the code.
@@ -200,7 +188,6 @@ You can use [manual steps](#Manual-steps)
       * Ensure that the **My APIs** tab is selected.
       * In the list of APIs, select the API `TodoListService-aspnetcore-webapi`.
       * In the **Delegated permissions** section, select the **ToDoList.Read**, **ToDoList.Write** in the list. Use the search box if necessary.
-      * In the **Application permissions** section, select the **ToDoList.Read.All**, **ToDoList.Write.All** in the list. Use the search box if necessary.
       * Select the **Add permissions** button at the bottom.
 
 ##### Configure the client app (TodoListClient-aspnetcore-webapi) to use your app registration
@@ -281,6 +268,46 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
 
 The implementations of these classes are in the [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) library (and folder), and they are designed to be reusable in your applications (Web apps and Web apis). You are encouraged to browse the code in the library to understand the changes in detail.
 
+### Using [Delegated permissions](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent)
+
+The delegated permissions are checked inside `TodoListService\Controllers/ToDoListController.cs` in the following way:
+
+```csharp
+  [HttpGet]
+  [RequiredScope(new string[] { "ToDoList.Read", "ToDoList.Write" })
+
+  public IEnumerable<Todo> Get()
+  {
+      string owner = User.Identity.Name;
+      return TodoStore.Values.Where(x => x.Owner == owner);
+  }
+```
+
+The code above demonstrates that to be able to reach a GET REST operation, access token should contain AT LEAST ONE of the scopes listed inside parameter of [RequiredScope attribute](https://github.com/AzureAD/microsoft-identity-web/blob/master/src/Microsoft.Identity.Web/Policy/RequiredScopeAttribute.cs)
+
+``` csharp
+  [HttpDelete("{id}")]
+  [RequiredScope("ToDoList.Write")]
+  public void Delete(int id)
+  {
+TodoStore.Remove(id);
+  }
+```
+
+The above code demonstrates that to be able to reach DELETE REST operation, the access token MUST contain ToDoList.Write scope. Note that it not allowed to access this operation having ToDoList.Read scope only.
+
+### Initial scopes
+
+Client [appsettings.json](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/master/4-WebApp-your-API/4-1-MyOrg/Client/appsettings.json) file contains `ToDoListScopes` key that should be manually updated to have an array of fully qualified scopes names in form of `api://<service_client_id>/<scope_name>`. The list of the scopes can be found inside Service App registration, under `Expose an API` blade.
+The list is used in [startup.cs](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/2607df1338a9f7c06fe228c87644b8b456ca708b/4-WebApp-your-API/4-1-MyOrg/Client/Startup.cs#L46) to specify which initial scopes should be requested from Web API when refreshing the token:
+
+```csharp
+services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+                    .EnableTokenAcquisitionToCallDownstreamApi(Configuration.GetSection("TodoList:TodoListScopes").Get<string[]>())
+                    .AddInMemoryTokenCaches();
+```
+
+
 </details>
 
 ## How the code was created
@@ -327,7 +354,7 @@ The implementations of these classes are in the [Microsoft.Identity.Web](https:/
 
      ```CSharp
      services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
-             .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Configuration["TodoList:TodoListScope"] })
+             .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Configuration["TodoList:TodoListScopes"] })
              .AddInMemoryTokenCaches();
      ```
 
@@ -351,14 +378,14 @@ The implementations of these classes are in the [Microsoft.Identity.Web](https:/
 1. Create a new Controller named `TodoListController` and copy and paste the code from the sample (TodoListService\Controllers\TodoListController.cs) to this controller.
 1. Copy the files `TodoListService` and `TodoListService.cs` in the **TodoListClient\Services** folder provided in this sample to your project.
 1. Copy the contents of **TodoListClient\views\ToDo** folder to the views folder of your project.
-1. Modify the `Views\Shared\_Layout.cshtml` to add a link to the ***ToDolist* controller. Check the `Views\Shared\_Layout.cshtml` in the sample for reference.
+1. Modify the `Views\Shared\_Layout.cshtml` to add a link to the **ToDolist** controller. Check the `Views\Shared\_Layout.cshtml` in the sample for reference.
 1. Add a section name **TodoList** in the appsettings.json file and add the keys `TodoListScope`, `TodoListBaseAddress`.
 1. Update the `configureServices` method in `startup.cs` to add the MSAL library and a token cache.
 
     ```CSharp
      services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
              .AddMicrosoftIdentityWebApp(Configuration)
-             .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Configuration["TodoList:TodoListScope"] })
+             .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Configuration["TodoList:TodoListScopes"] })
              .AddInMemoryTokenCaches();
     ```
 
@@ -423,7 +450,7 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
 ### Create the TodoListController.cs file
 
 1. Add a folder named `Models` and then create a new  file named `TodoItem.cs`. Copy the contents of the TodoListClient\Models\TodoItem.cs in this file.
-1. Create a new Controller named `TodoListController` and copy and paste the code from the sample (\TodoListService\Controllers\TodoListController.cs) to this controller.
+1. Create a new Controller named `TodoListController` and copy and paste the code from the sample (TodoListService\Controllers\TodoListController.cs) to this controller.
 
 </details>
 

@@ -55,7 +55,7 @@
 
   /* It either can be a text or link to another readme file */
   "ReadmeAboutTheCode": {
-    "FreeText": "\n`AddMicrosoftWebApi` does the following:\n\n* add the **Jwt**BearerAuthenticationScheme (Note the replacement of **BearerAuthenticationScheme** by **Jwt**BearerAuthenticationScheme)\n* set the authority to be the Microsoft identity platform identity\n* sets the audiences to validate\n* register an issuer validator that accepts issuers to be in the Microsoft identity platform clouds.\n\nThe implementations of these classes are in the [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) library (and folder), and they are designed to be reusable in your applications (Web apps and Web apis). You are encouraged to browse the code in the library to understand the changes in detail.\n"
+    "FreeText": "\n`AddMicrosoftWebApi` does the following:\n\n* add the **Jwt**BearerAuthenticationScheme (Note the replacement of **BearerAuthenticationScheme** by **Jwt**BearerAuthenticationScheme)\n* set the authority to be the Microsoft identity platform identity\n* sets the audiences to validate\n* register an issuer validator that accepts issuers to be in the Microsoft identity platform clouds.\n\nThe implementations of these classes are in the [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) library (and folder), and they are designed to be reusable in your applications (Web apps and Web apis). You are encouraged to browse the code in the library to understand the changes in detail.\n\n### Using [Delegated permissions](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent)\n\nThe delegated permissions are checked inside `TodoListService\\Controllers/ToDoListController.cs` in the following way:\n\n```csharp\n  [HttpGet]\n  [RequiredScope(new string[] { \"ToDoList.Read\", \"ToDoList.Write\" })\n\n  public IEnumerable<Todo> Get()\n  {\n      string owner = User.Identity.Name;\n      return TodoStore.Values.Where(x => x.Owner == owner);\n  }\n```\n\nThe code above demonstrates that to be able to reach a GET REST operation, access token should contain AT LEAST ONE of the scopes listed inside parameter of [RequiredScope attribute](https://github.com/AzureAD/microsoft-identity-web/blob/master/src/Microsoft.Identity.Web/Policy/RequiredScopeAttribute.cs)\n\n``` csharp\n  [HttpDelete(\"{id}\")]\n  [RequiredScope(\"ToDoList.Write\")]\n  public void Delete(int id)\n  {\nTodoStore.Remove(id);\n  }\n```\n\nThe above code demonstrates that to be able to reach DELETE REST operation, the access token MUST contain ToDoList.Write scope. Note that it not allowed to access this operation having ToDoList.Read scope only.\n\n### Initial scopes\n\nClient [appsettings.json](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/master/4-WebApp-your-API/4-1-MyOrg/Client/appsettings.json) file contains `ToDoListScopes` key that should be manually updated to have an array of fully qualified scopes names in form of `api://<service_client_id>/<scope_name>`. The list of the scopes can be found inside Service App registration, under `Expose an API` blade.\nThe list is used in [startup.cs](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/2607df1338a9f7c06fe228c87644b8b456ca708b/4-WebApp-your-API/4-1-MyOrg/Client/Startup.cs#L46) to specify which initial scopes should be requested from Web API when refreshing the token:\n\n```csharp\nservices.AddMicrosoftIdentityWebAppAuthentication(Configuration)\n                    .EnableTokenAcquisitionToCallDownstreamApi(Configuration.GetSection(\"TodoList:TodoListScopes\").Get<string[]>())\n                    .AddInMemoryTokenCaches();\n```\n\n"
   },
 
   /* It either can be a text or link to another readme file */
@@ -88,19 +88,8 @@
         "SampleSubPath": "4-WebApp-Your-API\\4-1-MyOrg",
         "ProjectDirectory": "\\TodoListService"
       },
-      "AppScopes": [ "ToDoList.Read", "ToDoList.Write" ],
-      "AppRoles": [
-        {
-          "Types": [ "Application" ],
-          "Name": "ToDoList.Read.All",
-          "Description": "Read all ToDos as an application."
-        },
-        {
-          "Types": [ "Application" ],
-          "Name": "ToDoList.Write.All",
-          "Description": "Read and write all ToDos as an application."
-        }
-      ]
+      "AppScopes": [ "ToDoList.Read", "ToDoList.Write" ]
+      
     },
     {
       "Id": "client",
@@ -114,8 +103,7 @@
       "RequiredResourcesAccess": [
         {
           "Resource": "service",
-          "DelegatedPermissions": [ "ToDoList.Read", "ToDoList.Write" ],
-          "ApplicationPermissions": [ "ToDoList.Read.All", "ToDoList.Write.All" ]
+          "DelegatedPermissions": [ "ToDoList.Read", "ToDoList.Write" ]
         }
       ],
       "Certificate": "the certificate will be named by application name",
