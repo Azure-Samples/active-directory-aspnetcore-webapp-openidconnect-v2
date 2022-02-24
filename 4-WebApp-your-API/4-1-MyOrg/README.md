@@ -201,7 +201,7 @@ You can use [manual steps](#Manual-steps)
   1. Find the key `TenantId` and replace the existing value with your Azure AD tenant ID.
   1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `TodoListClient-aspnetcore-webapi` app copied from the Azure portal.
   1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of `TodoListClient-aspnetcore-webapi` copied from the Azure portal.
-  1. Find the key `TodoListScopes` and replace the existing value with **"api://<your_api_client_id>/ToDoList.Read"** , **"api://<your_api_client_id>/ToDoList.Write"**.
+  1. Find the key `TodoListScopes` and replace the existing value with **"api://<your_api_client_id>/ToDoList.Read api://<your_api_client_id>/ToDoList.Write"**.
   1. Find the key `TodoListBaseAddress` and replace the existing value with the base address of `TodoListService-aspnetcore-webapi` (by default `https://localhost:44351`).
 
 ### Variation: web app using client certificates
@@ -298,12 +298,11 @@ The above code demonstrates that to be able to reach DELETE REST operation, the 
 
 ### Initial scopes
 
-Client [appsettings.json](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/master/4-WebApp-your-API/4-1-MyOrg/Client/appsettings.json) file contains `ToDoListScopes` key that should be manually updated to have an array of fully qualified scopes names in form of `api://<service_client_id>/<scope_name>`. The list of the scopes can be found inside Service App registration, under `Expose an API` blade.
-The list is used in [startup.cs](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/2607df1338a9f7c06fe228c87644b8b456ca708b/4-WebApp-your-API/4-1-MyOrg/Client/Startup.cs#L46) to specify which initial scopes should be requested from Web API when refreshing the token:
+Client [appsettings.json](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/master/4-WebApp-your-API/4-1-MyOrg/Client/appsettings.json) file contains `ToDoListScopes` key that is used in [startup.cs](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/2607df1338a9f7c06fe228c87644b8b456ca708b/4-WebApp-your-API/4-1-MyOrg/Client/Startup.cs#L46) to specify which initial scopes should be requested from Web API when refreshing the token:
 
 ```csharp
 services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
-                    .EnableTokenAcquisitionToCallDownstreamApi(Configuration.GetSection("TodoList:TodoListScopes").Get<string[]>())
+                    .EnableTokenAcquisitionToCallDownstreamApi(Configuration.GetSection("TodoList:TodoListScopes").Get<string>().Split(" ", System.StringSplitOptions.RemoveEmptyEntries))
                     .AddInMemoryTokenCaches();
 ```
 
@@ -354,7 +353,7 @@ services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
 
      ```CSharp
      services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
-             .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Configuration["TodoList:TodoListScopes"] })
+             .EnableTokenAcquisitionToCallDownstreamApi(Configuration.GetSection("TodoList:TodoListScopes").Get<string>().Split(" ", System.StringSplitOptions.RemoveEmptyEntries))
              .AddInMemoryTokenCaches();
      ```
 

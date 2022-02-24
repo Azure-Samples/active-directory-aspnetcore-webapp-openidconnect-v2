@@ -345,18 +345,12 @@ Function ConfigureApplications
     
     # Update config file for 'client'
     $configFile = $pwd.Path + "\..\Client\appsettings.json"
-    $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $clientAadApplication.AppId;"KeyVaultCertificateName" = $certificateName;"TodoListScopes" = "array of required scopes [api://[Enter_client_ID_Of_TodoListService-v2_from_Azure_Portal,_e.g._2ec40e65-ba09-4853-bcde-bcb60029e596]/access_as_user, ...]";"TodoListBaseAddress" = $serviceAadApplication.Web.HomePageUrl };
+    $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $clientAadApplication.AppId;"KeyVaultCertificateName" = $certificateName;"TodoListScopes" = "api://$($serviceAadApplication.AppId)/ToDoList.Read api://$($serviceAadApplication.AppId)/ToDoList.Write";"TodoListBaseAddress" = $serviceAadApplication.Web.HomePageUrl };
 
     Write-Host "Updating the sample code ($configFile)"
 
     UpdateTextFile -configFilePath $configFile -dictionary $dictionary
-    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
-    Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
-    Write-Host "- For client"
-    Write-Host "  - Navigate to $clientPortalUrl"
-    Write-Host "  - Find the key TodoListScopes and replace the existing value with ["api//<your_api_client_id>/ToDoList.Read" , "api://<your_api_client_id>/ToDoList.Write"]" -ForegroundColor Red 
-    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
-       if($isOpenSSL -eq 'Y')
+    if($isOpenSSL -eq 'Y')
     {
         Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
         Write-Host "You have generated certificate using OpenSSL so follow below steps: "
