@@ -355,7 +355,6 @@ Function ConfigureApplications
     Write-Host "- For client"
     Write-Host "  - Navigate to $clientPortalUrl"
     Write-Host "  - Find the key TodoListScopes and replace the existing value with ["api//<your_api_client_id>/ToDoList.Read" , "api://<your_api_client_id>/ToDoList.Write"]" -ForegroundColor Red 
-    Write-Host "  - Go to API Permissions and grant admin consent for your user." -ForegroundColor Red 
     Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
        if($isOpenSSL -eq 'Y')
     {
