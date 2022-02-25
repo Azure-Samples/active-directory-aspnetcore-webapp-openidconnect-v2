@@ -205,7 +205,7 @@ In case, you are authenticating using the [implicit grant flow](https://docs.mic
 
 ### Create the sample from the command line
 
-> The following code used an older version of `[Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) library and would be updated when the library becomes Generally Available.
+> The following code used an older version of [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) library and would be updated when the library becomes Generally Available.
 
 This project was created using the following command.
 
@@ -354,7 +354,7 @@ The following files have the code that would be of interest to you:
 1. if you used the PowerShell scripts provided in the [AppCreationScripts](.\AppCreationScripts) folder, then note the extra parameter `-GroupMembershipClaims` in the  `Configure.ps1` script.
 
      ```PowerShell
-       -GroupMembershipClaims "SecurityGroup" `
+       -GroupMembershipClaims "SecurityGroup"
        -PublicClient $False
      ```
 
