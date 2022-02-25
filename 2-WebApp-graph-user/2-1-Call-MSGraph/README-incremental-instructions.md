@@ -139,7 +139,7 @@ Still in the `Startup.cs` file, add the following `AddMicrosoftGraph` extension 
 
 ### Change the controller code to acquire a token and call Microsoft Graph
 
-In the `Controllers\HomeController.cs`file:
+In the `Controllers\HomeController.cs` file:
 
 1. Add a constructor to HomeController, making the ITokenAcquisition service available (used by the ASP.NET dependency injection mechanism)
 
