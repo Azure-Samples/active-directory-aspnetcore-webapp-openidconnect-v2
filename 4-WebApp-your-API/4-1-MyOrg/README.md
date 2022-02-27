@@ -237,8 +237,7 @@ Follow [README-use-certificate.md](README-use-certificate.md) to know how to use
 #### Step 2: Modified the generated code
 
 1. Open the generated project (.csproj) in Visual Studio, and save the solution.
-1. Add the `Microsoft.Identity.Web.csproj` project which is located at the root of this sample repo, to your solution (**Add Existing Project ...**). It's used to simplify signing-in and, in the next tutorial phases, to get a token.
-1. Add a reference from your newly generated project to `Microsoft.Identity.Web` (right click on the **Dependencies** node under your new project, and choose **Add Reference ...**, and then in the projects tab find the `Microsoft.Identity.Web` project)
+1. Add reference from your newly generated project to the `Microsoft.Identity.Web` NuGet package.
 
 1. Open the **Startup.cs** file and:
 
