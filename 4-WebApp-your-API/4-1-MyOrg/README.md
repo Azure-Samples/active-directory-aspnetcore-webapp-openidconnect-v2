@@ -110,6 +110,8 @@ You can follow the [manual steps](#Manual-steps)
 
 Follow the steps below for manually register and configure your apps
 
+<details>
+   <summary>Expand this section if you want to use this automation:</summary>
   1. Sign in to the [Azure portal](https://portal.azure.com).
   1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant.
 
@@ -178,7 +180,7 @@ Follow the steps below for manually register and configure your apps
      * The generated key value will be displayed when you select the **Add** button. Copy and save the generated value for use in later steps.
      * You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
 
-> :bulb: For enhanced security, consider [using certificates](https://github.com/AzureAD/microsoft-identity-web/wiki/Certificates) instead of client secrets.
+> :bulb: For enhanced security, consider [using certificates](./README-use-certificate.md) instead of client secrets.
 
 1. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
       * Select the **Add a permission** button and then,
@@ -200,6 +202,8 @@ Follow the steps below for manually register and configure your apps
   1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of `TodoListClient-aspnetcore-webapi` copied from the Azure portal.
   1. Find the key `TodoListScopes` and replace the existing value with **"api://<your_service_api_client_id>/ToDoList.Read api://<your_service_api_client_id>/ToDoList.Write"**.
   1. Find the key `TodoListBaseAddress` and replace the existing value with the base address of `TodoListService-aspnetcore-webapi` (by default `https://localhost:44351`).
+</details>
+
 
 ### Variation: web app using client certificates
 
