@@ -135,3 +135,4 @@ packages
 /2-WebApp-graph-user/2-1-Call-MSGraph/.vscode
 /4-WebApp-your-API/4-1-MyOrg/.vscode/settings.json
 /5-WebApp-AuthZ/5-1-Roles/.vscode/settings.json
+/.vscode

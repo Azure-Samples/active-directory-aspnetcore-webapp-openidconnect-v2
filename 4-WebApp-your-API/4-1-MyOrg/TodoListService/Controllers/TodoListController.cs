@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web.Resource;
 using System.Collections.Generic;
 using System.Linq;
 using TodoListService.Models;
@@ -33,6 +34,7 @@ namespace TodoListService.Controllers
 
         // GET: api/values
         [HttpGet]
+        [RequiredScope(new string[] { "ToDoList.Read", "ToDoList.Write" })]
         public IEnumerable<Todo> Get()
         {
             string owner = User.Identity.Name;
@@ -41,12 +43,14 @@ namespace TodoListService.Controllers
 
         // GET: api/values
         [HttpGet("{id}", Name = "Get")]
+        [RequiredScope(new string[] { "ToDoList.Read", "ToDoList.Write" })]
         public Todo Get(int id)
         {
             return TodoStore.Values.FirstOrDefault(t => t.Id == id);
         }
 
         [HttpDelete("{id}")]
+        [RequiredScope("ToDoList.Write")]
         public void Delete(int id)
         {
             TodoStore.Remove(id);
@@ -54,6 +58,7 @@ namespace TodoListService.Controllers
 
         // POST api/values
         [HttpPost]
+        [RequiredScope("ToDoList.Write")]
         public IActionResult Post([FromBody] Todo todo)
         {
             int id = TodoStore.Values.OrderByDescending(x => x.Id).FirstOrDefault().Id + 1;
@@ -65,6 +70,7 @@ namespace TodoListService.Controllers
 
         // PATCH api/values
         [HttpPatch("{id}")]
+        [RequiredScope("ToDoList.Write")]
         public IActionResult Patch(int id, [FromBody] Todo todo)
         {
             if (id != todo.Id)
