@@ -32,10 +32,10 @@ Table Of Contents
 
 ## Scenario
 
-This sample demonstrates an ASP.NET Core client Web App calling an ASP.NET Core Web API that is secured using Azure AD.
+ This sample demonstrates an ASP.NET Core client Web App calling an ASP.NET Core Web API that is secured using Azure AD.
 
-1. The client ASP.NET Core Web App uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign-in and obtain a JWT [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from **Azure AD**.
-1. The [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) is used as a bearer token to authorize the user to call the ASP.NET Core Web API protected by **Azure AD**.
+ 1. The client ASP.NET Core Web App uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign-in and obtain a JWT [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from **Azure AD**.
+ 1. The [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) is used as a bearer token to authorize the user to call the ASP.NET Core Web API protected by **Azure AD**.
 
 ![Scenario Image](./ReadmeFiles/topology.png)
 
@@ -83,7 +83,7 @@ You can follow the [manual steps](#Manual-steps)
    <summary>Expand this section if you want to use this automation:</summary>
 
     > **WARNING**: If you have never used **Azure AD Powershell** before, we recommend you go through the [App Creation Scripts guide](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
-    
+  
     1. On Windows, run PowerShell as **Administrator** and navigate to the root of the cloned directory
     1. In PowerShell run:
 
@@ -250,9 +250,9 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
 
 > NOTE: Remember, the TodoList is stored in memory in this `TodoListService` app. Each time you run the projects, your TodoList will get emptied.
 
-> Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
+Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
 
- > [Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbRz0h_jLR5HNJlvkZAewyoWxUNEFCQ0FSMFlPQTJURkJZMTRZWVJRNkdRMC4u)
+[Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbRz0h_jLR5HNJlvkZAewyoWxUNEFCQ0FSMFlPQTJURkJZMTRZWVJRNkdRMC4u)
 </details>
 
 ## About the code
@@ -264,47 +264,47 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
 
 1. Starting with the **Startup.cs** file :
 
-   * at the top of the file, the following two using directives were added:
+    * at the top of the file, the following two using directives were added:
 
-     ```CSharp
+      ```CSharp
       using Microsoft.Identity.Web;
       ```
 
-   * in the `ConfigureServices` method, the following code was added, replacing any existing `AddAuthentication()` code:
+    * in the `ConfigureServices` method, the following code was added, replacing any existing `AddAuthentication()` code:
 
-    ```CSharp
-            services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
-    ```
+      ```CSharp
+      services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
+      ```
 
-   * `AddMicrosoftIdentityWebApiAuthentication()` protects the Web API by validating Access tokens sent tho this API. Check out [Protected web API: Code configuration](https://docs.microsoft.com/azure/active-directory/develop/scenario-protected-web-api-app-configuration) which explains the inner workings of this method in more detail.
+    * `AddMicrosoftIdentityWebApiAuthentication()` protects the Web API by validating Access tokens sent tho this API. Check out [Protected web API: Code configuration](https://docs.microsoft.com/azure/active-directory/develop/scenario-protected-web-api-app-configuration) which explains the inner workings of this method in more detail.
 
-   * Then in the controllers `TodoListController.cs`, the `[Authorize]` added on top of the class to protect this route.
-   * Further in the controller, the `RequiredScope` is used to list the scopes ([Delegated permissions](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent)), that the user should consent for, before the method can be called.  
-   * The delegated permissions are checked inside `TodoListService\Controllers\ToDoListController.cs` in the following way:
+    * Then in the controllers `TodoListController.cs`, the `[Authorize]` added on top of the class to protect this route.
+    * Further in the controller, the `RequiredScope` is used to list the scopes ([Delegated permissions](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent)), that the user should consent for, before the method can be called.  
+    * The delegated permissions are checked inside `TodoListService\Controllers\ToDoListController.cs` in the following way:
 
-```CSharp
-  [HttpGet]
-  [RequiredScope(new string[] { "ToDoList.Read", "ToDoList.Write" })
-
-  public IEnumerable<Todo> Get()
-  {
+      ```CSharp
+      [HttpGet]
+      [RequiredScope(new string[] { "ToDoList.Read", "ToDoList.Write" })
+    
+      public IEnumerable<Todo> Get()
+      {
       string owner = User.Identity.Name;
       return TodoStore.Values.Where(x => x.Owner == owner);
-  }
-```
+      }
+      ```
 
-The code above demonstrates that to be able to reach a GET REST operation, the access token should contain AT LEAST ONE of the scopes listed inside parameter of [RequiredScope attribute](https://github.com/AzureAD/microsoft-identity-web/blob/master/src/Microsoft.Identity.Web/Policy/RequiredScopeAttribute.cs)
+      The code above demonstrates that to be able to reach a GET REST operation, the access token should contain AT LEAST ONE of the scopes listed inside parameter of [RequiredScope attribute](https://github.com/AzureAD/microsoft-identity-web/blob/master/src/Microsoft.Identity.Web/Policy/RequiredScopeAttribute.cs)
 
-``` CSharp
-  [HttpDelete("{id}")]
-  [RequiredScope("ToDoList.Write")]
-  public void Delete(int id)
-  {
-    TodoStore.Remove(id);
-  }
-```
+      ``` CSharp
+      [HttpDelete("{id}")]
+      [RequiredScope("ToDoList.Write")]
+      public void Delete(int id)
+      {
+      TodoStore.Remove(id);
+      }
+      ```
 
-The above code demonstrates that to be able to execute the DELETE REST operation, the access token MUST contain the `ToDoList.Write` scope. Note that the called is not allowed to access this operation with just `ToDoList.Read` scope only.
+      The above code demonstrates that to be able to execute the DELETE REST operation, the access token MUST contain the `ToDoList.Write` scope. Note that the called is not allowed to access this operation with just `ToDoList.Read` scope only.
 
 ### Initial scopes
 
@@ -312,10 +312,10 @@ Client [appsettings.json](https://github.com/Azure-Samples/active-directory-aspn
 
 ```csharp
 services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
-                    .EnableTokenAcquisitionToCallDownstreamApi(Configuration.GetSection("TodoList:TodoListScopes").Get<string>().Split(" ", System.StringSplitOptions.RemoveEmptyEntries))
-                    .AddInMemoryTokenCaches();
+ .EnableTokenAcquisitionToCallDownstreamApi(Configuration.GetSection("TodoList:TodoListScopes")
+ .Get<string>().Split(" ", System.StringSplitOptions.RemoveEmptyEntries))
+ .AddInMemoryTokenCaches();
 ```
-
 
 </details>
 
