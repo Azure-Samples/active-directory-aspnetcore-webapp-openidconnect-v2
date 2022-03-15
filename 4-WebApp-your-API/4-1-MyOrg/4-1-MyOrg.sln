@@ -28,6 +28,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppCreationScripts-WithCert
 		AppCreationScripts-withCert\sample.json = AppCreationScripts-withCert\sample.json
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReadmeFiles", "ReadmeFiles", "{2A7989B7-23E0-46D4-8F2A-3D069084F65D}"
+	ProjectSection(SolutionItems) = preProject
+		ReadmeFiles\ReadmeAboutTheCode.md = ReadmeFiles\ReadmeAboutTheCode.md
+		ReadmeFiles\ReadmeScenario.md = ReadmeFiles\ReadmeScenario.md
+		ReadmeFiles\topology.png = ReadmeFiles\topology.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +56,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{E09F37E8-2ED1-4A96-A751-14D7483D1CE8} = {DDAC3758-9CAE-4790-84B1-5B6258BAE44E}
 		{4BE500E2-1275-467C-BEFB-B6C211FE6988} = {DDAC3758-9CAE-4790-84B1-5B6258BAE44E}
+		{2A7989B7-23E0-46D4-8F2A-3D069084F65D} = {DDAC3758-9CAE-4790-84B1-5B6258BAE44E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C0E11621-7A5F-4207-9629-0155FF96ADC4}
