@@ -8,8 +8,6 @@
 
     const scopes = ["user.read"];
 
-    console.log(code);
-
     if (!!code) {
         msalInstance.acquireTokenByCode({
             code,
