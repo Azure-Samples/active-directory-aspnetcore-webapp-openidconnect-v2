@@ -7,10 +7,29 @@ using System.Globalization;
 namespace WebApp_OpenIDConnect_DotNet
 {
     /// <summary>
-    /// Description of the configuration of an AzureAD public client application (desktop/mobile application). This should
-    /// match the application registration done in the Azure portal
+    /// Metadata designed to match application configurations for applications that call APIs.
+    ///
+    /// https://docs.microsoft.com/en-us/azure/active-directory/develop/scenario-web-app-sign-user-app-configuration?tabs=aspnetcore
     /// </summary>
-    public class AuthenticationConfig
+    public class DownstreamApi
+    {
+        /// <summary>
+        /// Base URL of the API being called
+        /// </summary>
+        public string BaseUrl { get; set; } = "https://graph.microsoft.com/v1.0";
+        /// <summary>
+        /// Space seperated string of scopes to access from the API
+        /// </summary>
+        public string Scopes { get; set; }
+
+    }
+
+    /// <summary>
+    /// Metadata designed to match application configurations for applications that call APIs.
+    ///
+    /// https://docs.microsoft.com/en-us/azure/active-directory/develop/scenario-web-app-sign-user-app-configuration?tabs=aspnetcore
+    /// </summary>
+    public class AzureAd
     {
         /// <summary>
         /// instance of Azure AD, for example public Azure or a Sovereign cloud (Azure China, Germany, US government, etc ...)
@@ -23,22 +42,23 @@ namespace WebApp_OpenIDConnect_DotNet
         /// or a domain name associated with the tenant
         /// - or 'organizations' (for a multi-tenant application)
         /// </summary>
-        public string? Tenant { get; set; }
+        public string TenantId { get; set; }
+
+        /// <summary>
+        /// The domain of the tenant
+        /// </summary>
+        public string Domain { get; set; }
+
 
         /// <summary>
         /// Guid used by the application to uniquely identify itself to Azure AD
         /// </summary>
-        public string? ClientId { get; set; }
+        public string ClientId { get; set; }
 
         /// <summary>
         /// The ClientSecret is a credential used to authenticate the application to Azure AD.  Azure AD supports password and certificate credentials.
         /// </summary>
         public string? ClientSecret { get; set; }
-
-        /// <summary>
-        /// The Redirect Uri is the URL where the user will be redirected after they sign in.
-        /// </summary>
-        public string? RedirectUri { get; set; }
 
         /// <summary>
         /// URL of the authority
@@ -47,7 +67,7 @@ namespace WebApp_OpenIDConnect_DotNet
         {
             get
             {
-                return String.Format(CultureInfo.InvariantCulture, Instance, Tenant, "/v2.0");
+                return String.Format(CultureInfo.InvariantCulture, Instance + "{0}{1}", Domain, "/v2.0");
             }
         }
 
@@ -60,6 +80,22 @@ namespace WebApp_OpenIDConnect_DotNet
         /// (and identified by this CertificateName property)
         /// <remarks> 
         public CertificateDescription? Certificate { get; set; }
+
+    }
+    /// <summary>
+    /// Description of the configuration of an AzureAD public client application (desktop/mobile application). This should
+    /// match the application registration done in the Azure portal
+    /// </summary>
+    public class AuthenticationConfig
+    {
+        /// <summary>
+        /// The Redirect Uri is the URL where the user will be redirected after they sign in.
+        /// </summary>
+        public string? RedirectUri { get; set; }
+
+        public AzureAd? AzureAd { get; set; }
+
+        public DownstreamApi? DownstreamApi { get; set; }
 
         /// <summary>
         /// Reads the configuration from a json file

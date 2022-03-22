@@ -14,28 +14,46 @@ namespace WebApp_OpenIDConnect_DotNet.Services
                 if (_confidentialClientApplication == null)
                 {
                     var config = AuthenticationConfig.ReadFromJsonFile("appsettings.json");
-                    _confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(config.ClientId)
-                        .WithClientSecret(config.ClientSecret)
+
+                    _confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(config.AzureAd.ClientId)
+                        .WithClientSecret(config.AzureAd.ClientSecret)
                         .WithRedirectUri(config.RedirectUri)
-                        .WithAuthority(new Uri(config.Authority))
+                        .WithAuthority(new Uri(config.AzureAd.Authority))
                         .Build();
-                    
+
                     _confidentialClientApplication.AddInMemoryTokenCache();
                 }
 
                 return _confidentialClientApplication;
             }
         }
-       public async Task<AuthenticationResult> GetAuthenticationResultAsync(string[] scopes, string code, string codeVerifier)
+
+        private string[] _scopes;
+        private string[] Scopes
+        {
+            get
+            {
+                if (_scopes == null)
+                {
+                    var config = AuthenticationConfig.ReadFromJsonFile("appsettings.json");
+                    _scopes = config.DownstreamApi.Scopes.Split(' ');
+                }
+
+                return _scopes;
+            }
+        }
+
+        public async Task<AuthenticationResult> GetAuthenticationResultAsync(string code, string codeVerifier)
         {
             return await ConfidentialClientApplication
-                .AcquireTokenByAuthorizationCode(scopes, code)
+                .AcquireTokenByAuthorizationCode(Scopes, code)
                 .WithPkceCodeVerifier(codeVerifier)
                 .WithSpaAuthorizationCode(true)
                 .ExecuteAsync();
         }
 
-        public async Task RemoveAccount(string identifier) {
+        public async Task RemoveAccount(string identifier)
+        {
             var userAccount = await ConfidentialClientApplication.GetAccountAsync(identifier);
             if (userAccount != null)
             {

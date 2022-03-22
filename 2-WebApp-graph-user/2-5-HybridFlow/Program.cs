@@ -26,7 +26,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 
             var clientService = serviceProvider.GetService<IConfidentialClientApplicationService>();
 
-            var authResult = await clientService.GetAuthenticationResultAsync(new String[] { "user.read", "mail.read" }, context.ProtocolMessage.Code, codeVerifier);
+            var authResult = await clientService.GetAuthenticationResultAsync(context.ProtocolMessage.Code, codeVerifier);
             var spaCode = authResult.SpaAuthCode;
             context.Response.Cookies.Append("Microsoft.Identity.Hybrid.Authentication.Cookie", spaCode);
 
