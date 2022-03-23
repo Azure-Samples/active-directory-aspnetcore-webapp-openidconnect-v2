@@ -1,16 +1,23 @@
-﻿function getTokenFromCache() {
+﻿function getTokenFromCache(scopes) {
     const [account] = msalInstance.getAllAccounts();
-    const scopes = ["user.read"];
     return msalInstance.acquireTokenSilent({
         account,
         scopes
+    })
+    .catch(error => {
+        if (error instanceof msal.InteractionRequiredAuthError) {
+            return msalInstance.acquireTokenPopup({
+                account,
+                scopes
+            });
+        }
     });
 };
 
 const profileDiv = document.getElementById("profile-div");
 
-function loadUserData() {
-    getTokenFromCache()
+async function loadUserData() {
+    getTokenFromCache(['user.read'])
         .then(response => {
             callMSGraph('https://graph.microsoft.com/v1.0/me/messages', response.accessToken)
                 .then(data => {
@@ -49,21 +56,21 @@ function loadUserData() {
         });
 }
 
-function loadUserEmails() {
-    getTokenFromCache()
+async function loadUserEmails() {
+    getTokenFromCache(['user.read'])
         .then(response => {
             callMSGraph('https://graph.microsoft.com/v1.0/me/', response.accessToken)
                 .then(data => {
                     console.log(data);
                     profileDiv.innerHTML = '';
                     const title = document.createElement('p');
-                    title.innerHTML = "<strong>Title: </strong>" + data.jobTitle ?? 'Not set';
+                    title.innerHTML = "<strong>Title: </strong>" + (data.jobTitle || 'Not set');
                     const email = document.createElement('p');
-                    email.innerHTML = "<strong>Mail: </strong>" + data.mail ?? 'Not set';
+                    email.innerHTML = "<strong>Mail: </strong>" + (data.mail || 'Not set');
                     const phone = document.createElement('p');
-                    phone.innerHTML = "<strong>Phone: </strong>" + data.businessPhones[0] ?? 'Not set';
+                    phone.innerHTML = "<strong>Phone: </strong>" + (data.businessPhones[0] || 'Not set');
                     const address = document.createElement('p');
-                    address.innerHTML = "<strong>Location: </strong>" + data.officeLocation ?? 'Not set';
+                    address.innerHTML = "<strong>Location: </strong>" + (data.officeLocation || 'Not set');
                     profileDiv.appendChild(title);
                     profileDiv.appendChild(email);
                     profileDiv.appendChild(phone);
@@ -74,9 +81,11 @@ function loadUserEmails() {
         });
 }
 
-function updateUI() {
-    loadUserData();
-    loadUserEmails();
+async function updateUI() {
+    await Promise.all([
+        loadUserData(),
+        loadUserEmails()
+    ]);
 }
 
 function callMSGraph(endpoint, token) {

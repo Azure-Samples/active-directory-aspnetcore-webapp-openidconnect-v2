@@ -6,6 +6,20 @@ namespace WebApp_OpenIDConnect_DotNet.Services
 {
     public class ConfidentialClientApplicationService : IConfidentialClientApplicationService
     {
+        private static AuthenticationConfig _authenticationConfig;
+        private static AuthenticationConfig AuthenticationConfig
+        {
+            get
+            {
+                if (_authenticationConfig == null)
+                {
+                    _authenticationConfig = AuthenticationConfig.ReadFromJsonFile("appsettings.json");
+                }
+
+                return _authenticationConfig;
+            }
+        }
+
         private static IConfidentialClientApplication? _confidentialClientApplication;
         private static IConfidentialClientApplication ConfidentialClientApplication
         {
@@ -13,12 +27,10 @@ namespace WebApp_OpenIDConnect_DotNet.Services
             {
                 if (_confidentialClientApplication == null)
                 {
-                    var config = AuthenticationConfig.ReadFromJsonFile("appsettings.json");
-
-                    _confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(config.AzureAd.ClientId)
-                        .WithClientSecret(config.AzureAd.ClientSecret)
-                        .WithRedirectUri(config.RedirectUri)
-                        .WithAuthority(new Uri(config.AzureAd.Authority))
+                    _confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(AuthenticationConfig.AzureAd.ClientId)
+                        .WithClientSecret(AuthenticationConfig.AzureAd.ClientSecret)
+                        .WithRedirectUri(AuthenticationConfig.RedirectUri)
+                        .WithAuthority(new Uri(AuthenticationConfig.AzureAd.Authority))
                         .Build();
 
                     _confidentialClientApplication.AddInMemoryTokenCache();
@@ -28,25 +40,24 @@ namespace WebApp_OpenIDConnect_DotNet.Services
             }
         }
 
-        private string[] _scopes;
-        private string[] Scopes
+        private string[] _applicationScopes;
+        private string[] ApplicationScopes
         {
             get
             {
-                if (_scopes == null)
+                if (_applicationScopes == null)
                 {
-                    var config = AuthenticationConfig.ReadFromJsonFile("appsettings.json");
-                    _scopes = config.DownstreamApi.Scopes.Split(' ');
+                    _applicationScopes = AuthenticationConfig.DownstreamApi.Scopes.Split(' ');
                 }
 
-                return _scopes;
+                return _applicationScopes;
             }
         }
 
         public async Task<AuthenticationResult> GetAuthenticationResultAsync(string code, string codeVerifier)
         {
             return await ConfidentialClientApplication
-                .AcquireTokenByAuthorizationCode(Scopes, code)
+                .AcquireTokenByAuthorizationCode(ApplicationScopes, code)
                 .WithPkceCodeVerifier(codeVerifier)
                 .WithSpaAuthorizationCode(true)
                 .ExecuteAsync();

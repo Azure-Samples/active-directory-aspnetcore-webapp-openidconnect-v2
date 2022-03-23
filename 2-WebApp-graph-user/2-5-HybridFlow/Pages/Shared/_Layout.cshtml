@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -11,7 +14,76 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://alcdn.msauth.net/browser/2.22.0/js/msal-browser.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/js/RedeemCode.js" asp-append-version="true"></script>
+    <script>
+        const msalInstance = new msal.PublicClientApplication({
+            auth: {
+            @{
+                var clientId = Configuration["AzureAd:ClientId"];
+                var instance = Configuration["AzureAd:Instance"];
+                var domain = Configuration["AzureAd:Domain"];
+                var redirectUri = Configuration["SpaRedirectUri"];
+
+                @Html.Raw($"clientId: '{clientId}',");
+                @Html.Raw($"redirectUri: '{redirectUri}',");
+                @Html.Raw($"authority: '{instance}{domain}',");
+                @Html.Raw($"postLogoutRedirectUri: '{redirectUri}',");
+            }
+
+            },
+            cache: {
+                cacheLocation: 'sessionStorage',
+                storeAuthStateInCookie: false,
+            }
+        });
+
+        (function () {
+            const scopes = ["user.read"];
+            @{
+                Context.Request.Cookies.TryGetValue("Microsoft.Identity.Hybrid.Authentication.Cookie", out string value);
+                if (!string.IsNullOrEmpty(value))
+                {
+                    @Html.Raw($"const code = '{value}';");
+                    Context.Response.Cookies.Delete("Microsoft.Identity.Hybrid.Authentication.Cookie");
+                }
+                else
+                {
+                    @Html.Raw($"const code = '';");
+                }
+            }
+            if (!!code) {
+                msalInstance
+                    .handleRedirectPromise()
+                    .then(result => {
+                        if (result) {
+                            console.log('MSAL: Returning from login');
+                            return result;
+                        }
+
+                        const timeLabel = "Time for acquireTokenByCode";
+                        console.time(timeLabel);
+                        console.log('MSAL: acquireTokenByCode hybrid parameters present');
+
+                        return msalInstance.acquireTokenByCode({
+                            code,
+                            scopes,
+                        })
+                            .then(result => {
+                                console.timeEnd(timeLabel);
+                                console.log('MSAL: acquireTokenByCode completed successfully', result);
+                            })
+                            .catch(error => {
+                                console.timeEnd(timeLabel);
+                                console.error('MSAL: acquireTokenByCode failed', error);
+                                if (error instanceof msal.InteractionRequiredAuthError) {
+                                    console.log('MSAL: acquireTokenByCode failed, redirecting')
+                                    // Use loginHint from server to ensure same user
+                                    signOut();
+                                }
+                            });
+                    })
+                }
+            })();
+    </script>
 </head>
 
 <body>

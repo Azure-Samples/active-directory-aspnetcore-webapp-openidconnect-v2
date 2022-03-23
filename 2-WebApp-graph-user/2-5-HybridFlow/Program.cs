@@ -13,12 +13,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Add(serviceCollection.Single());
 
-builder.Services.Concat(serviceCollection);
-
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(options =>
     {
         options.ResponseType = "code";
+
         options.Events.OnAuthorizationCodeReceived = async context =>
         {
             context.TokenEndpointRequest.Parameters.TryGetValue("code_verifier", out var codeVerifier);

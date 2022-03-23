@@ -15,13 +15,13 @@
         });
 
         // Remove the authcode from cookies
-        document.cookie = document.cookie.split(';').map(cookie => {
+        /*document.cookie = document.cookie.split(';').map(cookie => {
             const [name, _] = cookie.split('=').map(c => c.trim());
             if (name === 'Microsoft.Identity.Hybrid.Authentication.Cookie') {
                 return name + '=; Max-Age=-99999999999';
             }
             return cookie;
-        }).join(';');
+        }).join(';');*/
     }
 })();
 
