@@ -12,6 +12,7 @@ var serviceProvider = serviceCollection.BuildServiceProvider();
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Add(serviceCollection.Single());
+builder.Services.AddSession();
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(options =>
@@ -24,15 +25,14 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
             context.HandleCodeRedemption();
 
             var clientService = serviceProvider.GetService<IConfidentialClientApplicationService>();
-
             var authResult = await clientService.GetAuthenticationResultAsync(context.ProtocolMessage.Code, codeVerifier);
-            var spaCode = authResult.SpaAuthCode;
-            context.Response.Cookies.Append("Microsoft.Identity.Hybrid.Authentication.Cookie", spaCode);
+
+            context.Request.HttpContext.Session.SetString("Microsoft.Identity.Hybrid.Authentication", authResult.SpaAuthCode);
 
             context.TokenEndpointResponse.AccessToken = authResult.AccessToken;
             context.TokenEndpointResponse.IdToken = authResult.IdToken;
-
         };
+
         builder.Configuration.Bind("AzureAd", options);
     });
 
@@ -49,6 +49,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+app.UseSession();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

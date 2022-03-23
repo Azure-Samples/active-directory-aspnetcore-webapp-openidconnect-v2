@@ -39,11 +39,11 @@
         (function () {
             const scopes = ["user.read"];
             @{
-                Context.Request.Cookies.TryGetValue("Microsoft.Identity.Hybrid.Authentication.Cookie", out string value);
-                if (!string.IsNullOrEmpty(value))
+                var spaCode = Context.Session.GetString("Microsoft.Identity.Hybrid.Authentication");
+                if (!string.IsNullOrEmpty(spaCode))
                 {
-                    @Html.Raw($"const code = '{value}';");
-                    Context.Response.Cookies.Delete("Microsoft.Identity.Hybrid.Authentication.Cookie");
+                    @Html.Raw($"const code = '{spaCode}';");
+                    Context.Session.Remove("Microsoft.Identity.Hybrid.Authentication");
                 }
                 else
                 {
