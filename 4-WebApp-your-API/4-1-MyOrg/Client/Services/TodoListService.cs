@@ -128,7 +128,7 @@ namespace TodoListClient.Services
         {
             //You would specify the scopes (delegated permissions) here for which you desire an Access token of this API from Azure AD.
             //Note that these scopes can be different from what you provided in startup.cs.
-            //The scopes provided here are in ADDITION to the one provided in startup.cs. Note that if they are different,
+            //The scopes provided here can be different or more from the ones provided in Startup.cs. Note that if they are different,
             //then the user might be prompted to consent again.
             var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new List<string>());
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
