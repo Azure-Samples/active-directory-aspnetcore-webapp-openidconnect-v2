@@ -18,38 +18,104 @@
         const msalInstance = new msal.PublicClientApplication({
             auth: {
             @{
-                var clientId = Configuration["AzureAd:ClientId"];
-                var instance = Configuration["AzureAd:Instance"];
-                var domain = Configuration["AzureAd:Domain"];
-                var redirectUri = Configuration["SpaRedirectUri"];
+            var clientId = Configuration["AzureAd:ClientId"];
+            var instance = Configuration["AzureAd:Instance"];
+            var domain = Configuration["AzureAd:Domain"];
+            var redirectUri = Configuration["SpaRedirectUri"];
 
-                @Html.Raw($"clientId: '{clientId}',");
-                @Html.Raw($"redirectUri: '{redirectUri}',");
-                @Html.Raw($"authority: '{instance}{domain}',");
-                @Html.Raw($"postLogoutRedirectUri: '{redirectUri}',");
-            }
+            @Html.Raw($"clientId: '{clientId}',")
+            ;
+            @Html.Raw($"redirectUri: '{redirectUri}',")
+            ;
+            @Html.Raw($"authority: '{instance}{domain}',")
+            ;
+            @Html.Raw($"postLogoutRedirectUri: '{redirectUri}',")
+            ;
+        }
 
             },
-            cache: {
-                cacheLocation: 'sessionStorage',
+        cache: {
+            cacheLocation: 'sessionStorage',
                 storeAuthStateInCookie: false,
             }
         });
 
+        function getTokenFromCache(scopes) {
+            const [account] = msalInstance.getAllAccounts();
+            return msalInstance.acquireTokenSilent({
+                account,
+                scopes
+            })
+                .catch(error => {
+                    if (error instanceof msal.InteractionRequiredAuthError) {
+                        return msalInstance.acquireTokenPopup({
+                            account,
+                            scopes
+                        });
+                    }
+                });
+        };
+
+        function callMSGraph(path, token) {
+        @{
+            var graphEndpoint = Configuration["DownstreamApi:BaseUrl"];
+            if (!string.IsNullOrEmpty(graphEndpoint))
+            {
+                @Html.Raw($"const graphEndpoint = '{graphEndpoint}';")
+                ;
+            }
+            else
+            {
+                @Html.Raw($"const graphEndpoint = '';")
+                ;
+            }
+        }
+
+            const headers = new Headers();
+            const bearer = `Bearer ${token}`;
+            headers.append("Authorization", bearer);
+
+            const options = {
+                method: "GET",
+                headers: headers
+            };
+
+            console.log('request made to Graph API at: ' + new Date().toString());
+
+            return fetch(`${graphEndpoint}${path}`, options)
+                .then(async response => {
+                    return await response.json()
+                })
+                .catch(error => console.log(error))
+        }
+
+        async function signOut() {
+            msalInstance.logoutRedirect();
+
+            fetch('/logout', {
+                method: 'POST',
+                mode: 'same-origin',
+                credentials: 'same-origin',
+            });
+        }
+
+
         (function () {
             const scopes = ["user.read"];
-            @{
-                var spaCode = Context.Session.GetString("Microsoft.Identity.Hybrid.Authentication");
-                if (!string.IsNullOrEmpty(spaCode))
-                {
-                    @Html.Raw($"const code = '{spaCode}';");
-                    Context.Session.Remove("Microsoft.Identity.Hybrid.Authentication");
-                }
-                else
-                {
-                    @Html.Raw($"const code = '';");
-                }
+        @{
+            var spaCode = Context.Session.GetString("Microsoft.Identity.Hybrid.Authentication");
+            if (!string.IsNullOrEmpty(spaCode))
+            {
+                @Html.Raw($"const code = '{spaCode}';")
+                ;
+                Context.Session.Remove("Microsoft.Identity.Hybrid.Authentication");
             }
+            else
+            {
+                @Html.Raw($"const code = '';")
+                ;
+            }
+        }
             if (!!code) {
                 msalInstance
                     .handleRedirectPromise()
@@ -75,14 +141,13 @@
                                 console.timeEnd(timeLabel);
                                 console.error('MSAL: acquireTokenByCode failed', error);
                                 if (error instanceof msal.InteractionRequiredAuthError) {
-                                    console.log('MSAL: acquireTokenByCode failed, redirecting')
-                                    // Use loginHint from server to ensure same user
+                                    console.log('MSAL: acquireTokenByCode failed, signing out')
                                     signOut();
                                 }
                             });
                     })
-                }
-            })();
+            }
+        })();
     </script>
 </head>
 
