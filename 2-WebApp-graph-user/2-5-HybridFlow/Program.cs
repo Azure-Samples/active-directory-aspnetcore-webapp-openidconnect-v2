@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Identity.Web;
 using WebApp_OpenIDConnect_DotNet.Services;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 var serviceCollection = new ServiceCollection();
 serviceCollection.AddSingleton<IConfidentialClientApplicationService, ConfidentialClientApplicationService>();
@@ -17,8 +18,7 @@ builder.Services.AddSession();
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(options =>
     {
-        options.ResponseType = "code";
-
+        options.ResponseType = OpenIdConnectResponseType.Code;
         options.Events.OnAuthorizationCodeReceived = async context =>
         {
             context.TokenEndpointRequest.Parameters.TryGetValue("code_verifier", out var codeVerifier);

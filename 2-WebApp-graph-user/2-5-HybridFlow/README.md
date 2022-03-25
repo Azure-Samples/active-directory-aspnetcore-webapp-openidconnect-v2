@@ -160,6 +160,7 @@ Follow the steps below for manually register and configure your apps
   1. Find the key `TenantId` and replace the existing value with your Azure AD tenant ID.
   1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `HybridFlow-aspnetcore` app copied from the Azure portal.
   1. Find the key `ClientSecret` and replace the existing value with the **client secret** of `HybridFlow-aspnetcore` app copied from the Azure portal.
+</details>
 
 ### Step 4: Running the sample
 
@@ -169,6 +170,139 @@ Follow the steps below for manually register and configure your apps
     cd 2-WebApp-graph-user\2-5-HybridFlow
     dotnet run
 ```
+
+## Troubleshooting
+
+<details>
+ <summary>Expand for troubleshooting info</summary>
+
+Use [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) to get support from the community.
+Ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
+Make sure that your questions or comments are tagged with [`azure-active-directory` `adal` `msal` `dotnet`].
+
+If you find a bug in the sample, please raise the issue on [GitHub Issues](../../issues).
+
+To provide a recommendation, visit the following [User Voice page](https://feedback.azure.com/forums/169401-azure-active-directory).
+</details>
+
+## Using the sample
+
+<details>
+ <summary>Expand to see how to use the sample</summary>
+ Open your web browser and navigate to `https://localhost:7089`. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in using an user account in that tenant. The client side `MSAL.js` client will receive an **auth** code from the server that will be exchanged for an authorization token and cached immediately after you've signed in.
+
+1. Click on `Profile` tab to see user information and emails in the page retrieved using the `MSAL.js` library client side.
+
+Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
+
+[Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbRz0h_jLR5HNJlvkZAewyoWxUNEFCQ0FSMFlPQTJURkJZMTRZWVJRNkdRMC4u)
+</details>
+
+## About the code
+
+<details>
+ <summary>Expand to see more information about the code</summary>
+
+## Server setup
+
+1. The entire application is built using the [Microsoft Identity Web](https://docs.microsoft.com/en-us/azure/active-directory/develop/microsoft-identity-web) library and [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core?view=aspnetcore-6.0) using [Razor](https://docs.microsoft.com/en-us/aspnet/web-pages/overview/getting-started/introducing-razor-syntax-c) pages.
+1. The main entry point of this program is found in the `Program.cs` file. With **ASP.NET Core 6.0** [the Startup.cs file has been merged with the Program.cs file](https://docs.microsoft.com/en-us/aspnet/core/release-notes/aspnetcore-6.0?view=aspnetcore-6.0#web-app-template-improvements). As a result, much of the configuration you'd see in older samples in the `Startup.cs` file now take place in the `Program.cs` file. Also, because this is based on C# 9 [the main method no longer needs to be explicitly stated and a top-level statement is used instead.](https://docs.microsoft.com/en-us/dotnet/csharp/fundamentals/program-structure/top-level-statements)
+1. In the `Program.cs` file you will see the [WebApplicationBuilder](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.webapplicationbuilder?view=aspnetcore-6.0) **builder** which injects all dependencies into your application.
+    * The authentication dependencies are some of the first to be injected into the application using the `AddAuthentication` method. The `OpenIdConnectDefaults.AuthenticationScheme` is provided to configure the application to use the [OpenID Connect protocol](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc).
+    * The `AddMicrosoftIdentityWebApp` called to further configure the application to use the authentication services required by **Microsoft Identity**. Because this is using a hybrid flow the `OnAuthorizationCodeReceived` event is customized to allow for the server to request an **authorization code** to be retrieved from the server and sent to the client to be redeemed while also acquiring a token to be stored server side. Both the server-side **authentication token** and client-side **authorization code** are redeemed using the `ConfidentialClientService` which is discussed later. Because this application is configured to use [PKCE](https://datatracker.ietf.org/doc/html/rfc7636) the `code_challenge` value is extracted from the URL that would have been used by the flow automatically and is passed to the `ConfidentialClientService` to acquire the needed **authentication token** and **authorization code**. The **authorization code** is then stored in the **session** to be placed in a JavaScript variable rendered server-side to be redeemed for an **authentication token**. This is discussed in more detail later.
+
+    The context `TokenEndpointResponse.AccessToken` and `context.TokenEndpointResponse.IdToken` need to be set to properly navigate to the next user verification step.
+
+    ```CSharp
+    builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApp(options =>
+    {
+        options.ResponseType = OpenIdConnectResponseType.Code;
+        options.Events.OnAuthorizationCodeReceived = async context =>
+        {
+            context.TokenEndpointRequest.Parameters.TryGetValue("code_verifier", out var codeVerifier);
+            context.HandleCodeRedemption();
+
+            var clientService = serviceProvider.GetService<IConfidentialClientApplicationService>();
+            var authResult = await clientService.GetAuthenticationResultAsync(context.ProtocolMessage.Code, codeVerifier);
+
+            context.Request.HttpContext.Session.SetString("Microsoft.Identity.Hybrid.Authentication", authResult.SpaAuthCode);
+
+            context.TokenEndpointResponse.AccessToken = authResult.AccessToken;
+            context.TokenEndpointResponse.IdToken = authResult.IdToken;
+        };
+
+        builder.Configuration.Bind("AzureAd", options);
+    });
+    ```
+
+1. The rest of the file configures a basic **ASP.NET Core** app to use **Razor** pages, **Controllers** and a few other configurations.
+    ```CSharp
+    builder.Services.AddControllersWithViews(options =>
+    {
+        var policy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+    
+        options.Filters.Add(new AuthorizeFilter(policy));
+    });
+    
+    builder.Services.AddRazorPages();
+    builder.Services.AddControllers();
+    
+    var app = builder.Build();
+    
+    app.UseSession();
+    
+    // Configure the HTTP request pipeline.
+    if (!app.Environment.IsDevelopment())
+    {
+    app.UseExceptionHandler("/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+    }
+    
+    app.UseHttpsRedirection();
+    app.UseStaticFiles("");
+    
+    app.UseRouting();
+    
+    app.UseAuthentication();
+    app.UseAuthorization();
+    
+    app.MapRazorPages();
+    app.MapControllers();
+    
+    app.Run();
+    ```
+
+## Server-side Token Redemption
+
+1. In this application server-side token acquisition is handled by the `ConfidentialClientService`. This service makes use of the [ConfidentialClientService](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identity.client.confidentialclientapplication?view=azure-dotnet) class from the Microsoft Identity Library to redeem access tokens from Azure and can also be used to store token attributed to individual accounts.
+
+```CSharp
+        private static IConfidentialClientApplication? _confidentialClientApplication;
+        private static IConfidentialClientApplication ConfidentialClientApplication
+        {
+            get
+            {
+                if (_confidentialClientApplication == null)
+                {
+                    _confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(AuthenticationConfig.AzureAd.ClientId)
+                        .WithClientSecret(AuthenticationConfig.AzureAd.ClientSecret)
+                        .WithRedirectUri(AuthenticationConfig.RedirectUri)
+                        .WithAuthority(new Uri(AuthenticationConfig.AzureAd.Authority))
+                        .Build();
+
+                    _confidentialClientApplication.AddInMemoryTokenCache();
+                }
+
+                return _confidentialClientApplication;
+            }
+        }
+```
+
+</details>
 
 ## Troubleshooting
 
