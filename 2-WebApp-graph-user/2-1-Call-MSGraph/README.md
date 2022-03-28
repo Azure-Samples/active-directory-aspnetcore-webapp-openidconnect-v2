@@ -226,7 +226,6 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
    private readonly ILogger<HomeController> _logger;
    private readonly GraphServiceClient _graphServiceClient;
   
-   private readonly GraphServiceClient _graphServiceClient;
    public HomeController(ILogger<HomeController> logger,
                       IConfiguration configuration,
                       GraphServiceClient graphServiceClient)
