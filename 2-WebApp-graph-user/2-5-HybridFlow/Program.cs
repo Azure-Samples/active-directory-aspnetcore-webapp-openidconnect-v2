@@ -5,28 +5,18 @@ using Microsoft.Identity.Web;
 using WebApp_OpenIDConnect_DotNet.Services;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using WebApp_OpenIDConnect_DotNet.Options;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var serviceCollection = new ServiceCollection();
+var azureAdOptions = Options
+    .Create(builder.Configuration.GetSection("AzureAd").Get<AzureAdOptions>());
 
-serviceCollection.Configure<AzureAdOptions>(builder.Configuration.GetSection("AzureAd"));
-serviceCollection.AddSingleton<IConfidentialClientApplicationService, ConfidentialClientApplicationService>();
+var confidentialClientService = new ConfidentialClientApplicationService(azureAdOptions);
 
-#pragma warning disable ASP0000
-var serviceProvider = serviceCollection.BuildServiceProvider();
-#pragma warning restore ASP0000
-
-var confidentialClientService = serviceProvider.GetService<IConfidentialClientApplicationService>();
-
-if (confidentialClientService is null)
-{
-    Console.Error.WriteLine("Unable to initialize confidential client application service.");
-    Environment.Exit(-1);
-}
+builder.Services.AddSingleton<IConfidentialClientApplicationService>(confidentialClientService);
 
 builder.Services.AddSession();
-builder.Services.AddSingleton<IConfidentialClientApplicationService>(confidentialClientService);
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(options =>
