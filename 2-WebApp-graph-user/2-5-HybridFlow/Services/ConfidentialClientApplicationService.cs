@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Web;
@@ -47,7 +46,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         public async Task RemoveAccount(string identifier)
         {
             var userAccount = await ConfidentialClientApplication.GetAccountAsync(identifier);
-            if (userAccount != null)
+            if (userAccount is not null)
             {
                 await ConfidentialClientApplication.RemoveAsync(userAccount);
             }
