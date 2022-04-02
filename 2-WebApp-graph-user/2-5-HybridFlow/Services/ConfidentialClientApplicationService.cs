@@ -1,23 +1,18 @@
 using System.Security.Claims;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Web;
+using WebApp_OpenIDConnect_DotNet.Options;
 
 namespace WebApp_OpenIDConnect_DotNet.Services
 {
     public class ConfidentialClientApplicationService : IConfidentialClientApplicationService
     {
-        private static AuthenticationConfig _authenticationConfig;
-        private static AuthenticationConfig AuthenticationConfig
-        {
-            get
-            {
-                if (_authenticationConfig == null)
-                {
-                    _authenticationConfig = AuthenticationConfig.ReadFromJsonFile("appsettings.json");
-                }
+        private static AzureAdOptions _azureAdOptions;
 
-                return _authenticationConfig;
-            }
+        public ConfidentialClientApplicationService(IOptions<AzureAdOptions> azureAdOptions)
+        {
+            _azureAdOptions = azureAdOptions.Value;
         }
 
         private static IConfidentialClientApplication? _confidentialClientApplication;
@@ -27,10 +22,10 @@ namespace WebApp_OpenIDConnect_DotNet.Services
             {
                 if (_confidentialClientApplication == null)
                 {
-                    _confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(AuthenticationConfig.AzureAd.ClientId)
-                        .WithClientSecret(AuthenticationConfig.AzureAd.ClientSecret)
-                        .WithRedirectUri(AuthenticationConfig.RedirectUri)
-                        .WithAuthority(new Uri(AuthenticationConfig.AzureAd.Authority))
+                    _confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(_azureAdOptions.ClientId)
+                        .WithClientSecret(_azureAdOptions.ClientSecret)
+                        .WithRedirectUri(_azureAdOptions.RedirectUri)
+                        .WithAuthority(new Uri(_azureAdOptions.Authority))
                         .Build();
 
                     _confidentialClientApplication.AddInMemoryTokenCache();
@@ -40,24 +35,10 @@ namespace WebApp_OpenIDConnect_DotNet.Services
             }
         }
 
-        private string[] _applicationScopes;
-        private string[] ApplicationScopes
-        {
-            get
-            {
-                if (_applicationScopes == null)
-                {
-                    _applicationScopes = AuthenticationConfig.DownstreamApi.Scopes.Split(' ');
-                }
-
-                return _applicationScopes;
-            }
-        }
-
-        public async Task<AuthenticationResult> GetAuthenticationResultAsync(string code, string codeVerifier)
+        public async Task<AuthenticationResult> GetAuthenticationResultAsync(IEnumerable<string> scopes, string authorizationCode, string codeVerifier)
         {
             return await ConfidentialClientApplication
-                .AcquireTokenByAuthorizationCode(ApplicationScopes, code)
+                .AcquireTokenByAuthorizationCode(scopes, authorizationCode)
                 .WithPkceCodeVerifier(codeVerifier)
                 .WithSpaAuthorizationCode(true)
                 .ExecuteAsync();

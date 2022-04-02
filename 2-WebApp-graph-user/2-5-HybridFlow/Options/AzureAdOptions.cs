@@ -1,40 +1,19 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
-
-using Microsoft.Identity.Web;
 using System.Globalization;
+using Microsoft.Identity.Web;
 
-namespace WebApp_OpenIDConnect_DotNet
+namespace WebApp_OpenIDConnect_DotNet.Options
 {
     /// <summary>
     /// Metadata designed to match application configurations for applications that call APIs.
     ///
     /// https://docs.microsoft.com/en-us/azure/active-directory/develop/scenario-web-app-sign-user-app-configuration?tabs=aspnetcore
     /// </summary>
-    public class DownstreamApi
-    {
-        /// <summary>
-        /// Base URL of the API being called
-        /// </summary>
-        public string BaseUrl { get; set; } = "https://graph.microsoft.com/v1.0";
-        /// <summary>
-        /// Space seperated string of scopes to access from the API
-        /// </summary>
-        public string Scopes { get; set; }
-
-    }
-
-    /// <summary>
-    /// Metadata designed to match application configurations for applications that call APIs.
-    ///
-    /// https://docs.microsoft.com/en-us/azure/active-directory/develop/scenario-web-app-sign-user-app-configuration?tabs=aspnetcore
-    /// </summary>
-    public class AzureAd
+    public class AzureAdOptions
     {
         /// <summary>
         /// instance of Azure AD, for example public Azure or a Sovereign cloud (Azure China, Germany, US government, etc ...)
         /// </summary>
-        public string Instance { get; set; } = "https://login.microsoftonline.com/{0}{1}";
+        public string Instance { get; set; } = "https://login.microsoftonline.com/";
 
         /// <summary>
         /// The Tenant is:
@@ -61,6 +40,24 @@ namespace WebApp_OpenIDConnect_DotNet
         public string? ClientSecret { get; set; }
 
         /// <summary>
+        /// Callback path added to redirect URI
+        /// </summary>
+        public string CallbackPath { get; set; }
+
+        /// <summary>
+        /// Redirect URI to be used by WebApp (server)
+        /// </summary>
+        public string RedirectUri
+        {
+            get
+            {
+                var redirectUriBasePath = "https://localhost:7089";
+
+                return $"{redirectUriBasePath}{CallbackPath}";
+            }
+        }
+
+        /// <summary>
         /// URL of the authority
         /// </summary>
         public string Authority
@@ -82,40 +79,4 @@ namespace WebApp_OpenIDConnect_DotNet
         public CertificateDescription? Certificate { get; set; }
 
     }
-    /// <summary>
-    /// Description of the configuration of an AzureAD public client application (desktop/mobile application). This should
-    /// match the application registration done in the Azure portal
-    /// </summary>
-    public class AuthenticationConfig
-    {
-        /// <summary>
-        /// The Redirect Uri is the URL where the user will be redirected after they sign in.
-        /// </summary>
-        public string? RedirectUri { get; set; }
-
-        public AzureAd? AzureAd { get; set; }
-
-        public DownstreamApi? DownstreamApi { get; set; }
-
-        /// <summary>
-        /// Reads the configuration from a json file
-        /// </summary>
-        /// <param name="path">Path to the configuration json file</param>
-        /// <returns>AuthenticationConfig read from the json file</returns>
-        public static AuthenticationConfig ReadFromJsonFile(string path)
-        {
-            IConfigurationRoot Configuration;
-
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(path);
-
-            Configuration = builder.Build();
-            return Configuration.Get<AuthenticationConfig>();
-        }
-    }
-
-
-
 }
-

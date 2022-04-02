@@ -4,16 +4,20 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Identity.Web;
 using WebApp_OpenIDConnect_DotNet.Services;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using WebApp_OpenIDConnect_DotNet.Options;
+
+var builder = WebApplication.CreateBuilder(args);
 
 var serviceCollection = new ServiceCollection();
+
+serviceCollection.Configure<AzureAdOptions>(builder.Configuration.GetSection("AzureAd"));
 serviceCollection.AddSingleton<IConfidentialClientApplicationService, ConfidentialClientApplicationService>();
 
 var serviceProvider = serviceCollection.BuildServiceProvider();
 
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.Add(serviceCollection.Single());
+builder.Services.Configure<AzureAdOptions>(builder.Configuration.GetSection("AzureAd"));
 builder.Services.AddSession();
+builder.Services.AddSingleton<IConfidentialClientApplicationService, ConfidentialClientApplicationService>();
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(options =>
@@ -33,7 +37,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
             context.HandleCodeRedemption();
 
             var clientService = serviceProvider.GetService<IConfidentialClientApplicationService>();
-            var authResult = await clientService.GetAuthenticationResultAsync(context.ProtocolMessage.Code, codeVerifier);
+            var authResult = await clientService.GetAuthenticationResultAsync(options.Scope, context.ProtocolMessage.Code, codeVerifier);
 
             context.Request.HttpContext.Session.SetString("Microsoft.Identity.Hybrid.Authentication", authResult.SpaAuthCode);
 
