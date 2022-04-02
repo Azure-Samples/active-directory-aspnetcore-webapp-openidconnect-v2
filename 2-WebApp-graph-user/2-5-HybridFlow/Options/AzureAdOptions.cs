@@ -21,18 +21,18 @@ namespace WebApp_OpenIDConnect_DotNet.Options
         /// or a domain name associated with the tenant
         /// - or 'organizations' (for a multi-tenant application)
         /// </summary>
-        public string TenantId { get; set; }
+        public string? TenantId { get; set; }
 
         /// <summary>
         /// The domain of the tenant
         /// </summary>
-        public string Domain { get; set; }
+        public string? Domain { get; set; }
 
 
         /// <summary>
         /// Guid used by the application to uniquely identify itself to Azure AD
         /// </summary>
-        public string ClientId { get; set; }
+        public string? ClientId { get; set; }
 
         /// <summary>
         /// The ClientSecret is a credential used to authenticate the application to Azure AD.  Azure AD supports password and certificate credentials.
@@ -42,7 +42,7 @@ namespace WebApp_OpenIDConnect_DotNet.Options
         /// <summary>
         /// Callback path added to redirect URI
         /// </summary>
-        public string CallbackPath { get; set; }
+        public string? CallbackPath { get; set; }
 
         /// <summary>
         /// Redirect URI to be used by WebApp (server)

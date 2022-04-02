@@ -14,7 +14,7 @@ namespace WebApp_OpenIDConnect_DotNet.Options
         /// <summary>
         /// Space seperated string of scopes to access from the API
         /// </summary>
-        public string Scopes { get; set; }
+        public string? Scopes { get; set; }
 
     }
 }

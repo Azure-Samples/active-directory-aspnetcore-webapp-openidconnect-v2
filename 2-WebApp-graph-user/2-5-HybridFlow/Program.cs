@@ -13,8 +13,17 @@ var serviceCollection = new ServiceCollection();
 serviceCollection.Configure<AzureAdOptions>(builder.Configuration.GetSection("AzureAd"));
 serviceCollection.AddSingleton<IConfidentialClientApplicationService, ConfidentialClientApplicationService>();
 
+#pragma warning disable ASP0000
 var serviceProvider = serviceCollection.BuildServiceProvider();
+#pragma warning restore ASP0000
+
 var confidentialClientService = serviceProvider.GetService<IConfidentialClientApplicationService>();
+
+if (confidentialClientService is null)
+{
+    Console.Error.WriteLine("Unable to initialize confidential client application service.");
+    Environment.Exit(-1);
+}
 
 builder.Services.AddSession();
 builder.Services.AddSingleton<IConfidentialClientApplicationService>(confidentialClientService);
@@ -27,7 +36,8 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         // Scopes need to be added in to get proper claims for user.
         var apiScopes = builder.Configuration.GetSection("DownstreamApi:Scopes").Value;
 
-        foreach(var scope in apiScopes.Split(' ')) {
+        foreach (var scope in apiScopes.Split(' '))
+        {
             options.Scope.Add(scope);
         }
 
@@ -35,6 +45,11 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         {
             context.TokenEndpointRequest.Parameters.TryGetValue("code_verifier", out var codeVerifier);
             context.HandleCodeRedemption();
+
+            if (string.IsNullOrEmpty(codeVerifier))
+            {
+                throw new Exception("Unable to retrive verify code challenge.");
+            }
 
             var authResult = await confidentialClientService.GetAuthenticationResultAsync(options.Scope, context.ProtocolMessage.Code, codeVerifier);
 

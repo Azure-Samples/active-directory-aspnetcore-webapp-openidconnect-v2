@@ -21,10 +21,17 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         [Authorize]
         public async Task<IActionResult> PostAsync()
         {
-            await _confidentialClientApplicationService.RemoveAccount(User.GetMsalAccountId());
-            await HttpContext.SignOutAsync("Cookies");
+            var accountId = User.GetMsalAccountId();
 
-            return Ok();
+            if (!string.IsNullOrEmpty(accountId))
+            {
+                await _confidentialClientApplicationService.RemoveAccount(accountId);
+                await HttpContext.SignOutAsync("Cookies");
+
+                return Ok();
+            }
+
+            return Unauthorized();
         }
     }
 }
