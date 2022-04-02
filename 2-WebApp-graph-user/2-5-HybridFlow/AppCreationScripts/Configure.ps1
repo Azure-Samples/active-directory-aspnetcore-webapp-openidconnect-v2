@@ -193,12 +193,6 @@ Function ConfigureApplications {
     $loggingSettings = @{ "LogLevel" = @{ "Default" = "Warning" } };
     $dictionary = [ordered]@{ "AzureAd" = $azureAdSettings; "Logging" = $loggingSettings; "AllowedHosts" = "*"; "DownstreamApi" = $downstreamApiSettings; "RedirectUri" = "https://localhost:7089/signin/"; };
     $dictionary | ConvertTo-Json | Out-File $configFile
-    Write-Host ""
-    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
-    Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
-    Write-Host "- For 'client'"
-    Write-Host "  - Navigate to '$clientPortalUrl'"
-    Write-Host "  - Navigate to the API permissions page and click on 'Grant admin consent for {tenant}'" -ForegroundColor Red 
 
     Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
      

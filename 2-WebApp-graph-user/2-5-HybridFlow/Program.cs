@@ -19,6 +19,14 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(options =>
     {
         options.ResponseType = OpenIdConnectResponseType.Code;
+
+        // Scopes need to be added in to get proper claims for user.
+        var apiScopes = builder.Configuration.GetSection("DownstreamApi:Scopes").Value;
+
+        foreach(var scope in apiScopes.Split(' ')) {
+            options.Scope.Add(scope);
+        }
+
         options.Events.OnAuthorizationCodeReceived = async context =>
         {
             context.TokenEndpointRequest.Parameters.TryGetValue("code_verifier", out var codeVerifier);
