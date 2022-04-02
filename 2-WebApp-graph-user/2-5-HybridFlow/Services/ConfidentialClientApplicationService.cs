@@ -8,15 +8,15 @@ namespace WebApp_OpenIDConnect_DotNet.Services
 {
     public class ConfidentialClientApplicationService : IConfidentialClientApplicationService
     {
-        private static AzureAdOptions _azureAdOptions;
+        private AzureAdOptions _azureAdOptions;
 
         public ConfidentialClientApplicationService(IOptions<AzureAdOptions> azureAdOptions)
         {
             _azureAdOptions = azureAdOptions.Value;
         }
 
-        private static IConfidentialClientApplication? _confidentialClientApplication;
-        private static IConfidentialClientApplication ConfidentialClientApplication
+        private IConfidentialClientApplication? _confidentialClientApplication;
+        private IConfidentialClientApplication ConfidentialClientApplication
         {
             get
             {
