@@ -19,13 +19,34 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         {
             get
             {
-                if (_confidentialClientApplication == null)
+                if (_confidentialClientApplication is null)
                 {
-                    _confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(_azureAdOptions.ClientId)
-                        .WithClientSecret(_azureAdOptions.ClientSecret)
-                        .WithRedirectUri(_azureAdOptions.RedirectUri)
-                        .WithAuthority(new Uri(_azureAdOptions.Authority))
-                        .Build();
+
+                    var clientSecretPlaceholderValue = "[Enter here a client secret for your application]";
+
+                    if (!string.IsNullOrWhiteSpace(_azureAdOptions.ClientSecret) &&
+                        _azureAdOptions.ClientSecret != clientSecretPlaceholderValue)
+                    {
+                        _confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(_azureAdOptions.ClientId)
+                            .WithClientSecret(_azureAdOptions.ClientSecret)
+                            .WithRedirectUri(_azureAdOptions.RedirectUri)
+                            .WithAuthority(new Uri(_azureAdOptions.Authority))
+                            .Build();
+                    }
+                    else if (_azureAdOptions.Certificate is not null)
+                    {
+                        ICertificateLoader certificateLoader = new DefaultCertificateLoader();
+                        certificateLoader.LoadIfNeeded(_azureAdOptions.Certificate);
+
+                        _confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(_azureAdOptions.ClientId)
+                            .WithCertificate(_azureAdOptions.Certificate.Certificate)
+                            .WithAuthority(new Uri(_azureAdOptions.Authority))
+                            .Build();
+                    }
+                    else
+                    {
+                        throw new Exception("You must choose between using client secret or certificate. Please update appsettings.json file.");
+                    }
 
                     _confidentialClientApplication.AddInMemoryTokenCache();
                 }

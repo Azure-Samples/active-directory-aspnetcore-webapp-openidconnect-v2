@@ -29,21 +29,35 @@
                     @Html.Raw($"postLogoutRedirectUri: '{redirectUri}',");
                 }
             },
-        cache: {
-            cacheLocation: 'sessionStorage',
-                storeAuthStateInCookie: false,
-            }
-        });
+            cache: {
+                cacheLocation: 'sessionStorage',
+                    storeAuthStateInCookie: false,
+                }
+            });
 
         function getTokenFromCache(scopes) {
-            const [account] = msalInstance.getAllAccounts();
+            @{
+                if (User.Identity is not null)
+                {
+                    @Html.Raw($"const username = '{User.Identity.Name}';");
+                }
+                else
+                {
+                    @Html.Raw("signOut();");
+                    @Html.Raw("return;");
+                }
+            }
+
+            const account = msalInstance.getAllAccounts()
+                .find(account => account.username === username);
+
             return msalInstance.acquireTokenSilent({
                 account,
                 scopes
             })
                 .catch(error => {
                     if (error instanceof msal.InteractionRequiredAuthError) {
-                        return msalInstance.acquireTokenPopup({
+                        return msalInstance.acquireTokenRedirect({
                             account,
                             scopes
                         });
@@ -52,17 +66,17 @@
         };
 
         function callMSGraph(path, token) {
-        @{
-            var graphEndpoint = Configuration["DownstreamApi:BaseUrl"];
-            if (!string.IsNullOrEmpty(graphEndpoint))
-            {
-                @Html.Raw($"const graphEndpoint = '{graphEndpoint}';");
+            @{
+                var graphEndpoint = Configuration["DownstreamApi:BaseUrl"];
+                if (!string.IsNullOrEmpty(graphEndpoint))
+                {
+                    @Html.Raw($"const graphEndpoint = '{graphEndpoint}';");
+                }
+                else
+                {
+                    @Html.Raw($"const graphEndpoint = '';");
+                }
             }
-            else
-            {
-                @Html.Raw($"const graphEndpoint = '';");
-            }
-        }
 
             const headers = new Headers();
             const bearer = `Bearer ${token}`;
@@ -83,62 +97,16 @@
         }
 
         async function signOut() {
-            msalInstance.logoutRedirect();
 
             fetch('/logout', {
                 method: 'POST',
                 mode: 'same-origin',
                 credentials: 'same-origin',
             });
+
+            await msalInstance.logoutRedirect();
         }
 
-
-        (function () {
-            const scopes = ["user.read"];
-        @{
-            var spaCode = Context.Session.GetString("Microsoft.Identity.Hybrid.Authentication");
-            if (!string.IsNullOrEmpty(spaCode))
-            {
-                @Html.Raw($"const code = '{spaCode}';");
-                Context.Session.Remove("Microsoft.Identity.Hybrid.Authentication");
-            }
-            else
-            {
-                @Html.Raw($"const code = '';");
-            }
-        }
-            if (!!code) {
-                msalInstance
-                    .handleRedirectPromise()
-                    .then(result => {
-                        if (result) {
-                            console.log('MSAL: Returning from login');
-                            return result;
-                        }
-
-                        const timeLabel = "Time for acquireTokenByCode";
-                        console.time(timeLabel);
-                        console.log('MSAL: acquireTokenByCode hybrid parameters present');
-
-                        return msalInstance.acquireTokenByCode({
-                            code,
-                            scopes,
-                        })
-                            .then(result => {
-                                console.timeEnd(timeLabel);
-                                console.log('MSAL: acquireTokenByCode completed successfully', result);
-                            })
-                            .catch(error => {
-                                console.timeEnd(timeLabel);
-                                console.error('MSAL: acquireTokenByCode failed', error);
-                                if (error instanceof msal.InteractionRequiredAuthError) {
-                                    console.log('MSAL: acquireTokenByCode failed, signing out')
-                                    signOut();
-                                }
-                            });
-                    })
-            }
-        })();
     </script>
 </head>
 
@@ -184,6 +152,77 @@
         </div>
     </footer>
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        (function () {
+            const scopes = ["user.read"];
+            @{
+                var spaCode = Context.Session.GetString("Microsoft.Identity.Hybrid.Authentication");
+                if (!string.IsNullOrEmpty(spaCode))
+                {
+                    @Html.Raw($"const code = '{spaCode}';");
+                    Context.Session.Remove("Microsoft.Identity.Hybrid.Authentication");
+                }
+                else
+                {
+                    @Html.Raw($"const code = '';");
+                }
+            }
+
+            if (true || !!code) {
+                msalInstance
+                    .handleRedirectPromise()
+                    .then(result => {
+                        if (result) {
+                            console.log('MSAL: Returning from login');
+                            document.dispatchEvent(new Event('AUTHENTICATED'));
+                            return result;
+                        }
+
+                        const timeLabel = "Time for acquireTokenByCode";
+                        console.time(timeLabel);
+                        console.log('MSAL: acquireTokenByCode hybrid parameters present');
+
+                        return msalInstance.acquireTokenByCode({
+                            code,
+                            scopes,
+                        })
+                            .then(result => {
+                                console.timeEnd(timeLabel);
+                                console.log('MSAL: acquireTokenByCode completed successfully', result);
+                                document.dispatchEvent(new Event('AUTHENTICATED'));
+                            })
+                            .catch(error => {
+                                console.timeEnd(timeLabel);
+                                console.error('MSAL: acquireTokenByCode failed', error);
+                                if (error instanceof msal.InteractionRequiredAuthError) {
+                                    console.log('MSAL: acquireTokenByCode failed, redirecting');
+                                    @{
+                                        if (User.Identity is not null)
+                                        {
+                                            @Html.Raw($"const username = '{User.Identity.Name}';");
+                                        }
+                                        else
+                                        {
+                                            @Html.Raw($"const username = '';");
+                                        }
+                                    }
+
+                                    const account = msalInstance.getAllAccounts()
+                                        .find(account => account.username === username);
+
+                                    return msalInstance.acquireTokenRedirect({
+                                        account,
+                                        scopes
+                                    });
+                                }
+                            });
+                    })
+            }
+            else {
+                document.dispatchEvent(new Event('AUTHENTICATED'));
+            }
+        })();
+    </script>
 </body>
 
 </html>

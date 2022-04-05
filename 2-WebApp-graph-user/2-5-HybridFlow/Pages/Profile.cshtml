@@ -105,5 +105,9 @@ async function updateUI() {
     ]);
 }
 
-updateUI();
+document.addEventListener('AUTHENTICATED', async () => {
+    await updateUI();
+}, {
+    once: true
+});
 </script>
