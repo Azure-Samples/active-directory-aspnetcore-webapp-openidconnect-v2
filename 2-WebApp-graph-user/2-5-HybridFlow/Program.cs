@@ -34,7 +34,6 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         options.Events.OnAuthorizationCodeReceived = async context =>
         {
             context.TokenEndpointRequest.Parameters.TryGetValue("code_verifier", out var codeVerifier);
-            context.HandleCodeRedemption();
 
             if (string.IsNullOrEmpty(codeVerifier))
             {
@@ -45,8 +44,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 
             context.Request.HttpContext.Session.SetString("Microsoft.Identity.Hybrid.Authentication", authResult.SpaAuthCode);
 
-            context.TokenEndpointResponse.AccessToken = authResult.AccessToken;
-            context.TokenEndpointResponse.IdToken = authResult.IdToken;
+            context.HandleCodeRedemption(authResult.AccessToken, authResult.IdToken);
         };
 
         builder.Configuration.Bind("AzureAd", options);
