@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Hybrid Sample Application</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -84,15 +85,12 @@
 
             const options = {
                 method: "GET",
-                headers: headers
+                headers
             };
 
             console.log('request made to Graph API at: ' + new Date().toString());
 
             return fetch(`${graphEndpoint}${path}`, options)
-                .then(async response => {
-                    return await response.json()
-                })
                 .catch(error => console.log(error))
         }
 
@@ -154,8 +152,17 @@
     @await RenderSectionAsync("Scripts", required: false)
     <script>
         (function () {
-            const scopes = ["user.read"];
+            const scopes = 
             @{
+                var apiScopes = Configuration["DownstreamApi:Scopes"].Split(' ');
+                @Html.Raw("[");
+
+                foreach(var scope in apiScopes) {
+                    @Html.Raw($"'{scope}',")
+                }
+
+                @Html.Raw("];");
+
                 var spaCode = Context.Session.GetString("Microsoft.Identity.Hybrid.Authentication");
                 if (!string.IsNullOrEmpty(spaCode))
                 {
