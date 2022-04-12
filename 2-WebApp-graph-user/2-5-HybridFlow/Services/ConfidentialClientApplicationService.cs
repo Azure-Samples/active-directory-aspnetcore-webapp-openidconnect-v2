@@ -40,6 +40,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
 
                         _confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(_azureAdOptions.ClientId)
                             .WithCertificate(_azureAdOptions.Certificate.Certificate)
+                            .WithRedirectUri(_azureAdOptions.RedirectUri)
                             .WithAuthority(new Uri(_azureAdOptions.Authority))
                             .Build();
                     }
