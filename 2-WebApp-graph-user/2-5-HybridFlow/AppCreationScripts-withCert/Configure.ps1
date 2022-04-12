@@ -148,13 +148,7 @@ Function ConfigureApplications {
         RedirectUris = "https://localhost:7089/"
     } `
         -SignInAudience AzureADMyOrg `
-    #end of command
-
-    #add password to the application
-    $pwdCredential = Add-MgApplicationPassword -ApplicationId $hybridAadApplication.Id -PasswordCredential $key
-    $clientAppKey = $pwdCredential.SecretText
-    $tenantName = (Get-MgApplication -ApplicationId $hybridAadApplication.Id).PublisherDomain
-    Update-MgApplication -ApplicationId $hybridAadApplication.Id -IdentifierUris @("https://$tenantName/HybridFlow-aspnetcore")
+        #end of command
     
     # create the service principal of the newly created application 
     $currentAppId = $hybridAadApplication.AppId
@@ -168,6 +162,25 @@ Function ConfigureApplications {
     }
 
     Write-Host "Done creating the service application (HybridFlow-aspnetcore)"
+
+    # Generate a certificate
+    Write-Host "Creating the client application (HybridFlow-aspnetcore)"
+    $certificate = New-SelfSignedCertificate -Subject CN=HybridFlowCert `
+        -CertStoreLocation "Cert:\CurrentUser\My" `
+        -KeyExportPolicy Exportable `
+        -KeySpec Signature
+
+    $thumbprint = $certificate.Thumbprint
+    $certificatePassword = Read-Host -Prompt "Enter password for your certificate: " -AsSecureString
+    Write-Host "Exporting certificate as a PFX file"
+    Export-PfxCertificate -Cert "Cert:\Currentuser\My\$thumbprint" -FilePath "$pwd\HybridFlowCert.pfx" -ChainOption EndEntityCertOnly -NoProperties -Password $certificatePassword
+    Write-Host "PFX written to:"
+    Write-Host "$pwd\HybridFlowCert.pfx"
+
+    Write-Host "Exporting certificate as a CER file"
+    Export-Certificate -Cert $certificate -FilePath "$pwd\HybridFlowCert.cer"
+    Write-Host "CER written to:"
+    Write-Host "$pwd\HybridFlowCert.cer"
 
     # URL of the AAD application in the Azure portal
     # Future? $clientPortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$clientAadApplication.AppId+"/objectId/"+$clientAadApplication.ObjectId+"/isMSAApp/"
@@ -185,15 +198,18 @@ Function ConfigureApplications {
     Update-MgApplication -ApplicationId $hybridAadApplication.Id -RequiredResourceAccess $requiredResourcesAccess
     Write-Host "Granted permissions."
 
+    $tenantName = (Get-MgApplication -ApplicationId $hybridAadApplication.Id).PublisherDomain
+
     # Update config file for 'client'
     $configFile = $pwd.Path + "\..\appsettings.json"
     Write-Host "Updating the sample code ($configFile)"
-    $azureAdSettings = [ordered]@{ "Instance" = "https://login.microsoftonline.com/"; "ClientId" = $hybridAadApplication.AppId; "ClientSecret" = $pwdCredential.SecretText; "Domain" = $tenantName; "TenantId" = $tenantId; "CallbackPath" = "/signin/"; };
+    $certificateDescriptor = [ordered]@{"SourceType" = "StoreWithDistinguishedName"; "CertificateStorePath" = "CurrentUser/My"; "CertificateDistinguishedName" = "CN=HybridFlowCert" };
+    $azureAdSettings = [ordered]@{ "Instance" = "https://login.microsoftonline.com/"; "ClientId" = $hybridAadApplication.AppId; "Domain" = $tenantName; "TenantId" = $tenantId; "CallbackPath" = "/signin/"; "Certificate" = $certificateDescriptor; };
     $downstreamApiSettings = [ordered]@{ "BaseUrl" = "https://graph.microsoft.com/v1.0"; "Scopes" = "user.read contacts.read"; };
     $loggingSettings = @{ "LogLevel" = @{ "Default" = "Warning" } };
-    $dictionary = [ordered]@{ "AzureAd" = $azureAdSettings; "Logging" = $loggingSettings; "AllowedHosts" = "*"; "DownstreamApi" = $downstreamApiSettings; "SpaRedirectUri" = "https://localhost:7089/"; };
+    $dictionary = [ordered]@{ "AzureAd" = $azureAdSettings; "Logging" = $loggingSettings; "AllowedHosts" = "*"; "DownstreamApi" = $downstreamApiSettings; "SpaRedirectUri" = "https://localhost:7089/";  };
     $dictionary | ConvertTo-Json | Out-File $configFile
-
+    Write-Host ""
     Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
      
     Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  
