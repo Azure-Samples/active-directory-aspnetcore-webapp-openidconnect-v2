@@ -1,5 +1,3 @@
-@page
-@model ProfileModel
 @{
     ViewData["Title"] = "User Profile";
 }
@@ -28,7 +26,6 @@
 </div>
 
 <script>
-
     function generateUserDetailsHtmlElement({
         jobTitle,
         mail,
@@ -145,14 +142,15 @@
             }));
 
         // This requests the user photos for each user contact. They get associated with each object.
-        const userContactDataWithPhotos = await Promise.all(userContactData.map(async cd => {
-            const rawPhotoRequestResponse = await callMSGraph(`/me/contacts/${cd.id}/photo/$value?szie=48x48`, tokenResponse.accessToken);
+        const userContactDataWithPhotos = await Promise.all(userContactData.reverse().map(async cd => {
+            const rawPhotoRequestResponse = await callMSGraph(`/me/contacts/${cd.id}/photo/$value`, tokenResponse.accessToken);
             const urlEncodedImage = URL.createObjectURL(await rawPhotoRequestResponse.blob());
             cd.image = urlEncodedImage;
             return cd;
         }));
 
-        insertContactDataIntoPage(userContactData);
+
+        insertContactDataIntoPage(userContactDataWithPhotos);
     }
 
     async function updateUI() {

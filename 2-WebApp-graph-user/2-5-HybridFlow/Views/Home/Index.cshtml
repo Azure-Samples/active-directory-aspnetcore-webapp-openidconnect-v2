@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <div class="jumbotron">
+        <h1>SPA Authorization Code</h1>
+        <p class="lead">This flow enables confidential client applications to request an additional "spa auth code" from
+            the eSTS /token endpoint, and this authorization code can be redeemed silently by the front end running in
+            the browser. This feature is intended for applications that perform server-side (web apps) and client-side
+            (SPA) authentication, using a confidential client SDK such as MSAL.net or MSAL Node server-side, and MSAL.js
+            client side.</p>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <h2>Getting started with MSAL?</h2>
+            <p>
+                MSAL.NET (Microsoft.Identity.Client) is an authentication library which enables you to acquire tokens
+                from Azure AD, to access protected Web APIs (Microsoft APIs or applications registered with Azure Active
+                Directory). MSAL.NET is available on several .NET platforms (Desktop, Universal Windows Platform,
+                Xamarin Android, Xamarin iOS, Windows 8.1, and .NET Core).
+
+
+
+            </p>
+            <p><a class="btn btn-default"
+                    href="https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki">Learn more
+                    &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+            <h2>Why use MSAL.Net</h2>
+            <p>MSAL.NET (Microsoft Authentication Library for .NET) enables developers of .NET applications to acquire
+                tokens in order to call secured Web APIs. These Web APIs can be the Microsoft Graph, other Microsoft
+                APIS, 3rd party Web APIs, or your own Web API.</p>
+            <p><a class="btn btn-default"
+                    href="https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/MSAL.NET-supports-multiple-application-architectures-and-multiple-platforms">Learn
+                    more &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+            <h2>Scenarios</h2>
+            <p>The .NET authentication libraries support scenarios involving Protecting a Web API image and Acquiring
+                tokens for a protected Web API image. MSAL.NET is only about the later.</p>
+            <p><a class="btn btn-default"
+                    href="https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/scenarios">Learn
+                    more &raquo;</a></p>
+        </div>
+        <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    </div>
+</div>

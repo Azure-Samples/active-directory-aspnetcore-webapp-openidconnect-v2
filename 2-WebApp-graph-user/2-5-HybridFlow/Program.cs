@@ -6,6 +6,7 @@ using WebApp_OpenIDConnect_DotNet.Services;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using WebApp_OpenIDConnect_DotNet.Options;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Web.UI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +48,16 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
             context.HandleCodeRedemption(authResult.AccessToken, authResult.IdToken);
         };
 
+        options.Events.OnRedirectToIdentityProviderForSignOut = async context => {
+            var oid = context.HttpContext.User.GetObjectId();
+            var tid = context.HttpContext.User.GetTenantId();
+
+            if (!string.IsNullOrEmpty(oid) && !string.IsNullOrEmpty(tid))
+            {
+                await confidentialClientService.RemoveAccount($"{oid}.{tid}");
+            }
+        };
+
         builder.Configuration.Bind("AzureAd", options);
     });
 
@@ -57,10 +68,9 @@ builder.Services.AddControllersWithViews(options =>
         .Build();
 
     options.Filters.Add(new AuthorizeFilter(policy));
-});
+}).AddMicrosoftIdentityUI();
 
 builder.Services.AddRazorPages();
-builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -75,14 +85,19 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles("");
+app.UseStaticFiles();
 
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapRazorPages();
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+    endpoints.MapRazorPages();
+});
 
 app.Run();
