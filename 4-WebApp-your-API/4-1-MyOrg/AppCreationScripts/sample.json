@@ -28,9 +28,13 @@
   },
 
   "ReadmeSetup": {
-    "FreeText": "\n For command line run the next commands:\n",
+    "FreeText": "",
+    "IncludeFilePath": "",
     "UseNewSetup": "1", /* when set to 0, only legacy setup will be used */
-    "CertificateOption": "1" /* 1 when a certificate can be used instead of secret*/
+    "CertificateOption": "1", /* 1 when a certificate can be used instead of secret*/
+    "CreateProjectIncludeFilePath": "",
+    "AppRegistrationIncludeFilePath": "",
+    "RunSampleIncludeFilePath": ""
   },
 
   /* It either can be a text or link to another readme file */

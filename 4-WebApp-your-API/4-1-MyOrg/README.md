@@ -210,9 +210,7 @@ Follow the steps below for manually register and configure your apps
 Follow [README-use-keyvault-certificate.md](README-use-keyvault-certificate.md) to know how to use this option.
 
 ### Step 4: Running the sample
-
- For command line run the next commands:
-
+ To run the samlple, run the next commands:
 ```console
     cd 4-WebApp-Your-API\4-1-MyOrg\TodoListService
     dotnet run
