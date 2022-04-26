@@ -265,7 +265,7 @@ Function ConfigureApplications
                                                         } `
                                                        -SignInAudience AzureADMyOrg `
                                                       #end of command
-    #add password to the application
+    #add a secret to the application
     $pwdCredential = Add-MgApplicationPassword -ApplicationId $clientAadApplication.Id -PasswordCredential $key
     $clientAppKey = $pwdCredential.SecretText
     $tenantName = (Get-MgApplication -ApplicationId $clientAadApplication.Id).PublisherDomain
