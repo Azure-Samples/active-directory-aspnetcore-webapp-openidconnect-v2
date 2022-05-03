@@ -70,7 +70,15 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
             context.HandleCodeRedemption(authResult.AccessToken, authResult.IdToken);
         };
 
-        options.Events.OnRedirectToIdentityProviderForSignOut = async context => {
+        // Even though the ASP.NET Core middleware handles the call to the Microsoft Identity Platform logout path
+        // automatically this application creates a ConfidentialClientApplication in order to handle the auth token
+        // flow which also has it's own cache. In order to ensure that cached tokens for users are removed this handler
+        // is activated after a user is redirected to the application from the Microsoft Identity logout endpoint.
+        //
+        // You can find more information here:
+        // https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-6-SignOut
+        options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
+        {
             var oid = context.HttpContext.User.GetObjectId();
             var tid = context.HttpContext.User.GetTenantId();
 
