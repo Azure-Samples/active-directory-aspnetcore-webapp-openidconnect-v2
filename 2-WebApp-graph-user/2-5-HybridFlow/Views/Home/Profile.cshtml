@@ -8,9 +8,7 @@
             <div id="card-div" class="col-md-4">
                 <h3>User Details</h3>
                 <div class="card text-center">
-                    <div class="card-body">
-                        <div id="profile-div"></div>
-                    </div>
+                    <div id="profile-div"></div>
                 </div>
             </div>
             <br>
@@ -33,7 +31,11 @@
         officeLocation,
     }) {
         const profileDiv = document.getElementById("profile-div");
+        profileDiv.classList.add('card-body');
         profileDiv.innerHTML = '';
+
+        const innerProfileDiv = document.createElement('div');
+        innerProfileDiv.innerHTML = '';
 
         const title = document.createElement('p');
         title.innerHTML = "<strong>Title: </strong>" + (jobTitle || 'Not set');
@@ -44,10 +46,12 @@
         const address = document.createElement('p');
         address.innerHTML = "<strong>Location: </strong>" + (officeLocation || 'Not set');
 
-        profileDiv.appendChild(title);
-        profileDiv.appendChild(email);
-        profileDiv.appendChild(phone);
-        profileDiv.appendChild(address);
+        profileDiv.appendChild(innerProfileDiv);
+
+        innerProfileDiv.appendChild(title);
+        innerProfileDiv.appendChild(email);
+        innerProfileDiv.appendChild(phone);
+        innerProfileDiv.appendChild(address);
     }
 
     function generateContactHtmlCardElement({
@@ -111,6 +115,14 @@
         const userContactsDiv = document.getElementById("user-contacts");
         userContactsDiv.innerHTML = '';
 
+        if (!contactData.length) {
+            const noContactsFoundElement = document.createElement('p');
+            noContactsFoundElement.innerHTML = 'There are no contacts associated with this account.';
+            
+            userContactsDiv.appendChild(noContactsFoundElement);
+            return;
+        }
+
         const contactCardElements = contactData.map(cd => generateContactHtmlCardElement(cd));
 
         contactCardElements.map(e => userContactsDiv.appendChild(e));
@@ -144,6 +156,25 @@
         // This requests the user photos for each user contact. They get associated with each object.
         const userContactDataWithPhotos = await Promise.all(userContactData.reverse().map(async cd => {
             const rawPhotoRequestResponse = await callMSGraph(`/me/contacts/${cd.id}/photo/$value`, tokenResponse.accessToken);
+
+            if (rawPhotoRequestResponse.status === 404) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 180;
+                canvas.height = 180;
+
+                var ctx = canvas.getContext("2d");
+                ctx.font = "20px Sans-Serif";
+                ctx.fillStyle = "blacnk";
+                ctx.fillRect(0, 0, 180, 180);
+                ctx.fillStyle = "white";
+                ctx.textAlign = "center";
+                ctx.fillText("Image not found", canvas.width/2, canvas.height/2);
+
+                cd.image = canvas.toDataURL();
+
+                return cd;
+            }
+
             const urlEncodedImage = URL.createObjectURL(await rawPhotoRequestResponse.blob());
             cd.image = urlEncodedImage;
             return cd;
