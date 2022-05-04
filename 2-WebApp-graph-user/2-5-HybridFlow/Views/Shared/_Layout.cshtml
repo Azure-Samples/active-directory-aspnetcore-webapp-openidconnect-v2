@@ -155,28 +155,6 @@
                 {
                     @Html.Raw($"const code = '';");
                 }
-
-                if (User.Identity is not null)
-                {
-                    @Html.Raw($"const username = '{User.Identity.Name}';");
-                }
-                else
-                {
-                    @Html.Raw($"const username = '';");
-                }
-            }
-
-            @{ /* Remove any client sessions if user is not logged in server-side or a different user is logged in. */ }
-            if (!!msalInstance.getAllAccounts().length) {
-                if(!username ||
-                   !msalInstance.getAllAccounts()
-                        .find(a => a.username === username)) {
-
-                    msalInstance.logoutRedirect({
-                        onRedirectNavigate: _ => false
-                    });
-
-                }
             }
 
             if (!!code) {
@@ -207,6 +185,17 @@
                                 console.error('MSAL: acquireTokenByCode failed', error);
                                 if (error instanceof msal.InteractionRequiredAuthError) {
                                     console.log('MSAL: acquireTokenByCode failed, redirecting');
+
+                                    @{
+                                        if (User.Identity is not null)
+                                        {
+                                            @Html.Raw($"const username = '{User.Identity.Name}';");
+                                        }
+                                        else
+                                        {
+                                            @Html.Raw($"const username = '';");
+                                        }
+                                    }
 
                                     const account = msalInstance.getAllAccounts()
                                         .find(account => account.username === username);

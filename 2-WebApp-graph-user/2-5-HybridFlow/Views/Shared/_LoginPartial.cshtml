@@ -7,7 +7,7 @@
             <span class="nav-link text-dark">Hello @User.Identity.Name!</span>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign out</a>
+            <a id="signout-link" class="nav-link text-dark" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign out</a>
         </li>
 }
 else
@@ -17,3 +17,23 @@ else
         </li>
 }
 </ul>
+
+<script>
+
+    { /* Intercept the SignOut link to clear the MSAL.js cache before triggering the server-side logout. */ }
+    var signoutLink = document.getElementById('signout-link');
+
+
+    if (!!signoutLink) {
+        signoutLink.addEventListener('click', e => {
+            e.preventDefault();
+
+            msalInstance.logoutRedirect({
+                onRedirectNavigate: _ => false
+            });
+
+            window.location = e.target.href;
+        });
+    }
+
+</script>
