@@ -15,19 +15,6 @@ param(
  There are four ways to run this script. For more information, read the AppCreationScripts.md file in the same folder as this script.
 #>
 
-# Create an application key
-# See https://www.sabin.io/blog/adding-an-azure-active-directory-application-and-key-using-powershell/
-Function CreateAppKey([DateTime] $fromDate, [double] $durationInMonths) {
-    $key = New-Object Microsoft.Graph.PowerShell.Models.MicrosoftGraphPasswordCredential
-
-    $key.StartDateTime = $fromDate
-    $key.EndDateTime = $fromDate.AddMonths($durationInMonths)
-    $key.KeyId = (New-Guid).ToString()
-    $key.DisplayName = "app secret"
-
-    return $key
-}
-
 # Adds the requiredAccesses (expressed as a pipe separated string) to the requiredAccess structure
 # The exposed permissions are in the $exposedPermissions collection, and the type of permission (Scope | Role) is 
 # described in $permissionType
@@ -136,7 +123,7 @@ Function ConfigureApplications {
     $hybridAadApplication = New-MgApplication -DisplayName "HybridFlow-aspnetcore" `
         -Web `
     @{ `
-            RedirectUris      = "https://localhost:7089/signin/"
+            RedirectUris      = "https://localhost:7089/signin-oidc"
         ImplicitGrantSettings =
         @{
             EnableIdTokenIssuance     = $true
@@ -152,7 +139,6 @@ Function ConfigureApplications {
     
     # create the service principal of the newly created application 
     $currentAppId = $hybridAadApplication.AppId
-    $serviceServicePrincipal = New-MgServicePrincipal -AppId $currentAppId -Tags { WindowsAzureActiveDirectoryIntegratedApp }
 
     # add the user running the script as an app owner if needed
     $owner = Get-MgApplicationOwner -ApplicationId $hybridAadApplication.Id
@@ -204,7 +190,7 @@ Function ConfigureApplications {
     $configFile = $pwd.Path + "\..\appsettings.json"
     Write-Host "Updating the sample code ($configFile)"
     $certificateDescriptor = [ordered]@{"SourceType" = "StoreWithDistinguishedName"; "CertificateStorePath" = "CurrentUser/My"; "CertificateDistinguishedName" = "CN=HybridFlowCert" };
-    $azureAdSettings = [ordered]@{ "Instance" = "https://login.microsoftonline.com/"; "ClientId" = $hybridAadApplication.AppId; "Domain" = $tenantName; "TenantId" = $tenantId; "CallbackPath" = "/signin/"; "Certificate" = $certificateDescriptor; };
+    $azureAdSettings = [ordered]@{ "Instance" = "https://login.microsoftonline.com/"; "ClientId" = $hybridAadApplication.AppId; "Domain" = $tenantName; "TenantId" = $tenantId; "CallbackPath" = "/signin-oidc"; "Certificate" = $certificateDescriptor; };
     $downstreamApiSettings = [ordered]@{ "BaseUrl" = "https://graph.microsoft.com/v1.0"; "Scopes" = "user.read contacts.read"; };
     $loggingSettings = @{ "LogLevel" = @{ "Default" = "Warning" } };
     $dictionary = [ordered]@{ "AzureAd" = $azureAdSettings; "Logging" = $loggingSettings; "AllowedHosts" = "*"; "DownstreamApi" = $downstreamApiSettings; "SpaRedirectUri" = "https://localhost:7089/";  };

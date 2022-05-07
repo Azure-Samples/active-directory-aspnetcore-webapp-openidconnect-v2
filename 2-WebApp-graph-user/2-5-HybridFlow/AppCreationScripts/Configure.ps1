@@ -136,7 +136,7 @@ Function ConfigureApplications {
     $hybridAadApplication = New-MgApplication -DisplayName "HybridFlow-aspnetcore" `
         -Web `
     @{ `
-            RedirectUris      = "https://localhost:7089/signin/"
+            RedirectUris      = "https://localhost:7089/signin-oidc"
         ImplicitGrantSettings =
         @{
             EnableIdTokenIssuance     = $true
@@ -188,7 +188,7 @@ Function ConfigureApplications {
     # Update config file for 'client'
     $configFile = $pwd.Path + "\..\appsettings.json"
     Write-Host "Updating the sample code ($configFile)"
-    $azureAdSettings = [ordered]@{ "Instance" = "https://login.microsoftonline.com/"; "ClientId" = $hybridAadApplication.AppId; "ClientSecret" = $pwdCredential.SecretText; "Domain" = $tenantName; "TenantId" = $tenantId; "CallbackPath" = "/signin/"; };
+    $azureAdSettings = [ordered]@{ "Instance" = "https://login.microsoftonline.com/"; "ClientId" = $hybridAadApplication.AppId; "ClientSecret" = $pwdCredential.SecretText; "Domain" = $tenantName; "TenantId" = $tenantId; "CallbackPath" = "/signin-oidc"; };
     $downstreamApiSettings = [ordered]@{ "BaseUrl" = "https://graph.microsoft.com/v1.0"; "Scopes" = "user.read contacts.read"; };
     $loggingSettings = @{ "LogLevel" = @{ "Default" = "Warning" } };
     $dictionary = [ordered]@{ "AzureAd" = $azureAdSettings; "Logging" = $loggingSettings; "AllowedHosts" = "*"; "DownstreamApi" = $downstreamApiSettings; "SpaRedirectUri" = "https://localhost:7089/"; };
