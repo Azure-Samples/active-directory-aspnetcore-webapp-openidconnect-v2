@@ -13,11 +13,12 @@ var builder = WebApplication.CreateBuilder(args);
 var azureAdOptions = Options
     .Create(builder.Configuration.GetSection("AzureAd").Get<AzureAdOptions>());
 
+var downStreamApiOptions = Options
+    .Create(builder.Configuration.GetSection("DownstreamApi").Get<DownstreamApiOptions>());
+
 var confidentialClientService = new ConfidentialClientApplicationService(azureAdOptions);
 
 builder.Services.AddSingleton<IConfidentialClientApplicationService>(confidentialClientService);
-
-builder.Services.AddSession();
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(options =>
@@ -28,7 +29,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         options.ResponseType = OpenIdConnectResponseType.Code;
 
         // Scopes need to be added in to get proper claims for user.
-        var apiScopes = builder.Configuration.GetSection("DownstreamApi:Scopes").Value;
+        var apiScopes = downStreamApiOptions.Value.Scopes;
 
         foreach (var scope in apiScopes.Split(' '))
         {
@@ -91,6 +92,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         builder.Configuration.Bind("AzureAd", options);
     });
 
+builder.Services.AddSession();
 builder.Services.AddControllersWithViews(options =>
 {
     var policy = new AuthorizationPolicyBuilder()
