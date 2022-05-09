@@ -4,7 +4,7 @@ name: Creating a Hybrid Graph API Application
 services: active-directory
 platforms: dotnet
 urlFragment: active-directory-aspnetcore-webapp-openidconnect-v2
-description: This sample demonstrates an ASP.NET Core hybrid calling Microsoft Graph API.
+description: Sign-in users interactively server-side (Confidential client) and silently acquire token for MS Graph for a Single-page app (SPA).
 languages:
  - csharp
  - javascript
@@ -13,7 +13,7 @@ products:
  - azure-active-directory
 ---
 
-# How to secure an ASP.NET Core Web API with the Microsoft identity platform
+# Sign-in users interactively server-side (Confidential client) and silently acquire token for MS Graph for a Single-page app (SPA)
 
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
@@ -35,9 +35,11 @@ Table Of Contents
 
  This is a ASP.NET Core single page application/web application hybrid sample that calls the Microsoft Graph API using Razor and MSAL.js.
 
- 1. The client ASP.NET Core Web App uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign-in and obtain a JWT [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from **Azure AD** as well as an additional [Spa Authorization Code](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/SPA-Authorization-Code) to be passed to a client-side single page application.
- 1. The [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) is used as a bearer token to call the **Microsoft Graph API**.
- 1. The [Spa Authorization Code](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/SPA-Authorization-Code) is passed to the razor single page application to be exchanged for an access token client side.
+This sample shows how to silently (without re-authenticating the user) acquire an Access Token for MS Graph in a SPA app for an already authenticated user. The sample uses a `hybrid` web application that comprises of:
+
+1. An Asp.net core web app that interactively authenticates the user on the server (Confidential client) using [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) and obtains both an [Access Tokens](https://aka.ms/access-tokens) and as well as an additional [Spa Authorization Code](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/SPA-Authorization-Code).
+1. The [Spa Authorization Code](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/SPA-Authorization-Code) is passed to the razor Single Page Application (SPA) to be redeemed for an access token for MS Graph at client side without the need to re-authenticate the user.
+1. The [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) is used as a bearer token to call the **Microsoft Graph API**.
 
 ## Prerequisites
 
@@ -112,6 +114,7 @@ Follow the steps below for manually register and configure your apps
 
 <details>
    <summary>Expand this section to manually register your app(s):</summary>
+
   1. Sign in to the [Azure portal](https://portal.azure.com).
   1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant.
 
@@ -171,21 +174,21 @@ Follow the steps below for manually register and configure your apps
   
   Alternatively you can use an existing certificate if you have one (just be sure to record its name for the next steps)
   
-  ### Add the certificate for the application in Azure AD
+#### Add the certificate for the application in Azure AD
   
   In the application registration blade for your application, in the **Certificates & secrets** page, in the **Certificates** section:
   
   1. Click on **Upload certificate** and, in click the browse button on the right to select the certificate you just exported (or your existing certificate)
   1. Click **Add**
   
-  ### Configure the Visual Studio project
+#### Configure the Visual Studio project
   
   To change the visual studio project to enable certificates you need to:
   
   1. Open the `appsettings.json` file
   2. Find the app key `Certificate` in the `AzureAd` section and insert the `CertificateDescription` properties of your certificate. You can see some examples below and read more about how to configure certificate descriptions [here](https://github.com/AzureAD/microsoft-identity-web/wiki/Certificates#specifying-certificates).
   
-  ### Get certificate from certificate store
+#### Get certificate from certificate store
   
   You can retrieve a certificate from your local store by adding the configuration below to the `Certificate` property in the `appsettings.json` file replacing **<CERTIFICATE_STORE_PATH>** with the store path to your certificate and **<CERTIFICATE_DISTINGUISHED_NAME>** with the distinguished name of your certificate. If you used the configuration scripts to generate the application this will be done for you using a sample self-signed certificate. You can read more about certificate stores [here](https://docs.microsoft.com/windows-hardware/drivers/install/certificate-stores).
   
@@ -203,7 +206,7 @@ Follow the steps below for manually register and configure your apps
   }
   ```
   
-  #### Get certificate from file path
+#### Get certificate from file path
   
   It's possible to get a certificate file, such as a **pfx** file, directly from a file path on your machine and load it into the application by using the configuration as shown below. Replace the values in the `Certificate` key of the `appsettings.json` with the snippet shown below also replacing `<PATH_TO_YOUR_CERTIFICATE_FILE>` with the path to your certificate file and `<CERTIFICATE_PASSWORD>` with that certificates password. If you created the application with the `Configure.ps1` script found in the `AppCreationScripts-withCert` a **pfx** file called **HybridFlowCert.pfx** will be generated with the certificate that is associated with  your app and can be used as a credential. If you like, you can use configure the `Certificate` property to reference this file and use it as a credential.
   
@@ -221,7 +224,7 @@ Follow the steps below for manually register and configure your apps
   }
   ```
   
-  #### Get certificate from Key Vault
+#### Get certificate from Key Vault
   
   It's also possible to get certificates from an [Azure Key Vault](https://docs.microsoft.com/azure/key-vault/general/overview). Replace the values in the `Certificate` key of the `appsettings.json` file with the snippet shown below also replacing `<YOUR_KEY_VAULT_URL>` with the URL of the Key Vault holding your certificate and `<YOUR_KEY_VAULT_CERTIFICATE_NAME>` with the name of that certificate as shown in your Key Vault. If you created the application with the `Configure.ps1` script found in the `AppCreationScripts-withCert` a **pfx** file called **HybridFlowCert.pfx** will be generated that is associated with the certificate that can be used as a credential for your app. If you like, you can load that certificate into a Key Vault and then access that Key Vault to use as a credential for your application.
 
@@ -256,6 +259,7 @@ Follow the steps below for manually register and configure your apps
 
 <details>
  <summary>Expand to see how to use the sample</summary>
+
  Open your web browser and navigate to `https://localhost:7089`. You should see the application home page with a link for **Home**, **Privacy** and **Sign in**. Click the **Sign in** link and you'll be redirected to the Microsoft login page. Sign in using an user account in your tenant. After you sign in the client side `MSAL.js` client will receive an **auth** code from the server that will be exchanged for an authorization token and cached immediately in the browser.
 
 1. Click on `Profile` tab to see the signed in user's information and contacts. This information is retrieved using the `MSAL.js` library in the browser.
@@ -272,7 +276,7 @@ Did the sample not work for you as expected? Did you encounter issues trying thi
 
 ## Server setup
 
-The entire application is built using the [Microsoft Identity Web](https://docs.microsoft.com/azure/active-directory/develop/microsoft-identity-web) library and [ASP.NET Core](https://docs.microsoft.com/aspnet/core/introduction-to-aspnet-core) using [Razor](https://docs.microsoft.com/aspnet/web-pages/overview/getting-started/introducing-razor-syntax-c) pages.
+The entire application is built on [ASP.NET Core](https://docs.microsoft.com/aspnet/core/introduction-to-aspnet-core) using [Razor](https://docs.microsoft.com/aspnet/web-pages/overview/getting-started/introducing-razor-syntax-c) pages. The web app is then secured using the [Microsoft Identity Web](https://docs.microsoft.com/azure/active-directory/develop/microsoft-identity-web) library.
 
 In other samples you may have noticed that samples leveraged a class called `AuthenticationConfig` to bind the settings in the `appsettings.json` file into an `IConfiguration` object to make the settings available throughout the application.
 
