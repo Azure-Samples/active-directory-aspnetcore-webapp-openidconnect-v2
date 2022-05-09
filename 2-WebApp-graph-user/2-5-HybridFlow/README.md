@@ -127,7 +127,7 @@ Follow the steps below for manually register and configure your apps
   1. In the app's registration screen, select **Authentication** in the menu.
      * If you don't have a platform added, select **Add a platform** and select the **Web** option.
      * In the **Redirect URIs** section, enter the following redirect URIs.
-        * `https://localhost:44321/signin/`
+        * `https://localhost:44321/signin-oidc/`
      * Click on the **Add a platform** button in the **Platform configurations** section of the page
        * Select the **Single-page application** button and enter `https://localhost:7089/` as the **Redirect URI** and click the **Configure** button
   1. Select **Save** to save your changes.
@@ -141,9 +141,8 @@ Follow the steps below for manually register and configure your apps
      * Select the **Add a permission** button and then,
      * Ensure that the **Microsoft APIs** tab is selected.
      * In the *Commonly used Microsoft APIs* section, select **Microsoft Graph**
-     * In the **Delegated permissions** section, select the **User.Read** in the list followed by **Mail.Read**. Use the search box if necessary.
+     * In the **Delegated permissions** section, select the **User.Read** in the list followed by **Contacts.Read**. Use the search box if necessary.
      * Select the **Add permissions** button at the bottom.
-     * Click the **Grant admin consent** button in the page to allow your application access to these scopes.
 
 ##### Configure the application to use your registration
 

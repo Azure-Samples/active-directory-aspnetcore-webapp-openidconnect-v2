@@ -31,6 +31,11 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         // Scopes need to be added in to get proper claims for user.
         var apiScopes = downStreamApiOptions.Value.Scopes;
 
+        if (apiScopes is null)
+        {
+            throw new Exception("No scopes set. Please update the 'Scopes' section of 'DownStreamApi' section of appsettings.json.");
+        }
+
         foreach (var scope in apiScopes.Split(' '))
         {
             options.Scope.Add(scope);

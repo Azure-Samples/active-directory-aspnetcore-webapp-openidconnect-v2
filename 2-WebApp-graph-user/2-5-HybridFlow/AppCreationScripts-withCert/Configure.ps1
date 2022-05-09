@@ -124,11 +124,6 @@ Function ConfigureApplications {
         -Web `
     @{ `
             RedirectUris      = "https://localhost:7089/signin-oidc"
-        ImplicitGrantSettings =
-        @{
-            EnableIdTokenIssuance     = $true
-            EnableAccessTokenIssuance = $true
-        }
     } `
         -Spa `
     @{
