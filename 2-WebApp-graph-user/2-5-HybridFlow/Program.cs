@@ -23,7 +23,7 @@ builder.Services.AddSingleton<IConfidentialClientApplicationService>(confidentia
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(options =>
     {
-        // Needed to make PKCE possible.
+        // Enable PKCE.
         //
         // https://datatracker.ietf.org/doc/html/rfc7636 
         options.ResponseType = OpenIdConnectResponseType.Code;
@@ -54,8 +54,8 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
             //
             // See the 'code_verifier' query parameter at these links for further reading.
             //
-            // https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-access-token-with-a-client_secret/
-            // https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-access-token-with-a-certificate-credential
+            // https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-access-token-with-a-client_secret/
+            // https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-access-token-with-a-certificate-credential
             context.TokenEndpointRequest.Parameters.TryGetValue("code_verifier", out var codeVerifier);
 
             if (string.IsNullOrEmpty(codeVerifier))
@@ -68,7 +68,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
             // The code used in the front-end to exchange for an authentication token is called the 'SpaAuthCode' which
             // is passed along in the 'Microsoft.Identity.Hybrid.Authentication' value.
             //
-            // https://docs.microsoft.com/en-us/dotnet/api/microsoft.identity.client.authenticationresult?view=azure-dotnet
+            // https://docs.microsoft.com/dotnet/api/microsoft.identity.client.authenticationresult?view=azure-dotnet
             var authResult = await confidentialClientService.GetAuthenticationResultAsync(options.Scope, context.ProtocolMessage.Code, codeVerifier);
 
             context.Request.HttpContext.Session.SetString("Microsoft.Identity.Hybrid.Authentication", authResult.SpaAuthCode);

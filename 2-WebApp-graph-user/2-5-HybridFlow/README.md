@@ -35,6 +35,8 @@ Table Of Contents
 
  This is a ASP.NET Core single page application/web application hybrid sample that calls the Microsoft Graph API using Razor and MSAL.js.
 
+ Use the hybrid-SPA code flow to obtain an Access token for your Web API in he backend and use it in the client SPA [without re-authenticating the user]
+
  1. The client ASP.NET Core Web App uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign-in and obtain a JWT [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from **Azure AD** as well as an additional [Spa Authorization Code](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/SPA-Authorization-Code) to be passed to a client-side single page application.
  1. The [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) is used as a bearer token to call the **Microsoft Graph API**.
  1. The [Spa Authorization Code](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/SPA-Authorization-Code) is passed to the razor single page application to be exchanged for an access token client side.
@@ -69,9 +71,7 @@ or download and extract the repository .zip file.
 
 There are two projects in this sample. Each needs to be separately registered in your Azure AD tenant. To register these projects:
 
-You can follow the [manual steps](#Manual-steps)
-
-**OR**
+You can follow the [manual steps](#Manual-steps) to set the up the application or use the automated steps below.
 
 ### Run automation scripts
 
@@ -79,30 +79,25 @@ You can follow the [manual steps](#Manual-steps)
   * **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you.
   * modify the projects' configuration files.
 
-  <details>
-   <summary>Expand this section if you want to use this automation:</summary>
+> **WARNING**: If you have never used **Azure AD Powershell** before, we recommend you go through the [App Creation Scripts guide](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
 
-    > **WARNING**: If you have never used **Azure AD Powershell** before, we recommend you go through the [App Creation Scripts guide](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
-  
-    1. On Windows, run PowerShell as **Administrator** and navigate to the root of the cloned directory
-    1. In PowerShell run:
+1. On Windows, run PowerShell as **Administrator** and navigate to the root of the cloned directory
+2. In PowerShell run:
 
-       ```PowerShell
-       Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
-       ```
+   ```PowerShell
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+   ```
 
-    1. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
-    1. For interactive process - in PowerShell run:
+3. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
+4. For interactive process - in PowerShell run:
 
-       ```PowerShell
-       cd .\AppCreationScripts\
-       .\Configure.ps1 -TenantId "[Optional] - your tenant id" -Environment "[Optional] - Azure environment, defaults to 'Global'"
-       ```
+   ```PowerShell
+   cd .\AppCreationScripts\
+   .\Configure.ps1 -TenantId "[Optional] - your tenant id" -Environment "[Optional] - Azure environment, defaults to 'Global'"
+   ```
 
-       > Other ways of running the scripts are described in [App Creation Scripts guide](./AppCreationScripts/AppCreationScripts.md)
-       > The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
-
-  </details>
+   > Other ways of running the scripts are described in [App Creation Scripts guide](./AppCreationScripts/AppCreationScripts.md)
+   > The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
 
 ### Manual Steps
 
@@ -110,8 +105,6 @@ You can follow the [manual steps](#Manual-steps)
 
 Follow the steps below for manually register and configure your apps
 
-<details>
-   <summary>Expand this section to manually register your app(s):</summary>
   1. Sign in to the [Azure portal](https://portal.azure.com).
   1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant.
 
@@ -132,12 +125,12 @@ Follow the steps below for manually register and configure your apps
        * Select the **Single-page application** button and enter `https://localhost:7089/` as the **Redirect URI** and click the **Configure** button
   1. Select **Save** to save your changes.
   1. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
-  2. In the **Client secrets** section, select **New client secret**:
+  1. In the **Client secrets** section, select **New client secret**:
      * Type a key description (for instance `app secret`),
      * Select one of the available key durations (**6 months**, **12 months** or **Custom**) as per your security posture.
      * The generated key value will be displayed when you select the **Add** button. Copy and save the generated value for use in later steps.
      * You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
-  3. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
+  1. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
      * Select the **Add a permission** button and then,
      * Ensure that the **Microsoft APIs** tab is selected.
      * In the *Commonly used Microsoft APIs* section, select **Microsoft Graph**
@@ -156,7 +149,7 @@ Follow the steps below for manually register and configure your apps
   1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `HybridFlow-aspnetcore` app copied from the Azure portal.
   1. Find the key `ClientSecret` and replace the existing value with the **client secret** of `HybridFlow-aspnetcore` app copied from the Azure portal.
 
-#### (Optional) Create a self-signed certificate
+##### (Optional) Create a self-signed certificate
 
   To complete this step, you will use the `New-SelfSignedCertificate` Powershell command. You can find more information about the New-SelfSignedCertificate command [here](https://docs.microsoft.com/powershell/module/pkiclient/new-selfsignedcertificate).
   
@@ -171,21 +164,21 @@ Follow the steps below for manually register and configure your apps
   
   Alternatively you can use an existing certificate if you have one (just be sure to record its name for the next steps)
   
-  ### Add the certificate for the application in Azure AD
+###### Add the certificate for the application in Azure AD
   
   In the application registration blade for your application, in the **Certificates & secrets** page, in the **Certificates** section:
   
   1. Click on **Upload certificate** and, in click the browse button on the right to select the certificate you just exported (or your existing certificate)
   1. Click **Add**
   
-  ### Configure the Visual Studio project
+###### Configure the Visual Studio project
   
   To change the visual studio project to enable certificates you need to:
   
   1. Open the `appsettings.json` file
   2. Find the app key `Certificate` in the `AzureAd` section and insert the `CertificateDescription` properties of your certificate. You can see some examples below and read more about how to configure certificate descriptions [here](https://github.com/AzureAD/microsoft-identity-web/wiki/Certificates#specifying-certificates).
   
-  ### Get certificate from certificate store
+###### Get certificate from certificate store
   
   You can retrieve a certificate from your local store by adding the configuration below to the `Certificate` property in the `appsettings.json` file replacing **<CERTIFICATE_STORE_PATH>** with the store path to your certificate and **<CERTIFICATE_DISTINGUISHED_NAME>** with the distinguished name of your certificate. If you used the configuration scripts to generate the application this will be done for you using a sample self-signed certificate. You can read more about certificate stores [here](https://docs.microsoft.com/windows-hardware/drivers/install/certificate-stores).
   
@@ -203,7 +196,7 @@ Follow the steps below for manually register and configure your apps
   }
   ```
   
-  #### Get certificate from file path
+###### Get certificate from file path
   
   It's possible to get a certificate file, such as a **pfx** file, directly from a file path on your machine and load it into the application by using the configuration as shown below. Replace the values in the `Certificate` key of the `appsettings.json` with the snippet shown below also replacing `<PATH_TO_YOUR_CERTIFICATE_FILE>` with the path to your certificate file and `<CERTIFICATE_PASSWORD>` with that certificates password. If you created the application with the `Configure.ps1` script found in the `AppCreationScripts-withCert` a **pfx** file called **HybridFlowCert.pfx** will be generated with the certificate that is associated with  your app and can be used as a credential. If you like, you can use configure the `Certificate` property to reference this file and use it as a credential.
   
@@ -221,7 +214,7 @@ Follow the steps below for manually register and configure your apps
   }
   ```
   
-  #### Get certificate from Key Vault
+###### Get certificate from Key Vault
   
   It's also possible to get certificates from an [Azure Key Vault](https://docs.microsoft.com/azure/key-vault/general/overview). Replace the values in the `Certificate` key of the `appsettings.json` file with the snippet shown below also replacing `<YOUR_KEY_VAULT_URL>` with the URL of the Key Vault holding your certificate and `<YOUR_KEY_VAULT_CERTIFICATE_NAME>` with the name of that certificate as shown in your Key Vault. If you created the application with the `Configure.ps1` script found in the `AppCreationScripts-withCert` a **pfx** file called **HybridFlowCert.pfx** will be generated that is associated with the certificate that can be used as a credential for your app. If you like, you can load that certificate into a Key Vault and then access that Key Vault to use as a credential for your application.
 
@@ -239,9 +232,7 @@ Follow the steps below for manually register and configure your apps
   }
   ```
   
-  3. If you had set `ClientSecret` previously, change its value to empty string, `""`.
-
-</details>
+  1. If you had set `ClientSecret` previously, change its value to empty string, `""`.
 
 ### Step 4: Running the sample
 
@@ -254,8 +245,6 @@ Follow the steps below for manually register and configure your apps
 
 ## Using the sample
 
-<details>
- <summary>Expand to see how to use the sample</summary>
  Open your web browser and navigate to `https://localhost:7089`. You should see the application home page with a link for **Home**, **Privacy** and **Sign in**. Click the **Sign in** link and you'll be redirected to the Microsoft login page. Sign in using an user account in your tenant. After you sign in the client side `MSAL.js` client will receive an **auth** code from the server that will be exchanged for an authorization token and cached immediately in the browser.
 
 1. Click on `Profile` tab to see the signed in user's information and contacts. This information is retrieved using the `MSAL.js` library in the browser.
@@ -263,20 +252,16 @@ Follow the steps below for manually register and configure your apps
 Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
 
 [Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbRz0h_jLR5HNJlvkZAewyoWxUNEFCQ0FSMFlPQTJURkJZMTRZWVJRNkdRMC4u)
-</details>
 
 ## About the code
 
-<details>
- <summary>Expand to see more information about the code</summary>
-
-## Server setup
+### Code in Asp.net core web app
 
 The entire application is built using the [Microsoft Identity Web](https://docs.microsoft.com/azure/active-directory/develop/microsoft-identity-web) library and [ASP.NET Core](https://docs.microsoft.com/aspnet/core/introduction-to-aspnet-core) using [Razor](https://docs.microsoft.com/aspnet/web-pages/overview/getting-started/introducing-razor-syntax-c) pages.
 
 In other samples you may have noticed that samples leveraged a class called `AuthenticationConfig` to bind the settings in the `appsettings.json` file into an `IConfiguration` object to make the settings available throughout the application.
 
-Using the [options pattern in ASP.Net Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-6.0) the configurations set in `appsettings.json` can instead be bound directly into `Options` objects and injected directly into the application.
+Using the [options pattern in ASP.Net Core](https://docs.microsoft.com/aspnet/core/fundamentals/configuration/options) the configurations set in `appsettings.json` can instead be bound directly into `Options` objects and injected directly into the application.
 
 ```csharp
 var azureAdOptions = Options
@@ -295,18 +280,18 @@ builder.Services.AddSingleton<IConfidentialClientApplicationService>(confidentia
 ```
 
 Further into the `Program.cs` file you will see the [WebApplicationBuilder](https://docs.microsoft.com/dotnet/api/microsoft.aspnetcore.builder.webapplicationbuilder) **builder** which injects all dependencies into your application.
-  * The authentication dependencies are some of the first to be injected into the application using the `AddAuthentication` method. The `OpenIdConnectDefaults.AuthenticationScheme` is provided to configure the application to use the [OpenID Connect protocol](https://docs.microsoft.com/azure/active-directory/develop/v2-protocols-oidc).
-  * The `AddMicrosoftIdentityWebApp` method is called to further configure the application to use the authentication services required by **Microsoft Identity**. Because this is using a hybrid flow the `OnAuthorizationCodeReceived` event is customized as follows:
-    * To enable [PKCE](https://datatracker.ietf.org/doc/html/rfc7636) the `code_verifier` value is extracted from the URL that would have been used by the flow automatically to be used for attaining a server-side **authentication token** and client-side **authorization code**
-    * The server-side **authentication token** and client-side **authorization code** are retrieved simultaneously using the `ConfidentialClientApplicationService` which is discussed in more detail later.
-  *  The `AddMicrosoftIdentityWebApp` also configures a special handler for `OnRedirectToIdentityProviderForSignOut` which is triggered after a re-direct from the OpenID provider after signing out to empty the token cache for the user stored in the `ConfidentialClientApplication` within `ConfidentialClientApplicationService`.
 
+* The authentication dependencies are some of the first to be injected into the application using the `AddAuthentication` method. The `OpenIdConnectDefaults.AuthenticationScheme` is provided to configure the application to use the [OpenID Connect protocol](https://docs.microsoft.com/azure/active-directory/develop/v2-protocols-oidc).
+* The `AddMicrosoftIdentityWebApp` method is called to further configure the application to use the authentication services required by **Microsoft Identity**. Because this is using a hybrid flow the `OnAuthorizationCodeReceived` event is customized as follows:
+  * To enable [PKCE](https://datatracker.ietf.org/doc/html/rfc7636) the `code_verifier` value is extracted from the URL that would have been used by the flow automatically to be used for attaining a server-side **authentication token** and client-side **authorization code**
+  * The server-side **authentication token** and client-side **authorization code** are retrieved simultaneously using the `ConfidentialClientApplicationService` which is discussed in more detail later.
+* The `AddMicrosoftIdentityWebApp` also configures a special handler for `OnRedirectToIdentityProviderForSignOut` which is triggered after a re-direct from the OpenID provider after signing out to empty the token cache for the user stored in the `ConfidentialClientApplication` within `ConfidentialClientApplicationService`.
 
 ```CSharp
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(options =>
     {
-        // Needed to make PKCE possible.
+        // Enable PKCE.
         //
         // https://datatracker.ietf.org/doc/html/rfc7636 
         options.ResponseType = OpenIdConnectResponseType.Code;
@@ -332,8 +317,8 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
             //
             // See the 'code_verifier' query parameter at these links for further reading.
             //
-            // https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-access-token-with-a-client_secret/
-            // https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-access-token-with-a-certificate-credential
+            // https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-access-token-with-a-client_secret/
+            // https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-access-token-with-a-certificate-credential
             context.TokenEndpointRequest.Parameters.TryGetValue("code_verifier", out var codeVerifier);
 
             if (string.IsNullOrEmpty(codeVerifier))
@@ -346,7 +331,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
             // The code used in the front-end to exchange for an authentication token is called the 'SpaAuthCode' which
             // is passed along in the 'Microsoft.Identity.Hybrid.Authentication' value.
             //
-            // https://docs.microsoft.com/en-us/dotnet/api/microsoft.identity.client.authenticationresult?view=azure-dotnet
+            // https://docs.microsoft.com/dotnet/api/microsoft.identity.client.authenticationresult?view=azure-dotnet
             var authResult = await confidentialClientService.GetAuthenticationResultAsync(options.Scope, context.ProtocolMessage.Code, codeVerifier);
 
             context.Request.HttpContext.Session.SetString("Microsoft.Identity.Hybrid.Authentication", authResult.SpaAuthCode);
@@ -422,71 +407,20 @@ app.UseEndpoints(endpoints =>
 app.Run();
 ```
 
-## Server-side Token Redemption
+### Prepare the MSAL library for token acquisition
 
 Server-side token acquisition is handled by the `ConfidentialClientApplicationService`. This service makes use of the [ConfidentialClientApplication](https://docs.microsoft.com/dotnet/api/microsoft.identity.client.confidentialclientapplication?view=azure-dotnet) class from the Microsoft Identity Library to redeem access tokens from Azure and also to store token attributed to individual accounts.
 
-The code below shows how the `ConfidentialClientApplicationService` is created. The `AzureAdOptions` made earlier are used to handle the configuration and pass the relevant values to teh `ConfidentialClientApplication`.
-
-```CSharp
-private AzureAdOptions _azureAdOptions;
-
-public ConfidentialClientApplicationService(IOptions<AzureAdOptions> azureAdOptions)
-{
-    _azureAdOptions = azureAdOptions.Value;
-}
-
-private IConfidentialClientApplication? _confidentialClientApplication;
-private IConfidentialClientApplication ConfidentialClientApplication
-{
-    get
-    {
-        if (_confidentialClientApplication is null)
-        {
-
-            var clientSecretPlaceholderValue = "[Enter here a client secret for your application]";
-
-            if (!string.IsNullOrWhiteSpace(_azureAdOptions.ClientSecret) &&
-                _azureAdOptions.ClientSecret != clientSecretPlaceholderValue)
-            {
-                _confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(_azureAdOptions.ClientId)
-                    .WithClientSecret(_azureAdOptions.ClientSecret)
-                    .WithRedirectUri(_azureAdOptions.RedirectUri)
-                    .WithAuthority(new Uri(_azureAdOptions.Authority))
-                    .Build();
-            }
-            else if (_azureAdOptions.Certificate is not null)
-            {
-                ICertificateLoader certificateLoader = new DefaultCertificateLoader();
-                certificateLoader.LoadIfNeeded(_azureAdOptions.Certificate);
-
-                _confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(_azureAdOptions.ClientId)
-                    .WithCertificate(_azureAdOptions.Certificate.Certificate)
-                    .WithRedirectUri(_azureAdOptions.RedirectUri)
-                    .WithAuthority(new Uri(_azureAdOptions.Authority))
-                    .Build();
-            }
-            else
-            {
-                throw new Exception("You must choose between using client secret or certificate. Please update appsettings.json file.");
-            }
-
-            _confidentialClientApplication.AddInMemoryTokenCache();
-        }
-
-        return _confidentialClientApplication;
-    }
-}
-```
-
-The acquisition of the server-side **authentication token** and **SPA authorization code** directly from Azure is handled within the `GetAuthenticationResultAsync` method. This app uses [PKCE](https://datatracker.ietf.org/doc/html/rfc7636) by default but this can be disabled.
+The acquisition of the server-side **access token** and **SPA authorization code** directly from Azure is handled within the `GetAuthenticationResultAsync` method. This app uses [PKCE](https://datatracker.ietf.org/doc/html/rfc7636) by default but this can be disabled.
 
 ```CSharp
 public async Task<AuthenticationResult> GetAuthenticationResultAsync(string code, string codeVerifier)
 {
     return await ConfidentialClientApplication
         .AcquireTokenByAuthorizationCode(ApplicationScopes, code)
+        // Validate the PKCE code.
         .WithPkceCodeVerifier(codeVerifier)
+        // Include an authorization code with the response to be sent to and redeemed by the JavaScript client.
         .WithSpaAuthorizationCode(true)
         .ExecuteAsync();
 }
@@ -505,7 +439,7 @@ public async Task RemoveAccount(string identifier)
 }
 ```
 
-## Client-side MSAL.js Client
+### Client-side MSAL.js Client
 
 The single page application in this sample is run using the [MSAL.js library](https://github.com/AzureAD/microsoft-authentication-library-for-js).
 
@@ -534,7 +468,7 @@ cache: {
 });
 ```
 
-## Client-side Authorization Code Redemption
+### Client-side Authorization Code Redemption
 
 Because this app is configured to make a simple web application using the `AddMicrosoftIdentityWebApp` this makes it possible to associate sessions with each login instance. The authorization code intended for redemption by the client side application is passed into the client side through the `Microsoft.Identity.Hybrid.Authentication` session property as the server redeems an authorization code for itself.
 
@@ -631,7 +565,7 @@ After the either a token is redeemed for the user from Azure or a token is found
 })();
 ```
 
-## Client-side Graph API requests
+### Client-side Graph API requests
 
 In order to make a successful call to Microsoft Graph you first need to get an access token from the `PublicClientApplication` cache and then use that access token within the `Authorization` header along with the `Bearer` key word.
 
@@ -698,37 +632,15 @@ function callMSGraph(path, token) {
 }
 ```
 
-All requests made by this application to the Graph API are made within the `Profile.cshtml` page.
-
-Before making any requests the JavaScript of the page has a listener for the `AUTHENTICATED` event mentioned earlier. After this event is received requests for the signed in user's profile and contacts is made and rendered into the HTML of the page.
-
-```JavaScript
-async function updateUI() {
-    await Promise.all([
-        loadUserData(),
-        loadUserContacts()
-    ]);
-}
-
-// Only need to run this once to ensure the token has been loaded.
-document.addEventListener('AUTHENTICATED', async () => await updateUI(), { once: true });
-```
-
-</details>
-
 ## Troubleshooting
 
-<details>
- <summary>Expand for troubleshooting info</summary>
-
-Use [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) to get support from the community.
+Use [Stack Overflow](http://stackoverflow.com/questions/tagged/adal) to get support from the community.
 Ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
 Make sure that your questions or comments are tagged with [`azure-active-directory` `adal` `msal` `dotnet`].
 
 If you find a bug in the sample, please raise the issue on [GitHub Issues](../../issues).
 
 To provide a recommendation, visit the following [User Voice page](https://feedback.azure.com/forums/169401-azure-active-directory).
-</details>
 
 ## Next Steps
 
@@ -746,12 +658,14 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## Learn More
 
-* Microsoft identity platform (Azure Active Directory for developers)](https://docs.microsoft.com/azure/active-directory/develop/)
-* Overview of Microsoft Authentication Library (MSAL)](https://docs.microsoft.com/azure/active-directory/develop/msal-overview)
-* Authentication Scenarios for Azure AD](https://docs.microsoft.com/azure/active-directory/develop/authentication-flows-app-scenarios)
-* Azure AD code samples](https://docs.microsoft.com/azure/active-directory/develop/sample-v2-code)
-* Register an application with the Microsoft identity platform](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
-* Building Zero Trust ready apps](https://aka.ms/ztdevsession)
+* [Microsoft identity platform (Azure Active Directory for developers)](<https://docs.microsoft.com/azure/active-directory/develop/>)
+* [Overview of Microsoft Authentication Library (MSAL)](<https://docs.microsoft.com/azure/active-directory/develop/msal-overview>)
+* [Authentication Scenarios for Azure AD](<https://docs.microsoft.com/azure/active-directory/develop/authentication-flows-app-scenarios>)
+* [Azure AD code samples](<https://docs.microsoft.com/azure/active-directory/develop/sample-v2-code>)
+* [Register an application with the Microsoft identity platform](<https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app>)
+* [Building Zero Trust ready apps](<https://aka.ms/ztdevsession>)
+* [SPA Authorization Code](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/SPA-Authorization-Code)
+* [MSAL.js Authorization Code Flow](https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-common/docs/request.md?msclkid=f140d8c9d0f111ec93acc5e285676bbe)
 
 For more information, visit the following links:
 
