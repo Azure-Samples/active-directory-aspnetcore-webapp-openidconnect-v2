@@ -4,7 +4,7 @@ name: Creating a Hybrid Graph API Application
 services: active-directory
 platforms: dotnet
 urlFragment: active-directory-aspnetcore-webapp-openidconnect-v2
-description: This sample demonstrates an ASP.NET Core hybrid calling Microsoft Graph API.
+description: Sign-in users interactively server-side (Confidential client) and silently acquire token for MS Graph for a Single-page app (SPA).
 languages:
  - csharp
  - javascript
@@ -13,7 +13,7 @@ products:
  - azure-active-directory
 ---
 
-# How to secure an ASP.NET Core Web API with the Microsoft identity platform
+# Sign-in users interactively server-side (Confidential client) and silently acquire token for MS Graph for a Single-page app (SPA)
 
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
@@ -195,7 +195,7 @@ Follow the steps below for manually register and configure your apps
     }
   }
   ```
-  
+
 ###### Get certificate from file path
   
   It's possible to get a certificate file, such as a **pfx** file, directly from a file path on your machine and load it into the application by using the configuration as shown below. Replace the values in the `Certificate` key of the `appsettings.json` with the snippet shown below also replacing `<PATH_TO_YOUR_CERTIFICATE_FILE>` with the path to your certificate file and `<CERTIFICATE_PASSWORD>` with that certificates password. If you created the application with the `Configure.ps1` script found in the `AppCreationScripts-withCert` a **pfx** file called **HybridFlowCert.pfx** will be generated with the certificate that is associated with  your app and can be used as a credential. If you like, you can use configure the `Certificate` property to reference this file and use it as a credential.
@@ -257,7 +257,7 @@ Did the sample not work for you as expected? Did you encounter issues trying thi
 
 ### Code in Asp.net core web app
 
-The entire application is built using the [Microsoft Identity Web](https://docs.microsoft.com/azure/active-directory/develop/microsoft-identity-web) library and [ASP.NET Core](https://docs.microsoft.com/aspnet/core/introduction-to-aspnet-core) using [Razor](https://docs.microsoft.com/aspnet/web-pages/overview/getting-started/introducing-razor-syntax-c) pages.
+The entire application is built on [ASP.NET Core](https://docs.microsoft.com/aspnet/core/introduction-to-aspnet-core) using [Razor](https://docs.microsoft.com/aspnet/web-pages/overview/getting-started/introducing-razor-syntax-c) pages. The web app is then secured using the [Microsoft Identity Web](https://docs.microsoft.com/azure/active-directory/develop/microsoft-identity-web) library.
 
 In other samples you may have noticed that samples leveraged a class called `AuthenticationConfig` to bind the settings in the `appsettings.json` file into an `IConfiguration` object to make the settings available throughout the application.
 
