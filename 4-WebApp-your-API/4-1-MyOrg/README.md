@@ -38,13 +38,11 @@ Table Of Contents
  1. The [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) is used as a bearer token to authorize the user to call the ASP.NET Core Web API protected by **Azure AD**.
 
 ![Scenario Image](./ReadmeFiles/topology.png)
-
 ## Prerequisites
 
 * Either [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/download) and [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
 * An **Azure AD** tenant. For more information, see: [How to get an Azure AD tenant](https://docs.microsoft.com/azure/active-directory/develop/test-setup-environment#get-a-test-tenant)
 * A user account in your **Azure AD** tenant. This sample will not work with a **personal Microsoft account**.  If you're signed in to the [Azure portal](https://portal.azure.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
-
 ## Setup the sample
 
 ### Step 1: Clone or download this repository
@@ -69,7 +67,7 @@ or download and extract the repository .zip file.
 
 There are two projects in this sample. Each needs to be separately registered in your Azure AD tenant. To register these projects:
 
-You can follow the [manual steps](#Manual-steps)
+Follow the [manual steps](#Manual-steps)
 
 **OR**
 
@@ -97,6 +95,13 @@ You can follow the [manual steps](#Manual-steps)
        ```PowerShell
        cd .\AppCreationScripts\
        .\Configure.ps1 -TenantId "[Optional] - your tenant id" -Environment "[Optional] - Azure environment, defaults to 'Global'"
+       ```
+
+    1. In case the previous script fails with error about duplicate App Registration, you might want to run the next cleanup script prior to re-running Configure.ps1
+
+       ```powershell
+       cd .\AppCreationScripts\
+       .\Cleanup.ps1
        ```
 
        > Other ways of running the scripts are described in [App Creation Scripts guide](./AppCreationScripts/AppCreationScripts.md)
@@ -133,8 +138,8 @@ Follow the steps below for manually register and configure your apps
      * Select **Add a scope** button open the **Add a scope** screen and Enter the values as indicated below:
           * For **Scope name**, use `ToDoList.Read`.
           * Select **Admins and users** options for **Who can consent?**.
-        - For **Admin consent display name** type `Allow the app TodoListService-aspnetcore-webapi to [ex, read ToDo list items] as the signed-in user`.
-        - For **Admin consent description** type `Allow the application to [ex, read ToDo list items] as the signed-in user.`
+        - For **Admin consent display name** type `Allow the app TodoListService-aspnetcore-webapi to [ex, read ToDo list items]`.
+        - For **Admin consent description** type `Allow the app TodoListService-aspnetcore-webapi to [ex, read ToDo list items]`
         - For **User consent display name** type `[ex, Read ToDo list items] as you`.
         - For **User consent description** type `Allow the application to [ex, Read ToDo list items] as the signed-in user on your behalf.`
           * Keep **State** as **Enabled**.
@@ -208,15 +213,17 @@ Follow the steps below for manually register and configure your apps
 ### Variation: web app using client certificates
 
 Follow [README-use-keyvault-certificate.md](README-use-keyvault-certificate.md) to know how to use this option.
-
 ### Step 4: Running the sample
- To run the samlple, run the next commands:
+
+ To run the sample, run the following commands in the console:
+
 ```console
     cd 4-WebApp-Your-API\4-1-MyOrg\TodoListService
     dotnet run
 ```
 
 Then open a separate command line terminal and run
+
 
 ```console
     cd 4-WebApp-Your-API\4-1-MyOrg\Client
@@ -530,6 +537,7 @@ Also, if you increase the instance count of the web site, requests will be distr
 
 </details>
 
+
 ## Next Steps
 
 Learn how to:
@@ -546,12 +554,12 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## Learn More
 
-* Microsoft identity platform (Azure Active Directory for developers)](https://docs.microsoft.com/azure/active-directory/develop/)
-* Overview of Microsoft Authentication Library (MSAL)](https://docs.microsoft.com/azure/active-directory/develop/msal-overview)
-* Authentication Scenarios for Azure AD](https://docs.microsoft.com/azure/active-directory/develop/authentication-flows-app-scenarios)
-* Azure AD code samples](https://docs.microsoft.com/azure/active-directory/develop/sample-v2-code)
-* Register an application with the Microsoft identity platform](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
-* Building Zero Trust ready apps](https://aka.ms/ztdevsession)
+* [Microsoft identity platform (Azure Active Directory for developers)](https://docs.microsoft.com/azure/active-directory/develop/)
+* [Overview of Microsoft Authentication Library (MSAL)](https://docs.microsoft.com/azure/active-directory/develop/msal-overview)
+* [Authentication Scenarios for Azure AD](https://docs.microsoft.com/azure/active-directory/develop/authentication-flows-app-scenarios)
+* [Azure AD code samples](https://docs.microsoft.com/azure/active-directory/develop/sample-v2-code)
+* [Register an application with the Microsoft identity platform](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
+* [Building Zero Trust ready apps](https://aka.ms/ztdevsession)
 
 For more information, visit the following links:
 

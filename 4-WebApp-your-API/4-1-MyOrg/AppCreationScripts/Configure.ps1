@@ -228,14 +228,14 @@ Function ConfigureApplications
     -userConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
     -userConsentDescription "Allow the application to access TodoListService-aspnetcore-webapi on your behalf."  `
     -adminConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
-    -adminConsentDescription "Allows the app to have the same access to information in the directory on behalf of the signed-in user."
+    -adminConsentDescription "Allow the app TodoListService-aspnetcore-webapi to [ex, read ToDo list items]"
             
     $scopes.Add($scope)
     $scope = CreateScope -value ToDoList.Write  `
     -userConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
     -userConsentDescription "Allow the application to access TodoListService-aspnetcore-webapi on your behalf."  `
     -adminConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
-    -adminConsentDescription "Allows the app to have the same access to information in the directory on behalf of the signed-in user."
+    -adminConsentDescription "Allow the app TodoListService-aspnetcore-webapi to [ex, read ToDo list items]"
             
     $scopes.Add($scope)
     
