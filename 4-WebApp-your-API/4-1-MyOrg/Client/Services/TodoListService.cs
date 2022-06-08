@@ -12,7 +12,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using TodoListService.Models;
+using TodoListClient.Models;
 
 namespace TodoListClient.Services
 {

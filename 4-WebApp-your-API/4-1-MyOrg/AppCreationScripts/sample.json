@@ -94,7 +94,19 @@
         "SampleSubPath": "4-WebApp-Your-API\\4-1-MyOrg",
         "ProjectDirectory": "\\TodoListService"
       },
-      "Scopes": [ "ToDoList.Read", "ToDoList.Write" ]
+      "Scopes": [ "ToDoList.Read", "ToDoList.ReadWrite" ]
+      //"AppRoles": [
+      //  {
+      //    "Types": [ "Application" ],
+      //    "Name": "ToDoList.Read.All",
+      //    "Description": "Application can only read ToDo list"
+      //  },
+      //  {
+      //    "Types": [ "Application" ],
+      //    "Name": "ToDoList.ReadWrite.All",
+      //    "Description": "Application can read and write into ToDo list"
+      //  }
+      //]
     },
     {
       "Id": "client",
@@ -112,6 +124,8 @@
         }
       ],
       "ManualSteps": [],
+      "EnableAccessTokenIssuance": "true",
+      "EnableIdTokenIssuance": "false",
       "Sample": {
         "SampleSubPath": "4-WebApp-Your-API\\4-1-MyOrg",
         "ProjectDirectory": "\\Client"

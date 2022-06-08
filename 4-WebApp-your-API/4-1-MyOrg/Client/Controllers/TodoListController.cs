@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using System.Threading.Tasks;
+using TodoListClient.Models;
 using TodoListClient.Services;
-using TodoListService.Models;
 
 namespace TodoListClient.Controllers
 {

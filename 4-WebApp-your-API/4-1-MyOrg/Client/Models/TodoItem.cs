@@ -1,4 +1,4 @@
-﻿namespace TodoListService.Models
+﻿namespace TodoListClient.Models
 {
     public class Todo
     {

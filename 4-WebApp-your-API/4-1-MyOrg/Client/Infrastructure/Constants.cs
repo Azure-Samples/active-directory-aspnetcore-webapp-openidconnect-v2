@@ -4,5 +4,6 @@ namespace WebApp_OpenIDConnect_DotNet.Infrastructure
     {
         public const string ScopeUserImpersonation = "user_impersonation";
         public const string BearerAuthorizationScheme = "Bearer";
+        public const string ScopeClaimType = "http://schemas.microsoft.com/identity/claims/scope";
     }
 }
