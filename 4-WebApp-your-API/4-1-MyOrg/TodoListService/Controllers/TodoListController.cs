@@ -120,10 +120,6 @@ namespace TodoListService.Controllers
                 //with such a permission any owner name is accepted from UI
                 owner = todo.Owner;
             }
-            else
-            {
-                throw new ApplicationException("Somehow you've sneaked in. Impossible... Just a bug in Matrix...");
-            }
 
             int id = TodoStore.Values.OrderByDescending(x => x.Id).FirstOrDefault().Id + 1;
             Todo todonew = new Todo() { Id = id, Owner = owner, Title = todo.Title };
@@ -168,15 +164,19 @@ namespace TodoListService.Controllers
         //check if the permission is inside claims
         private bool IsInPermissions(string[] permissionsNames)
         {
-            return User.Claims.Where(c => c.Type.Equals(ClaimTypes.Role)).FirstOrDefault()
+            var result = User.Claims.Where(c => c.Type.Equals(ClaimTypes.Role)).FirstOrDefault()?
                 .Value.Split(' ').Any(v => permissionsNames.Any(p => p.Equals(v)));
+
+            return result ?? false;
         }
 
         //check if the scope is inside claims
         private bool IsInScopes(string[] scopesNames)
         {
-            return User.Claims.Where(c => c.Type.Equals(Constants.ScopeClaimType)).FirstOrDefault()
+            var result = User.Claims.Where(c => c.Type.Equals(Constants.ScopeClaimType)).FirstOrDefault()?
                 .Value.Split(' ').Any(v => scopesNames.Any(s => s.Equals(v)));
+
+            return result ?? false;
         }
     }
 }
