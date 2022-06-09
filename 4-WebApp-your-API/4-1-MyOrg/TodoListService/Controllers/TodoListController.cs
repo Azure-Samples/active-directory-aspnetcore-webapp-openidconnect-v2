@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.Resource;
 using System;
 using System.Collections.Generic;
@@ -30,8 +31,8 @@ namespace TodoListService.Controllers
             // Pre-populate with sample data
             if (TodoStore.Count == 0)
             {
-                TodoStore.Add(1, new Todo() { Id = 1, Owner = $"{_contextAccessor.HttpContext.User.Identity.Name}", Title = "Pick up groceries" });
-                TodoStore.Add(2, new Todo() { Id = 2, Owner = $"{_contextAccessor.HttpContext.User.Identity.Name}", Title = "Finish invoice report" });
+                TodoStore.Add(1, new Todo() { Id = 1, Owner = $"{GetObjectIdClaim(_contextAccessor.HttpContext.User)}", Title = "Pick up groceries" });
+                TodoStore.Add(2, new Todo() { Id = 2, Owner = $"{GetObjectIdClaim(_contextAccessor.HttpContext.User)}", Title = "Finish invoice report" });
                 TodoStore.Add(3, new Todo() { Id = 3, Owner = "Other User", Title = "Rent a car" });
                 TodoStore.Add(4, new Todo() { Id = 4, Owner = "Other User", Title = "Get vaccinated" });
             }
@@ -45,11 +46,11 @@ namespace TodoListService.Controllers
             )]
         public IEnumerable<Todo> Get()
         {
-            if (IsInScopes(new string[] { "ToDoList.Read", "ToDoList.ReadWrite" }))
+            if (HasDelegatedPermissions(new string[] { "ToDoList.Read", "ToDoList.ReadWrite" }))
             {
-                return TodoStore.Values.Where(x => x.Owner == User.Identity.Name);
+                return TodoStore.Values.Where(x => x.Owner == GetObjectIdClaim(User));
             }
-            else if (IsInPermissions(new string[] { "ToDoList.Read.All", "ToDoList.ReadWrite.All" }))
+            else if (HasApplicationPermissions(new string[] { "ToDoList.Read.All", "ToDoList.ReadWrite.All" }))
             {
                 return TodoStore.Values;
             }
@@ -68,11 +69,11 @@ namespace TodoListService.Controllers
             //then it will be t.id==id && x.Owner == owner
             //if it has app permissions the it will return  t.id==id
 
-            if (IsInScopes(new string[] { "ToDoList.Read", "ToDoList.ReadWrite" }))
+            if (HasDelegatedPermissions(new string[] { "ToDoList.Read", "ToDoList.ReadWrite" }))
             {
-                return TodoStore.Values.FirstOrDefault(t => t.Id == id && t.Owner == User.Identity.Name);
+                return TodoStore.Values.FirstOrDefault(t => t.Id == id && t.Owner == GetObjectIdClaim(User));
             }
-            else if (IsInPermissions(new string[] { "ToDoList.Read.All", "ToDoList.ReadWrite.All" }))
+            else if (HasApplicationPermissions(new string[] { "ToDoList.Read.All", "ToDoList.ReadWrite.All" }))
             {
                 return TodoStore.Values.FirstOrDefault(t => t.Id == id);
             }
@@ -90,11 +91,11 @@ namespace TodoListService.Controllers
             if (
                 (
 
-                IsInScopes(new string[] { "ToDoList.ReadWrite" }) && TodoStore.Values.Any(x => x.Id == id && x.Owner == User.Identity.Name))
+                HasDelegatedPermissions(new string[] { "ToDoList.ReadWrite" }) && TodoStore.Values.Any(x => x.Id == id && x.Owner == GetObjectIdClaim(User)))
 
                 ||
 
-                IsInPermissions(new string[] { "ToDoList.ReadWrite.All" })
+                HasApplicationPermissions(new string[] { "ToDoList.ReadWrite.All" })
                 )
             {
                 TodoStore.Remove(id);
@@ -113,9 +114,9 @@ namespace TodoListService.Controllers
             AcceptedAppPermission = new string[] { "ToDoList.ReadWrite.All" })]
         public IActionResult Post([FromBody] Todo todo)
         {
-            var owner = HttpContext.User.Identity.Name;
+            var owner = GetObjectIdClaim(User);
 
-            if (IsInPermissions(new string[] { "ToDoList.ReadWrite.All" }))
+            if (HasApplicationPermissions(new string[] { "ToDoList.ReadWrite.All" }))
             {
                 //with such a permission any owner name is accepted from UI
                 owner = todo.Owner;
@@ -141,13 +142,13 @@ namespace TodoListService.Controllers
             }
 
             if (
-                IsInScopes(new string[] { "ToDoList.ReadWrite" }) 
-                && TodoStore.Values.Any(x => x.Id == id && x.Owner == User.Identity.Name)
-                && todo.Owner == User.Identity.Name
+                HasDelegatedPermissions(new string[] { "ToDoList.ReadWrite" })
+                && TodoStore.Values.Any(x => x.Id == id && x.Owner == GetObjectIdClaim(User))
+                && todo.Owner == GetObjectIdClaim(User)
 
                 ||
 
-                IsInPermissions(new string[] { "ToDoList.ReadWrite.All" })
+                HasApplicationPermissions(new string[] { "ToDoList.ReadWrite.All" })
 
                 )
             {
@@ -162,21 +163,29 @@ namespace TodoListService.Controllers
         }
 
         //check if the permission is inside claims
-        private bool IsInPermissions(string[] permissionsNames)
+        private bool HasApplicationPermissions(string[] permissionsNames)
         {
-            var result = User.Claims.Where(c => c.Type.Equals(ClaimTypes.Role)).FirstOrDefault()?
-                .Value.Split(' ').Any(v => permissionsNames.Any(p => p.Equals(v)));
+            var rolesClaim = User.Claims.Where(
+              c => c.Type == ClaimConstants.Roles || c.Type == ClaimConstants.Role)
+              .SelectMany(c => c.Value.Split(' '));
+
+            var result = rolesClaim.Any(v => permissionsNames.Any(p => p.Equals(v)));
+
+            return result;
+        }
+
+        //check if the scope is inside claims
+        private bool HasDelegatedPermissions(string[] scopesNames)
+        {
+            var result = (User.FindFirst(ClaimConstants.Scp) ?? User.FindFirst(ClaimConstants.Scope))?
+                .Value.Split(' ').Any(v => scopesNames.Any(s => s.Equals(v)));
 
             return result ?? false;
         }
 
-        //check if the scope is inside claims
-        private bool IsInScopes(string[] scopesNames)
+        private string GetObjectIdClaim(ClaimsPrincipal user)
         {
-            var result = User.Claims.Where(c => c.Type.Equals(Constants.ScopeClaimType)).FirstOrDefault()?
-                .Value.Split(' ').Any(v => scopesNames.Any(s => s.Equals(v)));
-
-            return result ?? false;
+            return (user.FindFirst(ClaimConstants.Oid) ?? user.FindFirst(ClaimConstants.ObjectId))?.Value;
         }
     }
 }
