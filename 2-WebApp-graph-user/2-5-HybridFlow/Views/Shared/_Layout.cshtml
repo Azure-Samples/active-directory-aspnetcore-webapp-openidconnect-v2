@@ -1,5 +1,6 @@
 ﻿@using Microsoft.Extensions.Configuration
 @using System.Text
+@using Microsoft.Identity.Web
 @inject IConfiguration Configuration
 
 <!DOCTYPE html>
@@ -143,12 +144,12 @@
 
                 @Html.Raw("];");
 
-                Context.Session.TryGetValue("Microsoft.Identity.Hybrid.Authentication", out var spaCode);
+                Context.Session.TryGetValue(Constants.SpaAuthCode, out var spaCode);
 
                 if (spaCode is not null && !string.IsNullOrEmpty(Encoding.Default.GetString(spaCode)))
                 {
                     @Html.Raw($"const code = '{Encoding.Default.GetString(spaCode)}';");
-                    Context.Session.Remove("Microsoft.Identity.Hybrid.Authentication");
+                    Context.Session.Remove(Constants.SpaAuthCode);
                 }
                 else
                 {

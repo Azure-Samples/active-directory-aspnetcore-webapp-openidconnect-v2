@@ -9,6 +9,8 @@
         <li class="nav-item">
             <a class="nav-link text-dark" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign out</a>
         </li>
+        Html.RouteLink("Log Off", "Default", 
+    new { action = "LogOff", controller = "Account" });
 }
 else
 {
