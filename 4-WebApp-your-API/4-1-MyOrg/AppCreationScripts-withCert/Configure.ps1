@@ -205,6 +205,14 @@ Function ConfigureApplications
         Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($serviceServicePrincipal.DisplayName)'"
     }
     
+    # Add application permissions/user roles
+    $appRoles = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphAppRole]
+    $newRole = CreateAppRole -types "Application" -name "ToDoList.Read.All" -description "Application can only read ToDo list"
+    $appRoles.Add($newRole)
+    $newRole = CreateAppRole -types "Application" -name "ToDoList.ReadWrite.All" -description "Application can read and write into ToDo list"
+    $appRoles.Add($newRole)
+    Update-MgApplication -ApplicationId $serviceAadApplication.Id -AppRoles $appRoles
+    
     # rename the user_impersonation scope if it exists to match the readme steps or add a new scope
        
     # delete default scope i.e. User_impersonation
@@ -228,14 +236,21 @@ Function ConfigureApplications
     -userConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
     -userConsentDescription "Allow the application to access TodoListService-aspnetcore-webapi on your behalf."  `
     -adminConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
-    -adminConsentDescription "Allows the app to have the same access to information in the directory on behalf of the signed-in user."
+    -adminConsentDescription "Allow the app TodoListService-aspnetcore-webapi to [ex, read ToDo list items]"
             
     $scopes.Add($scope)
     $scope = CreateScope -value ToDoList.Write  `
     -userConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
     -userConsentDescription "Allow the application to access TodoListService-aspnetcore-webapi on your behalf."  `
     -adminConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
-    -adminConsentDescription "Allows the app to have the same access to information in the directory on behalf of the signed-in user."
+    -adminConsentDescription "Allow the app TodoListService-aspnetcore-webapi to [ex, read ToDo list items]"
+            
+    $scopes.Add($scope)
+    $scope = CreateScope -value ToDoList.ReadWrite  `
+    -userConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
+    -userConsentDescription "Allow the application to access TodoListService-aspnetcore-webapi on your behalf."  `
+    -adminConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
+    -adminConsentDescription "Allow the app TodoListService-aspnetcore-webapi to [ex, read ToDo list items]"
             
     $scopes.Add($scope)
     
@@ -262,10 +277,13 @@ Function ConfigureApplications
                                                           RedirectUris = "https://localhost:44321/", "https://localhost:44321/signin-oidc"; `
                                                           HomePageUrl = "https://localhost:44321/"; `
                                                           LogoutUrl = "https://localhost:44321/signout-oidc"; `
+                                                          ImplicitGrantSettings = @{ `
+                                                              EnableAccessTokenIssuance=$true; `
+                                                          } `
                                                         } `
                                                        -SignInAudience AzureADMyOrg `
                                                       #end of command
-    #add password to the application
+    #add a secret to the application
     $pwdCredential = Add-MgApplicationPassword -ApplicationId $clientAadApplication.Id -PasswordCredential $key
     $clientAppKey = $pwdCredential.SecretText
     $tenantName = (Get-MgApplication -ApplicationId $clientAadApplication.Id).PublisherDomain
@@ -345,7 +363,7 @@ Function ConfigureApplications
     
     # Update config file for 'client'
     $configFile = $pwd.Path + "\..\Client\appsettings.json"
-    $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $clientAadApplication.AppId;"KeyVaultCertificateName" = $certificateName;"TodoListScopes" = "api://$($serviceAadApplication.AppId)/ToDoList.Read api://$($serviceAadApplication.AppId)/ToDoList.Write";"TodoListBaseAddress" = $serviceAadApplication.Web.HomePageUrl };
+    $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $clientAadApplication.AppId;"KeyVaultCertificateName" = $certificateName;"TodoListScopes" = "api://$($serviceAadApplication.AppId)/ToDoList.Read api://$($serviceAadApplication.AppId)/ToDoList.Write api://$($serviceAadApplication.AppId)/ToDoList.ReadWrite";"TodoListBaseAddress" = $serviceAadApplication.Web.HomePageUrl };
 
     Write-Host "Updating the sample code ($configFile)"
 

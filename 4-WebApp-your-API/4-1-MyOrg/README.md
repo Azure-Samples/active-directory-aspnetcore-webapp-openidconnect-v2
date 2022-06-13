@@ -144,11 +144,23 @@ Follow the steps below for manually register and configure your apps
         - For **User consent description** type `Allow the application to [ex, Read ToDo list items] as the signed-in user on your behalf.`
           * Keep **State** as **Enabled**.
           * Select the **Add scope** button on the bottom to save this scope.
-     > Repeat the steps above for scope **ToDoList.Write**
+     > Repeat the steps above for scope **ToDoList.ReadWrite**
 
   1. Select the `Manifest` blade on the left.
      * Set `accessTokenAcceptedVersion` property to **2**.
      * Click on **Save**.
+
+##### Define Application Permissions
+
+  1. Still on the same app registration, select the **App roles** blade to the left.
+  1. Select **Create app role**:
+     * For **Display name**, enter a suitable name, for instance **ToDoList.Read.All**.
+     * For **Allowed member types**, choose **Application**.
+     * For **Value**, enter **ToDoList.Read.All**.
+     * For **Description**, enter **Application can only read ToDo list**.
+     > Repeat the steps above for permission **ToDoList.ReadWrite.All**
+
+  1. Select **Apply** to save your changes. 
 
 ##### Configure the service app (TodoListService-aspnetcore-webapi) to use your app registration
 
@@ -177,6 +189,7 @@ Follow the steps below for manually register and configure your apps
     1. `https://localhost:44321/signin-oidc`
 
   1. In the **Front-channel logout URL** section, set it to `https://localhost:44321/signout-oidc`.
+  1. In the **Implicit grant and hybrid flows** section, check the **Access tokens (used for implicit flows)** option.
   1. Click **Save** to save your changes.
   1. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where you can generate secrets and upload certificates.
   1. In the **Client secrets** section, select **New client secret**:
@@ -191,7 +204,7 @@ Follow the steps below for manually register and configure your apps
       * Select the **Add a permission** button and then,
       * Ensure that the **My APIs** tab is selected.
       * In the list of APIs, select the API `TodoListService-aspnetcore-webapi`.
-      * In the **Delegated permissions** section, select the **ToDoList.Read**, **ToDoList.Write** in the list. Use the search box if necessary.
+      * In the **Delegated permissions** section, select the **ToDoList.Read**, **ToDoList.ReadWrite** in the list. Use the search box if necessary.
       * Select the **Add permissions** button at the bottom.
 
 ##### Configure the client app (TodoListClient-aspnetcore-webapi) to use your app registration
@@ -205,7 +218,7 @@ Follow the steps below for manually register and configure your apps
   1. Find the key `TenantId` and replace the existing value with your Azure AD tenant ID.
   1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `TodoListClient-aspnetcore-webapi` app copied from the Azure portal.
   1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of `TodoListClient-aspnetcore-webapi` copied from the Azure portal.
-  1. Find the key `TodoListScopes` and replace the existing value with **"api://<your_service_api_client_id>/ToDoList.Read api://<your_service_api_client_id>/ToDoList.Write"**.
+  1. Find the key `TodoListScopes` and replace the existing value with **"api://<your_service_api_client_id>/ToDoList.Read api://<your_service_api_client_id>/ToDoList.ReadWrite"**.
   1. Find the key `TodoListBaseAddress` and replace the existing value with the base address of `TodoListService-aspnetcore-webapi` (by default `https://localhost:44351`).
 </details>
 
