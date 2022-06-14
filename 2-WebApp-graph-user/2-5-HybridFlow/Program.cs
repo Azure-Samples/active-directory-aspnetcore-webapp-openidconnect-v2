@@ -11,9 +11,13 @@ builder.Services.AddSession(options =>
    options.Cookie.IsEssential = true;
  });
 
+var initialScopes = builder.Configuration.GetSection("DownstreamApi:Scopes")
+    .Value
+    .Split(' ');
+
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(builder.Configuration)
-    .EnableTokenAcquisitionToCallDownstreamApi()
+    .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
     .AddDistributedTokenCaches();
 
 builder.Services.AddControllersWithViews(options =>

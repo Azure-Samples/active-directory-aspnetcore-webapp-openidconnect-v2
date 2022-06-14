@@ -34,33 +34,38 @@ Function Cleanup
     # Removes the applications
     Write-Host "Cleaning-up applications from tenant '$tenantId'"
 
-    Write-Host "Removing 'client' (HybridFlow-aspnetcore) if needed"
+    Write-Host "Removing 'HybridFlowAspNetCore' (HybridFlowAspNetCore) if needed"
     try
     {
-        Get-MgApplication -Filter "DisplayName eq 'HybridFlow-aspnetcore'"  | ForEach-Object {Remove-MgApplication -ApplicationId $_.Id }
+        Get-MgApplication -Filter "DisplayName eq 'HybridFlowAspNetCore'"  | ForEach-Object {Remove-MgApplication -ApplicationId $_.Id }
     }
     catch
     {
-	    Write-Host "Unable to remove the application 'HybridFlow-aspnetcore' . Try deleting manually." -ForegroundColor White -BackgroundColor Red
+	    Write-Host "Unable to remove the application 'HybridFlowAspNetCore' . Try deleting manually." -ForegroundColor White -BackgroundColor Red
     }
 
-    Write-Host "Making sure there are no more (HybridFlow-aspnetcore) applications found, will remove if needed..."
-    $apps = Get-MgApplication -Filter "DisplayName eq 'HybridFlow-aspnetcore'"
+    Write-Host "Making sure there are no more (HybridFlowAspNetCore) applications found, will remove if needed..."
+    $apps = Get-MgApplication -Filter "DisplayName eq 'HybridFlowAspNetCore'"
+    
+    if ($apps)
+    {
+        Remove-MgApplication -ApplicationId $apps.Id
+    }
 
     foreach ($app in $apps) 
     {
         Remove-MgApplication -ApplicationId $app.Id
-        Write-Host "Removed HybridFlow-aspnetcore.."
+        Write-Host "Removed HybridFlowAspNetCore.."
     }
 
     # also remove service principals of this app
     try
     {
-        Get-MgServicePrincipal -filter "DisplayName eq 'HybridFlow-aspnetcore'" | ForEach-Object {Remove-MgServicePrincipal -ApplicationId $_.Id -Confirm:$false}
+        Get-MgServicePrincipal -filter "DisplayName eq 'HybridFlowAspNetCore'" | ForEach-Object {Remove-MgServicePrincipal -ApplicationId $_.Id -Confirm:$false}
     }
     catch
     {
-	    Write-Host "Unable to remove ServicePrincipal 'HybridFlow-aspnetcore' . Try deleting manually from Enterprise applications." -ForegroundColor White -BackgroundColor Red
+	    Write-Host "Unable to remove ServicePrincipal 'HybridFlowAspNetCore' . Try deleting manually from Enterprise applications." -ForegroundColor White -BackgroundColor Red
     }
 }
 
@@ -75,3 +80,4 @@ Cleanup -tenantId $tenantId -environment $azureEnvironmentName
 
 Write-Host "Disconnecting from tenant"
 Disconnect-MgGraph
+
