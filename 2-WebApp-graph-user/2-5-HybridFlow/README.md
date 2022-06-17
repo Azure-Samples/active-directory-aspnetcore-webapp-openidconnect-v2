@@ -117,15 +117,15 @@ Follow the steps below for manually register and configure your apps
      * In the **Redirect URIs** section, enter the following redirect URIs.
         * `https://localhost:44321/signin-oidc/`
      * Click on the **Add a platform** button in the **Platform configurations** section of the page
-       * Select the **Single-page application** button and enter `https://localhost:7089/` as the **Redirect URI** and click the **Configure** button
-  1. Select **Save** to save your changes.
-  1. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
-  1. In the **Client secrets** section, select **New client secret**:
+       * Select the **Single-page application** button and enter `https://localhost:44321/` as the **Redirect URI** and click the **Configure** button
+  2. Select **Save** to save your changes.
+  3. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
+  4. In the **Client secrets** section, select **New client secret**:
      * Type a key description (for instance `app secret`),
      * Select one of the available key durations (**6 months**, **12 months** or **Custom**) as per your security posture.
      * The generated key value will be displayed when you select the **Add** button. Copy and save the generated value for use in later steps.
      * You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
-  1. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
+  5. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
      * Select the **Add a permission** button and then,
      * Ensure that the **Microsoft APIs** tab is selected.
      * In the *Commonly used Microsoft APIs* section, select **Microsoft Graph**
@@ -247,7 +247,7 @@ If you find a bug in the sample, please raise the issue on [GitHub Issues](../..
 
 To provide a recommendation, visit the following [User Voice page](https://feedback.azure.com/forums/169401-azure-active-directory).
 
- Open your web browser and navigate to `https://localhost:7089`. You should see the application home page with a link for **Home**, **Privacy** and **Sign in**. Click the **Sign in** link and you'll be redirected to the Microsoft login page. Sign in using an user account in your tenant. After you sign in the client side `MSAL.js` client will receive an **auth** code from the server that will be exchanged for an authorization token and cached immediately in the browser.
+ Open your web browser and navigate to `https://localhost:44321`. You should see the application home page with a link for **Home**, **Privacy** and **Sign in**. Click the **Sign in** link and you'll be redirected to the Microsoft login page. Sign in using an user account in your tenant. After you sign in the client side `MSAL.js` client will receive an **auth** code from the server that will be exchanged for an authorization token and cached immediately in the browser.
 
 1. Click on `Profile` tab to see the signed in user's information and contacts. This information is retrieved using the `MSAL.js` library in the browser.
 
