@@ -16,6 +16,51 @@
     "Service": "Microsoft Graph",
     "Title": "active-directory-aspnetcore-webapp-openidconnect-v2"
   },
+  "ReadmeScenario": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeScenario.md",
+    "Image": "../ReadmeFiles/topology.png",
+    "AdditionalNotes": ""
+  },
+  "ReadmePrerequirements": {
+    "FreeText": "",
+    "IncludeFilePath": ""
+  },
+  "ReadmeSetup": {
+    "FreeText": "",
+    "IncludeFilePath": "../ReadmeFiles/ReadmeSetup.md",
+    "UseNewSetup": "1",
+    "CertificateOption": "1",
+    "CreateProjectIncludeFilePath": "",
+    "AppRegistrationIncludeFilePath": "",
+    "RunSampleIncludeFilePath": ""
+  },
+  "ReadmeTroubleshooting": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeTroubleshooting.md"
+  },
+  "ReadmeNextSteps": {
+    "FreeText": "",
+    "IncludeFilePath": "../ReadmeFiles/ReadmeNextSteps.md"
+  },
+  "ReadmeContributing": {
+    "FreeText": "",
+    "IncludeFilePath": "../ReadmeFiles/ReadmeContributing.md"
+  },
+  "ReadmeHowTheCodeWasCreated": {
+    "IncludeFilePath": ""
+  },
+  "ReadmeAboutTheCode": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeAboutTheCode.md"
+  },
+  "ReadmeAzureDeploy": {
+    "FreeText": "",
+    "IncludeFilePath": ""
+  },
+  "ReadmeUsingTheSample": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeUsingTheSample.md"
+  },
+  "ReadmeLearnMore": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeLearnMore.md"
+  },
   "AADApps": [
     {
       "AllowImplicitFlow": true,
@@ -25,11 +70,11 @@
       "HybridRedirectUris": [
         {
           "ApplicationKind": "WebApp",
-          "Uri": "https://localhost:7089/signin-oidc"
+          "Uri": "https://localhost:44321/signin-oidc"
         },
         {
           "ApplicationKind": "SinglePageApplication",
-          "Uri": "https://localhost:7089/"
+          "Uri": "https://localhost:44321/"
         }
       ],
       "Id": "HybridFlowAspNetCore",
@@ -55,12 +100,14 @@
             "AzureAd": {
               "Instance": "https://login.microsoftonline.com/",
               "CallbackPath": "/signin-oidc",
-              "ClientCertificates": [{
-                "SourceType": "StoreWithDistinguishedName",
-                "CertificateStorePath": "CurrentUser/My",
-                "CertificateDistinguishedName": "CN=HybridFlowAspNetCore"
-            }],
-              "WithSpaAuthCode": true,
+              "ClientCertificates": [
+                {
+                  "SourceType": "StoreWithDistinguishedName",
+                  "CertificateStorePath": "CurrentUser/My",
+                  "CertificateDistinguishedName": "CN=HybridFlowAspNetCore"
+                }
+              ],
+              "WithSpaAuthCode": true
             },
             "DownStreamApi": {
               "BaseUrl": "https://graph.microsoft.com/v1.0",
