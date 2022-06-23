@@ -3,11 +3,13 @@
 <details>
  <summary>Expand the section</summary>
 
+1. Consider adding [MSAL.NET Logging](https://docs.microsoft.com/azure/active-directory/develop/msal-logging-dotnet) to you project
+
 1. In the `TodoListService` project, first the package `Microsoft.Identity.Web`is added from NuGet.
 
 1. Starting with the **Startup.cs** file :
 
-    * at the top of the file, the following two using directives were added:
+    * at the top of the file, the following using directory was added:
 
       ```CSharp
       using Microsoft.Identity.Web;
@@ -19,7 +21,7 @@
       services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
       ```
 
-    * `AddMicrosoftIdentityWebApiAuthentication()` protects the Web API by validating Access tokens sent tho this API. Check out [Protected web API: Code configuration](https://docs.microsoft.com/azure/active-directory/develop/scenario-protected-web-api-app-configuration) which explains the inner workings of this method in more detail.
+    * `AddMicrosoftIdentityWebApiAuthentication()` protects the Web API by [validating Access tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens#validating-tokens) sent tho this API. Check out [Protected web API: Code configuration](https://docs.microsoft.com/azure/active-directory/develop/scenario-protected-web-api-app-configuration) which explains the inner workings of this method in more detail.
 
     * Then in the controllers `TodoListController.cs`, the `[Authorize]` added on top of the class to protect this route.
     * Further in the controller, the `RequiredScope` is used to list the scopes ([Delegated permissions](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent)), that the user should consent for, before the method can be called.  

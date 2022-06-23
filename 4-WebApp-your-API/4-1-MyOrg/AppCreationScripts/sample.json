@@ -99,12 +99,12 @@
         {
           "Types": [ "Application" ],
           "Name": "ToDoList.Read.All",
-          "Description": "Application can only read ToDo list"
+          "Description": "Allow application to read all ToDo list items"
         },
         {
           "Types": [ "Application" ],
           "Name": "ToDoList.ReadWrite.All",
-          "Description": "Application can read and write into ToDo list"
+          "Description": "Allow application to read and write into ToDo list"
         }
       ]
     },

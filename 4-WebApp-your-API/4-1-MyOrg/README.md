@@ -34,8 +34,7 @@ Table Of Contents
 
  This sample demonstrates an ASP.NET Core client Web App calling an ASP.NET Core Web API that is secured using Azure AD.
 
- 1. The client ASP.NET Core Web App uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign-in and obtain a JWT [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from **Azure AD**.
- 1. The [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) is used as a bearer token to authorize the user to call the ASP.NET Core Web API protected by **Azure AD**.
+ 1. The client ASP.NET Core Web App uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign-in a user and obtain a JWT [Id Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) from **Azure AD**.
 
 ![Scenario Image](./ReadmeFiles/topology.png)
 ## Prerequisites
@@ -157,7 +156,7 @@ Follow the steps below for manually register and configure your apps
      * For **Display name**, enter a suitable name, for instance **ToDoList.Read.All**.
      * For **Allowed member types**, choose **Application**.
      * For **Value**, enter **ToDoList.Read.All**.
-     * For **Description**, enter **Application can only read ToDo list**.
+     * For **Description**, enter **Allow application to read all ToDo list items**.
      > Repeat the steps above for permission **ToDoList.ReadWrite.All**
 
   1. Select **Apply** to save your changes. 
@@ -278,11 +277,13 @@ Did the sample not work for you as expected? Did you encounter issues trying thi
 <details>
  <summary>Expand the section</summary>
 
+1. Consider adding [MSAL.NET Logging](https://docs.microsoft.com/azure/active-directory/develop/msal-logging-dotnet) to you project
+
 1. In the `TodoListService` project, first the package `Microsoft.Identity.Web`is added from NuGet.
 
 1. Starting with the **Startup.cs** file :
 
-    * at the top of the file, the following two using directives were added:
+    * at the top of the file, the following using directory was added:
 
       ```CSharp
       using Microsoft.Identity.Web;
@@ -294,7 +295,7 @@ Did the sample not work for you as expected? Did you encounter issues trying thi
       services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
       ```
 
-    * `AddMicrosoftIdentityWebApiAuthentication()` protects the Web API by validating Access tokens sent tho this API. Check out [Protected web API: Code configuration](https://docs.microsoft.com/azure/active-directory/develop/scenario-protected-web-api-app-configuration) which explains the inner workings of this method in more detail.
+    * `AddMicrosoftIdentityWebApiAuthentication()` protects the Web API by [validating Access tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens#validating-tokens) sent tho this API. Check out [Protected web API: Code configuration](https://docs.microsoft.com/azure/active-directory/develop/scenario-protected-web-api-app-configuration) which explains the inner workings of this method in more detail.
 
     * Then in the controllers `TodoListController.cs`, the `[Authorize]` added on top of the class to protect this route.
     * Further in the controller, the `RequiredScope` is used to list the scopes ([Delegated permissions](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent)), that the user should consent for, before the method can be called.  

@@ -58,7 +58,7 @@ namespace TodoListClient.Services
                 return todo;
             }
 
-            throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
+            return null;
         }
 
         public async Task DeleteAsync(int id)
@@ -71,8 +71,6 @@ namespace TodoListClient.Services
             {
                 return;
             }
-
-            throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
         }
 
         public async Task<Todo> EditAsync(Todo todo)
@@ -91,7 +89,7 @@ namespace TodoListClient.Services
                 return todo;
             }
 
-            throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
+            return null;
         }
 
         public async Task<IEnumerable<Todo>> GetAsync()
@@ -106,7 +104,7 @@ namespace TodoListClient.Services
                 return todolist;
             }
 
-            throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
+            return null;
         }        
 
         public async Task<Todo> GetAsync(int id)
@@ -121,7 +119,7 @@ namespace TodoListClient.Services
                 return todo;
             }
 
-            throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
+            return null;
         }
         
         private async Task PrepareAuthenticatedClient()

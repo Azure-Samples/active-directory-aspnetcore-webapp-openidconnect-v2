@@ -55,7 +55,7 @@ namespace TodoListService.Controllers
                 return TodoStore.Values;
             }
 
-            throw new ApplicationException("It's impossible for you to be in this state in a normal situation.");
+            return null;
         }
 
         // GET: api/values
@@ -78,7 +78,7 @@ namespace TodoListService.Controllers
                 return TodoStore.Values.FirstOrDefault(t => t.Id == id);
             }
 
-            throw new ApplicationException("It's impossible for you to be in this state. STINKY HACKER");
+            return null;
         }
 
         [HttpDelete("{id}")]
@@ -87,7 +87,6 @@ namespace TodoListService.Controllers
             AcceptedAppPermission = new string[] { "ToDoList.ReadWrite.All" })]
         public void Delete(int id)
         {
-
             if (
                 (
 
@@ -99,11 +98,6 @@ namespace TodoListService.Controllers
                 )
             {
                 TodoStore.Remove(id);
-            }
-
-            else
-            {
-                throw new ApplicationException("No idea how you've got here");
             }
         }
 
@@ -156,13 +150,12 @@ namespace TodoListService.Controllers
                 TodoStore.Add(id, todo);
 
                 return Ok(todo);
-            }
+            } 
 
-            throw new ApplicationException("You have insufficient permissions to run this patch operation.");
-
+            return BadRequest();
         }
 
-        //check if the permission is inside claims
+        //Checks if the presented token has application permissions
         private bool HasApplicationPermissions(string[] permissionsNames)
         {
             var rolesClaim = User.Claims.Where(
@@ -174,7 +167,7 @@ namespace TodoListService.Controllers
             return result;
         }
 
-        //check if the scope is inside claims
+        //Checks if the presented token has delegated permissions
         private bool HasDelegatedPermissions(string[] scopesNames)
         {
             var result = (User.FindFirst(ClaimConstants.Scp) ?? User.FindFirst(ClaimConstants.Scope))?
