@@ -18,7 +18,7 @@
   },
   "ReadmeScenario": {
     "IncludeFilePath": "../ReadmeFiles/ReadmeScenario.md",
-    "Image": "../ReadmeFiles/topology.png",
+    "Image": "./ReadmeFiles/topology.png",
     "AdditionalNotes": ""
   },
 
