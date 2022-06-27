@@ -36,7 +36,7 @@ Table Of Contents
  1. The [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) is used as a bearer token to call the **Microsoft Graph API**.
  1. The [Spa Authorization Code](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/SPA-Authorization-Code) is passed to the razor single page application to be exchanged for an access token client side.
 
-![Scenario Image](../ReadmeFiles/topology.png)
+![Scenario Image](./ReadmeFiles/topology.png)
 ## Prerequisites
 
 * Either [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/download) and [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
