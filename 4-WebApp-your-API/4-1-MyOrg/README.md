@@ -79,7 +79,7 @@ Follow the [manual steps](#Manual-steps)
   <details>
    <summary>Expand this section if you want to use this automation:</summary>
 
-    > **WARNING**: If you have never used **Azure AD Powershell** before, we recommend you go through the [App Creation Scripts guide](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
+    > **WARNING**: If you have never used **Microsoft Graph PowerShell** before, we recommend you go through the [App Creation Scripts guide](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
   
     1. On Windows, run PowerShell as **Administrator** and navigate to the root of the cloned directory
     1. In PowerShell run:

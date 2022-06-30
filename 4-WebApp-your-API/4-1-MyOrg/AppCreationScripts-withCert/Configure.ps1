@@ -207,9 +207,9 @@ Function ConfigureApplications
     
     # Add application permissions/user roles
     $appRoles = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphAppRole]
-    $newRole = CreateAppRole -types "Application" -name "ToDoList.Read.All" -description "Application can only read ToDo list"
+    $newRole = CreateAppRole -types "Application" -name "ToDoList.Read.All" -description "Allow application to read all ToDo list items"
     $appRoles.Add($newRole)
-    $newRole = CreateAppRole -types "Application" -name "ToDoList.ReadWrite.All" -description "Application can read and write into ToDo list"
+    $newRole = CreateAppRole -types "Application" -name "ToDoList.ReadWrite.All" -description "Allow application to read and write into ToDo list"
     $appRoles.Add($newRole)
     Update-MgApplication -ApplicationId $serviceAadApplication.Id -AppRoles $appRoles
     
@@ -233,13 +233,6 @@ Function ConfigureApplications
 
     $scopes = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphPermissionScope]
     $scope = CreateScope -value ToDoList.Read  `
-    -userConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
-    -userConsentDescription "Allow the application to access TodoListService-aspnetcore-webapi on your behalf."  `
-    -adminConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
-    -adminConsentDescription "Allow the app TodoListService-aspnetcore-webapi to [ex, read ToDo list items]"
-            
-    $scopes.Add($scope)
-    $scope = CreateScope -value ToDoList.Write  `
     -userConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
     -userConsentDescription "Allow the application to access TodoListService-aspnetcore-webapi on your behalf."  `
     -adminConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
@@ -334,6 +327,10 @@ Function ConfigureApplications
         New-MgApplicationOwnerByRef -ApplicationId $clientAadApplication.Id  -BodyParameter = @{"@odata.id" = "htps://graph.microsoft.com/v1.0/directoryObjects/$user.ObjectId"}
         Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($clientServicePrincipal.DisplayName)'"
     }
+    
+    # Add application permissions/user roles
+    $appRoles = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphAppRole]
+    Update-MgApplication -ApplicationId $clientAadApplication.Id -AppRoles $appRoles
     Write-Host "Done creating the client application (TodoListClient-aspnetcore-webapi)"
 
     # URL of the AAD application in the Azure portal
@@ -346,7 +343,7 @@ Function ConfigureApplications
     # Add Required Resources Access (from 'client' to 'service')
     Write-Host "Getting access from 'client' to 'service'"
     $requiredPermissions = GetRequiredPermissions -applicationDisplayName "TodoListService-aspnetcore-webapi" `
-        -requiredDelegatedPermissions "ToDoList.Read|ToDoList.Write" `
+        -requiredDelegatedPermissions "ToDoList.Read|ToDoList.ReadWrite" `
     
 
     $requiredResourcesAccess.Add($requiredPermissions)
@@ -363,7 +360,7 @@ Function ConfigureApplications
     
     # Update config file for 'client'
     $configFile = $pwd.Path + "\..\Client\appsettings.json"
-    $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $clientAadApplication.AppId;"KeyVaultCertificateName" = $certificateName;"TodoListScopes" = "api://$($serviceAadApplication.AppId)/ToDoList.Read api://$($serviceAadApplication.AppId)/ToDoList.Write api://$($serviceAadApplication.AppId)/ToDoList.ReadWrite";"TodoListBaseAddress" = $serviceAadApplication.Web.HomePageUrl };
+    $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $clientAadApplication.AppId;"KeyVaultCertificateName" = $certificateName;"TodoListScopes" = "api://$($serviceAadApplication.AppId)/ToDoList.Read api://$($serviceAadApplication.AppId)/ToDoList.ReadWrite";"TodoListBaseAddress" = $serviceAadApplication.Web.HomePageUrl };
 
     Write-Host "Updating the sample code ($configFile)"
 
