@@ -5,12 +5,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using TodoListClient.Models;
 
@@ -46,14 +47,14 @@ namespace TodoListClient.Services
         {
             await PrepareAuthenticatedClient();
 
-            var jsonRequest = JsonConvert.SerializeObject(todo);
+            var jsonRequest = JsonSerializer.Serialize(todo);
             var jsoncontent = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
             var response = await this._httpClient.PostAsync($"{ _TodoListBaseAddress}/api/todolist", jsoncontent);
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                todo = JsonConvert.DeserializeObject<Todo>(content);
+                todo = JsonSerializer.Deserialize<Todo>(content);
 
                 return todo;
             }
@@ -77,14 +78,14 @@ namespace TodoListClient.Services
         {
             await PrepareAuthenticatedClient();
 
-            var jsonRequest = JsonConvert.SerializeObject(todo);
+            var jsonRequest = JsonSerializer.Serialize(todo);
             var jsoncontent = new StringContent(jsonRequest, Encoding.UTF8, "application/json-patch+json");
             var response = await _httpClient.PatchAsync($"{ _TodoListBaseAddress}/api/todolist/{todo.Id}", jsoncontent);
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                todo = JsonConvert.DeserializeObject<Todo>(content);
+                todo = JsonSerializer.Deserialize<Todo>(content);
 
                 return todo;
             }
@@ -99,7 +100,7 @@ namespace TodoListClient.Services
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                IEnumerable<Todo> todolist = JsonConvert.DeserializeObject<IEnumerable<Todo>>(content);
+                IEnumerable<Todo> todolist = JsonSerializer.Deserialize<IEnumerable<Todo>>(content);
 
                 return todolist;
             }
@@ -114,7 +115,7 @@ namespace TodoListClient.Services
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                Todo todo = JsonConvert.DeserializeObject<Todo>(content);
+                Todo todo = JsonSerializer.Deserialize<Todo>(content);
 
                 return todo;
             }
