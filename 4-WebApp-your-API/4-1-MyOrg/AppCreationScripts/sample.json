@@ -113,7 +113,7 @@
       "Name": "TodoListClient-aspnetcore-webapi",
       "Kind": "WebApp",
       "HomePage": "https://localhost:44321/",
-      "ReplyUrls": "https://localhost:44321/,https://localhost:44321/signin-oidc",
+      "ReplyUrls": "https://localhost:44321/signin-oidc",
       "LogoutUrl": "https://localhost:44321/signout-oidc",
       "Audience": "AzureADMyOrg",
       "PasswordCredentials": "Auto",
@@ -124,8 +124,6 @@
         }
       ],
       "ManualSteps": [],
-      "EnableAccessTokenIssuance": "true",
-      "EnableIdTokenIssuance": "false",
       "Sample": {
         "SampleSubPath": "4-WebApp-Your-API\\4-1-MyOrg",
         "ProjectDirectory": "\\Client"

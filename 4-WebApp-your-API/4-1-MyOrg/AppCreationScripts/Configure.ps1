@@ -155,6 +155,7 @@ Function CreateAppRole([string] $types, [string] $name, [string] $description)
     return $appRole
 }
 
+
 Function ConfigureApplications
 {
     <#.Description
@@ -187,6 +188,10 @@ Function ConfigureApplications
                                                        -Web `
                                                        @{ `
                                                            HomePageUrl = "https://localhost:44351"; `
+                                                         } `
+                                                         -Api `
+                                                         @{ `
+                                                            RequestedAccessTokenVersion = 2 `
                                                          } `
                                                         -SignInAudience AzureADMyOrg `
                                                        #end of command
@@ -267,18 +272,16 @@ Function ConfigureApplications
    $clientAadApplication = New-MgApplication -DisplayName "TodoListClient-aspnetcore-webapi" `
                                                       -Web `
                                                       @{ `
-                                                          RedirectUris = "https://localhost:44321/", "https://localhost:44321/signin-oidc"; `
+                                                          RedirectUris = "https://localhost:44321/signin-oidc"; `
                                                           HomePageUrl = "https://localhost:44321/"; `
                                                           LogoutUrl = "https://localhost:44321/signout-oidc"; `
-                                                          ImplicitGrantSettings = @{ `
-                                                              EnableAccessTokenIssuance=$true; `
-                                                          } `
                                                         } `
                                                        -SignInAudience AzureADMyOrg `
                                                       #end of command
     #add a secret to the application
     $pwdCredential = Add-MgApplicationPassword -ApplicationId $clientAadApplication.Id -PasswordCredential $key
     $clientAppKey = $pwdCredential.SecretText
+
     $tenantName = (Get-MgApplication -ApplicationId $clientAadApplication.Id).PublisherDomain
     Update-MgApplication -ApplicationId $clientAadApplication.Id -IdentifierUris @("https://$tenantName/TodoListClient-aspnetcore-webapi")
     

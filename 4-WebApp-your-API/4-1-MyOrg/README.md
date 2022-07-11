@@ -133,7 +133,7 @@ Follow the steps below for manually register and configure your apps
   1. In the app's registration screen, select the **Expose an API** blade to the left to open the page where you can declare the parameters to expose this app as an API for which client applications can obtain [access tokens](https://aka.ms/access-tokens) for. The first thing that we need to do is to declare the unique [resource](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow) URI that the clients will be using to obtain access tokens for this API. To declare an resource URI(Application ID URI), follow the following steps:
       * Select `Set` next to the **Application ID URI** to generate a URI that is unique for this app.
       * For this sample, accept the proposed Application ID URI (`api://{clientId}`) by selecting **Save**. Read more about Application ID URI at [Validation differences by supported account types \(signInAudience\)](https://docs.microsoft.com/azure/active-directory/develop/supported-accounts-validation).
-  1. All APIs have to publish a minimum of two [scopes](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-authorization-code), also called [Delegated Permissions](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent#permission-types), for the client's to obtain an access token successfully. To publish a scope, follow these steps:
+  1. All APIs have to publish a minimum of one [scope](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-authorization-code), also called [Delegated Permissions](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent#permission-types), for the client's to obtain an access token successfully. To publish a scope, follow these steps:
      * Select **Add a scope** button open the **Add a scope** screen and Enter the values as indicated below:
           * For **Scope name**, use `ToDoList.Read`.
           * Select **Admins and users** options for **Who can consent?**.
@@ -143,7 +143,7 @@ Follow the steps below for manually register and configure your apps
         - For **User consent description** type `Allow the application to [ex, Read ToDo list items] as the signed-in user on your behalf.`
           * Keep **State** as **Enabled**.
           * Select the **Add scope** button on the bottom to save this scope.
-     > Repeat the steps above for scope **ToDoList.ReadWrite**
+     > Repeat the steps above for scope named **ToDoList.ReadWrite**
 
   1. Select the `Manifest` blade on the left.
      * Set `accessTokenAcceptedVersion` property to **2**.
@@ -157,7 +157,7 @@ Follow the steps below for manually register and configure your apps
      * For **Allowed member types**, choose **Application**.
      * For **Value**, enter **ToDoList.Read.All**.
      * For **Description**, enter **Allow application to read all ToDo list items**.
-     > Repeat the steps above for permission **ToDoList.ReadWrite.All**
+     > Repeat the steps above for app permission named **ToDoList.ReadWrite.All**
 
   1. Select **Apply** to save your changes. 
 
@@ -183,12 +183,11 @@ Follow the steps below for manually register and configure your apps
   1. In the app's registration screen, find and note the **Application (client) ID**. You use this value in your app's configuration file(s) later in your code.
   1. In the app's registration screen, select **Authentication** in the menu.
       * If you don't have a platform added, select **Add a platform** and select the **Web** option.
-  1. In the **Redirect URI** section enter the following redirect URIs:
-    1. `https://localhost:44321/`
-    1. `https://localhost:44321/signin-oidc`
+  1. In the **Redirect URI** section enter the following redirect URI:
+
+  1. `https://localhost:44321/signin-oidc`
 
   1. In the **Front-channel logout URL** section, set it to `https://localhost:44321/signout-oidc`.
-  1. In the **Implicit grant and hybrid flows** section, check the **Access tokens (used for implicit flows)** option.
   1. Click **Save** to save your changes.
   1. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where you can generate secrets and upload certificates.
   1. In the **Client secrets** section, select **New client secret**:
@@ -299,31 +298,57 @@ Did the sample not work for you as expected? Did you encounter issues trying thi
 
     * Then in the controllers `TodoListController.cs`, the `[Authorize]` added on top of the class to protect this route.
     * Further in the controller, the `RequiredScope` is used to list the scopes ([Delegated permissions](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent)), that the user should consent for, before the method can be called.  
-    * The delegated permissions are checked inside `TodoListService\Controllers\ToDoListController.cs` in the following way:
+    * The delegated permissions are checked inside `TodoListService\Controllers\ToDoListController.cs`, for example in the following way:
 
       ```CSharp
       [HttpGet]
-      [RequiredScope(new string[] { "ToDoList.Read", "ToDoList.Write" })
-    
+      [RequiredScopeOrAppPermission(
+        AcceptedScope = new string[] { "ToDoList.Read", "ToDoList.ReadWrite" },
+        AcceptedAppPermission = new string[] { "ToDoList.Read.All", "ToDoList.ReadWrite.All" }
+        )]
       public IEnumerable<Todo> Get()
       {
-      string owner = User.Identity.Name;
-      return TodoStore.Values.Where(x => x.Owner == owner);
+        if (HasDelegatedPermissions(new string[] { "ToDoList.Read", "ToDoList.ReadWrite" }))
+        {
+            return TodoStore.Values.Where(x => x.Owner == GetObjectIdClaim(User));
+        }
+        else if (HasApplicationPermissions(new string[] { "ToDoList.Read.All", "ToDoList.ReadWrite.All" }))
+        {
+            return TodoStore.Values;
+        }
+
+        return null;
       }
       ```
 
-      The code above demonstrates that to be able to reach a GET REST operation, the access token should contain AT LEAST ONE of the scopes listed inside parameter of [RequiredScope attribute](https://github.com/AzureAD/microsoft-identity-web/blob/master/src/Microsoft.Identity.Web/Policy/RequiredScopeAttribute.cs)
+      The code above demonstrates that to be able to reach a GET REST operation, the access token should contain AT LEAST ONE of the scopes listed inside parameter of [RequiredScopeOrAppPermission attribute](https://github.com/AzureAD/microsoft-identity-web/blob/master/src/Microsoft.Identity.Web/Policy/RequiredScopeOrAppPermissionAttribute.cs)
+      Please note that in this specific sample we use only delegated permissions, but also added an app permissions as an additional option for a developer consideration.
+      As well, pay attention that **ToDoList.*.All** permissions will list **ALL** entries.
+
+      Here is another example from the same controller:
 
       ``` CSharp
       [HttpDelete("{id}")]
-      [RequiredScope("ToDoList.Write")]
+      [RequiredScopeOrAppPermission(
+          AcceptedScope = new string[] { "ToDoList.ReadWrite" },
+          AcceptedAppPermission = new string[] { "ToDoList.ReadWrite.All" })]
       public void Delete(int id)
       {
-      TodoStore.Remove(id);
+          if (
+              (HasDelegatedPermissions(new string[] { "ToDoList.ReadWrite" }) && TodoStore.Values.Any(x => x.Id == id && x.Owner == GetObjectIdClaim(User)))
+
+                ||
+
+              HasApplicationPermissions(new string[] { "ToDoList.ReadWrite.All" }))
+          {
+              TodoStore.Remove(id);
+          }
       }
       ```
 
-      The above code demonstrates that to be able to execute the DELETE REST operation, the access token MUST contain the `ToDoList.Write` scope. Note that the called is not allowed to access this operation with just `ToDoList.Read` scope only.
+      The above code demonstrates that to be able to execute the DELETE REST operation, the access token MUST contain the `ToDoList.ReadWrite` scope. Note that the called is not allowed to access this operation with just `ToDoList.Read` scope only.
+      Also note of how we distinguish the **what** a user can delete. When there is a **ToDoList.ReadWrite.All** permission available, the user can delete **ANY** entity from the database,
+      but with **ToDoList.ReadWrite**, the user can delete only their own entries.
 
 ### Initial scopes
 
