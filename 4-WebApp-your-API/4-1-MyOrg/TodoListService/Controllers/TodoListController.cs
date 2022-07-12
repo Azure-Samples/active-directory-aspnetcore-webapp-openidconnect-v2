@@ -23,16 +23,23 @@ namespace TodoListService.Controllers
 
         private readonly IHttpContextAccessor _contextAccessor;
 
+        private const string _todoListReadScope = "ToDoList.Read";
+        private const string _todoListReadWriteScope = "ToDoList.ReadWrite";
+        private const string _todoListReadAllPermission = "ToDoList.Read.All";
+        private const string _todoListReadWriteAllPermission = "ToDoList.ReadWrite.All";
+
+        private string _currentLoggedUser = string.Empty;
+
         public TodoListController(IHttpContextAccessor contextAccessor)
         {
             _contextAccessor = contextAccessor;
-            var test = _contextAccessor.HttpContext.User.GetObjectId();
+            _currentLoggedUser = _contextAccessor.HttpContext.User.GetObjectId();
 
             // Pre-populate with sample data
-            if (TodoStore.Count == 0)
+            if (TodoStore.Count == 0 && !string.IsNullOrEmpty(_currentLoggedUser))
             {
-                TodoStore.Add(1, new Todo() { Id = 1, Owner = $"{_contextAccessor.HttpContext.User.GetObjectId()}", Title = "Pick up groceries" });
-                TodoStore.Add(2, new Todo() { Id = 2, Owner = $"{_contextAccessor.HttpContext.User.GetObjectId()}", Title = "Finish invoice report" });
+                TodoStore.Add(1, new Todo() { Id = 1, Owner = $"{_currentLoggedUser}", Title = "Pick up groceries" });
+                TodoStore.Add(2, new Todo() { Id = 2, Owner = $"{_currentLoggedUser}", Title = "Finish invoice report" });
                 TodoStore.Add(3, new Todo() { Id = 3, Owner = "Other User", Title = "Rent a car" });
                 TodoStore.Add(4, new Todo() { Id = 4, Owner = "Other User", Title = "Get vaccinated" });
             }
@@ -40,16 +47,16 @@ namespace TodoListService.Controllers
 
         [HttpGet]
         [RequiredScopeOrAppPermission(
-            AcceptedScope = new string[] { "ToDoList.Read", "ToDoList.ReadWrite" },
-            AcceptedAppPermission = new string[] { "ToDoList.Read.All", "ToDoList.ReadWrite.All" }
+            AcceptedScope = new string[] { _todoListReadScope, _todoListReadWriteScope },
+            AcceptedAppPermission = new string[] { _todoListReadAllPermission, _todoListReadWriteAllPermission }
             )]
         public IEnumerable<Todo> Get()
         {
-            if (HasDelegatedPermissions(new string[] { "ToDoList.Read", "ToDoList.ReadWrite" }))
+            if (HasDelegatedPermissions(new string[] { _todoListReadScope, _todoListReadWriteScope }))
             {
-                return TodoStore.Values.Where(x => x.Owner == _contextAccessor.HttpContext.User.GetObjectId());
+                return TodoStore.Values.Where(x => x.Owner == _currentLoggedUser);
             }
-            else if (HasApplicationPermissions(new string[] { "ToDoList.Read.All", "ToDoList.ReadWrite.All" }))
+            else if (HasApplicationPermissions(new string[] { _todoListReadAllPermission, _todoListReadWriteAllPermission }))
             {
                 return TodoStore.Values;
             }
@@ -59,19 +66,19 @@ namespace TodoListService.Controllers
 
         [HttpGet("{id}", Name = "Get")]
         [RequiredScopeOrAppPermission(
-            AcceptedScope = new string[] { "ToDoList.Read", "ToDoList.ReadWrite" },
-            AcceptedAppPermission = new string[] { "ToDoList.Read.All", "ToDoList.ReadWrite.All" })]
+            AcceptedScope = new string[] { _todoListReadScope, _todoListReadWriteScope },
+            AcceptedAppPermission = new string[] { _todoListReadAllPermission, _todoListReadWriteAllPermission })]
         public Todo Get(int id)
         {
             //if it only has delegated permissions
             //then it will be t.id==id && x.Owner == owner
             //if it has app permissions the it will return  t.id==id
 
-            if (HasDelegatedPermissions(new string[] { "ToDoList.Read", "ToDoList.ReadWrite" }))
+            if (HasDelegatedPermissions(new string[] { _todoListReadScope, _todoListReadWriteScope }))
             {
-                return TodoStore.Values.FirstOrDefault(t => t.Id == id && t.Owner == _contextAccessor.HttpContext.User.GetObjectId());
+                return TodoStore.Values.FirstOrDefault(t => t.Id == id && t.Owner == _currentLoggedUser);
             }
-            else if (HasApplicationPermissions(new string[] { "ToDoList.Read.All", "ToDoList.ReadWrite.All" }))
+            else if (HasApplicationPermissions(new string[] { _todoListReadAllPermission, _todoListReadWriteAllPermission }))
             {
                 return TodoStore.Values.FirstOrDefault(t => t.Id == id);
             }
@@ -81,18 +88,18 @@ namespace TodoListService.Controllers
 
         [HttpDelete("{id}")]
         [RequiredScopeOrAppPermission(
-            AcceptedScope = new string[] { "ToDoList.ReadWrite" },
-            AcceptedAppPermission = new string[] { "ToDoList.ReadWrite.All" })]
+            AcceptedScope = new string[] { _todoListReadWriteScope },
+            AcceptedAppPermission = new string[] { _todoListReadWriteAllPermission })]
         public void Delete(int id)
         {
             if (
                 (
 
-                HasDelegatedPermissions(new string[] { "ToDoList.ReadWrite" }) && TodoStore.Values.Any(x => x.Id == id && x.Owner == _contextAccessor.HttpContext.User.GetObjectId()))
+                HasDelegatedPermissions(new string[] { _todoListReadWriteScope }) && TodoStore.Values.Any(x => x.Id == id && x.Owner == _currentLoggedUser))
 
                 ||
 
-                HasApplicationPermissions(new string[] { "ToDoList.ReadWrite.All" })
+                HasApplicationPermissions(new string[] { _todoListReadWriteAllPermission })
                 )
             {
                 TodoStore.Remove(id);
@@ -101,20 +108,20 @@ namespace TodoListService.Controllers
 
         [HttpPost]
         [RequiredScopeOrAppPermission(
-            AcceptedScope = new string[] { "ToDoList.ReadWrite" },
-            AcceptedAppPermission = new string[] { "ToDoList.ReadWrite.All" })]
+            AcceptedScope = new string[] { _todoListReadWriteScope },
+            AcceptedAppPermission = new string[] { _todoListReadWriteAllPermission })]
         public IActionResult Post([FromBody] Todo todo)
         {
-            var owner = _contextAccessor.HttpContext.User.GetObjectId();
+            var ownerInEffect = _currentLoggedUser;
 
-            if (HasApplicationPermissions(new string[] { "ToDoList.ReadWrite.All" }))
+            if (HasApplicationPermissions(new string[] { _todoListReadWriteAllPermission }))
             {
                 //with such a permission any owner name is accepted from UI
-                owner = todo.Owner;
+                ownerInEffect = todo.Owner;
             }
 
             int id = TodoStore.Values.OrderByDescending(x => x.Id).FirstOrDefault().Id + 1;
-            Todo todonew = new Todo() { Id = id, Owner = owner, Title = todo.Title };
+            Todo todonew = new Todo() { Id = id, Owner = ownerInEffect, Title = todo.Title };
             TodoStore.Add(id, todonew);
 
             return Ok(todo);
@@ -122,8 +129,8 @@ namespace TodoListService.Controllers
 
         [HttpPatch("{id}")]
         [RequiredScopeOrAppPermission(
-            AcceptedScope = new string[] { "ToDoList.ReadWrite" },
-            AcceptedAppPermission = new string[] { "ToDoList.ReadWrite.All" })]
+            AcceptedScope = new string[] { _todoListReadWriteScope },
+            AcceptedAppPermission = new string[] { _todoListReadWriteAllPermission })]
         public IActionResult Patch(int id, [FromBody] Todo todo)
         {
             if (id != todo.Id || !TodoStore.Values.Any(x => x.Id == id))
@@ -132,13 +139,13 @@ namespace TodoListService.Controllers
             }
 
             if (
-                HasDelegatedPermissions(new string[] { "ToDoList.ReadWrite" })
-                && TodoStore.Values.Any(x => x.Id == id && x.Owner == _contextAccessor.HttpContext.User.GetObjectId())
-                && todo.Owner == _contextAccessor.HttpContext.User.GetObjectId()
+                HasDelegatedPermissions(new string[] { _todoListReadWriteScope })
+                && TodoStore.Values.Any(x => x.Id == id && x.Owner == _currentLoggedUser)
+                && todo.Owner == _currentLoggedUser
 
                 ||
 
-                HasApplicationPermissions(new string[] { "ToDoList.ReadWrite.All" })
+                HasApplicationPermissions(new string[] { _todoListReadWriteAllPermission })
 
                 )
             {
