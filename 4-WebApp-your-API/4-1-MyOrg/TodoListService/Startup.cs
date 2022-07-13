@@ -8,6 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Linq;
+using System;
 
 namespace TodoListService
 {
@@ -32,7 +35,33 @@ namespace TodoListService
             // Adds Microsoft Identity platform (AAD v2.0) support to protect this Api
             services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
 
-            services.AddControllers();
+            //Comment above lines of code and uncomment this section if you would like to validate ID tokens for allowed tenantIds
+
+           //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+           //  .AddMicrosoftIdentityWebApi(options =>
+           //{
+           //    Configuration.Bind("AzureAd", options);
+           //    options.Events = new JwtBearerEvents();
+           //    options.Events.OnTokenValidated = async context =>
+           //    {
+           //        string[] allowedTenants = {/* list of tenant IDs */ };
+           //        string tenantId = context.Principal.Claims.FirstOrDefault(x => x.Type == "tid" || x.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
+
+           //        if (!allowedTenants.Contains(tenantId))
+           //        {
+           //            throw new Exception("This tenant is not authorized");
+           //        }
+           //    };
+           //}, options => { Configuration.Bind("AzureAd", options); })
+           //  .EnableTokenAcquisitionToCallDownstreamApi(
+           //        options =>
+           //        {
+           //            Configuration.Bind("AzureAd", options);
+           //        })
+           //    .AddInMemoryTokenCaches();
+
+
+           services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
