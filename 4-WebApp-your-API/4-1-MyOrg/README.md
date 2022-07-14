@@ -299,6 +299,11 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
 
     * `AddMicrosoftIdentityWebApiAuthentication()` protects the Web API by [validating Access tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens#validating-tokens) sent tho this API. Check out [Protected web API: Code configuration](https://docs.microsoft.com/azure/active-directory/develop/scenario-protected-web-api-app-configuration) which explains the inner workings of this method in more detail.
 
+    * There is a bit of code (commented) provided under this method that can be used to used do extended token validation and check for additional claims, such as:
+      * check if the caller's tenant is in the allowed tenants list via the 'tid' claim (for multi-tenant applications)
+      * check if the caller's account is homed or guest via the 'acct' optional claim
+      * check if the caller belongs to right roles or groups via the 'roles' or 'groups' claim, respectively
+                
     * Then in the controllers `TodoListController.cs`, the `[Authorize]` added on top of the class to protect this route.
     * Further in the controller, the [RequiredScopeOrAppPermission](https://github.com/AzureAD/microsoft-identity-web/wiki/web-apis#checking-for-scopes-or-app-permissions=) is used to list the scopes ([Delegated permissions](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent)), that the user should consent for, before the method can be called.  
     * The delegated permissions are checked inside `TodoListService\Controllers\ToDoListController.cs` in the following manner:
