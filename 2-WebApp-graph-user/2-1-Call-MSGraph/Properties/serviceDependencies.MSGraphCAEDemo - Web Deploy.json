@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "type": "mssql",
+      "connectionId": "AzureAd/ClientSecret",
+      "suggestion": "true",
+      "ignored": "true"
+    }
+  }
+}
