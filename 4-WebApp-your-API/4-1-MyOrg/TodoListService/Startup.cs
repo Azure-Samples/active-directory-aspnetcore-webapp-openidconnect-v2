@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Logging;
 
 namespace TodoListService
 {
@@ -31,6 +32,9 @@ namespace TodoListService
 
             // Adds Microsoft Identity platform (AAD v2.0) support to protect this Api
             services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
+
+            // The following flag can be used to get more descriptive errors in development environments
+            IdentityModelEventSource.ShowPII = true;
 
             services.AddControllers();
         }

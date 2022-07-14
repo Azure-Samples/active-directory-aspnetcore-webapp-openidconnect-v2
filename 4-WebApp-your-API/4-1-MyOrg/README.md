@@ -35,13 +35,16 @@ Table Of Contents
  This sample demonstrates an ASP.NET Core client Web App calling an ASP.NET Core Web API that is secured using Azure AD.
 
  1. The client ASP.NET Core Web App uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign-in a user and obtain a JWT [Id Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) from **Azure AD**.
+ 2. The service again uses the the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to protect the Web api, and validate tokens.  
 
 ![Scenario Image](./ReadmeFiles/topology.png)
+
 ## Prerequisites
 
 * Either [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/download) and [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
 * An **Azure AD** tenant. For more information, see: [How to get an Azure AD tenant](https://docs.microsoft.com/azure/active-directory/develop/test-setup-environment#get-a-test-tenant)
 * A user account in your **Azure AD** tenant. This sample will not work with a **personal Microsoft account**.  If you're signed in to the [Azure portal](https://portal.azure.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
+  
 ## Setup the sample
 
 ### Step 1: Clone or download this repository
@@ -115,7 +118,7 @@ Follow the [manual steps](#Manual-steps)
 Follow the steps below for manually register and configure your apps
 
 <details>
-   <summary>Expand this section if you want to use this automation:</summary>
+   <summary>Expand this section if you want to register apps manually:</summary>
   1. Sign in to the [Azure portal](https://portal.azure.com).
   1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant.
 
@@ -218,8 +221,8 @@ Follow the steps below for manually register and configure your apps
   1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of `TodoListClient-aspnetcore-webapi` copied from the Azure portal.
   1. Find the key `TodoListScopes` and replace the existing value with **"api://<your_service_api_client_id>/ToDoList.Read api://<your_service_api_client_id>/ToDoList.ReadWrite"**.
   1. Find the key `TodoListBaseAddress` and replace the existing value with the base address of `TodoListService-aspnetcore-webapi` (by default `https://localhost:44351`).
-</details>
 
+</details>
 
 ### Variation: web app using client certificates
 
@@ -241,20 +244,6 @@ Then open a separate command line terminal and run
     dotnet run
 ```
 
-## Troubleshooting
-
-<details>
- <summary>Expand for troubleshooting info</summary>
-
-Use [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) to get support from the community.
-Ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
-Make sure that your questions or comments are tagged with [`azure-active-directory` `adal` `msal` `dotnet`].
-
-If you find a bug in the sample, please raise the issue on [GitHub Issues](../../issues).
-
-To provide a recommendation, visit the following [User Voice page](https://feedback.azure.com/forums/169401-azure-active-directory).
-</details>
-
 ## Using the sample
 
 <details>
@@ -271,6 +260,20 @@ Did the sample not work for you as expected? Did you encounter issues trying thi
 [Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbRz0h_jLR5HNJlvkZAewyoWxUNEFCQ0FSMFlPQTJURkJZMTRZWVJRNkdRMC4u)
 </details>
 
+## Troubleshooting
+
+<details>
+ <summary>Expand for troubleshooting info</summary>
+
+Use [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) to get support from the community.
+Ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
+Make sure that your questions or comments are tagged with [`azure-active-directory` `adal` `msal` `dotnet`].
+
+If you find a bug in the sample, please raise the issue on [GitHub Issues](../../issues).
+
+To provide a recommendation, visit the following [User Voice page](https://feedback.azure.com/forums/169401-azure-active-directory).
+</details>
+
 ## About the code
 
 <details>
@@ -278,7 +281,7 @@ Did the sample not work for you as expected? Did you encounter issues trying thi
 
 1. Consider adding [MSAL.NET Logging](https://docs.microsoft.com/azure/active-directory/develop/msal-logging-dotnet) to you project
 
-1. In the `TodoListService` project, first the package `Microsoft.Identity.Web`is added from NuGet.
+1. In the `TodoListService` project, which represents the web api, first the package `Microsoft.Identity.Web`is added from NuGet.
 
 1. Starting with the **Startup.cs** file :
 
@@ -297,8 +300,8 @@ Did the sample not work for you as expected? Did you encounter issues trying thi
     * `AddMicrosoftIdentityWebApiAuthentication()` protects the Web API by [validating Access tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens#validating-tokens) sent tho this API. Check out [Protected web API: Code configuration](https://docs.microsoft.com/azure/active-directory/develop/scenario-protected-web-api-app-configuration) which explains the inner workings of this method in more detail.
 
     * Then in the controllers `TodoListController.cs`, the `[Authorize]` added on top of the class to protect this route.
-    * Further in the controller, the `RequiredScope` is used to list the scopes ([Delegated permissions](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent)), that the user should consent for, before the method can be called.  
-    * The delegated permissions are checked inside `TodoListService\Controllers\ToDoListController.cs`, for example in the following way:
+    * Further in the controller, the [RequiredScopeOrAppPermission](https://github.com/AzureAD/microsoft-identity-web/wiki/web-apis#checking-for-scopes-or-app-permissions=) is used to list the scopes ([Delegated permissions](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent)), that the user should consent for, before the method can be called.  
+    * The delegated permissions are checked inside `TodoListService\Controllers\ToDoListController.cs` in the following manner:
 
       ```CSharp
       [HttpGet]
@@ -308,22 +311,23 @@ Did the sample not work for you as expected? Did you encounter issues trying thi
         )]
       public IEnumerable<Todo> Get()
       {
-        if (HasDelegatedPermissions(new string[] { "ToDoList.Read", "ToDoList.ReadWrite" }))
-        {
-            return TodoStore.Values.Where(x => x.Owner == GetObjectIdClaim(User));
-        }
-        else if (HasApplicationPermissions(new string[] { "ToDoList.Read.All", "ToDoList.ReadWrite.All" }))
-        {
-            return TodoStore.Values;
-        }
-
-        return null;
+          if (IsUserToken())
+          {
+              // this is a request for all ToDo list items of a certain user.
+              return TodoStore.Values.Where(x => x.Owner == _currentLoggedUser);
+          }
+          else
+          {
+              // Its an app calling with app permissions, so return all items across all users
+              return TodoStore.Values;
+          }
       }
       ```
 
-      The code above demonstrates that to be able to reach a GET REST operation, the access token should contain AT LEAST ONE of the scopes listed inside parameter of [RequiredScopeOrAppPermission attribute](https://github.com/AzureAD/microsoft-identity-web/blob/master/src/Microsoft.Identity.Web/Policy/RequiredScopeOrAppPermissionAttribute.cs)
-      Please note that in this specific sample we use only delegated permissions, but also added an app permissions as an additional option for a developer consideration.
-      As well, pay attention that **ToDoList.*.All** permissions will list **ALL** entries.
+      The code above demonstrates that to be able to reach a GET REST operation, the access token should contain AT LEAST ONE of the scopes listed inside parameter of [RequiredScopeOrAppPermission](https://github.com/AzureAD/microsoft-identity-web/wiki/web-apis#checking-for-scopes-or-app-permissions=) attribute
+      Please note that while in this sample, the client app only works with *Delegated Permissions*,  the API's controller is designed to work with both *Delegated* and *Application* permissions.
+
+      The **ToDoList.*.All** permissions are **Application PErmissions**.
 
       Here is another example from the same controller:
 
@@ -334,15 +338,18 @@ Did the sample not work for you as expected? Did you encounter issues trying thi
           AcceptedAppPermission = new string[] { "ToDoList.ReadWrite.All" })]
       public void Delete(int id)
       {
-          if (
-              (HasDelegatedPermissions(new string[] { "ToDoList.ReadWrite" }) && TodoStore.Values.Any(x => x.Id == id && x.Owner == GetObjectIdClaim(User)))
-
-                ||
-
-              HasApplicationPermissions(new string[] { "ToDoList.ReadWrite.All" }))
-          {
-              TodoStore.Remove(id);
-          }
+            if (IsUserToken())
+            {
+                // only delete if the ToDo list item belonged to this user
+                if (TodoStore.Values.Any(x => x.Id == id && x.Owner == _currentLoggedUser))
+                {
+                    TodoStore.Remove(id);
+                }
+            }
+            else
+            {
+                TodoStore.Remove(id);
+            }
       }
       ```
 
@@ -352,7 +359,7 @@ Did the sample not work for you as expected? Did you encounter issues trying thi
 
 ### Initial scopes
 
-Client [appsettings.json](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/master/4-WebApp-your-API/4-1-MyOrg/Client/appsettings.json) file contains `ToDoListScopes` key that is used in [startup.cs](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/2607df1338a9f7c06fe228c87644b8b456ca708b/4-WebApp-your-API/4-1-MyOrg/Client/Startup.cs#L46) to specify which initial scopes should be requested from Web API when refreshing the token:
+Client [appsettings.json](../4-1-MyOrg/Client/appsettings.json) file contains `ToDoListScopes` key that is used in [startup.cs](../4-1-MyOrg/Client/Startup.cs#L46) to specify which initial scopes should be requested from Web API when refreshing the token:
 
 ```csharp
 services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
@@ -437,10 +444,14 @@ services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
 1. Update the `configureServices` method in `startup.cs` to add the MSAL library and a token cache.
 
     ```CSharp
-     services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-             .AddMicrosoftIdentityWebApp(Configuration)
-             .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Configuration["TodoList:TodoListScopes"] })
-             .AddInMemoryTokenCaches();
+            services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+                    .EnableTokenAcquisitionToCallDownstreamApi(
+                        Configuration.GetSection("TodoList:TodoListScopes").Get<string>().Split(" ", System.StringSplitOptions.RemoveEmptyEntries)
+                     )
+                    .AddInMemoryTokenCaches();
+
+            // Add APIs
+            services.AddTodoListService(Configuration);
     ```
 
 1. Update the `Configure` method to include **app.UseAuthentication();** before **app.UseAuthorization();**  
@@ -576,7 +587,6 @@ Also, if you increase the instance count of the web site, requests will be distr
 
 </details>
 
-
 ## Next Steps
 
 Learn how to:
@@ -616,6 +626,4 @@ For more information, visit the following links:
   *[Introduction to Identity on ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authentication/identity)
   *[AuthenticationBuilder](https://docs.microsoft.com/dotnet/api/microsoft.aspnetcore.authentication.authenticationbuilder)
   *[Azure Active Directory with ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authentication/azure-active-directory)
-
-
-
+[Protected web API: Verify scopes and app roles](https://docs.microsoft.com/en-us/azure/active-directory/develop/scenario-protected-web-api-verification-scope-app-roles?tabs=aspnetcore)

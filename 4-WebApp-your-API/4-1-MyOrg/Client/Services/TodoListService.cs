@@ -122,7 +122,7 @@ namespace TodoListClient.Services
             return null;
         }
         
-        //Acquire a token and add it as Bearer to Athorization header
+        //Acquire a token and add it as Bearer to Authorization header
         private async Task PrepareAuthenticatedClient()
         {
             //You would specify the scopes (delegated permissions) here for which you desire an Access token of this API from Azure AD.
