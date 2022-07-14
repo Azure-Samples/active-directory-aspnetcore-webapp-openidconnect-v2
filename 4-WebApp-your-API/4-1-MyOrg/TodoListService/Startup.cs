@@ -9,6 +9,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Logging;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Linq;
+using System.Net;
+using System.Web.Http;
 
 namespace TodoListService
 {
@@ -33,8 +37,45 @@ namespace TodoListService
             // Adds Microsoft Identity platform (AAD v2.0) support to protect this Api
             services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
 
-            // The following flag can be used to get more descriptive errors in development environments
-            IdentityModelEventSource.ShowPII = true;
+
+            //// Comment the lines of code above and uncomment the following section if you would like to limit calls to this API to just a set of client apps
+            //// The following is an example of extended token validation
+            /**
+            * The example below can be used do extended token validation and check for additional claims, such as:
+            * -check if the caller's tenant is in the allowed tenants list via the 'tid' claim (for multi-tenant applications)
+            *  -check if the caller's account is homed or guest via the 'acct' optional claim
+                * -check if the caller belongs to right roles or groups via the 'roles' or 'groups' claim, respectively
+                *
+                * For more information, visit: https://docs.microsoft.com/azure/active-directory/develop/access-tokens#validate-the-user-has-permission-to-access-this-data
+            **/
+
+
+
+                       //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                       //  .AddMicrosoftIdentityWebApi(options =>
+                       //      {
+                       //          Configuration.Bind("AzureAd", options);
+                       //          options.Events = new JwtBearerEvents();
+                       //          options.Events.OnTokenValidated = async context =>
+                       //          {
+                       //              string[] allowedClientApps =
+                       //              {
+                       //                  /* list of client ids to allow */
+                       //              };
+                       //              string clientappId = context?.Principal?.Claims
+                       //                  .FirstOrDefault(x => x.Type == "azp" || x.Type == "appid")?.Value;
+
+                       //              if (!allowedClientApps.Contains(clientappId))
+                       //              {
+                       //                  throw new HttpResponseException(HttpStatusCode.Unauthorized);
+                       //              }
+                       //          }
+                       //      }
+                       //  );
+
+
+                       // The following flag can be used to get more descriptive errors in development environments
+                       IdentityModelEventSource.ShowPII = true;
 
             services.AddControllers();
         }
