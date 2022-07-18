@@ -77,16 +77,15 @@ namespace TodoListService.Controllers
         }
 
         /// <summary>
-        /// Indicates of the AT presented was for a user or not.
+        /// Indicates of the AT presented was for a app or not.
         /// </summary>
         /// <returns></returns>
-        private bool IsUserToken()
+        private bool IsAppOnlyToken()
         {
-            if (!string.IsNullOrWhiteSpace((this._currentLoggedUser)))
-                return true;
-            // evaluating 'idtyp' optional claim is another good option
-
-            return false;
+            // Add in the optional 'idtyp' claim to check if the access token is coming from an application or user.
+            //
+            // See: https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-optional-claims
+            return HttpContext.User.Claims.Any(c => c.Type == "idtyp" && c.Value == "app");
         }
 
         // GET: api/values
@@ -101,7 +100,7 @@ namespace TodoListService.Controllers
             )]
         public IEnumerable<Todo> Get()
         {
-            if (IsUserToken())
+            if (!IsAppOnlyToken())
             {
                 // this is a request for all ToDo list items of a certain user.
                 return TodoStore.Values.Where(x => x.Owner == _currentLoggedUser);
@@ -124,7 +123,7 @@ namespace TodoListService.Controllers
             //then it will be t.id==id && x.Owner == owner
             //if it has app permissions the it will return  t.id==id
 
-            if (IsUserToken())
+            if (!IsAppOnlyToken())
             {
                 return TodoStore.Values.FirstOrDefault(t => t.Id == id && t.Owner == _currentLoggedUser);
             }
@@ -141,7 +140,7 @@ namespace TodoListService.Controllers
             AcceptedAppPermission = new string[] { _todoListReadWriteAllPermission })]
         public void Delete(int id)
         {
-            if (IsUserToken())
+            if (!IsAppOnlyToken())
             {
                 // only delete if the ToDo list item belonged to this user
                 if (TodoStore.Values.Any(x => x.Id == id && x.Owner == _currentLoggedUser))
@@ -162,7 +161,7 @@ namespace TodoListService.Controllers
             AcceptedAppPermission = new string[] { _todoListReadWriteAllPermission })]
         public IActionResult Post([FromBody] Todo todo)
         {
-            if (!IsUserToken())
+            if (IsAppOnlyToken())
             {
                 if (string.IsNullOrEmpty(todo.Owner))
                 {
@@ -200,7 +199,7 @@ namespace TodoListService.Controllers
                 return NotFound();
             }
 
-            if (IsUserToken())
+            if (!IsAppOnlyToken())
             {
                 // a user can only modify their own ToDos
                 if (existingToDo.Owner != _currentLoggedUser)
