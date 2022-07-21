@@ -100,12 +100,12 @@
       "Scopes": [ "ToDoList.Read", "ToDoList.ReadWrite" ],
       "AppRoles": [
         {
-          "Types": [ "Application" ],
+          "AllowedMemberTypes": [ "Application" ],
           "Name": "ToDoList.Read.All",
           "Description": "Allow application to read all ToDo list items"
         },
         {
-          "Types": [ "Application" ],
+          "AllowedMemberTypes": [ "Application" ],
           "Name": "ToDoList.ReadWrite.All",
           "Description": "Allow application to read and write into ToDo list"
         }

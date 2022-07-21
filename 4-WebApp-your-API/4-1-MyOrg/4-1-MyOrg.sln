@@ -31,7 +31,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReadmeFiles", "ReadmeFiles", "{2A7989B7-23E0-46D4-8F2A-3D069084F65D}"
 	ProjectSection(SolutionItems) = preProject
 		ReadmeFiles\ReadmeAboutTheCode.md = ReadmeFiles\ReadmeAboutTheCode.md
+		ReadmeFiles\ReadmeAzureDeploy.md = ReadmeFiles\ReadmeAzureDeploy.md
+		ReadmeFiles\ReadmeHowTheCodeWasCreated.md = ReadmeFiles\ReadmeHowTheCodeWasCreated.md
+		ReadmeFiles\ReadmeLearnMore.md = ReadmeFiles\ReadmeLearnMore.md
 		ReadmeFiles\ReadmeScenario.md = ReadmeFiles\ReadmeScenario.md
+		ReadmeFiles\ReadmeTroubleshooting.md = ReadmeFiles\ReadmeTroubleshooting.md
+		ReadmeFiles\ReadmeUsingTheSample.md = ReadmeFiles\ReadmeUsingTheSample.md
 		ReadmeFiles\topology.png = ReadmeFiles\topology.png
 	EndProjectSection
 EndProject

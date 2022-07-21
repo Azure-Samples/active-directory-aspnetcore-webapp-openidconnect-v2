@@ -5,7 +5,7 @@
 
 1. Consider adding [MSAL.NET Logging](https://docs.microsoft.com/azure/active-directory/develop/msal-logging-dotnet) to you project
 
-1. In the `TodoListService` project, first the package `Microsoft.Identity.Web`is added from NuGet.
+1. In the `TodoListService` project,  which represents the web api, first the package `Microsoft.Identity.Web`is added from NuGet.
 
 1. Starting with the **Startup.cs** file :
 
@@ -23,9 +23,14 @@
 
     * `AddMicrosoftIdentityWebApiAuthentication()` protects the Web API by [validating Access tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens#validating-tokens) sent tho this API. Check out [Protected web API: Code configuration](https://docs.microsoft.com/azure/active-directory/develop/scenario-protected-web-api-app-configuration) which explains the inner workings of this method in more detail.
 
+    * There is a bit of code (commented) provided under this method that can be used to used do extended token validation and check for additional claims, such as:
+      * check if the caller's tenant is in the allowed tenants list via the 'tid' claim (for multi-tenant applications)
+      * check if the caller's account is homed or guest via the 'acct' optional claim
+      * check if the caller belongs to right roles or groups via the 'roles' or 'groups' claim, respectively
+
     * Then in the controllers `TodoListController.cs`, the `[Authorize]` added on top of the class to protect this route.
-    * Further in the controller, the `RequiredScope` is used to list the scopes ([Delegated permissions](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent)), that the user should consent for, before the method can be called.  
-    * The delegated permissions are checked inside `TodoListService\Controllers\ToDoListController.cs`, for example in the following way:
+    * Further in the controller, the [RequiredScopeOrAppPermission](https://github.com/AzureAD/microsoft-identity-web/wiki/web-apis#checking-for-scopes-or-app-permissions=) is used to list the scopes ([Delegated permissions](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent)), that the user should consent for, before the method can be called.  
+    * The delegated permissions are checked inside `TodoListService\Controllers\ToDoListController.cs` in the following manner:
 
       ```CSharp
       [HttpGet]
@@ -35,22 +40,23 @@
         )]
       public IEnumerable<Todo> Get()
       {
-        if (HasDelegatedPermissions(new string[] { "ToDoList.Read", "ToDoList.ReadWrite" }))
-        {
-            return TodoStore.Values.Where(x => x.Owner == GetObjectIdClaim(User));
-        }
-        else if (HasApplicationPermissions(new string[] { "ToDoList.Read.All", "ToDoList.ReadWrite.All" }))
-        {
-            return TodoStore.Values;
-        }
-
-        return null;
+          if (IsUserToken())
+          {
+              // this is a request for all ToDo list items of a certain user.
+              return TodoStore.Values.Where(x => x.Owner == _currentLoggedUser);
+          }
+          else
+          {
+              // Its an app calling with app permissions, so return all items across all users
+              return TodoStore.Values;
+          }
       }
       ```
 
-      The code above demonstrates that to be able to reach a GET REST operation, the access token should contain AT LEAST ONE of the scopes listed inside parameter of [RequiredScopeOrAppPermission attribute](https://github.com/AzureAD/microsoft-identity-web/blob/master/src/Microsoft.Identity.Web/Policy/RequiredScopeOrAppPermissionAttribute.cs)
-      Please note that in this specific sample we use only delegated permissions, but also added an app permissions as an additional option for a developer consideration.
-      As well, pay attention that **ToDoList.*.All** permissions will list **ALL** entries.
+      The code above demonstrates that to be able to reach a GET REST operation, the access token should contain AT LEAST ONE of the scopes listed inside parameter of [RequiredScopeOrAppPermission](https://github.com/AzureAD/microsoft-identity-web/wiki/web-apis#checking-for-scopes-or-app-permissions=) attribute
+      Please note that while in this sample, the client app only works with *Delegated Permissions*,  the API's controller is designed to work with both *Delegated* and *Application* permissions.
+
+      The **ToDoList.*.All** permissions are **Application PErmissions**.
 
       Here is another example from the same controller:
 
@@ -61,15 +67,18 @@
           AcceptedAppPermission = new string[] { "ToDoList.ReadWrite.All" })]
       public void Delete(int id)
       {
-          if (
-              (HasDelegatedPermissions(new string[] { "ToDoList.ReadWrite" }) && TodoStore.Values.Any(x => x.Id == id && x.Owner == GetObjectIdClaim(User)))
-
-                ||
-
-              HasApplicationPermissions(new string[] { "ToDoList.ReadWrite.All" }))
-          {
-              TodoStore.Remove(id);
-          }
+            if (IsUserToken())
+            {
+                // only delete if the ToDo list item belonged to this user
+                if (TodoStore.Values.Any(x => x.Id == id && x.Owner == _currentLoggedUser))
+                {
+                    TodoStore.Remove(id);
+                }
+            }
+            else
+            {
+                TodoStore.Remove(id);
+            }
       }
       ```
 
@@ -79,7 +88,7 @@
 
 ### Initial scopes
 
-Client [appsettings.json](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/master/4-WebApp-your-API/4-1-MyOrg/Client/appsettings.json) file contains `ToDoListScopes` key that is used in [startup.cs](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/2607df1338a9f7c06fe228c87644b8b456ca708b/4-WebApp-your-API/4-1-MyOrg/Client/Startup.cs#L46) to specify which initial scopes should be requested from Web API when refreshing the token:
+Client [appsettings.json](../4-1-MyOrg/Client/appsettings.json) file contains `ToDoListScopes` key that is used in [startup.cs](../4-1-MyOrg/Client/Startup.cs#L46) to specify which initial scopes should be requested from Web API when refreshing the token:
 
 ```csharp
 services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
