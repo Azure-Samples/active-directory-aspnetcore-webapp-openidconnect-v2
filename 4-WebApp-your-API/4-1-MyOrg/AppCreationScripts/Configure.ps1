@@ -154,6 +154,19 @@ Function CreateAppRole([string] $types, [string] $name, [string] $description)
     $appRole.Value = $name;
     return $appRole
 }
+Function CreateOptionalClaim([string] $name)
+{
+    <#.Description
+    This function creates a new Azure AD optional claims  with default and provided values
+    #>  
+
+    $appClaim = New-Object Microsoft.Graph.PowerShell.Models.MicrosoftGraphOptionalClaim
+    $appClaim.AdditionalProperties =  New-Object System.Collections.Generic.List[string]
+    $appClaim.Source =  $null
+    $appClaim.Essential = $false
+    $appClaim.Name = $name
+    return $appClaim
+}
 
 Function ConfigureApplications
 {
@@ -188,6 +201,10 @@ Function ConfigureApplications
                                                        @{ `
                                                            HomePageUrl = "https://localhost:44351"; `
                                                          } `
+                                                         -Api `
+                                                         @{ `
+                                                            RequestedAccessTokenVersion = 2 `
+                                                         } `
                                                         -SignInAudience AzureADMyOrg `
                                                        #end of command
     $serviceIdentifierUri = 'api://'+$serviceAadApplication.AppId
@@ -204,12 +221,26 @@ Function ConfigureApplications
         New-MgApplicationOwnerByRef -ApplicationId $serviceAadApplication.Id  -BodyParameter = @{"@odata.id" = "htps://graph.microsoft.com/v1.0/directoryObjects/$user.ObjectId"}
         Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($serviceServicePrincipal.DisplayName)'"
     }
+
+    # Add Claims
+
+    $optionalClaims = New-Object Microsoft.Graph.PowerShell.Models.MicrosoftGraphOptionalClaims
+    $optionalClaims.AccessToken = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphOptionalClaim]
+    $optionalClaims.IdToken = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphOptionalClaim]
+    $optionalClaims.Saml2Token = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphOptionalClaim]
+
+
+    # Add Optional Claims
+
+    $newClaim =  CreateOptionalClaim  -name "idtyp" 
+    $optionalClaims.AccessToken += ($newClaim)
+    Update-MgApplication -ApplicationId $serviceAadApplication.Id -OptionalClaims $optionalClaims
     
-    # Add application permissions/user roles
+    # Add application Roles
     $appRoles = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphAppRole]
-    $newRole = CreateAppRole -types "Application" -name "ToDoList.Read.All" -description "Application can only read ToDo list"
+    $newRole = CreateAppRole -types "Application" -name "ToDoList.Read.All" -description "Allow application to read all ToDo list items"
     $appRoles.Add($newRole)
-    $newRole = CreateAppRole -types "Application" -name "ToDoList.ReadWrite.All" -description "Application can read and write into ToDo list"
+    $newRole = CreateAppRole -types "Application" -name "ToDoList.ReadWrite.All" -description "Allow application to read and write into ToDo list"
     $appRoles.Add($newRole)
     Update-MgApplication -ApplicationId $serviceAadApplication.Id -AppRoles $appRoles
     
@@ -236,14 +267,14 @@ Function ConfigureApplications
     -userConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
     -userConsentDescription "Allow the application to access TodoListService-aspnetcore-webapi on your behalf."  `
     -adminConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
-    -adminConsentDescription "Allow the app TodoListService-aspnetcore-webapi to [ex, read ToDo list items]"
+    -adminConsentDescription "Allows the app to have the same access to information in the directory on behalf of an admin."
             
     $scopes.Add($scope)
     $scope = CreateScope -value ToDoList.ReadWrite  `
     -userConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
     -userConsentDescription "Allow the application to access TodoListService-aspnetcore-webapi on your behalf."  `
     -adminConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
-    -adminConsentDescription "Allow the app TodoListService-aspnetcore-webapi to [ex, read ToDo list items]"
+    -adminConsentDescription "Allows the app to have the same access to information in the directory on behalf of an admin."
             
     $scopes.Add($scope)
     
@@ -267,18 +298,16 @@ Function ConfigureApplications
    $clientAadApplication = New-MgApplication -DisplayName "TodoListClient-aspnetcore-webapi" `
                                                       -Web `
                                                       @{ `
-                                                          RedirectUris = "https://localhost:44321/", "https://localhost:44321/signin-oidc"; `
+                                                          RedirectUris = "https://localhost:44321/signin-oidc"; `
                                                           HomePageUrl = "https://localhost:44321/"; `
                                                           LogoutUrl = "https://localhost:44321/signout-oidc"; `
-                                                          ImplicitGrantSettings = @{ `
-                                                              EnableAccessTokenIssuance=$true; `
-                                                          } `
                                                         } `
                                                        -SignInAudience AzureADMyOrg `
                                                       #end of command
     #add a secret to the application
     $pwdCredential = Add-MgApplicationPassword -ApplicationId $clientAadApplication.Id -PasswordCredential $key
     $clientAppKey = $pwdCredential.SecretText
+
     $tenantName = (Get-MgApplication -ApplicationId $clientAadApplication.Id).PublisherDomain
     Update-MgApplication -ApplicationId $clientAadApplication.Id -IdentifierUris @("https://$tenantName/TodoListClient-aspnetcore-webapi")
     
@@ -327,7 +356,13 @@ Function ConfigureApplications
     Write-Host "Updating the sample code ($configFile)"
 
     UpdateTextFile -configFilePath $configFile -dictionary $dictionary
-    if($isOpenSSL -eq 'Y')
+    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+    Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
+    Write-Host "- For service"
+    Write-Host "  - Navigate to $servicePortalUrl"
+    Write-Host "  - Application 'service' publishes application permissions. Do remember to navigate to the app registration in the app portal and consent for those" -ForegroundColor Red 
+    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+       if($isOpenSSL -eq 'Y')
     {
         Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
         Write-Host "You have generated certificate using OpenSSL so follow below steps: "

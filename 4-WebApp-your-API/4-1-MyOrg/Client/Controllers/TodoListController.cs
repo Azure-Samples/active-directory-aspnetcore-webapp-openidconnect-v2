@@ -16,11 +16,10 @@ namespace TodoListClient.Controllers
             _todoListService = todoListService;
         }
 
-        // GET: TodoList
-        [AuthorizeForScopes(ScopeKeySection = "TodoList:TodoListScopes")]
         public async Task<ActionResult> Index()
         {
-            return View(await _todoListService.GetAsync());
+            var result = await _todoListService.GetAsync();
+            return View(result);
         }
 
         // GET: TodoList/Details/5

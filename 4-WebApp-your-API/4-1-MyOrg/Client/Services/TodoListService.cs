@@ -58,7 +58,7 @@ namespace TodoListClient.Services
                 return todo;
             }
 
-            throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
+            return null;
         }
 
         public async Task DeleteAsync(int id)
@@ -71,8 +71,6 @@ namespace TodoListClient.Services
             {
                 return;
             }
-
-            throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
         }
 
         public async Task<Todo> EditAsync(Todo todo)
@@ -91,7 +89,7 @@ namespace TodoListClient.Services
                 return todo;
             }
 
-            throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
+            return null;
         }
 
         public async Task<IEnumerable<Todo>> GetAsync()
@@ -106,7 +104,7 @@ namespace TodoListClient.Services
                 return todolist;
             }
 
-            throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
+            return null;
         }        
 
         public async Task<Todo> GetAsync(int id)
@@ -121,9 +119,10 @@ namespace TodoListClient.Services
                 return todo;
             }
 
-            throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
+            return null;
         }
         
+        //Acquire a token and add it as Bearer to Authorization header
         private async Task PrepareAuthenticatedClient()
         {
             //You would specify the scopes (delegated permissions) here for which you desire an Access token of this API from Azure AD.
