@@ -10,6 +10,7 @@ languages:
 products:
  - aspnet-core
  - azure-active-directory
+---
 
 # How to secure an ASP.NET Core Web API with the Microsoft identity platform
 
@@ -22,6 +23,8 @@ Table Of Contents
 * [Contents](#Contents)
 * [Prerequisites](#Prerequisites)
 * [Setup the sample](#Setup-the-sample)
+* [Explore the sample](#Explore-the-sample)
+* [We'd love your feedback!](#We'd-love-your-feedback!)
 * [Using the sample](#Using-the-sample)
 * [Troubleshooting](#Troubleshooting)
 * [About the code](#About-the-code)
@@ -34,8 +37,6 @@ Table Of Contents
 ## Overview
 
 This sample demonstrates a ASP.NET Core Web App calling a ASP.NET Core Web API that is secured using Azure AD.
-
-> :information_source: See the community call: [Implement Authorization in your Applications with Microsoft identity platform](https://www.youtube.com/watch?v=LRoc-na27l0)
 
 ## Scenario
 
@@ -114,7 +115,7 @@ Follow the [manual steps](#Manual-steps)
 
 #### Manual steps
 
-    > Note: skip this part if you've used automation steps listed above
+> Note: skip this part if you've used automation steps listed above
 
 Follow the steps below to manually register and configure your apps in your Azure AD tenant 
 
@@ -262,12 +263,10 @@ Follow [README-use-keyvault-certificate.md](README-use-keyvault-certificate.md) 
 
 Then open a separate command line terminal and run
 
-
 ```console
     cd 4-WebApp-Your-API\4-1-MyOrg\Client
     dotnet run
 ```
-
 
 ## Using the sample
 
