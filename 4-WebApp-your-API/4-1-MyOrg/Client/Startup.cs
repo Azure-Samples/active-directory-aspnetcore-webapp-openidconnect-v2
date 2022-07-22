@@ -12,6 +12,7 @@ using Microsoft.Identity.Web;
 using TodoListClient.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web.UI;
+using Microsoft.IdentityModel.Logging;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -48,6 +49,11 @@ namespace WebApp_OpenIDConnect_DotNet
 
             // Add APIs
             services.AddTodoListService(Configuration);
+
+            // The following flag can be used to get more descriptive errors in development environments
+            // Enable diagnostic logging to help with troubleshooting.  For more details, see https://aka.ms/IdentityModel/PII.
+            // You might not want to keep this following flag on for production
+            IdentityModelEventSource.ShowPII = true;
 
             services.AddControllersWithViews(options =>
             {
