@@ -18,21 +18,20 @@ products:
 
 Table Of Contents
 
-* [Overview](#Overview)
-* [Scenario](#Scenario)
-* [Contents](#Contents)
-* [Prerequisites](#Prerequisites)
-* [Setup the sample](#Setup-the-sample)
-* [Explore the sample](#Explore-the-sample)
-* [We'd love your feedback!](#We'd-love-your-feedback!)
-* [Using the sample](#Using-the-sample)
-* [Troubleshooting](#Troubleshooting)
-* [About the code](#About-the-code)
-* [How the code was created](#How-the-code-was-created)
-* [How to deploy this sample to Azure](#How-to-deploy-this-sample-to-Azure)
-* [Next Steps](#Next-Steps)
-* [Contributing](#Contributing)
-* [Learn More](#Learn-More)
+- [Overview](#overview)
+- [Scenario](#scenario)
+- [Prerequisites](#prerequisites)
+- [Setup the sample](#setup-the-sample)
+- [Variation: web app using client certificates](#variation-web-app-using-client-certificates)
+- [Step 4: Running the sample](#step-4-running-the-sample)
+- [Using the sample](#using-the-sample)
+- [Troubleshooting](#troubleshooting)
+- [About the code](#about-the-code)
+- [How the code was created](#how-the-code-was-created)
+- [How to deploy this sample to Azure](#how-to-deploy-this-sample-to-azure)
+- [Next Steps](#next-steps)
+- [Contributing](#contributing)
+- [Learn More](#learn-more)
 
 ## Overview
 
@@ -247,10 +246,9 @@ As a first step you'll need to:
 
 </details>
 
-### Variation: web app using client certificates
+## Variation: web app using client certificates
 
 Follow [README-use-keyvault-certificate.md](README-use-keyvault-certificate.md) to know how to use this option.
-
 
 ### Step 4: Running the sample
 
