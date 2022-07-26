@@ -27,19 +27,21 @@ This sample was configured to use a client secret, but have an option to use a c
 ]
 ```
 
-4. Set execution policy
+4. While inside '4-1-MyOrg' folder, open a Powershell terminal
+
+5. Set next execution policy
 
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
 ```
 
-5. Run the cleanup script to delete old App Registration for the sample
+6. Run the cleanup script to delete old App Registration for the sample
 
 ```powershell
 AppCreationScripts-withCert/Cleanup.ps1
 ```
 
-6. Run the configuration script to re-create the App Registration. The script will also create a [application name].pfx file that will be **manually** uploaded into Key Vault. When asked about a password, remember it - you will need the password when uploading the certificate.
+7. Run the configuration script to re-create the App Registration. The script will also create a [application name].pfx file that will be **manually** uploaded into Key Vault. When asked about a password, remember it - you will need the password when uploading the certificate.
    
 ```powershell
 AppCreationScripts-withCert/Configuration.ps1

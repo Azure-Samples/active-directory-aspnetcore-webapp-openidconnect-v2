@@ -120,6 +120,7 @@
       "LogoutUrl": "https://localhost:44321/signout-oidc",
       "Audience": "AzureADMyOrg",
       "PasswordCredentials": "Auto",
+      "Certificate": "the certificate will be named by application name",
       "RequiredResourcesAccess": [
         {
           "Resource": "service",
