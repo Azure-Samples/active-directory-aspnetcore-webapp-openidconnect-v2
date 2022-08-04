@@ -1,0 +1,196 @@
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+<div>
+    <text>
+        <div class="row" style="margin:auto">
+            <div id="card-div" class="col-md-4">
+                <h3>User Details</h3>
+                <div class="card text-center">
+                    <div id="profile-div"></div>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="col-md-8">
+                <h3>User Contacts</h3>
+                <div id="user-contacts">
+                </div>
+            </div>
+            <br>
+            <br>
+    </text>
+</div>
+
+<script>
+    function generateUserDetailsHtmlElement({
+        jobTitle,
+        mail,
+        businessPhones,
+        officeLocation,
+    }) {
+        const profileDiv = document.getElementById("profile-div");
+        profileDiv.classList.add('card-body');
+        profileDiv.innerHTML = '';
+
+        const innerProfileDiv = document.createElement('div');
+        innerProfileDiv.innerHTML = '';
+
+        const title = document.createElement('p');
+        title.innerHTML = "<strong>Title: </strong>" + (jobTitle || 'Not set');
+        const email = document.createElement('p');
+        email.innerHTML = "<strong>Mail: </strong>" + (mail || 'Not set');
+        const phone = document.createElement('p');
+        phone.innerHTML = "<strong>Phone: </strong>" + (businessPhones.find(_ => true) || 'Not set');
+        const address = document.createElement('p');
+        address.innerHTML = "<strong>Location: </strong>" + (officeLocation || 'Not set');
+
+        profileDiv.appendChild(innerProfileDiv);
+
+        innerProfileDiv.appendChild(title);
+        innerProfileDiv.appendChild(email);
+        innerProfileDiv.appendChild(phone);
+        innerProfileDiv.appendChild(address);
+    }
+
+    function generateContactHtmlCardElement({
+        displayName,
+        emailAddress,
+        businessPhone,
+        image,
+    }) {
+        const cardDiv = document.createElement('div');
+        cardDiv.classList.add('card');
+
+        const cardBody = document.createElement('div');
+        cardBody.classList.add('card-body');
+
+        const cardFlexBox = document.createElement('div');
+        cardFlexBox.classList.add('d-flex');
+
+        const imgDiv = document.createElement('div');
+        imgDiv.classList.add('flex-shrink-0');
+        const imgElement = document.createElement('img');
+        imgElement.src = image;
+        imgElement.width = 180;
+        imgElement.height = 180;
+
+        imgDiv.appendChild(imgElement);
+
+        cardFlexBox.appendChild(imgDiv);
+
+        const userInfoDiv = document.createElement('div');
+        userInfoDiv.classList.add('flex-grow-1');
+        userInfoDiv.classList.add('ms-3');
+
+        const userDisplayName = document.createElement('h5');
+        userDisplayName.classList.add('mb-1');
+        userDisplayName.classList.add('pb-1');
+        userDisplayName.innerHTML = `${displayName}`;
+        userDisplayName.innerHTML = `${displayName}`;
+
+        const userEmail = document.createElement('p');
+        userEmail.classList.add('mb-1');
+        userEmail.innerHTML = `<strong>Email:</strong> ${emailAddress?.address || 'Not set'}`;
+
+        const userWorkPhone = document.createElement('p');
+        userEmail.classList.add('mb-1');
+        userWorkPhone.innerHTML = `<strong>Work Phone:</strong> ${businessPhone || 'Not set'}`;
+
+        userInfoDiv.append(userDisplayName);
+        userInfoDiv.append(userEmail);
+        userInfoDiv.append(userWorkPhone);
+
+        cardFlexBox.append(userInfoDiv);
+
+        cardBody.append(cardFlexBox)
+
+        cardDiv.append(cardBody);
+
+        return cardDiv;
+    }
+
+    function insertContactDataIntoPage(contactData) {
+        const userContactsDiv = document.getElementById("user-contacts");
+        userContactsDiv.innerHTML = '';
+
+        if (!contactData.length) {
+            const noContactsFoundElement = document.createElement('p');
+            noContactsFoundElement.innerHTML = 'There are no contacts associated with this account.';
+            
+            userContactsDiv.appendChild(noContactsFoundElement);
+            return;
+        }
+
+        const contactCardElements = contactData.map(cd => generateContactHtmlCardElement(cd));
+
+        contactCardElements.map(e => userContactsDiv.appendChild(e));
+    }
+
+    async function loadUserData() {
+        const scopes = ['user.read'];
+
+        const tokenResponse = await getTokenFromCache(scopes);
+        const graphApiResponse = await callMSGraph('/me/', tokenResponse.accessToken);
+        const userInfo = await graphApiResponse.json();
+
+        generateUserDetailsHtmlElement(userInfo);
+    }
+
+    async function loadUserContacts() {
+        const scopes = ['contacts.read'];
+
+        const tokenResponse = await getTokenFromCache(['contacts.read']);
+        const graphApiResponse = await callMSGraph('/me/contacts', tokenResponse.accessToken);
+        const rawUserContactData = await graphApiResponse.json();
+
+        const userContactData = rawUserContactData.value
+            .map(v => ({
+                displayName: v.displayName,
+                businessPhone: v.businessPhones.find(_ => true),
+                emailAddress: v.emailAddresses.find(_ => true),
+                id: v.id,
+            }));
+
+        // This requests the user photos for each user contact. They get associated with each object.
+        const userContactDataWithPhotos = await Promise.all(userContactData.reverse().map(async cd => {
+            const rawPhotoRequestResponse = await callMSGraph(`/me/contacts/${cd.id}/photo/$value`, tokenResponse.accessToken);
+
+            if (rawPhotoRequestResponse.status === 404) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 180;
+                canvas.height = 180;
+
+                var ctx = canvas.getContext("2d");
+                ctx.font = "20px Sans-Serif";
+                ctx.fillStyle = "blacnk";
+                ctx.fillRect(0, 0, 180, 180);
+                ctx.fillStyle = "white";
+                ctx.textAlign = "center";
+                ctx.fillText("Image not found", canvas.width/2, canvas.height/2);
+
+                cd.image = canvas.toDataURL();
+
+                return cd;
+            }
+
+            const urlEncodedImage = URL.createObjectURL(await rawPhotoRequestResponse.blob());
+            cd.image = urlEncodedImage;
+            return cd;
+        }));
+
+
+        insertContactDataIntoPage(userContactDataWithPhotos);
+    }
+
+    async function updateUI() {
+        await Promise.all([
+            loadUserData(),
+            loadUserContacts()
+        ]);
+    }
+
+    // Only need to run this once to ensure the token has been loaded.
+    document.addEventListener('AUTHENTICATED', async () => await updateUI(), { once: true });
+</script>

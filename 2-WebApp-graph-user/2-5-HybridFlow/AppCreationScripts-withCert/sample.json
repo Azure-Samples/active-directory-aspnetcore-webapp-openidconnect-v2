@@ -1,0 +1,130 @@
+{
+  "Sample": {
+    "Client": "ASP.NET Core Web App",
+    "Description": "Sign-in users interactively server-side (Confidential client) and silently acquire token for MS Graph for a Single-page app (SPA)",
+    "Endpoint": "AAD v2.0",
+    "Languages": [
+      "csharp",
+      "javascript"
+    ],
+    "Level": 200,
+    "Products": [
+      "aspnet-core",
+      "azure-active-directory"
+    ],
+    "RepositoryUrl": "active-directory-aspnetcore-webapp-openidconnect-v2",
+    "Service": "Microsoft Graph",
+    "Title": "active-directory-aspnetcore-webapp-openidconnect-v2"
+  },
+  "ReadmeScenario": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeScenario.md",
+    "Image": "./ReadmeFiles/topology.png",
+    "AdditionalNotes": ""
+  },
+  "ReadmePrerequirements": {
+    "FreeText": "",
+    "IncludeFilePath": ""
+  },
+  "ReadmeSetup": {
+    "FreeText": "",
+    "IncludeFilePath": "../ReadmeFiles/ReadmeSetup.md",
+    "UseNewSetup": "1",
+    "CertificateOption": "1",
+    "CreateProjectIncludeFilePath": "",
+    "AppRegistrationIncludeFilePath": "",
+    "RunSampleIncludeFilePath": ""
+  },
+  "ReadmeTroubleshooting": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeTroubleshooting.md"
+  },
+  "ReadmeNextSteps": {
+    "FreeText": "",
+    "IncludeFilePath": "../ReadmeFiles/ReadmeNextSteps.md"
+  },
+  "ReadmeContributing": {
+    "FreeText": "",
+    "IncludeFilePath": "../ReadmeFiles/ReadmeContributing.md"
+  },
+  "ReadmeHowTheCodeWasCreated": {
+    "IncludeFilePath": ""
+  },
+  "ReadmeAboutTheCode": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeAboutTheCode.md"
+  },
+  "ReadmeAzureDeploy": {
+    "FreeText": "",
+    "IncludeFilePath": ""
+  },
+  "ReadmeUsingTheSample": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeUsingTheSample.md"
+  },
+  "ReadmeLearnMore": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeLearnMore.md"
+  },
+  "AADApps": [
+    {
+      "AllowImplicitFlow": true,
+      "EnableIdTokenIssuance": true,
+      "Audience": "AzureADMyOrg",
+      "Certificate": "CN=HybridFlowAspNetCore",
+      "HybridRedirectUris": [
+        {
+          "ApplicationKind": "WebApp",
+          "Uri": "https://localhost:44321/signin-oidc"
+        },
+        {
+          "ApplicationKind": "SinglePageApplication",
+          "Uri": "https://localhost:44321/"
+        }
+      ],
+      "Id": "HybridFlowAspNetCore",
+      "Kind": "WebApp",
+      "ManualSteps": [],
+      "Name": "HybridFlowAspNetCore",
+      "RequiredResourcesAccess": [
+        {
+          "DelegatedPermissions": [
+            "User.Read",
+            "Contacts.Read"
+          ],
+          "Resource": "Microsoft Graph"
+        }
+      ],
+      "Sample": {
+        "SampleSubPath": "2-WebApp-graph-user\\2-5-HybridFlow",
+        "ProjectDirectory": "."
+      },
+      "CSharpConfigurations": [
+        {
+          "AppSettingsJson": {
+            "AzureAd": {
+              "Instance": "https://login.microsoftonline.com/",
+              "CallbackPath": "/signin-oidc",
+              "ClientCertificates": [
+                {
+                  "SourceType": "StoreWithDistinguishedName",
+                  "CertificateStorePath": "CurrentUser/My",
+                  "CertificateDistinguishedName": "CN=HybridFlowAspNetCore"
+                }
+              ],
+              "WithSpaAuthCode": true
+            },
+            "DownStreamApi": {
+              "BaseUrl": "https://graph.microsoft.com/v1.0",
+              "Scopes": "User.Read Contacts.Read"
+            },
+            "RelativePath": "..\\"
+          }
+        }
+      ]
+    }
+  ],
+  "CodeConfiguration": [
+    {
+      "App": "HybridFlowAspNetCore",
+      "Mappings": [],
+      "SettingFile": "\\..\\appsettings.json",
+      "SettingKind": "JSON"
+    }
+  ]
+}
