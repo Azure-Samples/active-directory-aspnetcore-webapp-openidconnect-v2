@@ -170,6 +170,8 @@ Function CreateOptionalClaim([string] $name)
 
 Function ConfigureApplications
 {
+    $isOpenSSl = 'N' #temporary disable open certificate creation 
+
     <#.Description
        This function creates the Azure AD applications for the sample in the provided Azure AD tenant and updates the
        configuration files in the client and service project  of the visual studio solution (App.Config and Web.Config)
@@ -197,19 +199,19 @@ Function ConfigureApplications
    
    # create the application 
    $serviceAadApplication = New-MgApplication -DisplayName "TodoListService-aspnetcore-webapi" `
-                                                       -Web `
-                                                       @{ `
+                                                           -Web `
+                                                           @{ `
                                                            HomePageUrl = "https://localhost:44351"; `
-                                                         } `
-                                                         -Api `
-                                                         @{ `
-                                                            RequestedAccessTokenVersion = 2 `
-                                                         } `
-                                                        -SignInAudience AzureADMyOrg `
+                                                               } `
+                                                           -Api `
+                                                           @{ `
+                                                               RequestedAccessTokenVersion = 2 `
+                                                           } `
+                                                       -SignInAudience AzureADMyOrg `
                                                        #end of command
     $serviceIdentifierUri = 'api://'+$serviceAadApplication.AppId
     Update-MgApplication -ApplicationId $serviceAadApplication.Id -IdentifierUris @($serviceIdentifierUri)
-    
+
     # create the service principal of the newly created application 
     $currentAppId = $serviceAadApplication.AppId
     $serviceServicePrincipal = New-MgServicePrincipal -AppId $currentAppId -Tags {WindowsAzureActiveDirectoryIntegratedApp}
@@ -221,6 +223,7 @@ Function ConfigureApplications
         New-MgApplicationOwnerByRef -ApplicationId $serviceAadApplication.Id  -BodyParameter = @{"@odata.id" = "htps://graph.microsoft.com/v1.0/directoryObjects/$user.ObjectId"}
         Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($serviceServicePrincipal.DisplayName)'"
     }
+
 
     # Add Claims
 
@@ -251,16 +254,16 @@ Function ConfigureApplications
     $scopes = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphPermissionScope]
     $scope = $serviceAadApplication.Api.Oauth2PermissionScopes | Where-Object { $_.Value -eq "User_impersonation" }
     
-    if($scope -ne $null)
-    {    
-        # disable the scope
-        $scope.IsEnabled = $false
-        $scopes.Add($scope)
-        Update-MgApplication -ApplicationId $serviceAadApplication.Id -Api @{Oauth2PermissionScopes = @($scopes)}
+        if($scope -ne $null)
+        {    
+            # disable the scope
+            $scope.IsEnabled = $false
+            $scopes.Add($scope)
+            Update-MgApplication -ApplicationId $serviceAadApplication.Id -Api @{Oauth2PermissionScopes = @($scopes)}
 
-        # clear the scope
-        Update-MgApplication -ApplicationId $serviceAadApplication.Id -Api @{Oauth2PermissionScopes = @()}
-    }
+            # clear the scope
+            Update-MgApplication -ApplicationId $serviceAadApplication.Id -Api @{Oauth2PermissionScopes = @()}
+        }
 
     $scopes = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphPermissionScope]
     $scope = CreateScope -value ToDoList.Read  `
@@ -280,6 +283,7 @@ Function ConfigureApplications
     
     # add/update scopes
     Update-MgApplication -ApplicationId $serviceAadApplication.Id -Api @{Oauth2PermissionScopes = @($scopes)}
+
     Write-Host "Done creating the service application (TodoListService-aspnetcore-webapi)"
 
     # URL of the AAD application in the Azure portal
@@ -289,20 +293,19 @@ Function ConfigureApplications
 
    # Create the client AAD application
    Write-Host "Creating the AAD application (TodoListClient-aspnetcore-webapi)"
-   # Get a 6 months application key for the client Application
-   $fromDate = [DateTime]::Now;
-   $key = CreateAppKey -fromDate $fromDate -durationInMonths 6
-   
+        # Get a 6 months application key for the client Application
+        $fromDate = [DateTime]::Now;
+        $key = CreateAppKey -fromDate $fromDate -durationInMonths 6
    
    # create the application 
    $clientAadApplication = New-MgApplication -DisplayName "TodoListClient-aspnetcore-webapi" `
-                                                      -Web `
-                                                      @{ `
+                                                          -Web `
+                                                          @{ `
                                                           RedirectUris = "https://localhost:44321/signin-oidc"; `
                                                           HomePageUrl = "https://localhost:44321/"; `
                                                           LogoutUrl = "https://localhost:44321/signout-oidc"; `
-                                                        } `
-                                                       -SignInAudience AzureADMyOrg `
+                                                              } `
+                                                      -SignInAudience AzureADMyOrg `
                                                       #end of command
     #add a secret to the application
     $pwdCredential = Add-MgApplicationPassword -ApplicationId $clientAadApplication.Id -PasswordCredential $key
@@ -310,7 +313,7 @@ Function ConfigureApplications
 
     $tenantName = (Get-MgApplication -ApplicationId $clientAadApplication.Id).PublisherDomain
     Update-MgApplication -ApplicationId $clientAadApplication.Id -IdentifierUris @("https://$tenantName/TodoListClient-aspnetcore-webapi")
-    
+
     # create the service principal of the newly created application 
     $currentAppId = $clientAadApplication.AppId
     $clientServicePrincipal = New-MgServicePrincipal -AppId $currentAppId -Tags {WindowsAzureActiveDirectoryIntegratedApp}
@@ -322,6 +325,8 @@ Function ConfigureApplications
         New-MgApplicationOwnerByRef -ApplicationId $clientAadApplication.Id  -BodyParameter = @{"@odata.id" = "htps://graph.microsoft.com/v1.0/directoryObjects/$user.ObjectId"}
         Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($clientServicePrincipal.DisplayName)'"
     }
+
+
     Write-Host "Done creating the client application (TodoListClient-aspnetcore-webapi)"
 
     # URL of the AAD application in the Azure portal
@@ -329,14 +334,12 @@ Function ConfigureApplications
     $clientPortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$clientAadApplication.AppId+"/objectId/"+$clientAadApplication.Id+"/isMSAApp/"
     Add-Content -Value "<tr><td>client</td><td>$currentAppId</td><td><a href='$clientPortalUrl'>TodoListClient-aspnetcore-webapi</a></td></tr>" -Path createdApps.html
     $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphRequiredResourceAccess]
-
     
     # Add Required Resources Access (from 'client' to 'service')
     Write-Host "Getting access from 'client' to 'service'"
     $requiredPermissions = GetRequiredPermissions -applicationDisplayName "TodoListService-aspnetcore-webapi" `
         -requiredDelegatedPermissions "ToDoList.Read|ToDoList.ReadWrite" `
     
-
     $requiredResourcesAccess.Add($requiredPermissions)
     Update-MgApplication -ApplicationId $clientAadApplication.Id -RequiredResourceAccess $requiredResourcesAccess
     Write-Host "Granted permissions."
@@ -344,7 +347,6 @@ Function ConfigureApplications
     # Update config file for 'service'
     $configFile = $pwd.Path + "\..\TodoListService\appsettings.json"
     $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $serviceAadApplication.AppId };
-
     Write-Host "Updating the sample code ($configFile)"
 
     UpdateTextFile -configFilePath $configFile -dictionary $dictionary
@@ -352,7 +354,6 @@ Function ConfigureApplications
     # Update config file for 'client'
     $configFile = $pwd.Path + "\..\Client\appsettings.json"
     $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $clientAadApplication.AppId;"ClientSecret" = $pwdCredential.SecretText;"TodoListScopes" = "api://$($serviceAadApplication.AppId)/ToDoList.Read api://$($serviceAadApplication.AppId)/ToDoList.ReadWrite";"TodoListBaseAddress" = $serviceAadApplication.Web.HomePageUrl };
-
     Write-Host "Updating the sample code ($configFile)"
 
     UpdateTextFile -configFilePath $configFile -dictionary $dictionary
@@ -362,7 +363,8 @@ Function ConfigureApplications
     Write-Host "  - Navigate to $servicePortalUrl"
     Write-Host "  - Application 'service' publishes application permissions. Do remember to navigate to the app registration in the app portal and consent for those" -ForegroundColor Red 
     Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
-       if($isOpenSSL -eq 'Y')
+       
+    if($isOpenSSL -eq 'Y')
     {
         Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
         Write-Host "You have generated certificate using OpenSSL so follow below steps: "
@@ -370,7 +372,7 @@ Function ConfigureApplications
         Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
     }
     Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  
-}
+} # end of ConfigureApplications function
 
 # Pre-requisites
 if ($null -eq (Get-Module -ListAvailable -Name "Microsoft.Graph.Applications")) {
