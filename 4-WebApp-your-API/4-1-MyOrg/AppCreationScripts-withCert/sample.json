@@ -120,14 +120,31 @@
       "LogoutUrl": "https://localhost:44321/signout-oidc",
       "Audience": "AzureADMyOrg",
       "PasswordCredentials": "Auto",
-      "Certificate": "the certificate will be named by application name",
       "RequiredResourcesAccess": [
         {
           "Resource": "service",
           "DelegatedPermissions": [ "ToDoList.Read", "ToDoList.ReadWrite" ]
         }
       ],
-      "Certificate": "the certificate will be named by application name",
+
+      "CSharpConfigurations": [
+        {
+          "AppSettingsJson": {
+            "AzureAd": {
+              "CallbackPath": "/signin-oidc",
+              "SignedOutCallbackPath ": "/signout-oidc",
+              "ClientCertificates": [
+                {
+                  "SourceType": "StoreWithDistinguishedName",
+                  "CertificateStorePath": "CurrentUser/My",
+                  "CertificateDistinguishedName": "CN=TodoListClient-aspnetcore-webapi"
+                }
+              ]
+            }
+          }
+        }
+      ],
+
       "ManualSteps": [],
       "Sample": {
         "SampleSubPath": "4-WebApp-Your-API\\4-1-MyOrg",

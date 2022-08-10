@@ -102,7 +102,8 @@ Function Cleanup
         Write-Host "Unable to remove ServicePrincipal 'TodoListClient-aspnetcore-webapi' . Try deleting manually from Enterprise applications." -ForegroundColor White -BackgroundColor Red
     }
      # remove self-signed certificate
-     Get-ChildItem -Path Cert:\CurrentUser\My | where { $_.subject -eq "the certificate will be named by application name" } | Remove-Item
+     Write-Host "Removing CN=TodoListClient-aspnetcore-webapi certificate from Cert:/CurrentUser/My"
+     Get-ChildItem -Path Cert:/CurrentUser/My | where { $_.subject -eq "CN=TodoListClient-aspnetcore-webapi" } | Remove-Item
 }
 
 if ($null -eq (Get-Module -ListAvailable -Name "Microsoft.Graph.Applications")) { 
