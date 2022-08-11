@@ -13,6 +13,7 @@ using TodoListClient.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web.UI;
 using Microsoft.IdentityModel.Logging;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -46,6 +47,23 @@ namespace WebApp_OpenIDConnect_DotNet
                         Configuration.GetSection("TodoList:TodoListScopes").Get<string>().Split(" ", System.StringSplitOptions.RemoveEmptyEntries)
                      )
                     .AddInMemoryTokenCaches();
+
+            //This is how we configure certificates in startup - https://github.com/AzureAD/microsoft-identity-web/wiki/Certificates
+            //services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+            //    .AddMicrosoftIdentityWebApp(microsoftIdentityOptions =>
+            //    {
+            //        Configuration.Bind("AzureAd", microsoftIdentityOptions);
+            //        microsoftIdentityOptions.ClientCertificates = new CertificateDescription[] {
+            //        CertificateDescription.FromKeyVault("[Enter URL for you Key Vault]",
+            //                                            "TodoListClient-aspnetcore-webapi")};
+            //    })
+            //    .EnableTokenAcquisitionToCallDownstreamApi(confidentialClientApplicationOptions =>
+            //    {
+            //        Configuration.GetSection("TodoList:TodoListScopes").Get<string>().Split(" ", System.StringSplitOptions.RemoveEmptyEntries);
+            //        Configuration.Bind("AzureAd", confidentialClientApplicationOptions);
+            //    })
+            //      .AddInMemoryTokenCaches();
+
 
             // Add APIs
             services.AddTodoListService(Configuration);

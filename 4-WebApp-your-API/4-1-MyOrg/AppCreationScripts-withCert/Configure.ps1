@@ -324,7 +324,7 @@ Function ConfigureApplications
     #$isOpenSSL = Read-Host ' By default certificate is generated using New-SelfSignedCertificate. Do you want to generate cert using OpenSSL(Y/N)?'
     if($isOpenSSL -eq 'Y')
     {
-        $certificate=openssl req -x509 -newkey rsa:4096 -sha256 -days 365 -keyout "$certificateName.key" -out "$certificateName.cer" -nodes -batch
+        $certificate=openssl req -x509 -newkey rsa:2048 -days 365 -keyout "$certificateName.key" -out "$certificateName.cer" -subj "/CN=$certificateName.com" -nodes
         openssl pkcs12 -export -out "$certificateName.pfx" -inkey $certificateName.key -in "$certificateName.cer"
     }
     else
@@ -395,7 +395,7 @@ Function ConfigureApplications
     Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
     Write-Host "- For service"
     Write-Host "  - Navigate to $servicePortalUrl"
-    Write-Host "  - Application 'service' publishes application permissions. Do remember to navigate to the app registration in the app portal and consent for those" -ForegroundColor Red 
+    Write-Host "  - Application 'service' publishes application permissions. Do remember to navigate to any client app(s) registration in the app portal and consent for those, if required" -ForegroundColor Red 
     Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
        
     if($isOpenSSL -eq 'Y')

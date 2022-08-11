@@ -19,7 +19,7 @@
     "IncludeFilePath": "../ReadmeFiles/ReadmeScenario.md",
     "Image": "./ReadmeFiles/topology.png",
     /* put additional notes, will be displayed right after image*/
-    "AdditionalNotes": ""
+    "AdditionalNotesIncludeFilePath": ""
   },
 
   "ReadmePrerequirements": {
@@ -70,8 +70,8 @@
   },
 
   /* It either can be a text or link to another readme file */
-  "ReadmeUsingTheSample": {
-    "IncludeFilePath": "../ReadmeFiles/ReadmeUsingTheSample.md"
+  "ReadmeExploreTheSample": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeExploreTheSample.md"
   },
 
   /* It either can be a text or link to another readme file */
@@ -126,13 +126,10 @@
           "DelegatedPermissions": [ "ToDoList.Read", "ToDoList.ReadWrite" ]
         }
       ],
-
-      "CSharpConfigurations": [
+      "CustomersConfigurations": [
         {
           "AppSettingsJson": {
             "AzureAd": {
-              "CallbackPath": "/signin-oidc",
-              "SignedOutCallbackPath ": "/signout-oidc",
               "ClientCertificates": [
                 {
                   "SourceType": "StoreWithDistinguishedName",
