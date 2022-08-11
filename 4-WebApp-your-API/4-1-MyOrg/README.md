@@ -328,7 +328,7 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
       The code above demonstrates that to be able to reach a GET REST operation, the access token should contain AT LEAST ONE of the scopes listed inside parameter of [RequiredScopeOrAppPermission](https://github.com/AzureAD/microsoft-identity-web/wiki/web-apis#checking-for-scopes-or-app-permissions=) attribute
       Please note that while in this sample, the client app only works with *Delegated Permissions*,  the API's controller is designed to work with both *Delegated* and *Application* permissions.
 
-      The **ToDoList.*.All** permissions are **Application PErmissions**.
+      The **ToDoList.*.All** permissions are **Application Permissions**.
 
       Here is another example from the same controller:
 
