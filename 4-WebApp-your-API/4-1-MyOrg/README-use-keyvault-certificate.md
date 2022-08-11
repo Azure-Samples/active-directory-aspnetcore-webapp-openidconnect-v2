@@ -22,7 +22,7 @@ This sample was configured to use a client secret, but have an option to use a c
   {
     "SourceType": "KeyVault",
     "KeyVaultUrl": "[Enter URL for you KeyVault]",
-    "KeyVaultCertificateName": "[Enter name of the certificate]"
+    "KeyVaultCertificateName": "TodoListClient-aspnetcore-webapi"
   }
 ]
 ```
