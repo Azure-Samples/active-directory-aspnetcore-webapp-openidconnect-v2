@@ -1,115 +1,91 @@
-# Web app using client certificates with Microsoft.Identity.Web
+# How to use certificates instead of secrets in your client applications
 
-There are different approaches for [using certificates with Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web/wiki/Certificates). In this Readme, we will explore use of certificate from a path on the disk.
+[Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web/wiki/Certificates) provides various ways for a developer to use a certificate instead of a client secret to authenticate their apps with Azure AD.
 
-## Use Self Signed Certificate from a path
+## Using Client certificate with KeyVault
 
-To use certificates instead of an application secret you will need to make some changes to what you have done so far:
+This sample was configured to use a client secret, but have an option to use a certificate instead.
 
-- generate a certificate and export it, if you don't have one already
-- register the certificate with your application in the Azure AD portal
-- Update appsettings.json
+### To be able to use a certificate, please make the following changes:
 
-### (Optional) use the automation script
+1. Open Client/appsettings.json file
+2. **Comment out** the next line:
 
-If you want to use the automation script:
-
-1. On Windows run PowerShell and navigate to the root of the cloned directory.
-1. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
-
-   ```PowerShell
-   .\AppCreationScripts-WtihCert\Configure.ps1
-   ```
-
-   > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts-WithCert/AppCreationScripts.md)
-
-### Generate a Self Signed certificate
-
-Since we'd be using certificate instead of a client secret in this sample, we'd first create a new self signed certificate. If you have an actual valid certificate available, then skip the following step.
-
-<details>
-<summary>Click here to use Powershell</summary>
-
-To generate a new self-signed certificate, we will use the [New-SelfSignedCertificate](https://docs.microsoft.com/powershell/module/pkiclient/new-selfsignedcertificate) Powershell command.
-
-1. Open PowerShell and run `New-SelfSignedCertificate` command with the following parameters to create a new self-signed certificate that will be stored in the **current user** certificate store on your computer:
-
-```PowerShell
-$cert=New-SelfSignedCertificate -Subject "/CN=webapp" -CertStoreLocation "Cert:\CurrentUser\My"  -KeyExportPolicy Exportable -KeySpec Signature
+```json
+"ClientSecret": "[Copy the client secret added to the app from the Azure portal]"
 ```
 
-1. Export this certificate using the "Manage User Certificate" MMC snap-in accessible from the Windows Control Panel. You can also add other options to generate the certificate in a different store such as the **Computer** or **service** store (See [How to: View Certificates with the MMC Snap-in](https://docs.microsoft.com/dotnet/framework/wcf/feature-details/how-to-view-certificates-with-the-mmc-snap-in)) for more details.
+3. **Un-comment** the following lines:
 
-Export one with private key as webapp.pfx and another as webapp.cer without private key.
-</details>
-
-<details>
-<summary>Click here to use OpenSSL</summary>
-
-Type the following in a terminal.
-
-```PowerShell
-openssl req -x509 -newkey rsa:4096 -sha256 -days 365 -keyout webapp.key -out webapp.cer -nodes -batch
-
-Generating a RSA private key
-...........................................................................................................................................................................................................................................................++++
-......................................................................................................++++
-writing new private key to 'webapp.key'
------ 
+```json
+"ClientCertificates": [
+  {
+    "SourceType": "KeyVault",
+    "KeyVaultUrl": "[Enter URL for you KeyVault]",
+    "KeyVaultCertificateName": "TodoListClient-aspnetcore-webapi"
+  }
+]
 ```
 
-Generate the webapp.pfx certificate with below command:
+4. While inside '4-1-MyOrg' folder, open a Powershell terminal
 
-```console
-openssl pkcs12 -export -out webapp.pfx -inkey webapp.key -in webapp.cer
+5. Set next execution policy
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
 ```
 
-Enter an export password when prompted and make a note of it.
+6. Run the cleanup script to delete old App Registration for the sample
 
-The following files should be generated: `webapp.key`, `webapp.cer` and `webapp.pfx`.
-</details>
+```powershell
+AppCreationScripts-withCert/Cleanup.ps1
+```
 
-### Add the certificate for the TodoListClient-aspnetcore-webapi application in the application's registration page
+7. Run the AppCreationScripts-withCert/Configure.ps1 script to re-create the App Registration. The script will also create a [application name].pfx file that will be **manually** uploaded into Key Vault. When asked about a password, remember it - you will need the password when uploading the certificate.
 
-1. Navigate back to the [Azure portal](https://portal.azure.com).
-In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations**.
-1. In the resultant screen, select the `TodoListClient-aspnetcore-webapi` application.
-1. In the **Certificates & secrets** tab, go to **Certificates** section:
-1. Select **Upload certificate** and, in select the browse button on the right to select the certificate you just exported, webapp.cer (or your existing certificate).
-1. Select **Add**.
+```powershell
+AppCreationScripts-withCert/Configuration.ps1
+```
+8. To use KeyVault, sign in to the [Azure portal](https://portal.azure.com) and [create an Azure Key Vault](https://docs.microsoft.com/azure/key-vault/general/quick-create-portal)
+9. Inside Client/appsettings.json file - update "KeyVaultUrl" key to have URL of your Key Vault, like https://[your Key Vault name here].vault.azure.net
+10. [Upload](https://docs.microsoft.com/azure/key-vault/certificates/tutorial-import-certificate#import-a-certificate-to-key-vault) the generated AppCreationScripts-withCert\.PFX file into the Key Vault
+11.  Run the sample as indicated in [README.md](README.md)
 
-### Configure the Visual Studio project
+## Using local Client certificate
 
-To change the visual studio project to enable certificates you need to:
+1. Open Client/appsettings.json file
+2. **Comment out** the next line:
 
-1. Open the `Client\appsettings.json` file
-1. Find the app key `ClientCertificates` and add the keys as displayed below:
+```json
+"ClientSecret": "[Copy the client secret added to the app from the Azure portal]"
+```
 
-    ```json
-    "ClientCertificates": [
-     {
-        "SourceType": "",
-        "CertificateDiskPath": "",
-        "CertificatePassword": ""
-      }
-    ]
-    ```
+3. **Un-comment** the following lines:
 
-    Update values of the keys:
+```json
+"ClientCertificates": [
+  {
+   "SourceType": "StoreWithDistinguishedName",
+   "CertificateStorePath": "CurrentUser/My",
+   "CertificateDistinguishedName": "CN=TodoListClient-aspnetcore-webapi"
+  }
+]
+```
 
-    `SourceType` to `Path`.
+4. Go through steps 4-6 of **"Using client certificate with KeyVault"** instructions
+5. Run the AppCreationScripts-withCert/Configure.ps1 script to re-create the App Registration.
+6. Run the sample as indicated in [README.md](README.md)
 
-    `CertificateDiskPath` to the path where certificate exported with private key (webapp.pfx) is stored. For example, `C:\\active-directory-aspnetcore-webapp-openidconnect-v2\\4-WebApp-your-API\\4-1-MyOrg\\AppCreationScripts-withCert\\webapp.pfx`
+## More information
 
-    `CertificatePassword` add the password used while exporting the certificate.
-1. If you had set `ClientSecret` previously, set its value to empty string, `""`.
+### About Azure KeyVault
 
-## (Alternate) Key Vault and Managed Service Identity (MSI)
+Cloud applications and services use cryptographic keys and secrets to help keep information secure. [Azure KeyVault](https://azure.microsoft.com/services/key-vault/) safeguards these keys and secrets. When you use Key Vault, you can encrypt authentication keys, storage account keys, data encryption keys, .pfx files, and passwords by using keys that are protected by hardware security modules (HSMs).
 
-[Azure Key Vault certificates](https://docs.microsoft.com/azure/key-vault/certificates/) enables Microsoft Azure applications and users to store and use certificates. Microsoft.Identity.Web leverages Managed Service Identity to retrieve these certificates. For details see [https://aka.ms/ms-id-web-certificates](https://aka.ms/ms-id-web-certificates).
+### About Managed Identities for Azure Resources
 
-To generate the certificate from KeyVault see [Get started with Key Vault certificates](https://docs.microsoft.com/azure/key-vault/certificates/certificate-scenarios) documentation.
+[Azure KeyVault](https://azure.microsoft.com/services/key-vault/#product-overview)
 
-## Run the sample
+[Managed Identities for Azure Resources](https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/)
 
-Follow [Step 4: Run the sample](Readme.md#step-4-run-the-sample) in [Readme.md](Readme.md).
+[Managed Identities for Azure App Services](https://docs.microsoft.com/azure/app-service/overview-managed-identity?tabs=dotnet)
