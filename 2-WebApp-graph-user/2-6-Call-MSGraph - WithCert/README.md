@@ -66,10 +66,10 @@ or download and extract the repository .zip file.
 
 > :warning: To avoid path length limitations on Windows, we recommend cloning into a directory near the root of your drive.
 
-Go to the `"2-WebApp-graph-user\2-1-Call-MSGraph"` folder
+Go to the `"2-WebApp-graph-user\2-6-Call-MSGraph - WithCert"` folder
 
  ```Sh
-  cd "2-WebApp-graph-user\2-1-Call-MSGraph"
+  cd "2-WebApp-graph-user\2-6-Call-MSGraph - WithCert"
   ```
 
 > Developers who wish to increase their familiarity with programming for Microsoft Graph are advised to go through the [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A) recorded session.
@@ -77,7 +77,7 @@ Go to the `"2-WebApp-graph-user\2-1-Call-MSGraph"` folder
 ### Step 2: Install project dependencies
 
 ```console
-    dotnet restore WebApp-OpenIDConnect-DotNet-graph.csproj
+    dotnet restore WebApp-OpenIDConnect-DotNet-graph-WithCertificate.csproj
 ```
 
 ### Step 3: Register the sample application(s) with your Azure Active Directory tenant
@@ -122,6 +122,29 @@ As a first step you'll need to:
 1. Sign in to the [Azure portal](https://portal.azure.com).
 1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant.
 
+#### (Optional) Create a self-signed certificate
+
+To generate certificate please follow the below steps. Please do note that, below steps depends on openssl tool to generate the certificate. You may have to install the tool on the machine. Alternatively, you can follow other methods to generate the self signed certificate. For example IIS.
+
+1. Generate a key:
+
+   ``` openssl genrsa -out selfcert.pem 2048 ```
+
+2. Create a certificate request:
+
+   ```openssl req -new -key selfcert.pem -out selfcert.csr```
+
+3. Generate a certificate:
+
+   ```openssl x509 -req -days 365 -in selfcert.csr -signkey selfcert.pem -out selfcert.crt```
+
+4. Generate a pfx file:
+
+   ```openssl pkcs12 -inkey selfcert.pem -in selfcert.cert -export -out selfcert.pfx```
+   
+5. You will have to upload this certificate (`selfcert.crt`) on Azure Portal (See next step). Once you save this certificate, the portal will give you the thumbprint of this certificate which is needed in the acquire token call. 
+Alternatively you can use an existing certificate if you have one.
+
 #### Register the client web app (WebApp-OpenIDConnect-DotNet-graph-v2)
 
 1. Navigate to the [Azure portal](https://portal.azure.com) and select the **Azure AD** service.
@@ -140,11 +163,10 @@ As a first step you'll need to:
    - In the **Front-channel logout URL** section, set it to `https://localhost:44321/signout-oidc`.
 1. Select **Save** to save your changes.
 1. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
-1. In the **Client secrets** section, select **New client secret**:
-   - Type a key description (for instance `app secret`),
-   - Select one of the available key durations (**6 months**, **12 months** or **Custom**) as per your security posture.
-   - The generated key value will be displayed when you select the **Add** button. Copy and save the generated value for use in later steps.
-   - You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
+1. In the **Certificates** section, select **Upload certificate**:
+   - Select the "crt" file which was created in the previous steps and upload it. If you skipped the self certification creation section, then please use use your existing certificate. 
+   - Leave the description field blank which will get updated with subject of the certificate. 
+   - Once you upload this certificate, the portal will give you the **thumbprint** and the **description** of this certificate which is needed in the acquire token call. You'll need this key later in your code's configuration files.
 1. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
    - Select the **Add a permission** button and then,
    - Ensure that the **Microsoft APIs** tab is selected.
@@ -162,15 +184,60 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `WebApp-OpenIDConnect-DotNet-graph-v2` app copied from the Azure portal.
 1. Find the key `TenantId` and replace the existing value with your Azure AD tenant ID.
 1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
-1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of `WebApp-OpenIDConnect-DotNet-graph-v2` copied from the Azure portal.
-
-- In case you want to deploy your app in [Sovereign or national clouds](https://docs.microsoft.com/graph/deployments), ensure the `GraphApiUrl` and `Instance` option matches the your requirements. The default values are set to Microsoft Graph in the Azure public cloud. You may skip this point if it does not apply to you.
+1. In case you want to deploy your app in [Sovereign or national clouds](https://docs.microsoft.com/graph/deployments), ensure the `GraphApiUrl` and `Instance` option matches the your requirements. The default values are set to Microsoft Graph in the Azure public cloud. You may skip this point if it does not apply to you.
 
   ```Json
   "Instance": "https://login.microsoftonline.com/",
   "GraphApiUrl": "https://graph.microsoft.com/v1.0"
   ```
 
+1. This sample provides three options to handle the certificate. You can one of the three approaches as per your wish. Please comment/ucomment accordingly in the `appsettings.json` file for the `ClientCertificates` section. 
+    
+  - Option-1 : Via pfxfile    
+    Use below configuration in the `appsettings.json`. In the sample, this approach is selected by default.
+       ```CSharp
+
+         "ClientCertificates": [
+              //Option - 1 : Via pfxfile
+              {
+                "SourceType": "Path",
+                "CertificateDiskPath": "c:\\certificate.pfx", //path to pfx file 
+                "CertificatePassword": "password"             //password that was supplied while creating the pfx
+              }
+            ]
+    ```  
+ - Option-2 : Via ThumbPrint
+    - For this approach to work, you need to install the PFX file under currentUser personal store. In windows machine, you can do this by double clicking on the pfx file and following the instruction of the wizard
+    - Use below configuration in the `appsettings.json`. In the sample, this approach is commented by default.
+
+      ```CSharp
+
+            "ClientCertificates": [
+
+                //Option - 2 : Via ThumbPrint
+                {
+                  "SourceType": "StoreWithThumbprint",
+                  "CertificateStorePath": "CurrentUser/My",
+                  "CertificateThumbprint": "<Thumbprint from Azure AD certificate section>"
+                }
+              ]
+      ```    
+  - Option-3 : Via DistigushedName
+    - For this approach to work, you need to install the PFX file under currentUser personal store. In windows machine, you can do this by double clicking on the pfx file and following the instruction of the wizard
+    - Use below configuration in the `appsettings.json`. In the sample, this approach is commented by default.
+     ```CSharp
+
+     "ClientCertificates": [
+
+          //Option - 3 : Via DistigushedName
+          {
+            "SourceType": "StoreWithDistinguishedName",
+            "CertificateStorePath": "CurrentUser/My",
+            "CertificateDistinguishedName": "<Description fromAzure AD certificate section>" 
+          }
+        ]
+     ```
+- For other options, please refer the article at https://github.com/AzureAD/microsoft-identity-web/wiki/Using-certificates     
 ## Run the sample
 
 > For Visual Studio Users
