@@ -12,7 +12,10 @@ using Microsoft.IdentityModel.Logging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Linq;
 using System.Net;
-using System.Web.Http;
+using System;
+using Microsoft.AspNetCore.Mvc.Filters;
+using TodoListService.Filters;
+using System.Threading.Tasks;
 
 namespace TodoListService
 {
@@ -69,8 +72,10 @@ namespace TodoListService
 
             //              if (!allowedClientApps.Contains(clientappId))
             //              {
-            //                  throw new HttpResponseException(HttpStatusCode.Unauthorized);
+            //                  throw new UnauthorizedAccessException("The client app is not permitted to access this API");
             //              }
+
+            //              await Task.CompletedTask;
             //          };
 
             //      }, options =>
@@ -83,6 +88,11 @@ namespace TodoListService
             // Enable diagnostic logging to help with troubleshooting.  For more details, see https://aka.ms/IdentityModel/PII.
             // You might not want to keep this following flag on for production
             IdentityModelEventSource.ShowPII = true;
+
+            services.AddMvc(options =>
+            {
+                options.Filters.Add<CustomExceptionFilter>();
+            });
 
             services.AddControllers();
         }
@@ -113,6 +123,8 @@ namespace TodoListService
             {
                 endpoints.MapControllers();
             });
+
+
         }
     }
 }

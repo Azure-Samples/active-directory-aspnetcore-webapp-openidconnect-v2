@@ -1,4 +1,4 @@
-﻿namespace TodoListClient.Models
+﻿namespace TodoListService.Models
 {
     /// <summary>
     /// Data object to transfer information between client/server/database
