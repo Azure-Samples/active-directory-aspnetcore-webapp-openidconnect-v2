@@ -10,8 +10,6 @@ products:
  - azure-active-directory
 urlFragment: active-directory-aspnetcore-webapp-openidconnect-v2
 description: This sample demonstrates an ASP.NET Core client Web App calling an ASP.NET Core Web API that is secured using Azure AD.
-extendedZipContent: <FILES_OR_FOLDERS_WITH_TWO_ABSOLUTE_PATHS_TO_INCLUDE_WITH_ZIP:PATH(NAME_IN_THE_REPO), TARGET(NAME_IN_THE_ZIP)>
-extensions: <ENTER_CONTENT_THAT_OTHER_TEAMS_CAN_USE_TO_IDENTIFY_SAMPLES>
 ---
 
 # How to secure an ASP.NET Core Web API with the Microsoft identity platform
@@ -36,14 +34,12 @@ extensions: <ENTER_CONTENT_THAT_OTHER_TEAMS_CAN_USE_TO_IDENTIFY_SAMPLES>
 
 This sample demonstrates a ASP.NET Core Web App calling a ASP.NET Core Web API that is secured using Azure AD.
 
-> :information_source: See the community call: [Implement authorization in your applications with the Microsoft identity platform](https://www.youtube.com/watch?v=LRoc-na27l0)
-
 ## Scenario
 
  This sample demonstrates an ASP.NET Core client Web App calling an ASP.NET Core Web API that is secured using Azure AD.
 
- 1. The client ASP.NET Core Web App uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign-in a user and obtain a JWT [Id Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) from **Azure AD**.
- 2. The service again uses the the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to protect the Web api, and validate tokens.
+ 1. The client ASP.NET Core Web App uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign-in a user and obtain a JWT [Access Token](https://aka.ms/access-tokens) from **Azure AD** for the web API.
+ 2. The service app  uses the the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to protect the Web api, and validate Access tokens.
 
 ![Scenario Image](./ReadmeFiles/topology.png)
 
@@ -114,6 +110,7 @@ To manually register the apps, as a first step you'll need to:
 1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant.
 
 #### Register the service app (TodoListService-aspnetcore-webapi)
+
 1. Navigate to the [Azure portal](https://portal.azure.com) and select the **Azure Active Directory** service.
 1. Select the **App Registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
@@ -176,6 +173,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `TodoListService-aspnetcore-webapi` app copied from the Azure portal.
 
 #### Register the client app (TodoListClient-aspnetcore-webapi)
+
 1. Navigate to the [Azure portal](https://portal.azure.com) and select the **Azure Active Directory** service.
 1. Select the **App Registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
