@@ -1,6 +1,7 @@
 # How to use certificates instead of secrets in your client applications
 
-[Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web/wiki/Certificates) provides various ways for a developer to use a certificate instead of a client secret to authenticate their apps with Azure AD.
+We recommend you familiarize yourself with [Using certificates with Microsoft\.Identity\.Web](https://github.com/AzureAD/microsoft-identity-web/wiki/Certificates#getting-certificates-from-key-vault) as it provides various ways for a developer to use a certificate instead of a client secret to authenticate their apps with Azure AD.
+> Note: Please carefully go through [Getting certificates from Key Vault](https://github.com/AzureAD/microsoft-identity-web/wiki/Certificates#getting-certificates-from-key-vault) when deploying your app to production.
 
 ## Using Client certificate with KeyVault
 
@@ -51,8 +52,10 @@ AppCreationScripts-withCert/Configure.ps1
 1. Inside Client/appsettings.json file - update "KeyVaultUrl" key to have URL of your Key Vault, like https://[your Key Vault name here].vault.azure.net
 1. [Upload](https://docs.microsoft.com/azure/key-vault/certificates/tutorial-import-certificate#import-a-certificate-to-key-vault) the generated AppCreationScripts-withCert\.PFX file into the Key Vault
 1. Run the sample as indicated in [README.md](README.md)
+1. Use the account you used to upload the certificate to key vault to sign-into the web app.
+1. In production environments, you'd give access to your deployed web app or Virtual machine to read this certificate's Key Vault entry.  
 
-## Using local Client certificate
+## Using a local Client certificate
 
 1. Open Client/appsettings.json file
 2. **Comment out** the next line:
