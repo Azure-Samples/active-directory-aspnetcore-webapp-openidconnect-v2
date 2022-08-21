@@ -424,7 +424,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 1. Add a reference to the ToDoListService.
 1. Create a new Controller named `TodoListController` and copy and paste the code from the sample (TodoListService\Controllers\TodoListController.cs) to this controller.
 1. Open the `appsettings.json` file and copy the keys from the sample's corresponding file under the `AzureAd` and `TodoList` sections.
-2. 
+
 ### Creating the client web app (TodoListClient)
 
 #### Step 1: the sample from the command line
