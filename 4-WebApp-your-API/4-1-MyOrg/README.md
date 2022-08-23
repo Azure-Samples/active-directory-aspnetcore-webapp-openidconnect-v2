@@ -9,7 +9,7 @@ products:
  - aspnet-core
  - azure-active-directory
 urlFragment: active-directory-aspnetcore-webapp-openidconnect-v2
-description: This sample demonstrates an ASP.NET Core client Web App calling an ASP.NET Core Web API that is secured using Azure AD.
+description: This sample demonstrates an ASP.NET Core Web App signing-in a user and calling an ASP.NET Core Web API that is secured with Azure AD.
 ---
 
 # How to secure an ASP.NET Core Web API with the Microsoft identity platform
@@ -38,8 +38,8 @@ This sample demonstrates a ASP.NET Core Web App calling a ASP.NET Core Web API t
 
  This sample demonstrates an ASP.NET Core client Web App calling an ASP.NET Core Web API that is secured using Azure AD.
 
- 1. The client ASP.NET Core Web App uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign-in a user and obtain a JWT [Access Token](https://aka.ms/access-tokens) from **Azure AD** for the web API.
- 2. The service app  uses the the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to protect the Web api, and validate Access tokens.
+ 1. The client ASP.NET Core Web App uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign-in a user and obtain a JWT [Id Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) from **Azure AD**.
+ 2. The service again uses the the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to protect the Web api, and validate tokens.
 
 ![Scenario Image](./ReadmeFiles/topology.png)
 
@@ -193,13 +193,13 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
     1. Select one of the available key durations (**6 months**, **12 months** or **Custom**) as per your security posture.
     1. The generated key value will be displayed when you select the **Add** button. Copy and save the generated value for use in later steps.
     1. You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
-    > :bulb: For enhanced security, instead of using client secrets, consider [using certificates](./README-use-certificate.md) and [Azure KeyVault](https://azure.microsoft.com/services/key-vault/#product-overview).
-1. Since this app signs-in users, we will now proceed to select **delegated permissions**, which is is required by apps signing-in users.
+    > :bulb: For enhanced security, instead of using client secrets, consider [using certificates](https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-node/docs/certificate-credentials.md) and [Azure KeyVault](https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-node/docs/key-vault-managed-identity.md).1. Since this app signs-in users, we will now proceed to select **delegated permissions**, which is is required by apps signing-in users.
    1. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs:
    1. Select the **Add a permission** button and then,
    1. Ensure that the **My APIs** tab is selected.
    1. In the list of APIs, select the API `TodoListService-aspnetcore-webapi`.
-   1. In the **Delegated permissions** section, select the **ToDoList.Read**, **ToDoList.ReadWrite** in the list. Use the search box if necessary.
+      * Since this app signs-in users, we will now proceed to select **delegated permissions**, which is is requested by apps when signing-in users.
+           1. In the **Delegated permissions** section, select the **ToDoList.Read**, **ToDoList.ReadWrite** in the list. Use the search box if necessary.
    1. Select the **Add permissions** button at the bottom.
 
 ##### Configure the client app (TodoListClient-aspnetcore-webapi) to use your app registration
@@ -306,19 +306,19 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
         AcceptedScope = new string[] { "ToDoList.Read", "ToDoList.ReadWrite" },
         AcceptedAppPermission = new string[] { "ToDoList.Read.All", "ToDoList.ReadWrite.All" }
         )]
-        public IEnumerable<Todo> Get()
-        {
+      public IEnumerable<Todo> Get()
+      {
             if (!IsAppOnlyToken())
-            {
-                // this is a request for all ToDo list items of a certain user.
-                return TodoStore.Values.Where(x => x.Owner == _currentLoggedUser);
-            }
-            else
-            {
-                // Its an app calling with app permissions, so return all items across all users
-                return TodoStore.Values;
-            }
-        }
+          {
+              // this is a request for all ToDo list items of a certain user.
+              return TodoStore.Values.Where(x => x.Owner == _currentLoggedUser);
+          }
+          else
+          {
+              // Its an app calling with app permissions, so return all items across all users
+              return TodoStore.Values;
+          }
+      }
       ```
 
       The code above demonstrates that to be able to reach a GET REST operation, the access token should contain AT LEAST ONE of the scopes (delegated permissions) listed inside parameter of [RequiredScopeOrAppPermission](https://github.com/AzureAD/microsoft-identity-web/wiki/web-apis#checking-for-scopes-or-app-permissions=) attribute
@@ -333,8 +333,8 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
       [RequiredScopeOrAppPermission(
           AcceptedScope = new string[] { "ToDoList.ReadWrite" },
           AcceptedAppPermission = new string[] { "ToDoList.ReadWrite.All" })]
-        public void Delete(int id)
-        {
+      public void Delete(int id)
+      {
             if (!IsAppOnlyToken())
             {
                 // only delete if the ToDo list item belonged to this user
@@ -347,7 +347,7 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
             {
                 TodoStore.Remove(id);
             }
-        }
+      }
       ```
 
       The above code demonstrates that to be able to execute the DELETE REST operation, the access token MUST contain the `ToDoList.ReadWrite` scope. Note that the called is not allowed to access this operation with just `ToDoList.Read` scope only.
@@ -378,6 +378,7 @@ services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
 ```
 
 </details>
+
 
 ## How the code was created
 
