@@ -24,12 +24,12 @@
     * `AddMicrosoftIdentityWebApiAuthentication()` protects the Web API by [validating Access tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens#validating-tokens) sent tho this API. Check out [Protected web API: Code configuration](https://docs.microsoft.com/azure/active-directory/develop/scenario-protected-web-api-app-configuration) which explains the inner workings of this method in more detail.
 
     * There is a bit of code (commented) provided under this method that can be used to used do extended token validation and check for additional claims, such as:
-      * check if the caller's tenant is in the allowed tenants list via the 'tid' claim (for multi-tenant applications)
+      * check if the client app's appid (azp) is in some sort of an allowed  list via the 'azp' claim, in case you wanted to restrict the API to a list of client apps.
       * check if the caller's account is homed or guest via the 'acct' optional claim
       * check if the caller belongs to right roles or groups via the 'roles' or 'groups' claim, respectively
 
-    * Then in the controllers `TodoListController.cs`, the `[Authorize]` added on top of the class to protect this route.
-    * Further in the controller, the [RequiredScopeOrAppPermission](https://github.com/AzureAD/microsoft-identity-web/wiki/web-apis#checking-for-scopes-or-app-permissions=) is used to list the scopes ([Delegated permissions](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent)), that the user should consent for, before the method can be called.  
+1. Then in the controllers `TodoListController.cs`, the `[Authorize]` added on top of the class to protect this route.
+    * Further in the controller, the [RequiredScopeOrAppPermission](https://github.com/AzureAD/microsoft-identity-web/wiki/web-apis#checking-for-scopes-or-app-permissions=) is used to list the ([Delegated permissions](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent)), that the user should consent for, before the method can be called.  
     * The delegated permissions are checked inside `TodoListService\Controllers\ToDoListController.cs` in the following manner:
 
       ```CSharp
@@ -40,7 +40,7 @@
         )]
       public IEnumerable<Todo> Get()
       {
-          if (IsUserToken())
+            if (!IsAppOnlyToken())
           {
               // this is a request for all ToDo list items of a certain user.
               return TodoStore.Values.Where(x => x.Owner == _currentLoggedUser);
@@ -53,10 +53,10 @@
       }
       ```
 
-      The code above demonstrates that to be able to reach a GET REST operation, the access token should contain AT LEAST ONE of the scopes listed inside parameter of [RequiredScopeOrAppPermission](https://github.com/AzureAD/microsoft-identity-web/wiki/web-apis#checking-for-scopes-or-app-permissions=) attribute
+      The code above demonstrates that to be able to reach a GET REST operation, the access token should contain AT LEAST ONE of the scopes (delegated permissions) listed inside parameter of [RequiredScopeOrAppPermission](https://github.com/AzureAD/microsoft-identity-web/wiki/web-apis#checking-for-scopes-or-app-permissions=) attribute
       Please note that while in this sample, the client app only works with *Delegated Permissions*,  the API's controller is designed to work with both *Delegated* and *Application* permissions.
 
-      The **ToDoList.*.All** permissions are **Application Permissions**.
+      The **ToDoList.<*>.All** permissions are **Application Permissions**.
 
       Here is another example from the same controller:
 
@@ -67,7 +67,7 @@
           AcceptedAppPermission = new string[] { "ToDoList.ReadWrite.All" })]
       public void Delete(int id)
       {
-            if (IsUserToken())
+            if (!IsAppOnlyToken())
             {
                 // only delete if the ToDo list item belonged to this user
                 if (TodoStore.Values.Any(x => x.Id == id && x.Owner == _currentLoggedUser))
@@ -85,6 +85,18 @@
       The above code demonstrates that to be able to execute the DELETE REST operation, the access token MUST contain the `ToDoList.ReadWrite` scope. Note that the called is not allowed to access this operation with just `ToDoList.Read` scope only.
       Also note of how we distinguish the **what** a user can delete. When there is a **ToDoList.ReadWrite.All** permission available, the user can delete **ANY** entity from the database,
       but with **ToDoList.ReadWrite**, the user can delete only their own entries.
+
+    * The method *IsAppOnlyToken()* is used by controller method to detect presence of an app only token, i.e a token that was issued to an app using the [Client credentials](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow) flow, i.e no users were signed-in by this client app. 
+
+      ```csharp
+              private bool IsAppOnlyToken()
+        {
+            // Add in the optional 'idtyp' claim to check if the access token is coming from an application or user.
+            //
+            // See: https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-optional-claims
+            return HttpContext.User.Claims.Any(c => c.Type == "idtyp" && c.Value == "app");
+        }
+      ```
 
 ### Initial scopes
 

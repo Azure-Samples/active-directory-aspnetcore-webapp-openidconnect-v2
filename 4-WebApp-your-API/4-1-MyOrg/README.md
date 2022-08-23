@@ -10,8 +10,6 @@ products:
  - azure-active-directory
 urlFragment: active-directory-aspnetcore-webapp-openidconnect-v2
 description: This sample demonstrates an ASP.NET Core client Web App calling an ASP.NET Core Web API that is secured using Azure AD.
-extendedZipContent: <FILES_OR_FOLDERS_WITH_TWO_ABSOLUTE_PATHS_TO_INCLUDE_WITH_ZIP:PATH(NAME_IN_THE_REPO), TARGET(NAME_IN_THE_ZIP)>
-extensions: <ENTER_CONTENT_THAT_OTHER_TEAMS_CAN_USE_TO_IDENTIFY_SAMPLES>
 ---
 
 # How to secure an ASP.NET Core Web API with the Microsoft identity platform
@@ -40,8 +38,8 @@ This sample demonstrates a ASP.NET Core Web App calling a ASP.NET Core Web API t
 
  This sample demonstrates an ASP.NET Core client Web App calling an ASP.NET Core Web API that is secured using Azure AD.
 
- 1. The client ASP.NET Core Web App uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign-in a user and obtain a JWT [Id Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) from **Azure AD**.
- 2. The service again uses the the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to protect the Web api, and validate tokens.
+ 1. The client ASP.NET Core Web App uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign-in a user and obtain a JWT [Access Token](https://aka.ms/access-tokens) from **Azure AD** for the web API.
+ 2. The service app  uses the the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to protect the Web api, and validate Access tokens.
 
 ![Scenario Image](./ReadmeFiles/topology.png)
 
@@ -294,12 +292,12 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
     * `AddMicrosoftIdentityWebApiAuthentication()` protects the Web API by [validating Access tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens#validating-tokens) sent tho this API. Check out [Protected web API: Code configuration](https://docs.microsoft.com/azure/active-directory/develop/scenario-protected-web-api-app-configuration) which explains the inner workings of this method in more detail.
 
     * There is a bit of code (commented) provided under this method that can be used to used do extended token validation and check for additional claims, such as:
-      * check if the caller's tenant is in the allowed tenants list via the 'tid' claim (for multi-tenant applications)
+      * check if the client app's appid (azp) is in some sort of an allowed  list via the 'azp' claim, in case you wanted to restrict the API to a list of client apps.
       * check if the caller's account is homed or guest via the 'acct' optional claim
       * check if the caller belongs to right roles or groups via the 'roles' or 'groups' claim, respectively
 
-    * Then in the controllers `TodoListController.cs`, the `[Authorize]` added on top of the class to protect this route.
-    * Further in the controller, the [RequiredScopeOrAppPermission](https://github.com/AzureAD/microsoft-identity-web/wiki/web-apis#checking-for-scopes-or-app-permissions=) is used to list the scopes ([Delegated permissions](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent)), that the user should consent for, before the method can be called.  
+1. Then in the controllers `TodoListController.cs`, the `[Authorize]` added on top of the class to protect this route.
+    * Further in the controller, the [RequiredScopeOrAppPermission](https://github.com/AzureAD/microsoft-identity-web/wiki/web-apis#checking-for-scopes-or-app-permissions=) is used to list the ([Delegated permissions](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent)), that the user should consent for, before the method can be called.  
     * The delegated permissions are checked inside `TodoListService\Controllers\ToDoListController.cs` in the following manner:
 
       ```CSharp
@@ -308,25 +306,25 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
         AcceptedScope = new string[] { "ToDoList.Read", "ToDoList.ReadWrite" },
         AcceptedAppPermission = new string[] { "ToDoList.Read.All", "ToDoList.ReadWrite.All" }
         )]
-      public IEnumerable<Todo> Get()
-      {
-          if (IsUserToken())
-          {
-              // this is a request for all ToDo list items of a certain user.
-              return TodoStore.Values.Where(x => x.Owner == _currentLoggedUser);
-          }
-          else
-          {
-              // Its an app calling with app permissions, so return all items across all users
-              return TodoStore.Values;
-          }
-      }
+        public IEnumerable<Todo> Get()
+        {
+            if (!IsAppOnlyToken())
+            {
+                // this is a request for all ToDo list items of a certain user.
+                return TodoStore.Values.Where(x => x.Owner == _currentLoggedUser);
+            }
+            else
+            {
+                // Its an app calling with app permissions, so return all items across all users
+                return TodoStore.Values;
+            }
+        }
       ```
 
-      The code above demonstrates that to be able to reach a GET REST operation, the access token should contain AT LEAST ONE of the scopes listed inside parameter of [RequiredScopeOrAppPermission](https://github.com/AzureAD/microsoft-identity-web/wiki/web-apis#checking-for-scopes-or-app-permissions=) attribute
+      The code above demonstrates that to be able to reach a GET REST operation, the access token should contain AT LEAST ONE of the scopes (delegated permissions) listed inside parameter of [RequiredScopeOrAppPermission](https://github.com/AzureAD/microsoft-identity-web/wiki/web-apis#checking-for-scopes-or-app-permissions=) attribute
       Please note that while in this sample, the client app only works with *Delegated Permissions*,  the API's controller is designed to work with both *Delegated* and *Application* permissions.
 
-      The **ToDoList.*.All** permissions are **Application Permissions**.
+      The **ToDoList.<*>.All** permissions are **Application Permissions**.
 
       Here is another example from the same controller:
 
@@ -335,9 +333,9 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
       [RequiredScopeOrAppPermission(
           AcceptedScope = new string[] { "ToDoList.ReadWrite" },
           AcceptedAppPermission = new string[] { "ToDoList.ReadWrite.All" })]
-      public void Delete(int id)
-      {
-            if (IsUserToken())
+        public void Delete(int id)
+        {
+            if (!IsAppOnlyToken())
             {
                 // only delete if the ToDo list item belonged to this user
                 if (TodoStore.Values.Any(x => x.Id == id && x.Owner == _currentLoggedUser))
@@ -349,12 +347,24 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
             {
                 TodoStore.Remove(id);
             }
-      }
+        }
       ```
 
       The above code demonstrates that to be able to execute the DELETE REST operation, the access token MUST contain the `ToDoList.ReadWrite` scope. Note that the called is not allowed to access this operation with just `ToDoList.Read` scope only.
       Also note of how we distinguish the **what** a user can delete. When there is a **ToDoList.ReadWrite.All** permission available, the user can delete **ANY** entity from the database,
       but with **ToDoList.ReadWrite**, the user can delete only their own entries.
+
+    * The method *IsAppOnlyToken()* is used by controller method to detect presence of an app only token, i.e a token that was issued to an app using the [Client credentials](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow) flow, i.e no users were signed-in by this client app. 
+
+      ```csharp
+              private bool IsAppOnlyToken()
+        {
+            // Add in the optional 'idtyp' claim to check if the access token is coming from an application or user.
+            //
+            // See: https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-optional-claims
+            return HttpContext.User.Claims.Any(c => c.Type == "idtyp" && c.Value == "app");
+        }
+      ```
 
 ### Initial scopes
 
@@ -374,6 +384,47 @@ services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
 <details>
  <summary>Expand the section</summary>
 
+### Creating the Web API project (TodoListService)
+
+The code for the TodoListService was created in the following way:
+
+#### Step 1: Create the web api using the ASP.NET Core templates
+
+```Text
+md TodoListService
+cd TodoListService
+dotnet new webapi -au=SingleOrg
+```
+
+1. Open the generated project (.csproj) in Visual Studio, and save the solution.
+
+#### Add a model (TodoListItem) and modify the controller
+
+In the TodoListService project, add a folder named `Models` and then create a new  file named `TodoItem.cs`. Copy the contents of the TodoListService\Models\TodoItem.cs in this file.
+
+### Modify the Program.cs file to validate bearer access tokens received by the Web API
+
+Update `Program.cs` file :
+
+ *replace the following code:
+
+  ```CSharp
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+   ```
+
+  with
+
+  ```Csharp
+    services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
+  ```
+
+### Create the TodoListController and associated Models
+
+1. Add a reference to the ToDoListService.
+1. Create a new Controller named `TodoListController` and copy and paste the code from the sample (TodoListService\Controllers\TodoListController.cs) to this controller.
+1. Open the `appsettings.json` file and copy the keys from the sample's corresponding file under the `AzureAd` and `TodoList` sections.
+
 ### Creating the client web app (TodoListClient)
 
 #### Step 1: the sample from the command line
@@ -391,34 +442,27 @@ services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
 #### Step 2: Modify the generated code
 
 1. Open the generated project (.csproj) in Visual Studio, and save the solution.
-1. Add the `Microsoft.Identity.Web.csproj` project which is located at the root of this sample repo, to your solution (**Add Existing Project ...**). It's used to simplify signing-in and, in the next tutorial phases, to get a token.
-1. Add a reference from your newly generated project to `Microsoft.Identity.Web` (right click on the **Dependencies** node under your new project, and choose **Add Reference ...**, and then in the projects tab find the `Microsoft.Identity.Web` project)
+1. Add the `Microsoft.Identity.Web` via Nuget.
+1. Open the **Program.cs** file and:
 
-1. Open the **Startup.cs** file and:
+   * Replace the two following lines:
 
-   * at the top of the file, add the following using directive were added:
+```CSharp
+services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
+    .AddAzureAD(options => Configuration.Bind("AzureAd", options));
+```
 
-     ```CSharp
-      using Microsoft.Identity.Web;
-      ```
+with these lines:
 
-   * in the `ConfigureServices` method, replace the two following lines:
+```CSharp
+services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+    .EnableTokenAcquisitionToCallDownstreamApi(
+        Configuration.GetSection("TodoList:TodoListScopes").Get<string>().Split(" ", System.StringSplitOptions.RemoveEmptyEntries)
+        )
+    .AddInMemoryTokenCaches();
+```
 
-     ```CSharp
-      services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
-              .AddAzureAD(options => Configuration.Bind("AzureAd", options));
-     ```
-
-     with these lines:
-
-     ```CSharp
-     services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
-             .EnableTokenAcquisitionToCallDownstreamApi(
-               Configuration.GetSection("TodoList:TodoListScopes").Get<string>().Split(" ", System.StringSplitOptions.RemoveEmptyEntries))
-             .AddInMemoryTokenCaches();
-     ```
-
-    This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
+* This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
 
 1. Change the `Properties\launchSettings.json` file to ensure that you start your web app from <https://localhost:44321> as registered. For this:
      * update the `sslPort` of the `iisSettings` section to be `44321`
@@ -430,7 +474,7 @@ services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
      services.AddTodoListService(Configuration);
    ```
 
-1. Open the `appsettings.json` file and copy the keys from the sample's corresponding file under the `AzureAd` and `TodoList` sections.
+2. Open the `appsettings.json` file and copy the keys from the sample's corresponding file under the `AzureAd` and `TodoList` sections.
 
 #### Add a model (TodoListItem) and add the controller and views
 
@@ -452,69 +496,6 @@ services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
             // Add APIs
             services.AddTodoListService(Configuration);
     ```
-
-1. Update the `Configure` method to include **app.UseAuthentication();** before **app.UseAuthorization();**  
-
-  ```Csharp
-     app.UseAuthentication();
-     app.AddAuthorization();
-  ```
-
-### Creating the Web API project (TodoListService)
-
-The code for the TodoListService was created in the following way:
-
-#### Step 1: Create the web api using the ASP.NET Core templates
-
-```Text
-md TodoListService
-cd TodoListService
-dotnet new webapi -au=SingleOrg
-```
-
-1. Open the generated project (.csproj) in Visual Studio, and save the solution.
-
-#### Add a model (TodoListItem) and modify the controller
-
-In the TodoListService project, add a folder named `Models` and then create a new  file named `TodoItem.cs`. Copy the contents of the TodoListService\Models\TodoItem.cs in this file.
-
-### Modify the Startup.cs file to validate bearer access tokens received by the Web API
-
-1. Add the `Microsoft.Identity.Web.csproj` project which is located at the root of this sample repo, to your solution (**Add Existing Project ...**).
-1. Add a reference from your newly generated project to `Microsoft.Identity.Web` (right click on the **Dependencies** node under your new project, and choose **Add Reference ...**, and then in the projects tab find the `Microsoft.Identity.Web` project)
-Update `Startup.cs` file :
-
- *Add the following two using statements
-
-```CSharp
-using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.Client.TokenCacheProviders;
-```
-
- *In the `ConfigureServices` method, replace the following code:
-
-  ```CSharp
-  services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
-          .AddAzureADBearer(options => Configuration.Bind("AzureAd", options));
-   ```
-
-  with
-
-  ```Csharp
-    services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
-  ```
-
- *Add the method **app.UseAuthentication()** before **app.UseAuthorization()** in the `Configure` method
-
-  ```Csharp
-     app.UseAuthentication();
-     app.UseAuthorization();
-  ```
-
-### Create the TodoListController.cs file
-
-1. Add a folder named `Models` and then create a new  file named `TodoItem.cs`. Copy the contents of the TodoListClient\Models\TodoItem.cs in this file.
-1. Create a new Controller named `TodoListController` and copy and paste the code from the sample (TodoListService\Controllers\TodoListController.cs) to this controller.
 
 </details>
 ## How to deploy this sample to Azure

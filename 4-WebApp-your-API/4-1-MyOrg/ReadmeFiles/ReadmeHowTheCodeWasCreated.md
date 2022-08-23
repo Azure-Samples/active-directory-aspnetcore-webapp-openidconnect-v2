@@ -1,7 +1,49 @@
+
 ## How the code was created
 
 <details>
  <summary>Expand the section</summary>
+
+### Creating the Web API project (TodoListService)
+
+The code for the TodoListService was created in the following way:
+
+#### Step 1: Create the web api using the ASP.NET Core templates
+
+```Text
+md TodoListService
+cd TodoListService
+dotnet new webapi -au=SingleOrg
+```
+
+1. Open the generated project (.csproj) in Visual Studio, and save the solution.
+
+#### Add a model (TodoListItem) and modify the controller
+
+In the TodoListService project, add a folder named `Models` and then create a new  file named `TodoItem.cs`. Copy the contents of the TodoListService\Models\TodoItem.cs in this file.
+
+### Modify the Program.cs file to validate bearer access tokens received by the Web API
+
+Update `Program.cs` file :
+
+ *replace the following code:
+
+  ```CSharp
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+   ```
+
+  with
+
+  ```Csharp
+    services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
+  ```
+
+### Create the TodoListController and associated Models
+
+1. Add a reference to the ToDoListService.
+1. Create a new Controller named `TodoListController` and copy and paste the code from the sample (TodoListService\Controllers\TodoListController.cs) to this controller.
+1. Open the `appsettings.json` file and copy the keys from the sample's corresponding file under the `AzureAd` and `TodoList` sections.
 
 ### Creating the client web app (TodoListClient)
 
@@ -20,34 +62,27 @@
 #### Step 2: Modify the generated code
 
 1. Open the generated project (.csproj) in Visual Studio, and save the solution.
-1. Add the `Microsoft.Identity.Web.csproj` project which is located at the root of this sample repo, to your solution (**Add Existing Project ...**). It's used to simplify signing-in and, in the next tutorial phases, to get a token.
-1. Add a reference from your newly generated project to `Microsoft.Identity.Web` (right click on the **Dependencies** node under your new project, and choose **Add Reference ...**, and then in the projects tab find the `Microsoft.Identity.Web` project)
+1. Add the `Microsoft.Identity.Web` via Nuget.
+1. Open the **Program.cs** file and:
 
-1. Open the **Startup.cs** file and:
+   * Replace the two following lines:
 
-   * at the top of the file, add the following using directive were added:
+```CSharp
+services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
+    .AddAzureAD(options => Configuration.Bind("AzureAd", options));
+```
 
-     ```CSharp
-      using Microsoft.Identity.Web;
-      ```
+with these lines:
 
-   * in the `ConfigureServices` method, replace the two following lines:
+```CSharp
+services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+    .EnableTokenAcquisitionToCallDownstreamApi(
+        Configuration.GetSection("TodoList:TodoListScopes").Get<string>().Split(" ", System.StringSplitOptions.RemoveEmptyEntries)
+        )
+    .AddInMemoryTokenCaches();
+```
 
-     ```CSharp
-      services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
-              .AddAzureAD(options => Configuration.Bind("AzureAd", options));
-     ```
-
-     with these lines:
-
-     ```CSharp
-     services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
-             .EnableTokenAcquisitionToCallDownstreamApi(
-               Configuration.GetSection("TodoList:TodoListScopes").Get<string>().Split(" ", System.StringSplitOptions.RemoveEmptyEntries))
-             .AddInMemoryTokenCaches();
-     ```
-
-    This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
+* This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
 
 1. Change the `Properties\launchSettings.json` file to ensure that you start your web app from <https://localhost:44321> as registered. For this:
      * update the `sslPort` of the `iisSettings` section to be `44321`
@@ -59,7 +94,7 @@
      services.AddTodoListService(Configuration);
    ```
 
-1. Open the `appsettings.json` file and copy the keys from the sample's corresponding file under the `AzureAd` and `TodoList` sections.
+2. Open the `appsettings.json` file and copy the keys from the sample's corresponding file under the `AzureAd` and `TodoList` sections.
 
 #### Add a model (TodoListItem) and add the controller and views
 
@@ -81,68 +116,5 @@
             // Add APIs
             services.AddTodoListService(Configuration);
     ```
-
-1. Update the `Configure` method to include **app.UseAuthentication();** before **app.UseAuthorization();**  
-
-  ```Csharp
-     app.UseAuthentication();
-     app.AddAuthorization();
-  ```
-
-### Creating the Web API project (TodoListService)
-
-The code for the TodoListService was created in the following way:
-
-#### Step 1: Create the web api using the ASP.NET Core templates
-
-```Text
-md TodoListService
-cd TodoListService
-dotnet new webapi -au=SingleOrg
-```
-
-1. Open the generated project (.csproj) in Visual Studio, and save the solution.
-
-#### Add a model (TodoListItem) and modify the controller
-
-In the TodoListService project, add a folder named `Models` and then create a new  file named `TodoItem.cs`. Copy the contents of the TodoListService\Models\TodoItem.cs in this file.
-
-### Modify the Startup.cs file to validate bearer access tokens received by the Web API
-
-1. Add the `Microsoft.Identity.Web.csproj` project which is located at the root of this sample repo, to your solution (**Add Existing Project ...**).
-1. Add a reference from your newly generated project to `Microsoft.Identity.Web` (right click on the **Dependencies** node under your new project, and choose **Add Reference ...**, and then in the projects tab find the `Microsoft.Identity.Web` project)
-Update `Startup.cs` file :
-
- *Add the following two using statements
-
-```CSharp
-using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.Client.TokenCacheProviders;
-```
-
- *In the `ConfigureServices` method, replace the following code:
-
-  ```CSharp
-  services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
-          .AddAzureADBearer(options => Configuration.Bind("AzureAd", options));
-   ```
-
-  with
-
-  ```Csharp
-    services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
-  ```
-
- *Add the method **app.UseAuthentication()** before **app.UseAuthorization()** in the `Configure` method
-
-  ```Csharp
-     app.UseAuthentication();
-     app.UseAuthorization();
-  ```
-
-### Create the TodoListController.cs file
-
-1. Add a folder named `Models` and then create a new  file named `TodoItem.cs`. Copy the contents of the TodoListClient\Models\TodoItem.cs in this file.
-1. Create a new Controller named `TodoListController` and copy and paste the code from the sample (TodoListService\Controllers\TodoListController.cs) to this controller.
 
 </details>

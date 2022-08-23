@@ -24,7 +24,7 @@ SOFTWARE.
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TodoListClient.Models;
+using TodoListService.Models;
 
 namespace TodoListClient.Services
 {
