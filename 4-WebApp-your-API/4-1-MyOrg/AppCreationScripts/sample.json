@@ -7,7 +7,7 @@
     "Service": "ASP.NET Core Web API",
     "RepositoryUrl": "active-directory-aspnetcore-webapp-openidconnect-v2",
     "Endpoint": "AAD v2.0",
-    "Description": "This sample demonstrates a ASP.NET Core Web App signing-in a user and calling a ASP.NET Core Web API that is secured with Azure AD.",
+    "Description": "This sample demonstrates an ASP.NET Core Web App signing-in a user and calling an ASP.NET Core Web API that is secured with Azure AD.",
     "Languages": [ "csharp" ],
     "Products": [ "aspnet-core", "azure-active-directory" ]
   },
