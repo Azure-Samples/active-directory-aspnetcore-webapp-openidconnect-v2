@@ -170,6 +170,8 @@ Function CreateOptionalClaim([string] $name)
 
 Function ConfigureApplications
 {
+    $isOpenSSl = 'N' #temporary disable open certificate creation 
+
     <#.Description
        This function creates the Azure AD applications for the sample in the provided Azure AD tenant and updates the
        configuration files in the client and service project  of the visual studio solution (App.Config and Web.Config)
