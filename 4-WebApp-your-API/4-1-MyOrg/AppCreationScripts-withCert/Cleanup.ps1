@@ -1,4 +1,4 @@
-
+﻿
 [CmdletBinding()]
 param(    
     [Parameter(Mandatory=$False, HelpMessage='Tenant ID (This is a GUID which represents the "Directory ID" of the AzureAD tenant into which you want to create the apps')]
@@ -103,7 +103,7 @@ Function Cleanup
     }
      # remove self-signed certificate
      Write-Host "Removing CN=TodoListClient-aspnetcore-webapi certificate from Cert:/CurrentUser/My"
-     Get-ChildItem -Path Cert:/CurrentUser/My | where { $_.subject -eq "CN=TodoListClient-aspnetcore-webapi" } | Remove-Item
+     Get-ChildItem -Path Cert:\CurrentUser\My | where { $_.subject -eq "CN=TodoListClient-aspnetcore-webapi" } | Remove-Item
 }
 
 if ($null -eq (Get-Module -ListAvailable -Name "Microsoft.Graph.Applications")) { 
@@ -117,4 +117,3 @@ Cleanup -tenantId $tenantId -environment $azureEnvironmentName
 
 Write-Host "Disconnecting from tenant"
 Disconnect-MgGraph
-

@@ -36,8 +36,6 @@ extensions: <ENTER_CONTENT_THAT_OTHER_TEAMS_CAN_USE_TO_IDENTIFY_SAMPLES>
 
 This sample demonstrates a ASP.NET Core Web App calling a ASP.NET Core Web API that is secured using Azure AD.
 
-> :information_source: See the community call: [Implement authorization in your applications with the Microsoft identity platform](https://www.youtube.com/watch?v=LRoc-na27l0)
-
 ## Scenario
 
  This sample demonstrates an ASP.NET Core client Web App calling an ASP.NET Core Web API that is secured using Azure AD.
@@ -114,6 +112,7 @@ To manually register the apps, as a first step you'll need to:
 1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant.
 
 #### Register the service app (TodoListService-aspnetcore-webapi)
+
 1. Navigate to the [Azure portal](https://portal.azure.com) and select the **Azure Active Directory** service.
 1. Select the **App Registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
@@ -127,7 +126,7 @@ To manually register the apps, as a first step you'll need to:
  
 ##### Publish Delegated Permissions
 
-1. All APIs must publish a minimum of one [scope](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-authorization-code), also called [Delegated Permission](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent#permission-types), for the client's to obtain an access token for a *user* successfully. To publish a scope, follow these steps:
+1. All APIs must publish a minimum of one [scope](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-authorization-code), also called [Delegated Permission](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent#permission-types), for the client apps to obtain an access token for a *user* successfully. To publish a scope, follow these steps:
 1. Select **Add a scope** button open the **Add a scope** screen and Enter the values as indicated below:
     1. For **Scope name**, use `ToDoList.Read`.
     1. Select **Admins and users** options for **Who can consent?**.
@@ -176,6 +175,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `TodoListService-aspnetcore-webapi` app copied from the Azure portal.
 
 #### Register the client app (TodoListClient-aspnetcore-webapi)
+
 1. Navigate to the [Azure portal](https://portal.azure.com) and select the **Azure Active Directory** service.
 1. Select the **App Registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
@@ -517,75 +517,99 @@ using Microsoft.Identity.Web.Client.TokenCacheProviders;
 1. Create a new Controller named `TodoListController` and copy and paste the code from the sample (TodoListService\Controllers\TodoListController.cs) to this controller.
 
 </details>
-
 ## How to deploy this sample to Azure
 
 <details>
  <summary>Expand the section</summary>
+### Deploying web API to Azure App Services
 
-This project has two WebApp / Web API projects. To deploy them to Azure Web Sites, you'll need, for each one, to:
+There is one web API in this sample. To deploy it to **Azure App Services**, you'll need to:
 
- *create an Azure Web Site
- *publish the Web App / Web APIs to the web site, and
- *update its client(s) to call the web site instead of IIS Express.
+- create an **Azure App Service**
+- publish the projects to the **App Services**
 
-### Create and publish the `TodoListService-aspnetcore-webapi` to an Azure Web Site
+#### Publish your files (TodoListService-aspnetcore-webapi)
 
-1. Sign in to the [Azure portal](https://portal.azure.com).
-1. Click `Create a resource` in the top left-hand corner, select **Web** --> **Web App**, and give your web site a name, for example, `TodoListService-aspnetcore-webapi-contoso.azurewebsites.net`.
-1. Thereafter select the `Subscription`, `Resource Group`, `App service plan and Location`. `OS` will be **Windows** and `Publish` will be **Code**.
-1. Click `Create` and wait for the App Service to be created.
-1. Once you get the `Deployment succeeded` notification, then click on `Go to resource` to navigate to the newly created App service.
-1. Once the web site is created, locate it it in the **Dashboard** and click it to open **App Services** **Overview** screen.
-1. From the **Overview** tab of the App Service, download the publish profile by clicking the **Get publish profile** link and save it.  Other deployment mechanisms, such as from source control, can also be used.
-1. Switch to Visual Studio and go to the TodoListService-aspnetcore-webapi project.  Right click on the project in the Solution Explorer and select **Publish**.  Click **Import Profile** on the bottom bar, and import the publish profile that you downloaded earlier.
-1. Click on **Configure** and in the `Connection tab`, update the Destination URL so that it is a `https` in the home page url, for example [https://TodoListService-aspnetcore-webapi-contoso.azurewebsites.net](https://TodoListService-aspnetcore-webapi-contoso.azurewebsites.net). Click **Next**.
-1. On the Settings tab, make sure `Enable Organizational Authentication` is NOT selected.  Click **Save**. Click on **Publish** on the main screen.
-1. Visual Studio will publish the project and automatically open a browser to the URL of the project.  If you see the default web page of the project, the publication was successful.
+##### Publish using Visual Studio
 
-### Update the Active Directory tenant application registration for `TodoListService-aspnetcore-webapi`
+Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visualstudio/deployment/quickstart-deploy-to-azure?view=vs-2019).
+
+##### Publish using Visual Studio Code
+
+1. Install the VS Code extension [Azure App Service](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureappservice).
+1. Sign-in to App Service using Azure AD Account.
+1. Open the TodoListService-aspnetcore-webapi project folder.
+1. Choose View > Terminal from the main menu.
+1. The terminal opens in the TodoListService-aspnetcore-webapi folder.
+1. Run the following command:
+
+    ```console
+    dotnet publish --configuration Release
+    ```
+
+1. Publish folder is created under path `bin/Release/<Enter_Framework_FolderName>`.
+1. Right Click on **Publish** folder and select **Deploy to Web App**.
+1. Select **Create New Web App**, enter unique name for the app.
+1. Select **Windows** as the *OS*. Press **Enter**.
+
+#### Enable cross-origin resource sharing (CORS) (TodoListService-aspnetcore-webapi)
+
+1. Go to [Azure portal](https://portal.azure.com), and locate your project there.
+    - On the API tab, select **CORS**. Check the box **Enable Access-Control-Allow-Credentials**.
+    - Under **Allowed origins**, add the site URL of your published website **that will call this web API**. 
+
+### Deploying web app to Azure App Services
+
+There is one web app in this sample. To deploy it to **Azure App Services**, you'll need to:
+
+- create an **Azure App Service**
+- publish the projects to the **App Services**, and
+- update its client(s) to call the website instead of the local environment.
+
+#### Publish your files (TodoListClient-aspnetcore-webapi)
+
+##### Publish using Visual Studio
+
+Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visualstudio/deployment/quickstart-deploy-to-azure?view=vs-2019).
+
+##### Publish using Visual Studio Code
+
+1. Install the VS Code extension [Azure App Service](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureappservice).
+1. Sign-in to App Service using Azure AD Account.
+1. Open the TodoListClient-aspnetcore-webapi project folder.
+1. Choose **View** > **Terminal** from the main menu.
+1. The terminal opens in the TodoListClient-aspnetcore-webapi folder.
+1. Run the following command:
+
+    ```console
+    dotnet publish --configuration Release
+    ```
+
+1. Publish folder is created under path `bin/Release/<Enter_Framework_FolderName>`.
+1. Right Click on **Publish** folder and select **Deploy to Web App**.
+1. Select **Create New Web App**, enter a unique name for the app.
+1. Select **Windows** as the *OS*. Press **Enter**.
+1. Browse your website. If you see the default web page of the project, then the publication was successful.
+
+#### Update the Azure AD app registration (TodoListClient-aspnetcore-webapi)
 
 1. Navigate back to to the [Azure portal](https://portal.azure.com).
 In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations (Preview)**.
-1. In the resultant screen, select the `TodoListService-aspnetcore-webapi` application.
-1. From the *Branding* menu, update the **Home page URL**, to the address of your service, for example [https://TodoListService-aspnetcore-webapi-contoso.azurewebsites.net](https://TodoListService-aspnetcore-webapi-contoso.azurewebsites.net). Save the configuration.
-1. Add the same URL in the list of values of the *Authentication -> Redirect URIs* menu. If you have multiple redirect urls, make sure that there a new entry using the App service's Uri for each redirect url.
+1. In the resulting screen, select the `TodoListClient-aspnetcore-webapi` application.
+1. In the app's registration screen, select **Authentication** in the menu.
+   - In the **Redirect URIs** section, update the reply URLs to match the site URL of your Azure deployment. For example:
+      - `https://TodoListClient-aspnetcore-webapi.azurewebsites.net/signin-oidc`
+   - Update the **Front-channel logout URL** fields with the address of your service, for example [https://TodoListClient-aspnetcore-webapi.azurewebsites.net](https://TodoListClient-aspnetcore-webapi.azurewebsites.net)
 
-### Update the `TodoListClient-aspnetcore-webapi` to call the `TodoListService-aspnetcore-webapi` Running in Azure Web Sites
+#### Update authentication configuration parameters (TodoListClient-aspnetcore-webapi)
 
-1. In Visual Studio, go to the `TodoListClient-aspnetcore-webapi` project.
-2. Open `Client\appsettings.json`.  Only one change is needed - update the `todo:TodoListBaseAddress` key value to be the address of the website you published,
-   for example, [https://TodoListService-aspnetcore-webapi-contoso.azurewebsites.net](https://TodoListService-aspnetcore-webapi-contoso.azurewebsites.net).
-3. Run the client! If you are trying multiple different client types (for example, .Net, Windows Store, Android, iOS) you can have them all call this one published web API.
+1. In your IDE, locate the `TodoListClient-aspnetcore-webapi` project. Then, open `Client\appsettings.json`.
+2. Find the key for **redirect URI** and replace its value with the address of the web app you published, for example, [https://TodoListClient-aspnetcore-webapi.azurewebsites.net/redirect](https://TodoListClient-aspnetcore-webapi.azurewebsites.net/redirect).
+3. Find the key for **web API endpoint** and replace its value with the address of the web API you published, for example, [https://TodoListService-aspnetcore-webapi.azurewebsites.net/api](https://TodoListService-aspnetcore-webapi.azurewebsites.net/api).
 
-### Create and publish the `TodoListClient-aspnetcore-webapi` to an Azure Web Site
-
-1. Sign in to the [Azure portal](https://portal.azure.com).
-1. Click `Create a resource` in the top left-hand corner, select **Web** --> **Web App**, and give your web site a name, for example, `TodoListClient-aspnetcore-webapi-contoso.azurewebsites.net`.
-1. Thereafter select the `Subscription`, `Resource Group`, `App service plan and Location`. `OS` will be **Windows** and `Publish` will be **Code**.
-1. Click `Create` and wait for the App Service to be created.
-1. Once you get the `Deployment succeeded` notification, then click on `Go to resource` to navigate to the newly created App service.
-1. Once the web site is created, locate it in the **Dashboard** and click it to open **App Services** **Overview** screen.
-1. From the **Overview** tab of the App Service, download the publish profile by clicking the **Get publish profile** link and save it.  Other deployment mechanisms, such as from source control, can also be used.
-1. Switch to Visual Studio and go to the TodoListClient-aspnetcore-webapi project.  Right click on the project in the Solution Explorer and select **Publish**.  Click **Import Profile** on the bottom bar, and import the publish profile that you downloaded earlier.
-1. Click on **Configure** and in the `Connection tab`, update the Destination URL so that it is a `https` in the home page url, for example [https://TodoListClient-aspnetcore-webapi-contoso.azurewebsites.net](https://TodoListClient-aspnetcore-webapi-contoso.azurewebsites.net). Click **Next**.
-1. On the Settings tab, make sure `Enable Organizational Authentication` is NOT selected.  Click **Save**. Click on **Publish** on the main screen.
-1. Visual Studio will publish the project and automatically open a browser to the URL of the project.  If you see the default web page of the project, the publication was successful.
-
-### Update the Active Directory tenant application registration for `TodoListClient-aspnetcore-webapi`
-
-1. Navigate back to to the [Azure portal](https://portal.azure.com).
-In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations (Preview)**.
-1. In the resultant screen, select the `TodoListClient-aspnetcore-webapi` application.
-1. In the **Authentication** | page for your application, update the Logout URL fields with the address of your service, for example [https://TodoListClient-aspnetcore-webapi-contoso.azurewebsites.net](https://TodoListClient-aspnetcore-webapi-contoso.azurewebsites.net)
-1. From the *Branding* menu, update the **Home page URL**, to the address of your service, for example [https://TodoListClient-aspnetcore-webapi-contoso.azurewebsites.net](https://TodoListClient-aspnetcore-webapi-contoso.azurewebsites.net). Save the configuration.
-1. Add the same URL in the list of values of the *Authentication -> Redirect URIs* menu. If you have multiple redirect urls, make sure that there a new entry using the App service's Uri for each redirect url.
-
-> NOTE: Remember, the To Do list is stored in memory in this TodoListService sample. Azure Web Sites will spin down your web site if it is inactive, and your To Do list will get emptied.
-Also, if you increase the instance count of the web site, requests will be distributed among the instances. To Do will, therefore, not be the same on each instance.
+> :warning: If your app is using an *in-memory* storage, **Azure App Services** will spin down your web site if it is inactive, and any records that your app was keeping will emptied. In addition, if you increase the instance count of your website, requests will be distributed among the instances. Your app's records, therefore, will not be the same on each instance.
 
 </details>
-
 ## Next Steps
 
 Learn how to:

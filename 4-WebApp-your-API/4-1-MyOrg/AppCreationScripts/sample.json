@@ -65,7 +65,7 @@
 
   /* It either can be a text or link to another readme file */
   "ReadmeAzureDeploy": {
-    "IncludeFilePath": "../ReadmeFiles/ReadmeAzureDeploy.md"
+    "IncludeFilePath": ""
   },
 
   /* It either can be a text or link to another readme file */
