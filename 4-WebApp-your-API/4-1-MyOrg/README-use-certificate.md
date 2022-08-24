@@ -71,7 +71,7 @@ AppCreationScripts-withCert/Configure.ps1
   {
    "SourceType": "StoreWithDistinguishedName",
    "CertificateStorePath": "CurrentUser/My",
-   "CertificateDistinguishedName": "CN=TodoListClient-aspnetcore-webapi"
+   "CertificateDistinguishedName": "CN=<my cert name>"
   }
 ]
 ```

@@ -139,11 +139,10 @@ The acceptable values for this parameter are:
 - AzureCloud
 - AzureChinaCloud
 - AzureUSGovernment
-- AzureGermanyCloud
 
 Example:
 
  ```PowerShell
- . .\Cleanup.ps1 -AzureEnvironmentName "AzureGermanyCloud"
- . .\Configure.ps1 -AzureEnvironmentName "AzureGermanyCloud"
+ . .\Cleanup.ps1 -AzureEnvironmentName "AzureUSGovernment"
+ . .\Configure.ps1 -AzureEnvironmentName "AzureUSGovernment"
  ```

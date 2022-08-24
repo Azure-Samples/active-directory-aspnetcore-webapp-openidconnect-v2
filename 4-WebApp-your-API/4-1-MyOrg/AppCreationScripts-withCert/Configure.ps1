@@ -16,20 +16,6 @@ param(
  There are four ways to run this script. For more information, read the AppCreationScripts.md file in the same folder as this script.
 #>
 
-# Create an application key
-# See https://www.sabin.io/blog/adding-an-azure-active-directory-application-and-key-using-powershell/
-Function CreateAppKey([DateTime] $fromDate, [double] $durationInMonths)
-{
-    $key = New-Object Microsoft.Graph.PowerShell.Models.MicrosoftGraphPasswordCredential
-
-    $key.StartDateTime = $fromDate
-    $key.EndDateTime = $fromDate.AddMonths($durationInMonths)
-    $key.KeyId = (New-Guid).ToString()
-    $key.DisplayName = "app secret"
-
-    return $key
-}
-
 # Adds the requiredAccesses (expressed as a pipe separated string) to the requiredAccess structure
 # The exposed permissions are in the $exposedPermissions collection, and the type of permission (Scope | Role) is 
 # described in $permissionType
@@ -291,10 +277,6 @@ Function ConfigureApplications
 
    # Create the client AAD application
    Write-Host "Creating the AAD application (TodoListClient-aspnetcore-webapi)"
-   # Get a 6 months application key for the client Application
-   $fromDate = [DateTime]::Now;
-   $key = CreateAppKey -fromDate $fromDate -durationInMonths 6
-   
    
    # create the application 
    $clientAadApplication = New-MgApplication -DisplayName "TodoListClient-aspnetcore-webapi" `
@@ -306,10 +288,6 @@ Function ConfigureApplications
                                                         } `
                                                        -SignInAudience AzureADMyOrg `
                                                       #end of command
-    #add a secret to the application
-    $pwdCredential = Add-MgApplicationPassword -ApplicationId $clientAadApplication.Id -PasswordCredential $key
-    $clientAppKey = $pwdCredential.SecretText
-
     $tenantName = (Get-MgApplication -ApplicationId $clientAadApplication.Id).PublisherDomain
     Update-MgApplication -ApplicationId $clientAadApplication.Id -IdentifierUris @("https://$tenantName/TodoListClient-aspnetcore-webapi")
         # Generate a certificate

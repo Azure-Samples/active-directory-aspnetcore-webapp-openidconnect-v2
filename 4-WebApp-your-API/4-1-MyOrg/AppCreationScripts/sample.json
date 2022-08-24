@@ -9,14 +9,15 @@
     "Endpoint": "AAD v2.0",
     "Description": "This sample demonstrates an ASP.NET Core Web App signing-in a user and calling an ASP.NET Core Web API that is secured with Azure AD.",
     "Languages": [ "csharp" ],
-    "Products": [ "aspnet-core", "azure-active-directory" ]
+    "Products": [ "aspnet-core", "azure-active-directory" ],
+    "Library":["Microsoft.Identity.Web"]
   },
 
   /*
     This section describes different regions of readme file
   */
   "ReadmeScenario": {
-    "IncludeFilePath": "../ReadmeFiles/ReadmeScenario.md",
+    "IncludeFilePath": "",
     "Image": "./ReadmeFiles/topology.png",
     /* put additional notes, will be displayed right after image*/
     "AdditionalNotesIncludeFilePath": ""
