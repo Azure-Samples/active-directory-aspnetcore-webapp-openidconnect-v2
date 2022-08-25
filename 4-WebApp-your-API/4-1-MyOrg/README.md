@@ -157,7 +157,7 @@ To manually register the apps, as a first step you'll need to:
 1. Still on the same app registration, select the **Token configuration** blade to the left.
 1. Select **Add optional claim**:
     1. Select **optional claim type**, then choose **Access**.
-    1. Select the optional claim **idtyp**.
+    1. Select the optional claim **idtyp**. Indicates token type.This claim is the most accurate way for an API to determine if a token is an app token or an app+user token
     1. Select **Add** to save your changes.
 
 ##### Configure the service app (TodoListService-aspnetcore-webapi) to use your app registration
@@ -167,8 +167,8 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 > In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
 1. Open the `TodoListService\appsettings.json` file.
-1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
-1. Find the key `TenantId` and replace the existing value with your Azure AD tenant ID.
+1. Find the key `Domain` and replace the existing value with your Azure AD tenant domain, ex. `contoso.onmicrosoft.com`.
+1. Find the key `TenantId` and replace the existing value with your Azure AD tenant/directory ID.
 1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `TodoListService-aspnetcore-webapi` app copied from the Azure portal.
 
 #### Register the client app (TodoListClient-aspnetcore-webapi)
@@ -203,6 +203,14 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
            1. In the **Delegated permissions** section, select the **ToDoList.Read**, **ToDoList.ReadWrite** in the list. Use the search box if necessary.
    1. Select the **Add permissions** button at the bottom.
 
+##### Configure Optional Claims
+
+1. Still on the same app registration, select the **Token configuration** blade to the left.
+1. Select **Add optional claim**:
+    1. Select **optional claim type**, then choose **ID**.
+    1. Select the optional claim **acct**. Provides user's account status in tenant.If the user is a member of the tenant, the value is 0. If they're a guest, the value is 1.
+    1. Select **Add** to save your changes.
+
 ##### Configure the client app (TodoListClient-aspnetcore-webapi) to use your app registration
 
 Open the project in your IDE (like Visual Studio or Visual Studio Code) to configure the code.
@@ -210,8 +218,8 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 > In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
 1. Open the `Client\appsettings.json` file.
-1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
-1. Find the key `TenantId` and replace the existing value with your Azure AD tenant ID.
+1. Find the key `Domain` and replace the existing value with your Azure AD tenant domain, ex. `contoso.onmicrosoft.com`.
+1. Find the key `TenantId` and replace the existing value with your Azure AD tenant/directory ID.
 1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `TodoListClient-aspnetcore-webapi` app copied from the Azure portal.
 1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of `TodoListClient-aspnetcore-webapi` copied from the Azure portal.
 1. Find the key `TodoListScopes` and replace the existing value with **"api://<your_service_api_client_id>/ToDoList.Read api://<your_service_api_client_id>/ToDoList.ReadWrite"**.
@@ -519,14 +527,6 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 1. Install the Visual Studio Code extension [Azure App Service](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureappservice).
 1. Follow the link to [Publish with Visual Studio Code](https://docs.microsoft.com/aspnet/core/tutorials/publish-to-azure-webapp-using-vscode)
 
-#### Enable cross-origin resource sharing (CORS) (TodoListService-aspnetcore-webapi)
-
-> :warning: the following steps are required only if you want your web API to be consumed by a single-page application (SPA). Learn more on [cross-origin resource sharing](https://developer.mozilla.org/docs/Web/HTTP/CORS).
-
-1. Go to [Azure portal](https://portal.azure.com), and locate your project there.
-    - On the API tab, select **CORS**. Check the box **Enable Access-Control-Allow-Credentials**.
-    - Under **Allowed origins**, add the site URL of your published website **that will call this web API**. 
-
 ### Deploying web app to Azure App Services
 
 There is one web app in this sample. To deploy it to **Azure App Services**, you'll need to:
@@ -563,14 +563,6 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
 3. Find the key for **web API endpoint** and replace its value with the address of the web API you published, for example, [https://TodoListService-aspnetcore-webapi.azurewebsites.net/api](https://TodoListService-aspnetcore-webapi.azurewebsites.net/api).
 
 > :warning: If your app is using an *in-memory* storage, **Azure App Services** will spin down your web site if it is inactive, and any records that your app was keeping will emptied. In addition, if you increase the instance count of your website, requests will be distributed among the instances. Your app's records, therefore, will not be the same on each instance.
-
-## Next Steps
-
-Learn how to:
-
-* [Change your app to sign-in users from any organization or Microsoft accounts](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-3-AnyOrgOrPersonal)
-* [Enable users from National clouds to sign-in to your application](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-4-Sovereign)
-* [Enable your web app to call a web API on behalf of the signed-in user](https://github.com/Azure-Samples/ms-identity-dotnetcore-ca-auth-context-app)
 
 ## Contributing
 

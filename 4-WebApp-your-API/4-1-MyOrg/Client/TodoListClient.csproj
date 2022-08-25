@@ -27,4 +27,8 @@
     <ProjectReference Include="..\TodoListService\TodoListService.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
+  
 </Project>

@@ -124,6 +124,9 @@
           "DelegatedPermissions": [ "ToDoList.Read", "ToDoList.ReadWrite" ]
         }
       ],
+      "OptionalClaims": {
+        "IdTokenClaims": [ "acct" ]
+      },
       "Certificate":"the name will be assigned automatically by PowerShell script and it will be equal to the Application name",
       "ManualSteps": [],
       "Sample": {
