@@ -18,7 +18,6 @@ description: This sample demonstrates an ASP.NET Core Web App signing-in a user 
 
 * [Overview](#overview)
 * [Scenario](#scenario)
-* [Contents](#contents)
 * [Prerequisites](#prerequisites)
 * [Setup the sample](#setup-the-sample)
 * [Explore the sample](#explore-the-sample)
@@ -193,7 +192,9 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
     1. Select one of the available key durations (**6 months**, **12 months** or **Custom**) as per your security posture.
     1. The generated key value will be displayed when you select the **Add** button. Copy and save the generated value for use in later steps.
     1. You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
-    > :bulb: For enhanced security, instead of using client secrets, consider [using certificates](https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-node/docs/certificate-credentials.md) and [Azure KeyVault](https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-node/docs/key-vault-managed-identity.md).1. Since this app signs-in users, we will now proceed to select **delegated permissions**, which is is required by apps signing-in users.
+    > :bulb: For enhanced security, instead of using client secrets, consider [using certificates](./README-use-certificate.md) and [Azure KeyVault](https://azure.microsoft.com/services/key-vault/#product-overview).
+    
+1. Since this app signs-in users, we will now proceed to select **delegated permissions**, which is is required by apps signing-in users.
    1. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs:
    1. Select the **Add a permission** button and then,
    1. Ensure that the **My APIs** tab is selected.
@@ -379,7 +380,6 @@ services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
 
 </details>
 
-
 ## How the code was created
 
 <details>
@@ -499,10 +499,8 @@ services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
     ```
 
 </details>
-## How to deploy this sample to Azure
+﻿## How to deploy this sample to Azure
 
-<details>
- <summary>Expand the section</summary>
 ### Deploying web API to Azure App Services
 
 There is one web API in this sample. To deploy it to **Azure App Services**, you'll need to:
@@ -514,27 +512,16 @@ There is one web API in this sample. To deploy it to **Azure App Services**, you
 
 ##### Publish using Visual Studio
 
-Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visualstudio/deployment/quickstart-deploy-to-azure?view=vs-2019).
+Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visualstudio/deployment/quickstart-deploy-to-azure).
 
 ##### Publish using Visual Studio Code
 
-1. Install the VS Code extension [Azure App Service](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureappservice).
-1. Sign-in to App Service using Azure AD Account.
-1. Open the TodoListService-aspnetcore-webapi project folder.
-1. Choose View > Terminal from the main menu.
-1. The terminal opens in the TodoListService-aspnetcore-webapi folder.
-1. Run the following command:
-
-    ```console
-    dotnet publish --configuration Release
-    ```
-
-1. Publish folder is created under path `bin/Release/<Enter_Framework_FolderName>`.
-1. Right Click on **Publish** folder and select **Deploy to Web App**.
-1. Select **Create New Web App**, enter unique name for the app.
-1. Select **Windows** as the *OS*. Press **Enter**.
+1. Install the Visual Studio Code extension [Azure App Service](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureappservice).
+1. Follow the link to [Publish with Visual Studio Code](https://docs.microsoft.com/aspnet/core/tutorials/publish-to-azure-webapp-using-vscode)
 
 #### Enable cross-origin resource sharing (CORS) (TodoListService-aspnetcore-webapi)
+
+> :warning: the following steps are required only if you want your web API to be consumed by a single-page application (SPA). Learn more on [cross-origin resource sharing](https://developer.mozilla.org/docs/Web/HTTP/CORS).
 
 1. Go to [Azure portal](https://portal.azure.com), and locate your project there.
     - On the API tab, select **CORS**. Check the box **Enable Access-Control-Allow-Credentials**.
@@ -552,26 +539,12 @@ There is one web app in this sample. To deploy it to **Azure App Services**, you
 
 ##### Publish using Visual Studio
 
-Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visualstudio/deployment/quickstart-deploy-to-azure?view=vs-2019).
+Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visualstudio/deployment/quickstart-deploy-to-azure).
 
 ##### Publish using Visual Studio Code
 
-1. Install the VS Code extension [Azure App Service](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureappservice).
-1. Sign-in to App Service using Azure AD Account.
-1. Open the TodoListClient-aspnetcore-webapi project folder.
-1. Choose **View** > **Terminal** from the main menu.
-1. The terminal opens in the TodoListClient-aspnetcore-webapi folder.
-1. Run the following command:
-
-    ```console
-    dotnet publish --configuration Release
-    ```
-
-1. Publish folder is created under path `bin/Release/<Enter_Framework_FolderName>`.
-1. Right Click on **Publish** folder and select **Deploy to Web App**.
-1. Select **Create New Web App**, enter a unique name for the app.
-1. Select **Windows** as the *OS*. Press **Enter**.
-1. Browse your website. If you see the default web page of the project, then the publication was successful.
+1. Install the Visual Studio Code extension [Azure App Service](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureappservice).
+1. Follow the link to [Publish with Visual Studio Code](https://docs.microsoft.com/aspnet/core/tutorials/publish-to-azure-webapp-using-vscode)
 
 #### Update the Azure AD app registration (TodoListClient-aspnetcore-webapi)
 
@@ -591,7 +564,6 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
 
 > :warning: If your app is using an *in-memory* storage, **Azure App Services** will spin down your web site if it is inactive, and any records that your app was keeping will emptied. In addition, if you increase the instance count of your website, requests will be distributed among the instances. Your app's records, therefore, will not be the same on each instance.
 
-</details>
 ## Next Steps
 
 Learn how to:
