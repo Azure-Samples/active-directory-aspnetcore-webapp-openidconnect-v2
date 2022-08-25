@@ -67,7 +67,7 @@ namespace TodoListClient.Controllers
         }
 
         // GET: TodoList/Delete/5
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> DeleteItem(int id)
         {
             Todo todo = await this._todoListService.GetAsync(id);
 
@@ -82,7 +82,7 @@ namespace TodoListClient.Controllers
         // POST: TodoList/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(int id, [Bind("Id,Title,Owner")] Todo todo)
+        public async Task<ActionResult> DeleteItem(int id, [Bind("Id,Title,Owner")] Todo todo)
         {
             await _todoListService.DeleteAsync(id);
             return RedirectToAction("Index");
