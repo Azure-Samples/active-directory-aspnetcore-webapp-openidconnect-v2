@@ -281,8 +281,6 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
 <details>
  <summary>Expand the section</summary>
 
-1. Consider adding [MSAL.NET Logging](https://docs.microsoft.com/azure/active-directory/develop/msal-logging-dotnet) to you project
-
 1. In the `TodoListService` project,  which represents the web api, first the package `Microsoft.Identity.Web`is added from NuGet.
 
 1. Starting with the **Startup.cs** file :
@@ -301,7 +299,7 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
 
     * `AddMicrosoftIdentityWebApiAuthentication()` protects the Web API by [validating Access tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens#validating-tokens) sent tho this API. Check out [Protected web API: Code configuration](https://docs.microsoft.com/azure/active-directory/develop/scenario-protected-web-api-app-configuration) which explains the inner workings of this method in more detail.
 
-    * There is a bit of code (commented) provided under this method that can be used to used do extended token validation and check for additional claims, such as:
+    * There is a bit of code (commented) provided under this method that can be used to used do **extended token validation** and do checks based on additional claims, such as:
       * check if the client app's appid (azp) is in some sort of an allowed  list via the 'azp' claim, in case you wanted to restrict the API to a list of client apps.
       * check if the caller's account is homed or guest via the 'acct' optional claim
       * check if the caller belongs to right roles or groups via the 'roles' or 'groups' claim, respectively
@@ -367,7 +365,7 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
     * The method *IsAppOnlyToken()* is used by controller method to detect presence of an app only token, i.e a token that was issued to an app using the [Client credentials](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow) flow, i.e no users were signed-in by this client app. 
 
       ```csharp
-              private bool IsAppOnlyToken()
+        private bool IsAppOnlyToken()
         {
             // Add in the optional 'idtyp' claim to check if the access token is coming from an application or user.
             //
@@ -376,16 +374,50 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
         }
       ```
 
-### Initial scopes
+1. In the `TodoListClient` project,  which represents the client app that signs-in a user and makes calls to the web api, first the package `Microsoft.Identity.Web`is added from NuGet.
 
-Client [appsettings.json](../4-1-MyOrg/Client/appsettings.json) file contains `ToDoListScopes` key that is used in [startup.cs](../4-1-MyOrg/Client/Startup.cs#L46) to specify which initial scopes should be requested from Web API when refreshing the token:
+* The following lines in *Startup.cs* adds the ability to authenticate a user using Azure AD.
 
 ```csharp
-services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
- .EnableTokenAcquisitionToCallDownstreamApi(Configuration.GetSection("TodoList:TodoListScopes")
- .Get<string>().Split(" ", System.StringSplitOptions.RemoveEmptyEntries))
- .AddInMemoryTokenCaches();
+        services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+                .EnableTokenAcquisitionToCallDownstreamApi(
+                    Configuration.GetSection("TodoList:TodoListScopes").Get<string>().Split(" ", System.StringSplitOptions.RemoveEmptyEntries)
+                    )
+                .AddInMemoryTokenCaches();
 ```
+
+* Specifying Initial scopes (delegated permissions)
+
+The ToDoListClient's *appsettings.json* file contains `ToDoListScopes` key that is used in *startup.cs* to specify which initial scopes (delegated permissions) should be requested for the Access Token when a user is being signed-in:
+
+```csharp
+    services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+    .EnableTokenAcquisitionToCallDownstreamApi(Configuration.GetSection("TodoList:TodoListScopes")
+    .Get<string>().Split(" ", System.StringSplitOptions.RemoveEmptyEntries))
+    .AddInMemoryTokenCaches();
+```
+
+* Detecting *Guest* users of a tenant signing-in. This section of code in *Startup.cs* shows you how to detect if the user signing-in is a *member* or *guest*. 
+  
+  ```CSharp
+  app.Use(async (context, next) => {
+                if (context.User != null && context.User.Identity.IsAuthenticated)
+                {
+                    // you can conduct any conditional processing for guest/homes user by inspecting the value of the 'acct' claim
+                    // Read more about the 'acct' claim at aka.ms/optionalclaims
+                    if (context.User.Claims.Any(x => x.Type == "acct"))
+                    {
+                        string claimvalue = context.User.Claims.FirstOrDefault(x => x.Type == "acct").Value;
+                        string userType = claimvalue == "0" ? "Member" : "Guest";
+                        Debug.WriteLine($"The type of the user account from this Azure AD tenant is-{userType}");
+                    }
+                }
+                await next();
+            });
+  ```
+
+1. There is some commented code in *Startup.cs* that also shows how to user certificates and KeyVault in place, see [README-use-certificate](README-use-certificate.md) for more details on how to use code in this section.
+1. Also consider adding [MSAL.NET Logging](https://docs.microsoft.com/azure/active-directory/develop/msal-logging-dotnet) to you project
 
 </details>
 
@@ -508,7 +540,8 @@ services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
     ```
 
 </details>
-﻿## How to deploy this sample to Azure
+
+## How to deploy this sample to Azure
 
 ### Deploying web API to Azure App Services
 

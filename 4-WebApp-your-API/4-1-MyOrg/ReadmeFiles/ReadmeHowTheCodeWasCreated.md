@@ -1,4 +1,3 @@
-
 ## How the code was created
 
 <details>
