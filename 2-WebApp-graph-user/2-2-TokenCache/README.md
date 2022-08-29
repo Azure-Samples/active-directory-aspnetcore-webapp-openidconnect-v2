@@ -148,12 +148,14 @@ Note: if you had used the automation to setup your application mentioned in [Ste
    > },
    > ```
 
-1. If you do not have an existing database and tables needed for token caching, you can execute the `dotnet sql-cache create` command to create the table for you. To do that, follow the steps below.
+1. If you do not have a tables needed for token caching, you can execute the `dotnet sql-cache create` command to create the table for you. To do that, follow the steps below.
 
     ```powershell
     dotnet tool install --global dotnet-sql-cache
     dotnet sql-cache create "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MY_TOKEN_CACHE_DATABASE;Integrated Security=True;" dbo TokenCache
     ```
+
+   > The database **should exist** before running the above command!
 
 - In case you want to deploy your app in Sovereign or national clouds, ensure the `GraphApiUrl` option matches the one you want. By default this is Microsoft Graph in the Azure public cloud
 

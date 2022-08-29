@@ -1,9 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30413.136
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32819.101
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApp-OpenIDConnect-DotNet", "WebApp-OpenIDConnect-DotNet.csproj", "{76F9C1E5-3CF7-4C9A-A0EC-D15B5F11022D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppCreationScripts", "AppCreationScripts", "{FC0F3826-20F8-499E-A4B5-27A4FE992F8C}"
+	ProjectSection(SolutionItems) = preProject
+		AppCreationScripts\AppCreationScripts.md = AppCreationScripts\AppCreationScripts.md
+		AppCreationScripts\Cleanup.ps1 = AppCreationScripts\Cleanup.ps1
+		AppCreationScripts\Configure.ps1 = AppCreationScripts\Configure.ps1
+		AppCreationScripts\createdApps.html = AppCreationScripts\createdApps.html
+		AppCreationScripts\sample.json = AppCreationScripts\sample.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
