@@ -103,7 +103,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                     await blobClient.UploadAsync(stream);
                     message = "Blob successfully created";
                 }
-	            catch (MicrosoftIdentityWebChallengeUserException ex)
+                catch (MicrosoftIdentityWebChallengeUserException ex)
                 {
                     throw ex;
                 }	

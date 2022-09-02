@@ -192,11 +192,12 @@ Function ConfigureApplications
     Write-Host "Getting access from 'webApp' to 'Microsoft Graph'"
     $requiredPermissions = GetRequiredPermissions -applicationDisplayName "Microsoft Graph" `
         -requiredDelegatedPermissions "User.Read.All" `
-    
-
     $requiredResourcesAccess.Add($requiredPermissions)
     Update-MgApplication -ApplicationId $webAppAadApplication.Id -RequiredResourceAccess $requiredResourcesAccess
     Write-Host "Granted permissions."
+
+    Write-Host "Successfully registered and configured that app registration for 'WebApp-MultiTenant-v2' at" -ForegroundColor Green
+    $webAppPortalUrl
     
     # Update config file for 'webApp'
     # $configFile = $pwd.Path + "\..\appsettings.json"
@@ -204,7 +205,7 @@ Function ConfigureApplications
     
     $dictionary = @{ "ClientId" = $webAppAadApplication.AppId;"TenantId" = 'organizations';"Domain" = $tenantName;"ClientSecret" = $webAppAppKey };
 
-    Write-Host "Updating the sample code ($configFile) with the following config values"
+    Write-Host "Updating the sample config '$configFile' with the following config values"
     $dictionary
 
     UpdateTextFile -configFilePath $configFile -dictionary $dictionary
