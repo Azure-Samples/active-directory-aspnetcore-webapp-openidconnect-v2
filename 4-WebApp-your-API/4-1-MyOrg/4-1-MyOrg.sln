@@ -6,8 +6,8 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DDAC3758-9CAE-4790-84B1-5B6258BAE44E}"
 	ProjectSection(SolutionItems) = preProject
 		README-incremental-instructions.md = README-incremental-instructions.md
-		README-use-keyvault-certificate.md = README-use-keyvault-certificate.md
 		README.md = README.md
+		README-use-certificate.md = README-use-certificate.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TodoListService", "TodoListService\TodoListService.csproj", "{A55C5542-9C7B-4A34-932C-05DAF36CED0C}"
@@ -31,7 +31,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReadmeFiles", "ReadmeFiles", "{2A7989B7-23E0-46D4-8F2A-3D069084F65D}"
 	ProjectSection(SolutionItems) = preProject
 		ReadmeFiles\ReadmeAboutTheCode.md = ReadmeFiles\ReadmeAboutTheCode.md
+		ReadmeFiles\ReadmeAzureDeploy.md = ReadmeFiles\ReadmeAzureDeploy.md
+		ReadmeFiles\ReadmeExploreTheSample.md = ReadmeFiles\ReadmeExploreTheSample.md
+		ReadmeFiles\ReadmeHowTheCodeWasCreated.md = ReadmeFiles\ReadmeHowTheCodeWasCreated.md
+		ReadmeFiles\ReadmeLearnMore.md = ReadmeFiles\ReadmeLearnMore.md
 		ReadmeFiles\ReadmeScenario.md = ReadmeFiles\ReadmeScenario.md
+		ReadmeFiles\ReadmeTroubleshooting.md = ReadmeFiles\ReadmeTroubleshooting.md
 		ReadmeFiles\topology.png = ReadmeFiles\topology.png
 	EndProjectSection
 EndProject

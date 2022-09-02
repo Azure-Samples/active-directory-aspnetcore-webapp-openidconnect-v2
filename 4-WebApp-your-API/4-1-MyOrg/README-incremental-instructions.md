@@ -119,10 +119,10 @@ These instructions only list the additional set of steps needed over the previou
    - Enter the following parameters
      - for **Scope name** use `user_impersonation`
      - Keep **Admins and users** for **Who can consent**
-     - in **Admin consent display name** type `Access TodoListService-aspnetcore-webapi as a user`
-     - in **Admin consent description** type `Accesses the TodoListService-aspnetcore-webapi Web API as a user`
-     - in **User consent display name** type `Access TodoListService-aspnetcore-webapi as a user`
-     - in **User consent description** type `Accesses the TodoListService-aspnetcore-webapi Web API as a user`
+     - in **Admin consent display name** type `Access TodoListService-aspnetcore-webapi as an admin`
+     - in **Admin consent description** type `Accesses the TodoListService-aspnetcore-webapi Web API as an admin`
+     - in **User consent display name** type `Access TodoListService-aspnetcore-webapi as an user`
+     - in **User consent description** type `Accesses the TodoListService-aspnetcore-webapi Web API as an user`
      - Keep **State** as **Enabled**
      - Select **Add scope**
 

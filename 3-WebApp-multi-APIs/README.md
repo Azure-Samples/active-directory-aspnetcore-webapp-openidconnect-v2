@@ -7,7 +7,8 @@ client: ASP.NET Core Web App
 service: Microsoft Graph
 endpoint: Microsoft identity platform
 ---
-# ASP.NET Core 6.0 Web API calling Azure REST API and Azure Storage
+
+# ASP.NET Core Web API calling Azure REST API and Azure Storage
 
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 

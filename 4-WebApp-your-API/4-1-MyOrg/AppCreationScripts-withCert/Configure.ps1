@@ -1,4 +1,4 @@
-
+ 
 [CmdletBinding()]
 param(
     [Parameter(Mandatory=$False, HelpMessage='Tenant ID (This is a GUID which represents the "Directory ID" of the AzureAD tenant into which you want to create the apps')]
@@ -15,20 +15,6 @@ param(
  
  There are four ways to run this script. For more information, read the AppCreationScripts.md file in the same folder as this script.
 #>
-
-# Create an application key
-# See https://www.sabin.io/blog/adding-an-azure-active-directory-application-and-key-using-powershell/
-Function CreateAppKey([DateTime] $fromDate, [double] $durationInMonths)
-{
-    $key = New-Object Microsoft.Graph.PowerShell.Models.MicrosoftGraphPasswordCredential
-
-    $key.StartDateTime = $fromDate
-    $key.EndDateTime = $fromDate.AddMonths($durationInMonths)
-    $key.KeyId = (New-Guid).ToString()
-    $key.DisplayName = "app secret"
-
-    return $key
-}
 
 # Adds the requiredAccesses (expressed as a pipe separated string) to the requiredAccess structure
 # The exposed permissions are in the $exposedPermissions collection, and the type of permission (Scope | Role) is 
@@ -154,9 +140,24 @@ Function CreateAppRole([string] $types, [string] $name, [string] $description)
     $appRole.Value = $name;
     return $appRole
 }
+Function CreateOptionalClaim([string] $name)
+{
+    <#.Description
+    This function creates a new Azure AD optional claims  with default and provided values
+    #>  
+
+    $appClaim = New-Object Microsoft.Graph.PowerShell.Models.MicrosoftGraphOptionalClaim
+    $appClaim.AdditionalProperties =  New-Object System.Collections.Generic.List[string]
+    $appClaim.Source =  $null
+    $appClaim.Essential = $false
+    $appClaim.Name = $name
+    return $appClaim
+}
 
 Function ConfigureApplications
 {
+    $isOpenSSl = 'N' #temporary disable open certificate creation 
+
     <#.Description
        This function creates the Azure AD applications for the sample in the provided Azure AD tenant and updates the
        configuration files in the client and service project  of the visual studio solution (App.Config and Web.Config)
@@ -188,6 +189,10 @@ Function ConfigureApplications
                                                        @{ `
                                                            HomePageUrl = "https://localhost:44351"; `
                                                          } `
+                                                         -Api `
+                                                         @{ `
+                                                            RequestedAccessTokenVersion = 2 `
+                                                         } `
                                                         -SignInAudience AzureADMyOrg `
                                                        #end of command
     $serviceIdentifierUri = 'api://'+$serviceAadApplication.AppId
@@ -204,6 +209,28 @@ Function ConfigureApplications
         New-MgApplicationOwnerByRef -ApplicationId $serviceAadApplication.Id  -BodyParameter = @{"@odata.id" = "htps://graph.microsoft.com/v1.0/directoryObjects/$user.ObjectId"}
         Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($serviceServicePrincipal.DisplayName)'"
     }
+
+    # Add Claims
+
+    $optionalClaims = New-Object Microsoft.Graph.PowerShell.Models.MicrosoftGraphOptionalClaims
+    $optionalClaims.AccessToken = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphOptionalClaim]
+    $optionalClaims.IdToken = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphOptionalClaim]
+    $optionalClaims.Saml2Token = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphOptionalClaim]
+
+
+    # Add Optional Claims
+
+    $newClaim =  CreateOptionalClaim  -name "idtyp" 
+    $optionalClaims.AccessToken += ($newClaim)
+    Update-MgApplication -ApplicationId $serviceAadApplication.Id -OptionalClaims $optionalClaims
+    
+    # Add application Roles
+    $appRoles = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphAppRole]
+    $newRole = CreateAppRole -types "Application" -name "ToDoList.Read.All" -description "Allow application to read all ToDo list items"
+    $appRoles.Add($newRole)
+    $newRole = CreateAppRole -types "Application" -name "ToDoList.ReadWrite.All" -description "Allow application to read and write into ToDo list"
+    $appRoles.Add($newRole)
+    Update-MgApplication -ApplicationId $serviceAadApplication.Id -AppRoles $appRoles
     
     # rename the user_impersonation scope if it exists to match the readme steps or add a new scope
        
@@ -228,14 +255,14 @@ Function ConfigureApplications
     -userConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
     -userConsentDescription "Allow the application to access TodoListService-aspnetcore-webapi on your behalf."  `
     -adminConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
-    -adminConsentDescription "Allows the app to have the same access to information in the directory on behalf of the signed-in user."
+    -adminConsentDescription "Allows the app to have the same access to information in the directory on behalf of an admin."
             
     $scopes.Add($scope)
-    $scope = CreateScope -value ToDoList.Write  `
+    $scope = CreateScope -value ToDoList.ReadWrite  `
     -userConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
     -userConsentDescription "Allow the application to access TodoListService-aspnetcore-webapi on your behalf."  `
     -adminConsentDisplayName "Access TodoListService-aspnetcore-webapi"  `
-    -adminConsentDescription "Allows the app to have the same access to information in the directory on behalf of the signed-in user."
+    -adminConsentDescription "Allows the app to have the same access to information in the directory on behalf of an admin."
             
     $scopes.Add($scope)
     
@@ -250,60 +277,51 @@ Function ConfigureApplications
 
    # Create the client AAD application
    Write-Host "Creating the AAD application (TodoListClient-aspnetcore-webapi)"
-   # Get a 6 months application key for the client Application
-   $fromDate = [DateTime]::Now;
-   $key = CreateAppKey -fromDate $fromDate -durationInMonths 6
-   
    
    # create the application 
    $clientAadApplication = New-MgApplication -DisplayName "TodoListClient-aspnetcore-webapi" `
                                                       -Web `
                                                       @{ `
-                                                          RedirectUris = "https://localhost:44321/", "https://localhost:44321/signin-oidc"; `
+                                                          RedirectUris = "https://localhost:44321/signin-oidc"; `
                                                           HomePageUrl = "https://localhost:44321/"; `
                                                           LogoutUrl = "https://localhost:44321/signout-oidc"; `
                                                         } `
                                                        -SignInAudience AzureADMyOrg `
                                                       #end of command
-    #add password to the application
-    $pwdCredential = Add-MgApplicationPassword -ApplicationId $clientAadApplication.Id -PasswordCredential $key
-    $clientAppKey = $pwdCredential.SecretText
     $tenantName = (Get-MgApplication -ApplicationId $clientAadApplication.Id).PublisherDomain
     Update-MgApplication -ApplicationId $clientAadApplication.Id -IdentifierUris @("https://$tenantName/TodoListClient-aspnetcore-webapi")
-    
-    # Generate a certificate
-    Write-Host "Creating the client application (TodoListClient-aspnetcore-webapi)"
+        # Generate a certificate
+        Write-Host "Creating the client application (TodoListClient-aspnetcore-webapi)"
 
-    $certificateName = 'TodoListClient-aspnetcore-webapi'
+        $certificateName = 'TodoListClient-aspnetcore-webapi'
 
-    # temporarily disable the option and procees to certificate creation
-    #$isOpenSSL = Read-Host ' By default certificate is generated using New-SelfSignedCertificate. Do you want to generate cert using OpenSSL(Y/N)?'
-    $isOpenSSl = 'N'
-    if($isOpenSSL -eq 'Y')
-    {
-        $certificate=openssl req -x509 -newkey rsa:4096 -sha256 -days 365 -keyout "$certificateName.key" -out "$certificateName.cer" -nodes -batch
-        openssl pkcs12 -export -out "$certificateName.pfx" -inkey $certificateName.key -in "$certificateName.cer"
-    }
-    else
-    {
-        $certificate=New-SelfSignedCertificate -Subject $certificateName `
-                                                -CertStoreLocation "Cert:\CurrentUser\My" `
-                                                -KeyExportPolicy Exportable `
-                                                -KeySpec Signature
+        # temporarily disable the option and procees to certificate creation
+        #$isOpenSSL = Read-Host ' By default certificate is generated using New-SelfSignedCertificate. Do you want to generate cert using OpenSSL(Y/N)?'
+        $isOpenSSl = 'N'
+        if($isOpenSSL -eq 'Y')
+        {
+            $certificate=openssl req -x509 -newkey rsa:2048 -days 365 -keyout "$certificateName.key" -out "$certificateName.cer" -subj "/CN=$certificateName.com" -nodes
+            openssl pkcs12 -export -out "$certificateName.pfx" -inkey $certificateName.key -in "$certificateName.cer"
+        }
+        else
+        {
+            $certificate=New-SelfSignedCertificate -Subject $certificateName `
+                                                    -CertStoreLocation "Cert:\CurrentUser\My" `
+                                                    -KeyExportPolicy Exportable `
+                                                    -KeySpec Signature
 
-        $thumbprint = $certificate.Thumbprint
-        $certificatePassword = Read-Host -Prompt "Enter password for your certificate (Please remember the password, you will need it when uploading to KeyVault): " -AsSecureString
-        Write-Host "Exporting certificate as a PFX file"
-        Export-PfxCertificate -Cert "Cert:\Currentuser\My\$thumbprint" -FilePath "$pwd\$certificateName.pfx" -ChainOption EndEntityCertOnly -NoProperties -Password $certificatePassword
-        Write-Host "PFX written to:"
-        Write-Host "$pwd\$certificateName.pfx"
+            $thumbprint = $certificate.Thumbprint
+            $certificatePassword = Read-Host -Prompt "Enter password for your certificate (Please remember the password, you will need it when uploading to KeyVault): " -AsSecureString
+            Write-Host "Exporting certificate as a PFX file"
+            Export-PfxCertificate -Cert "Cert:\Currentuser\My\$thumbprint" -FilePath "$pwd\$certificateName.pfx" -ChainOption EndEntityCertOnly -NoProperties -Password $certificatePassword
+            Write-Host "PFX written to:"
+            Write-Host "$pwd\$certificateName.pfx"
 
-        # Add a Azure Key Credentials from the certificate for the application
-        $clientKeyCredentials = Update-MgApplication -ApplicationId $clientAadApplication.Id `
-            -KeyCredentials @(@{Type = "AsymmetricX509Cert"; Usage = "Verify"; Key= $certificate.RawData; StartDateTime = $certificate.NotBefore; EndDateTime = $certificate.NotAfter;})       
+            # Add a Azure Key Credentials from the certificate for the application
+            $clientKeyCredentials = Update-MgApplication -ApplicationId $clientAadApplication.Id `
+                -KeyCredentials @(@{Type = "AsymmetricX509Cert"; Usage = "Verify"; Key= $certificate.RawData; StartDateTime = $certificate.NotBefore; EndDateTime = $certificate.NotAfter;})       
        
-    }
-  
+        }  
     
     # create the service principal of the newly created application 
     $currentAppId = $clientAadApplication.AppId
@@ -316,6 +334,20 @@ Function ConfigureApplications
         New-MgApplicationOwnerByRef -ApplicationId $clientAadApplication.Id  -BodyParameter = @{"@odata.id" = "htps://graph.microsoft.com/v1.0/directoryObjects/$user.ObjectId"}
         Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($clientServicePrincipal.DisplayName)'"
     }
+
+    # Add Claims
+
+    $optionalClaims = New-Object Microsoft.Graph.PowerShell.Models.MicrosoftGraphOptionalClaims
+    $optionalClaims.AccessToken = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphOptionalClaim]
+    $optionalClaims.IdToken = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphOptionalClaim]
+    $optionalClaims.Saml2Token = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphOptionalClaim]
+
+
+    # Add Optional Claims
+
+    $newClaim =  CreateOptionalClaim  -name "acct" 
+    $optionalClaims.IdToken += ($newClaim)
+    Update-MgApplication -ApplicationId $clientAadApplication.Id -OptionalClaims $optionalClaims
     Write-Host "Done creating the client application (TodoListClient-aspnetcore-webapi)"
 
     # URL of the AAD application in the Azure portal
@@ -323,12 +355,11 @@ Function ConfigureApplications
     $clientPortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$clientAadApplication.AppId+"/objectId/"+$clientAadApplication.Id+"/isMSAApp/"
     Add-Content -Value "<tr><td>client</td><td>$currentAppId</td><td><a href='$clientPortalUrl'>TodoListClient-aspnetcore-webapi</a></td></tr>" -Path createdApps.html
     $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphRequiredResourceAccess]
-
     
     # Add Required Resources Access (from 'client' to 'service')
     Write-Host "Getting access from 'client' to 'service'"
     $requiredPermissions = GetRequiredPermissions -applicationDisplayName "TodoListService-aspnetcore-webapi" `
-        -requiredDelegatedPermissions "ToDoList.Read|ToDoList.Write" `
+        -requiredDelegatedPermissions "ToDoList.Read|ToDoList.ReadWrite" `
     
 
     $requiredResourcesAccess.Add($requiredPermissions)
@@ -345,12 +376,18 @@ Function ConfigureApplications
     
     # Update config file for 'client'
     $configFile = $pwd.Path + "\..\Client\appsettings.json"
-    $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $clientAadApplication.AppId;"KeyVaultCertificateName" = $certificateName;"TodoListScopes" = "api://$($serviceAadApplication.AppId)/ToDoList.Read api://$($serviceAadApplication.AppId)/ToDoList.Write";"TodoListBaseAddress" = $serviceAadApplication.Web.HomePageUrl };
+    $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $clientAadApplication.AppId;"KeyVaultCertificateName" = $certificateName;"TodoListScopes" = "api://$($serviceAadApplication.AppId)/ToDoList.Read api://$($serviceAadApplication.AppId)/ToDoList.ReadWrite";"TodoListBaseAddress" = $serviceAadApplication.Web.HomePageUrl };
 
     Write-Host "Updating the sample code ($configFile)"
 
     UpdateTextFile -configFilePath $configFile -dictionary $dictionary
-    if($isOpenSSL -eq 'Y')
+    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+    Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
+    Write-Host "- For service"
+    Write-Host "  - Navigate to $servicePortalUrl"
+    Write-Host "  - Application 'service' publishes application permissions. Do remember to navigate to any client app(s) registration in the app portal and consent for those, if required" -ForegroundColor Red 
+    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+       if($isOpenSSL -eq 'Y')
     {
         Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
         Write-Host "You have generated certificate using OpenSSL so follow below steps: "
@@ -358,7 +395,7 @@ Function ConfigureApplications
         Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
     }
     Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  
-}
+} # end of ConfigureApplications function
 
 # Pre-requisites
 if ($null -eq (Get-Module -ListAvailable -Name "Microsoft.Graph.Applications")) {
