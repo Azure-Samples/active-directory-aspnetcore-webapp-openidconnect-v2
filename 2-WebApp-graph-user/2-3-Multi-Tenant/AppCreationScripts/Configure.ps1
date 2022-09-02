@@ -85,6 +85,40 @@ Function GetRequiredPermissions([string] $applicationDisplayName, [string] $requ
 }
 
 
+Function UpdateLine([string] $line, [string] $value)
+{
+    $index = $line.IndexOf(':')
+    $lineEnd = ''
+
+    if($line[$line.Length - 1] -eq ','){   $lineEnd = ',' }
+    
+    if ($index -ige 0)
+    {
+        $line = $line.Substring(0, $index+1) + " " + '"' + $value+ '"' + $lineEnd
+    }
+    return $line
+}
+
+Function UpdateTextFile([string] $configFilePath, [System.Collections.HashTable] $dictionary)
+{
+    $lines = Get-Content $configFilePath
+    $index = 0
+    while($index -lt $lines.Length)
+    {
+        $line = $lines[$index]
+        foreach($key in $dictionary.Keys)
+        {
+            if ($line.Contains($key))
+            {
+                $lines[$index] = UpdateLine $line $dictionary[$key]
+            }
+        }
+        $index++
+    }
+
+    Set-Content -Path $configFilePath -Value $lines -Force
+}
+
 Function ConfigureApplications
 {
     $isOpenSSl = 'N' #temporary disable open certificate creation 
@@ -165,11 +199,15 @@ Function ConfigureApplications
     Write-Host "Granted permissions."
     
     # Update config file for 'webApp'
-    $configFile = $pwd.Path + "\..\appsettings.json"
+    # $configFile = $pwd.Path + "\..\appsettings.json"
+    $configFile = $(Resolve-Path ($pwd.Path + "\..\appsettings.json"))
+    
     $dictionary = @{ "ClientId" = $webAppAadApplication.AppId;"TenantId" = 'organizations';"Domain" = $tenantName;"ClientSecret" = $webAppAppKey };
 
-    Write-Host "Updating the sample code ($configFile)"
+    Write-Host "Updating the sample code ($configFile) with the following config values"
+    $dictionary
 
+    UpdateTextFile -configFilePath $configFile -dictionary $dictionary
     if($isOpenSSL -eq 'Y')
     {
         Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
@@ -193,7 +231,16 @@ Add-Content -Value "<thead><tr><th>Application</th><th>AppId</th><th>Url in the 
 $ErrorActionPreference = "Stop"
 
 # Run interactively (will ask you for the tenant ID)
-ConfigureApplications -tenantId $tenantId -environment $azureEnvironmentName
 
+try
+{
+    ConfigureApplications -tenantId $tenantId -environment $azureEnvironmentName
+}
+catch
+{
+    $message = $_
+    Write-Warning $Error[0]
+    Write-Host "Unable to register apps. Error is $message." -ForegroundColor White -BackgroundColor Red
+}
 Write-Host "Disconnecting from tenant"
 Disconnect-MgGraph
