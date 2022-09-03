@@ -2,7 +2,7 @@
 page_type: sample
 services: ms-identity
 client: ASP.NET Core Web App
-service: Azure resource Manager
+service: Azure REST Api
 level: 200
 languages:
  - aspnetcore
