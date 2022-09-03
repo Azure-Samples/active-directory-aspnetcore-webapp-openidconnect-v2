@@ -1,8 +1,9 @@
 ---
-services: active-directory
-platforms: dotnet
-endpoint: Microsoft identity platform
 page_type: sample
+client: ASP.NET Core Web App
+service: Microsoft Graph
+platforms: dotnetcore
+endpoint: Microsoft identity platform
 author: TiagoBrenck
 level: 400
 client: ASP.NET Core Web App
@@ -10,15 +11,14 @@ service: Microsoft Graph
 languages:
   - CSharp
 products:
-  - azure
-  - azure-active-directory
-  - dotnet
-  - CSharp
-  - office-ms-graph
+ - azure-active-directory
+ - ms-graph
+ - microsoft-identity-web
+name: Integrate a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect
 description: "Protect a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect"
 ---
 
-# Protect a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect
+# Integrate a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect
 
 > This sample is for Azure AD, not Azure AD B2C.
 
@@ -28,9 +28,8 @@ description: "Protect a multi-tenant SaaS web application that calls Microsoft G
   - [Overview](#overview)
 - [Scenario](#scenario)
 - [How to run this sample](#how-to-run-this-sample)
-  - [Step 1:  Clone or download this repository](#step-1-clone-or-download-this-repository)
-  - [Step 2:  Register the sample application with your Azure Active Directory tenant](#step-2-register-the-sample-application-with-your-azure-active-directory-tenant)
-  - [Step 3:  Configure the sample to use your Azure AD tenant](#step-3-configure-the-sample-to-use-your-azure-ad-tenant)
+  - [Step 1:  Clone or download this repository](#step-1--clone-or-download-this-repository)
+  - [Step 2:  Register the sample application with your Azure Active Directory tenant](#step-2--register-the-sample-application-with-your-azure-active-directory-tenant)
   - [Step 4: Run the sample](#step-4-run-the-sample)
 - [About The code](#about-the-code)
   - [Usage of `/common` endpoint](#usage-of-common-endpoint)
@@ -87,14 +86,14 @@ Ideally, you would want to have two Azure AD tenants so you can test all the asp
 
 From your shell or command line:
 
-```Shell
+```console
 git clone https://github.com/Azure-Samples/microsoft-identity-platform-aspnetcore-webapp-tutorial.git
 cd "2-WebApp-graph-user\2-3-Multi-Tenant"
 ```
 
-or download and extract the repository .zip file.
+or download and extract the repository *.zip* file.
 
-> Given that the name of the sample is quiet long, and so are the names of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid path length limitations on Windows.
+> :warning: To avoid path length limitations on Windows, we recommend cloning into a directory near the root of your drive.
 
 ### Step 2:  Register the sample application with your Azure Active Directory tenant
 
@@ -105,85 +104,82 @@ There is one project in this sample. To register it, you can:
   - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you. Note that this works for Visual Studio only.
   - modify the Visual Studio projects' configuration files.
 
-<details>
-  <summary>Expand this section if you want to use this automation:</summary>
+  <details>
+   <summary>Expand this section if you want to use this automation:</summary>
 
-1. On Windows, run PowerShell and navigate to the root of the cloned directory
-1. In PowerShell run:
+    > :warning: If you have never used **Microsoft Graph PowerShell** before, we recommend you go through the [App Creation Scripts Guide](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
+  
+    1. On Windows, run PowerShell as **Administrator** and navigate to the root of the cloned directory
+    1. In PowerShell run:
 
-   ```PowerShell
-   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
-   ```
+       ```PowerShell
+       Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+       ```
 
-1. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
-1. In PowerShell run:
+    1. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
+    1. For interactive process -in PowerShell, run:
 
-   ```PowerShell
-   cd .\AppCreationScripts\ 
-   .\Configure.ps1
-   ```
+       ```PowerShell
+       cd .\AppCreationScripts\
+       .\Configure.ps1 -TenantId "[Optional] - your tenant id" -AzureEnvironmentName "[Optional] - Azure environment, defaults to 'Global'"
+       ```
 
-   > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
-   > The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
+    > Other ways of running the scripts are described in [App Creation Scripts guide](./AppCreationScripts/AppCreationScripts.md). The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
 
-1. Open the Visual Studio solution and click start to run the code.
+  </details>
 
-</details>
+#### Choose the Azure AD tenant where you want to create your applications
 
-Follow the steps below to manually walk through the steps to register and configure the applications.
+To manually register the apps, as a first step you'll need to:
 
-### Step 3:  Configure the sample to use your Azure AD tenant
+1. Sign in to the [Azure portal](https://portal.azure.com).
+1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant.
 
-As a first step you'll need to:
+#### Register the webApp app (WebApp-MultiTenant-v2)
 
-1. Sign in to the [Azure portal](https://portal.azure.com) using either a work or school account or a personal Microsoft account.
-1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory**.
-   Change your portal session to the desired Azure AD tenant.
-
-#### Register the web app (WebApp-MultiTenant-v2)
-
-1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
-1. Click **New registration** on top.
+1. Navigate to the [Azure portal](https://portal.azure.com) and select the **Azure Active Directory** service.
+1. Select the **App Registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
-   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp-MultiTenant-v2`.
-   - Change **Supported account types** to **Accounts in any organizational directory**.
-     > Note that there are more than one redirect URIs used in this sample. You'll need to add them from the **Authentication** tab later after the app has been created successfully.
-1. Click on the **Register** button in bottom to create the application.
-1. In the app's registration screen, find the **Application (client) ID** value and record it for use later. You'll need it to configure the configuration file(s) later in your code.
-1. In the app's registration screen, click on the **Authentication** blade in the left.
-   - In the Redirect URIs section, select **Web** in the drop down and enter the following redirect URIs.
-           - `https://localhost:44321/`
-           - `https://localhost:44321/signin-oidc`
-           - `https://localhost:44321/Onboarding/ProcessCode`
-        - In the **Advanced settings** section, set **Logout URL** to `https://localhost:44321/signout-oidc`.
-        - In the **Advanced settings** | **Implicit grant** section, check **ID tokens** as this sample requires
-            the [ID Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) to be enabled to
-            sign-in the user.
+    1. In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp-MultiTenant-v2`.
+    1. Under **Supported account types**, select **Accounts in any organizational directory**
+    1. Select **Register** to create the application.
+1. In the **Overview** blade, find and note the **Application (client) ID**. You use this value in your app's configuration file(s) later in your code.
+1. In the app's registration screen, select the **Authentication** blade to the left.
+1. If you don't have a platform added, select **Add a platform** and select the **Web** option.
+    1. In the **Redirect URI** section enter the following redirect URIs:
+        1. `https://localhost:44321/`
+        1. `https://localhost:44321/signin-oidc`
+        1. `https://localhost:44321/Onboarding/ProcessCode`
+    1. In the **Front-channel logout URL** section, set it to `https://localhost:44321/signout-oidc`.
+    1. Click **Save** to save your changes.
+1. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where you can generate secrets and upload certificates.
+1. In the **Client secrets** section, select **New client secret**:
+    1. Type a key description (for instance `app secret`).
+    1. Select one of the available key durations (**6 months**, **12 months** or **Custom**) as per your security posture.
+    1. The generated key value will be displayed when you select the **Add** button. Copy and save the generated value for use in later steps.
+    1. You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
+    > :bulb: For enhanced security, instead of using client secrets, consider [using certificates](./README-use-certificate.md) and [Azure KeyVault](https://azure.microsoft.com/services/key-vault/#product-overview).
+    
+1. Since this app signs-in users, we will now proceed to select **delegated permissions**, which is is required by apps signing-in users.
+   1. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs:
+   1. Select the **Add a permission** button and then,
+   1. Ensure that the **Microsoft APIs** tab is selected.
+   1. In the *Commonly used Microsoft APIs* section, select **Microsoft Graph**
+      * Since this app signs-in users, we will now proceed to select **delegated permissions**, which is is requested by apps when signing-in users.
+           1. In the **Delegated permissions** section, select the **User.Read.All** in the list. Use the search box if necessary.
+   1. Select the **Add permissions** button at the bottom.
 
-1. Click the **Save** button on top to save the changes.
-1. In the app's registration screen, click on the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
-1. In the **Client secrets** section, click on **New client secret**:
-   - Type a key description (for instance `app secret`),
-   - Select one of the available key durations (**In 1 year**, **In 2 years**, or **Never Expires**) as per your security concerns.
-   - The generated key value will be displayed when you click the **Add** button. Copy the generated value for use in the steps later.
-   - You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
-1. In the app's registration screen, click on the **API permissions** blade in the left to open the page where we add access to the Apis that your application needs.
-   - Click the **Add a permission** button and then,
-   - Ensure that the **Microsoft APIs** tab is selected.
-   - In the *Commonly used Microsoft APIs* section, click on **Microsoft Graph**
-   - In the **Delegated permissions** section, select the **User.Read.All** in the list. Use the search box if necessary.
-   - Click on the **Add permissions** button in the bottom.
+##### Configure the webApp app (WebApp-MultiTenant-v2) to use your app registration
 
-##### Configure the project (WebApp-OpenIDConnect-DotNet) to use your app registration
+Open the project in your IDE (like Visual Studio or Visual Studio Code) to configure the code.
 
-Open the project in your IDE (like Visual Studio) to configure the code.
->In the steps below, "ClientID" is the same as "Application ID" or "AppId".
+> In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
-1. Open the `appsettings.json` file
-1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `WebApp-MultiTenant-v2` application copied from the Azure portal.
-1. Find the app key `TenantId` and replace the existing value with `organizations`.
-1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
-1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp-MultiTenant-v2` app, in the Azure portal.
+1. Open the `appsettings.json` file.
+1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `WebApp-MultiTenant-v2` app copied from the Azure portal.
+1. Find the key `TenantId` and replace the existing value with 'organizations'.
+1. Find the key `Domain` and replace the existing value with your Azure AD tenant domain, ex. `contoso.onmicrosoft.com`.
+1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of `WebApp-MultiTenant-v2` copied from the Azure portal.
 
 ### Step 4: Run the sample
 

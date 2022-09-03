@@ -1,70 +1,87 @@
+﻿
 [CmdletBinding()]
 param(    
-    [PSCredential] $Credential,
     [Parameter(Mandatory=$False, HelpMessage='Tenant ID (This is a GUID which represents the "Directory ID" of the AzureAD tenant into which you want to create the apps')]
-    [string] $tenantId
+    [string] $tenantId,
+    [Parameter(Mandatory=$False, HelpMessage='Azure environment to use while running the script. Default = Global')]
+    [string] $azureEnvironmentName
 )
-
-if ($null -eq (Get-Module -ListAvailable -Name "AzureAD")) { 
-    Install-Module "AzureAD" -Scope CurrentUser 
-} 
-Import-Module AzureAD
-$ErrorActionPreference = "Stop"
 
 Function Cleanup
 {
-<#
-.Description
-This function removes the Azure AD applications for the sample. These applications were created by the Configure.ps1 script
-#>
+    if (!$azureEnvironmentName)
+    {
+        $azureEnvironmentName = "Global"
+    }
+
+    <#
+    .Description
+    This function removes the Azure AD applications for the sample. These applications were created by the Configure.ps1 script
+    #>
 
     # $tenantId is the Active Directory Tenant. This is a GUID which represents the "Directory ID" of the AzureAD tenant 
     # into which you want to create the apps. Look it up in the Azure portal in the "Properties" of the Azure AD. 
 
-    # Login to Azure PowerShell (interactive if credentials are not already provided:
-    # you'll need to sign-in with creds enabling your to create apps in the tenant)
-    if (!$Credential -and $TenantId)
-    {
-        $creds = Connect-AzureAD -TenantId $tenantId
+    # Connect to the Microsoft Graph API
+    Write-Host "Connecting to Microsoft Graph"
+    if ($tenantId -eq "") {
+        Connect-MgGraph -Scopes "Application.ReadWrite.All" -Environment $azureEnvironmentName
+        $tenantId = (Get-MgContext).TenantId
     }
-    else
-    {
-        if (!$TenantId)
-        {
-            $creds = Connect-AzureAD -Credential $Credential
-        }
-        else
-        {
-            $creds = Connect-AzureAD -TenantId $tenantId -Credential $Credential
-        }
+    else {
+        Connect-MgGraph -TenantId $tenantId -Scopes "Application.ReadWrite.All" -Environment $azureEnvironmentName
     }
-
-    if (!$tenantId)
-    {
-        $tenantId = $creds.Tenant.Id
-    }
-    $tenant = Get-AzureADTenantDetail
-    $tenantName =  ($tenant.VerifiedDomains | Where-Object { $_._Default -eq $True }).Name
     
     # Removes the applications
-    Write-Host "Cleaning-up applications from tenant '$tenantName'"
+    Write-Host "Cleaning-up applications from tenant '$tenantId'"
 
     Write-Host "Removing 'webApp' (WebApp-MultiTenant-v2) if needed"
-    Get-AzureADApplication -Filter "DisplayName eq 'WebApp-MultiTenant-v2'"  | ForEach-Object {Remove-AzureADApplication -ObjectId $_.ObjectId }
-    $apps = Get-AzureADApplication -Filter "DisplayName eq 'WebApp-MultiTenant-v2'"
+    try
+    {
+        Get-MgApplication -Filter "DisplayName eq 'WebApp-MultiTenant-v2'" | ForEach-Object {Remove-MgApplication -ApplicationId $_.Id }
+    }
+    catch
+    {
+        $message = $_
+        Write-Warning $Error[0]
+        Write-Host "Unable to remove the application 'WebApp-MultiTenant-v2'. Error is $message. Try deleting manually." -ForegroundColor White -BackgroundColor Red
+    }
+
+    Write-Host "Making sure there are no more (WebApp-MultiTenant-v2) applications found, will remove if needed..."
+    $apps = Get-MgApplication -Filter "DisplayName eq 'WebApp-MultiTenant-v2'" | Format-List Id, DisplayName, AppId, SignInAudience, PublisherDomain
+    
     if ($apps)
     {
-        Remove-AzureADApplication -ObjectId $apps.ObjectId
+        Remove-MgApplication -ApplicationId $apps.Id
     }
 
     foreach ($app in $apps) 
     {
-        Remove-AzureADApplication -ObjectId $app.ObjectId
+        Remove-MgApplication -ApplicationId $app.Id -Debug
         Write-Host "Removed WebApp-MultiTenant-v2.."
     }
+
     # also remove service principals of this app
-    Get-AzureADServicePrincipal -filter "DisplayName eq 'WebApp-MultiTenant-v2'" | ForEach-Object {Remove-AzureADServicePrincipal -ObjectId $_.Id -Confirm:$false}
-    
+    try
+    {
+        Get-MgServicePrincipal -filter "DisplayName eq 'WebApp-MultiTenant-v2'" | ForEach-Object {Remove-MgServicePrincipal -ServicePrincipalId $_.Id -Confirm:$false}
+    }
+    catch
+    {
+        $message = $_
+        Write-Warning $Error[0]
+        Write-Host "Unable to remove ServicePrincipal 'WebApp-MultiTenant-v2'. Error is $message. Try deleting manually from Enterprise applications." -ForegroundColor White -BackgroundColor Red
+    }
 }
 
-Cleanup -Credential $Credential -tenantId $TenantId
+if ($null -eq (Get-Module -ListAvailable -Name "Microsoft.Graph.Applications")) { 
+    Install-Module "Microsoft.Graph.Applications" -Scope CurrentUser                                            
+} 
+Import-Module Microsoft.Graph.Applications
+$ErrorActionPreference = "Stop"
+
+
+Cleanup -tenantId $tenantId -environment $azureEnvironmentName
+
+Write-Host "Disconnecting from tenant"
+Disconnect-MgGraph
