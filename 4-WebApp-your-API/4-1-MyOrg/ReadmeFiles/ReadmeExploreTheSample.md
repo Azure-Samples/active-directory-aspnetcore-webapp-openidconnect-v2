@@ -1,4 +1,4 @@
-## Using the sample
+## Explore the sample
 
 <details>
  <summary>Expand to see how to use the sample</summary>

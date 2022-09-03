@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using System.Threading.Tasks;
-using TodoListClient.Services;
 using TodoListService.Models;
+using TodoListClient.Services;
 
 namespace TodoListClient.Controllers
 {
@@ -16,11 +16,10 @@ namespace TodoListClient.Controllers
             _todoListService = todoListService;
         }
 
-        // GET: TodoList
-        [AuthorizeForScopes(ScopeKeySection = "TodoList:TodoListScopes")]
         public async Task<ActionResult> Index()
         {
-            return View(await _todoListService.GetAsync());
+            var result = await _todoListService.GetAsync();
+            return View(result);
         }
 
         // GET: TodoList/Details/5
@@ -68,7 +67,7 @@ namespace TodoListClient.Controllers
         }
 
         // GET: TodoList/Delete/5
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> DeleteItem(int id)
         {
             Todo todo = await this._todoListService.GetAsync(id);
 
@@ -83,7 +82,7 @@ namespace TodoListClient.Controllers
         // POST: TodoList/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(int id, [Bind("Id,Title,Owner")] Todo todo)
+        public async Task<ActionResult> DeleteItem(int id, [Bind("Id,Title,Owner")] Todo todo)
         {
             await _todoListService.DeleteAsync(id);
             return RedirectToAction("Index");

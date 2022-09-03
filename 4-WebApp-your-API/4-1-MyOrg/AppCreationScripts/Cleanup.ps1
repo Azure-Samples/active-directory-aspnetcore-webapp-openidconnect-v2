@@ -1,3 +1,4 @@
+﻿
 [CmdletBinding()]
 param(    
     [Parameter(Mandatory=$False, HelpMessage='Tenant ID (This is a GUID which represents the "Directory ID" of the AzureAD tenant into which you want to create the apps')]
@@ -41,7 +42,7 @@ Function Cleanup
     }
     catch
     {
-	    Write-Host "Unable to remove the application 'TodoListService-aspnetcore-webapi' . Try deleting manually." -ForegroundColor White -BackgroundColor Red
+        Write-Host "Unable to remove the application 'TodoListService-aspnetcore-webapi' . Try deleting manually." -ForegroundColor White -BackgroundColor Red
     }
 
     Write-Host "Making sure there are no more (TodoListService-aspnetcore-webapi) applications found, will remove if needed..."
@@ -65,7 +66,7 @@ Function Cleanup
     }
     catch
     {
-	    Write-Host "Unable to remove ServicePrincipal 'TodoListService-aspnetcore-webapi' . Try deleting manually from Enterprise applications." -ForegroundColor White -BackgroundColor Red
+        Write-Host "Unable to remove ServicePrincipal 'TodoListService-aspnetcore-webapi' . Try deleting manually from Enterprise applications." -ForegroundColor White -BackgroundColor Red
     }
     Write-Host "Removing 'client' (TodoListClient-aspnetcore-webapi) if needed"
     try
@@ -74,7 +75,7 @@ Function Cleanup
     }
     catch
     {
-	    Write-Host "Unable to remove the application 'TodoListClient-aspnetcore-webapi' . Try deleting manually." -ForegroundColor White -BackgroundColor Red
+        Write-Host "Unable to remove the application 'TodoListClient-aspnetcore-webapi' . Try deleting manually." -ForegroundColor White -BackgroundColor Red
     }
 
     Write-Host "Making sure there are no more (TodoListClient-aspnetcore-webapi) applications found, will remove if needed..."
@@ -98,7 +99,7 @@ Function Cleanup
     }
     catch
     {
-	    Write-Host "Unable to remove ServicePrincipal 'TodoListClient-aspnetcore-webapi' . Try deleting manually from Enterprise applications." -ForegroundColor White -BackgroundColor Red
+        Write-Host "Unable to remove ServicePrincipal 'TodoListClient-aspnetcore-webapi' . Try deleting manually from Enterprise applications." -ForegroundColor White -BackgroundColor Red
     }
 }
 
@@ -113,4 +114,3 @@ Cleanup -tenantId $tenantId -environment $azureEnvironmentName
 
 Write-Host "Disconnecting from tenant"
 Disconnect-MgGraph
-

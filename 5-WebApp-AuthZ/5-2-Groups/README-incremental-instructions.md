@@ -55,6 +55,8 @@ Navigate to the `"5-WebApp-AuthZ"` folder
 
 ### Step 2: Configure your application to receive the **groups** claim
 
+In the sample, a dashboard component allows signed-in users to see the tasks assigned to them or other users based on their memberships to one of the two security groups, **GroupAdmin** and **GroupMember**. Please use the instructions provided at [Create a basic group and add members using Azure AD](https://docs.microsoft.com/azure/active-directory/fundamentals/active-directory-groups-create-azure-portal) to create these security groups, if not available already. 
+
 You have two different options available to you on how you can further configure your application to receive the `groups` claim.
 
 1. [Receive **all the groups** that the signed-in user is assigned to in an Azure AD tenant, included nested groups](#configure-your-application-to-receive-all-the-groups-the-signed-in-user-is-assigned-to-included-nested-groups).
