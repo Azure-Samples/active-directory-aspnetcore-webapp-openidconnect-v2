@@ -190,13 +190,16 @@ Function ConfigureApplications
     
     # Add Required Resources Access (from 'webApp' to 'Microsoft Graph')
     Write-Host "Getting access from 'webApp' to 'Microsoft Graph'"
-    $requiredPermissions = GetRequiredPermissions -applicationDisplayName "Microsoft Graph" `
+    $requiredPermission = GetRequiredPermissions -applicationDisplayName "Microsoft Graph" `
         -requiredDelegatedPermissions "User.Read.All" `
-    $requiredResourcesAccess.Add($requiredPermissions)
+
+    $requiredResourcesAccess.Add($requiredPermission)
     Update-MgApplication -ApplicationId $webAppAadApplication.Id -RequiredResourceAccess $requiredResourcesAccess
     Write-Host "Granted permissions."
 
     Write-Host "Successfully registered and configured that app registration for 'WebApp-MultiTenant-v2' at" -ForegroundColor Green
+
+    # print the registered app portal URL for any further navigation
     $webAppPortalUrl
     
     # Update config file for 'webApp'

@@ -85,6 +85,40 @@ Function GetRequiredPermissions([string] $applicationDisplayName, [string] $requ
 }
 
 
+Function UpdateLine([string] $line, [string] $value)
+{
+    $index = $line.IndexOf(':')
+    $lineEnd = ''
+
+    if($line[$line.Length - 1] -eq ','){   $lineEnd = ',' }
+    
+    if ($index -ige 0)
+    {
+        $line = $line.Substring(0, $index+1) + " " + '"' + $value+ '"' + $lineEnd
+    }
+    return $line
+}
+
+Function UpdateTextFile([string] $configFilePath, [System.Collections.HashTable] $dictionary)
+{
+    $lines = Get-Content $configFilePath
+    $index = 0
+    while($index -lt $lines.Length)
+    {
+        $line = $lines[$index]
+        foreach($key in $dictionary.Keys)
+        {
+            if ($line.Contains($key))
+            {
+                $lines[$index] = UpdateLine $line $dictionary[$key]
+            }
+        }
+        $index++
+    }
+
+    Set-Content -Path $configFilePath -Value $lines -Force
+}
+
 Function ConfigureApplications
 {
     $isOpenSSl = 'N' #temporary disable open certificate creation 
@@ -112,14 +146,14 @@ Function ConfigureApplications
     
 
    # Create the webApp AAD application
-   Write-Host "Creating the AAD application (WebApp)"
+   Write-Host "Creating the AAD application (Azure_Api_WebApp)"
    # Get a 6 months application key for the webApp Application
    $fromDate = [DateTime]::Now;
    $key = CreateAppKey -fromDate $fromDate -durationInMonths 6
    
    
    # create the application 
-   $webAppAadApplication = New-MgApplication -DisplayName "WebApp" `
+   $webAppAadApplication = New-MgApplication -DisplayName "Azure_Api_WebApp" `
                                                       -Web `
                                                       @{ `
                                                           RedirectUris = "https://localhost:44321/", "https://localhost:44321/signin-oidc"; `
@@ -133,7 +167,7 @@ Function ConfigureApplications
     $webAppAppKey = $pwdCredential.SecretText
 
     $tenantName = (Get-MgApplication -ApplicationId $webAppAadApplication.Id).PublisherDomain
-    Update-MgApplication -ApplicationId $webAppAadApplication.Id -IdentifierUris @("https://$tenantName/WebApp")
+    Update-MgApplication -ApplicationId $webAppAadApplication.Id -IdentifierUris @("https://$tenantName/Azure_Api_WebApp")
     
     # create the service principal of the newly created application 
     $currentAppId = $webAppAadApplication.AppId
@@ -146,35 +180,40 @@ Function ConfigureApplications
         New-MgApplicationOwnerByRef -ApplicationId $webAppAadApplication.Id  -BodyParameter = @{"@odata.id" = "htps://graph.microsoft.com/v1.0/directoryObjects/$user.ObjectId"}
         Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($webAppServicePrincipal.DisplayName)'"
     }
-    Write-Host "Done creating the webApp application (WebApp)"
+    Write-Host "Done creating the webApp application (Azure_Api_WebApp)"
 
     # URL of the AAD application in the Azure portal
     # Future? $webAppPortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$webAppAadApplication.AppId+"/objectId/"+$webAppAadApplication.Id+"/isMSAApp/"
     $webAppPortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$webAppAadApplication.AppId+"/objectId/"+$webAppAadApplication.Id+"/isMSAApp/"
-    Add-Content -Value "<tr><td>webApp</td><td>$currentAppId</td><td><a href='$webAppPortalUrl'>WebApp</a></td></tr>" -Path createdApps.html
+    Add-Content -Value "<tr><td>webApp</td><td>$currentAppId</td><td><a href='$webAppPortalUrl'>Azure_Api_WebApp</a></td></tr>" -Path createdApps.html
     $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphRequiredResourceAccess]
     
     # Add Required Resources Access (from 'webApp' to 'Microsoft Graph')
     Write-Host "Getting access from 'webApp' to 'Microsoft Graph'"
-    $requiredPermissions = GetRequiredPermissions -applicationDisplayName "Microsoft Graph" `
+    $requiredPermission = GetRequiredPermissions -applicationDisplayName "Microsoft Graph" `
         -requiredDelegatedPermissions "User.Read" `
-    $requiredResourcesAccess.Add($requiredPermissions)
+
+    $requiredResourcesAccess.Add($requiredPermission)
     
     # Add Required Resources Access (from 'webApp' to 'Windows Azure Service Management API')
     Write-Host "Getting access from 'webApp' to 'Windows Azure Service Management API'"
-    $requiredPermissions = GetRequiredPermissions -applicationDisplayName "Windows Azure Service Management API" `
+    $requiredPermission = GetRequiredPermissions -applicationDisplayName "Windows Azure Service Management API" `
         -requiredDelegatedPermissions "user_impersonation" `
-    $requiredResourcesAccess.Add($requiredPermissions)
+
+    $requiredResourcesAccess.Add($requiredPermission)
     
     # Add Required Resources Access (from 'webApp' to 'Azure Storage')
     Write-Host "Getting access from 'webApp' to 'Azure Storage'"
-    $requiredPermissions = GetRequiredPermissions -applicationDisplayName "Azure Storage" `
+    $requiredPermission = GetRequiredPermissions -applicationDisplayName "Azure Storage" `
         -requiredDelegatedPermissions "user_impersonation" `
-    $requiredResourcesAccess.Add($requiredPermissions)
+
+    $requiredResourcesAccess.Add($requiredPermission)
     Update-MgApplication -ApplicationId $webAppAadApplication.Id -RequiredResourceAccess $requiredResourcesAccess
     Write-Host "Granted permissions."
 
-    Write-Host "Successfully registered and configured that app registration for 'WebApp' at" -ForegroundColor Green
+    Write-Host "Successfully registered and configured that app registration for 'Azure_Api_WebApp' at" -ForegroundColor Green
+
+    # print the registered app portal URL for any further navigation
     $webAppPortalUrl
     
     # Update config file for 'webApp'
@@ -186,6 +225,7 @@ Function ConfigureApplications
     Write-Host "Updating the sample config '$configFile' with the following config values"
     $dictionary
 
+    UpdateTextFile -configFilePath $configFile -dictionary $dictionary
     if($isOpenSSL -eq 'Y')
     {
         Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 

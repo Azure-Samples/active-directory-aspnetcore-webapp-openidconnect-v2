@@ -25,8 +25,13 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.3" />
+<<<<<<< HEAD
     <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.25.2" />
     <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.25.2" />
+=======
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.22.2" />
+    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.22.2" />
+>>>>>>> 677330932b64d80cc52f7cc2ee789da50a961aca
   </ItemGroup>
 
 </Project>

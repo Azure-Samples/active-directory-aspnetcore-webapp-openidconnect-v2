@@ -20,7 +20,7 @@
   "AADApps": [
     {
       "Id": "webApp",
-      "Name": "WebApp",
+      "Name": "Azure_Api_WebApp",
       "Kind": "WebApp",
       "HomePage": "https://localhost:44321/",
       "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc",
@@ -52,7 +52,7 @@
   "CodeConfiguration": [
     {
       "App": "webApp",
-      "SettingKind": "JSon",
+      "SettingKind": "JSON",
       "SettingFile": "\\..\\appsettings.json",
       "Mappings": [
         {

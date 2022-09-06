@@ -35,20 +35,20 @@ Function Cleanup
     # Removes the applications
     Write-Host "Cleaning-up applications from tenant '$tenantId'"
 
-    Write-Host "Removing 'webApp' (WebApp) if needed"
+    Write-Host "Removing 'webApp' (Azure_Api_WebApp) if needed"
     try
     {
-        Get-MgApplication -Filter "DisplayName eq 'WebApp'" | ForEach-Object {Remove-MgApplication -ApplicationId $_.Id }
+        Get-MgApplication -Filter "DisplayName eq 'Azure_Api_WebApp'" | ForEach-Object {Remove-MgApplication -ApplicationId $_.Id }
     }
     catch
     {
         $message = $_
         Write-Warning $Error[0]
-        Write-Host "Unable to remove the application 'WebApp'. Error is $message. Try deleting manually." -ForegroundColor White -BackgroundColor Red
+        Write-Host "Unable to remove the application 'Azure_Api_WebApp'. Error is $message. Try deleting manually." -ForegroundColor White -BackgroundColor Red
     }
 
-    Write-Host "Making sure there are no more (WebApp) applications found, will remove if needed..."
-    $apps = Get-MgApplication -Filter "DisplayName eq 'WebApp'" | Format-List Id, DisplayName, AppId, SignInAudience, PublisherDomain
+    Write-Host "Making sure there are no more (Azure_Api_WebApp) applications found, will remove if needed..."
+    $apps = Get-MgApplication -Filter "DisplayName eq 'Azure_Api_WebApp'" | Format-List Id, DisplayName, AppId, SignInAudience, PublisherDomain
     
     if ($apps)
     {
@@ -58,19 +58,19 @@ Function Cleanup
     foreach ($app in $apps) 
     {
         Remove-MgApplication -ApplicationId $app.Id -Debug
-        Write-Host "Removed WebApp.."
+        Write-Host "Removed Azure_Api_WebApp.."
     }
 
     # also remove service principals of this app
     try
     {
-        Get-MgServicePrincipal -filter "DisplayName eq 'WebApp'" | ForEach-Object {Remove-MgServicePrincipal -ServicePrincipalId $_.Id -Confirm:$false}
+        Get-MgServicePrincipal -filter "DisplayName eq 'Azure_Api_WebApp'" | ForEach-Object {Remove-MgServicePrincipal -ServicePrincipalId $_.Id -Confirm:$false}
     }
     catch
     {
         $message = $_
         Write-Warning $Error[0]
-        Write-Host "Unable to remove ServicePrincipal 'WebApp'. Error is $message. Try deleting manually from Enterprise applications." -ForegroundColor White -BackgroundColor Red
+        Write-Host "Unable to remove ServicePrincipal 'Azure_Api_WebApp'. Error is $message. Try deleting manually from Enterprise applications." -ForegroundColor White -BackgroundColor Red
     }
 }
 
