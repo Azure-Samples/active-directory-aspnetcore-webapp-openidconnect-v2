@@ -9,7 +9,8 @@
     "Endpoint": "AAD v2.0",
     "Description": "This sample demonstrates an ASP.NET Core client Web App calling an ASP.NET Core Web API that is secured using Azure AD.",
     "Languages": [ "csharp" ],
-    "Products": [ "aspnet-core", "azure-active-directory" ]
+    "Products": [ "aspnet-core", "azure-active-directory" ],
+    "Platform": "AspNetCore"
   },
 
   /*
@@ -127,7 +128,7 @@
       "OptionalClaims": {
         "IdTokenClaims": [ "acct" ]
       },
-      "Certificate":"the name will be assigned automatically by PowerShell script and it will be equal to the Application name",
+      "Certificate": "the name will be assigned automatically by PowerShell script and it will be equal to the Application name",
       "ManualSteps": [],
       "Sample": {
         "SampleSubPath": "4-WebApp-Your-API\\4-1-MyOrg",

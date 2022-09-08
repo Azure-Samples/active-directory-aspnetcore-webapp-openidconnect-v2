@@ -10,7 +10,8 @@
     "Description": "This sample demonstrates an ASP.NET Core Web App signing-in a user and calling an ASP.NET Core Web API that is secured with Azure AD.",
     "Languages": [ "csharp" ],
     "Products": [ "aspnet-core", "azure-active-directory" ],
-    "Library":["Microsoft.Identity.Web"]
+    "Library": [ "Microsoft.Identity.Web" ],
+    "Platform": "AspNetCore"
   },
 
   /*

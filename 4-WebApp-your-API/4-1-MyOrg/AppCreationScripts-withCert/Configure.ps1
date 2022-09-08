@@ -358,27 +358,37 @@ Function ConfigureApplications
     
     # Add Required Resources Access (from 'client' to 'service')
     Write-Host "Getting access from 'client' to 'service'"
-    $requiredPermissions = GetRequiredPermissions -applicationDisplayName "TodoListService-aspnetcore-webapi" `
+    $requiredPermission = GetRequiredPermissions -applicationDisplayName "TodoListService-aspnetcore-webapi" `
         -requiredDelegatedPermissions "ToDoList.Read|ToDoList.ReadWrite" `
-    
 
-    $requiredResourcesAccess.Add($requiredPermissions)
+    $requiredResourcesAccess.Add($requiredPermission)
     Update-MgApplication -ApplicationId $clientAadApplication.Id -RequiredResourceAccess $requiredResourcesAccess
     Write-Host "Granted permissions."
+
+    Write-Host "Successfully registered and configured that app registration for 'TodoListClient-aspnetcore-webapi' at" -ForegroundColor Green
+
+    # print the registered app portal URL for any further navigation
+    $clientPortalUrl
     
     # Update config file for 'service'
-    $configFile = $pwd.Path + "\..\TodoListService\appsettings.json"
+    # $configFile = $pwd.Path + "\..\TodoListService\appsettings.json"
+    $configFile = $(Resolve-Path ($pwd.Path + "\..\TodoListService\appsettings.json"))
+    
     $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $serviceAadApplication.AppId };
 
-    Write-Host "Updating the sample code ($configFile)"
+    Write-Host "Updating the sample config '$configFile' with the following config values"
+    $dictionary
 
     UpdateTextFile -configFilePath $configFile -dictionary $dictionary
     
     # Update config file for 'client'
-    $configFile = $pwd.Path + "\..\Client\appsettings.json"
+    # $configFile = $pwd.Path + "\..\Client\appsettings.json"
+    $configFile = $(Resolve-Path ($pwd.Path + "\..\Client\appsettings.json"))
+    
     $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $clientAadApplication.AppId;"KeyVaultCertificateName" = $certificateName;"TodoListScopes" = "api://$($serviceAadApplication.AppId)/ToDoList.Read api://$($serviceAadApplication.AppId)/ToDoList.ReadWrite";"TodoListBaseAddress" = $serviceAadApplication.Web.HomePageUrl };
 
-    Write-Host "Updating the sample code ($configFile)"
+    Write-Host "Updating the sample config '$configFile' with the following config values"
+    $dictionary
 
     UpdateTextFile -configFilePath $configFile -dictionary $dictionary
     Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
@@ -410,7 +420,16 @@ Add-Content -Value "<thead><tr><th>Application</th><th>AppId</th><th>Url in the 
 $ErrorActionPreference = "Stop"
 
 # Run interactively (will ask you for the tenant ID)
-ConfigureApplications -tenantId $tenantId -environment $azureEnvironmentName
 
+try
+{
+    ConfigureApplications -tenantId $tenantId -environment $azureEnvironmentName
+}
+catch
+{
+    $message = $_
+    Write-Warning $Error[0]
+    Write-Host "Unable to register apps. Error is $message." -ForegroundColor White -BackgroundColor Red
+}
 Write-Host "Disconnecting from tenant"
 Disconnect-MgGraph
