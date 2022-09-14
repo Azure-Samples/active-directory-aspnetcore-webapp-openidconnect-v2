@@ -286,7 +286,7 @@ Function ConfigureApplications
 
     # URL of the AAD application in the Azure portal
     # Future? $servicePortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$serviceAadApplication.AppId+"/objectId/"+$serviceAadApplication.Id+"/isMSAApp/"
-    $servicePortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$serviceAadApplication.AppId+"/objectId/"+$serviceAadApplication.Id+"/isMSAApp/"
+    $servicePortalUrl = "https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/Overview/appId/"+$serviceAadApplication.AppId+"/objectId/"+$serviceAadApplication.Id+"/"
     Add-Content -Value "<tr><td>service</td><td>$currentAppId</td><td><a href='$servicePortalUrl'>TodoListService-aspnetcore-webapi</a></td></tr>" -Path createdApps.html
 
    # Create the client AAD application
@@ -342,23 +342,29 @@ Function ConfigureApplications
 
     # URL of the AAD application in the Azure portal
     # Future? $clientPortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$clientAadApplication.AppId+"/objectId/"+$clientAadApplication.Id+"/isMSAApp/"
-    $clientPortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$clientAadApplication.AppId+"/objectId/"+$clientAadApplication.Id+"/isMSAApp/"
+    $clientPortalUrl = "https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/Overview/appId/"+$clientAadApplication.AppId+"/objectId/"+$clientAadApplication.Id+"/"
     Add-Content -Value "<tr><td>client</td><td>$currentAppId</td><td><a href='$clientPortalUrl'>TodoListClient-aspnetcore-webapi</a></td></tr>" -Path createdApps.html
-    
+    # Declare a list to hold RRA items    
+    $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphRequiredResourceAccess]
+
     # Add Required Resources Access (from 'client' to 'service')
     Write-Host "Getting access from 'client' to 'service'"
-    $requiredPermission = GetRequiredPermissions -applicationDisplayName "TodoListService-aspnetcore-webapi" `
-        -requiredDelegatedPermissions "ToDoList.Read|ToDoList.ReadWrite" `
-        $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphRequiredResourceAccess]
+    $requiredPermission = GetRequiredPermissions -applicationDisplayName "TodoListService-aspnetcore-webapi"`
+        -requiredDelegatedPermissions "ToDoList.Read|ToDoList.ReadWrite"
 
     $requiredResourcesAccess.Add($requiredPermission)
+    Write-Host "Added 'service' to the RRA list."
+    # Useful for RRA troubleshooting
+    # $requiredResourcesAccess.Count
+    # $requiredResourcesAccess
+    
     Update-MgApplication -ApplicationId $clientAadApplication.Id -RequiredResourceAccess $requiredResourcesAccess
     Write-Host "Granted permissions."
 
-    Write-Host "Successfully registered and configured that app registration for 'TodoListClient-aspnetcore-webapi' at" -ForegroundColor Green
-
     # print the registered app portal URL for any further navigation
-    $clientPortalUrl
+    Write-Host "Successfully registered and configured that app registration for 'TodoListClient-aspnetcore-webapi' at `n $clientPortalUrl"
+    
+    
 Function UpdateLine([string] $line, [string] $value)
 {
     $index = $line.IndexOf(':')
@@ -401,6 +407,7 @@ Function UpdateTextFile([string] $configFilePath, [System.Collections.HashTable]
 
     Write-Host "Updating the sample config '$configFile' with the following config values:"
     $dictionary
+    Write-Host "-----------------"
 
     UpdateTextFile -configFilePath $configFile -dictionary $dictionary
     
@@ -412,6 +419,7 @@ Function UpdateTextFile([string] $configFilePath, [System.Collections.HashTable]
 
     Write-Host "Updating the sample config '$configFile' with the following config values:"
     $dictionary
+    Write-Host "-----------------"
 
     UpdateTextFile -configFilePath $configFile -dictionary $dictionary
     Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
