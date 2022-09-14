@@ -1,14 +1,18 @@
 ---
 page_type: sample
-name: How to secure an ASP.NET Core Web API with the Microsoft identity platform
 services: ms-identity
-platform: DotNet
+client: ASP.NET Core Web App
+service: ASP.NET Core Web API
+level: 200
 languages:
  - csharp
 products:
  - aspnet-core
  - azure-active-directory
+platform: AspNetCore
+endpoint: AAD v2.0
 urlFragment: active-directory-aspnetcore-webapp-openidconnect-v2
+name: How to secure an ASP.NET Core Web API with the Microsoft identity platform
 description: This sample demonstrates an ASP.NET Core Web App signing-in a user and calling an ASP.NET Core Web API that is secured with Azure AD.
 ---
 
@@ -24,7 +28,7 @@ description: This sample demonstrates an ASP.NET Core Web App signing-in a user 
 * [Troubleshooting](#troubleshooting)
 * [About the code](#about-the-code)
 * [How the code was created](#how-the-code-was-created)
-* [Deploy the sample](#deploy-the-sample)
+* [How to deploy this sample to Azure](#how-to-deploy-this-sample-to-azure)
 * [Next Steps](#next-steps)
 * [Contributing](#contributing)
 * [Learn More](#learn-more)
@@ -35,10 +39,11 @@ This sample demonstrates a ASP.NET Core Web App calling a ASP.NET Core Web API t
 
 ## Scenario
 
- This sample demonstrates an ASP.NET Core client Web App calling an ASP.NET Core Web API that is secured using Azure AD.
+This sample demonstrates an ASP.NET Core client Web App calling an ASP.NET Core Web API that is secured using Azure AD.
 
- 1. The client ASP.NET Core Web App uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign-in a user and obtain a JWT [Access Token](https://aka.ms/access-tokens) from **Azure AD**.
- 2. The service uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to protect the Web api, check permissions and validate tokens.
+1. The client ASP.NET Core Web App uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign-in a user and obtain a JWT [Access Token](https://aka.ms/access-tokens) from **Azure AD**.
+1. The access token is used as a *bearer* token to authorize the user to call the ASP.NET Core Web API protected by **Azure AD**.
+1. The service uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to protect the Web api, check permissions and validate tokens.
 
 ![Scenario Image](./ReadmeFiles/topology.png)
 
@@ -55,7 +60,7 @@ This sample demonstrates a ASP.NET Core Web App calling a ASP.NET Core Web API t
 From your shell or command line:
 
 ```console
-    git clone https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2.git
+git clone https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2.git
 ```
 
 or download and extract the repository *.zip* file.
@@ -65,7 +70,7 @@ or download and extract the repository *.zip* file.
 ### Step 2: Navigate to project folder
 
 ```console
-    cd 4-WebApp-Your-API\4-1-MyOrg
+cd 4-WebApp-Your-API\4-1-MyOrg
 ```
 
 ### Step 3: Register the sample application(s) in your tenant
@@ -117,7 +122,6 @@ To manually register the apps, as a first step you'll need to:
     1. Under **Supported account types**, select **Accounts in this organizational directory only**
     1. Select **Register** to create the application.
 1. In the **Overview** blade, find and note the **Application (client) ID**. You use this value in your app's configuration file(s) later in your code.
-
 1. In the app's registration screen, select the **Expose an API** blade to the left to open the page where you can publish the permission as an API for which client applications can obtain [access tokens](https://aka.ms/access-tokens) for. The first thing that we need to do is to declare the unique [resource](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow) URI that the clients will be using to obtain access tokens for this API. To declare an resource URI(Application ID URI), follow the following steps:
     1. Select **Set** next to the **Application ID URI** to generate a URI that is unique for this app.
     1. For this sample, accept the proposed Application ID URI (`api://{clientId}`) by selecting **Save**. Read more about Application ID URI at [Validation differences by supported account types \(signInAudience\)](https://docs.microsoft.com/azure/active-directory/develop/supported-accounts-validation).
@@ -128,18 +132,19 @@ To manually register the apps, as a first step you'll need to:
 1. Select **Add a scope** button open the **Add a scope** screen and Enter the values as indicated below:
     1. For **Scope name**, use `ToDoList.Read`.
     1. Select **Admins and users** options for **Who can consent?**.
-    1. For **Admin consent display name** type in the details, `e.g. Allow the users of the app TodoListService-aspnetcore-webapi to read ToDo list items`.
-    1. For **Admin consent description** type in the details `e.g. Allows the app TodoListService-aspnetcore-webapi to read the signed-in users ToDo list items.`
-    1. For **User consent display name** type in the details `e.g. Read ToDo list items as yourself`.
-    1. For **User consent description** type in the details `e.g. Allow the app TodoListService-aspnetcore-webapi to read ToDo list items on your behalf.`
+    1. For **Admin consent display name** type in *Read users ToDo list using the 'TodoListService-aspnetcore-webapi'.*.
+    1. For **Admin consent description** type in *Allow the app to read the user's ToDo list using the 'TodoListService-aspnetcore-webapi'.*.
+    1. For **User consent display name** type in *Read your ToDo list items via the 'TodoListService-aspnetcore-webapi'.*.
+    1. For **User consent description** type in *Allow the app to read your ToDo list items via the 'TodoListService-aspnetcore-webapi'.*.
     1. Keep **State** as **Enabled**.
     1. Select the **Add scope** button on the bottom to save this scope.
+
     > Repeat the steps above for another scope named **ToDoList.ReadWrite**
 1. Select the **Manifest** blade on the left.
     1. Set `accessTokenAcceptedVersion` property to **2**.
     1. Select on **Save**.
 
-    > :information_source:  Follow  [the principle of least privilege](https://docs.microsoft.com/azure/active-directory/develop/secure-least-privileged-access) whenever you are publishing permissions for a web API.
+> :information_source:  Follow  [the principle of least privilege](https://docs.microsoft.com/azure/active-directory/develop/secure-least-privileged-access) whenever you are publishing permissions for a web API.
 
 ##### Publish Application Permissions
 
@@ -149,8 +154,9 @@ To manually register the apps, as a first step you'll need to:
     1. For **Display name**, enter a suitable name for your application permission, for instance **ToDoList.Read.All**.
     1. For **Allowed member types**, choose **Application** to ensure other applications can be granted this permission.
     1. For **Value**, enter **ToDoList.Read.All**.
-    1. For **Description**, enter **Allow application to read all ToDo list items**.
+    1. For **Description**, enter *Allow the app to read every user's ToDo list using the 'TodoListService-aspnetcore-webapi'.*.
     1. Select **Apply** to save your changes.
+
     > Repeat the steps above for another app permission named **ToDoList.ReadWrite.All**
 
 ##### Configure Optional Claims
@@ -158,7 +164,8 @@ To manually register the apps, as a first step you'll need to:
 1. Still on the same app registration, select the **Token configuration** blade to the left.
 1. Select **Add optional claim**:
     1. Select **optional claim type**, then choose **Access**.
-    1. Select the optional claim **idtyp**. Indicates token type.This claim is the most accurate way for an API to determine if a token is an app token or an app+user token
+     1. Select the optional claim **idtyp**. 
+    > Indicates token type. This claim is the most accurate way for an API to determine if a token is an app token or an app+user token. This is not issued in tokens issued to users.
     1. Select **Add** to save your changes.
 
 ##### Configure the service app (TodoListService-aspnetcore-webapi) to use your app registration
@@ -194,14 +201,13 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
     1. The generated key value will be displayed when you select the **Add** button. Copy and save the generated value for use in later steps.
     1. You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
     > :bulb: For enhanced security, instead of using client secrets, consider [using certificates](./README-use-certificate.md) and [Azure KeyVault](https://azure.microsoft.com/services/key-vault/#product-overview).
-    
-1. Since this app signs-in users, we will now proceed to select **delegated permissions**, which is is required by apps signing-in users.
+    1. Since this app signs-in users, we will now proceed to select **delegated permissions**, which is is required by apps signing-in users.
    1. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs:
-   1. Select the **Add a permission** button and then,
+   1. Select the **Add a permission** button and then:
    1. Ensure that the **My APIs** tab is selected.
    1. In the list of APIs, select the API `TodoListService-aspnetcore-webapi`.
       * Since this app signs-in users, we will now proceed to select **delegated permissions**, which is is requested by apps when signing-in users.
-           1. In the **Delegated permissions** section, select the **ToDoList.Read**, **ToDoList.ReadWrite** in the list. Use the search box if necessary.
+           1. In the **Delegated permissions** section, select **ToDoList.Read**, **ToDoList.ReadWrite** in the list. Use the search box if necessary.
    1. Select the **Add permissions** button at the bottom.
 
 ##### Configure Optional Claims
@@ -209,7 +215,8 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. Still on the same app registration, select the **Token configuration** blade to the left.
 1. Select **Add optional claim**:
     1. Select **optional claim type**, then choose **ID**.
-    1. Select the optional claim **acct**. Provides user's account status in tenant.If the user is a member of the tenant, the value is 0. If they're a guest, the value is 1.
+    1. Select the optional claim **acct**. 
+    > Provides user's account status in tenant. If the user is a **member** of the tenant, the value is 0. If they're a **guest**, the value is 1.
     1. Select **Add** to save your changes.
 
 ##### Configure the client app (TodoListClient-aspnetcore-webapi) to use your app registration
@@ -372,7 +379,13 @@ To provide a recommendation, visit the following [User Voice page](https://feedb
             // Add in the optional 'idtyp' claim to check if the access token is coming from an application or user.
             //
             // See: https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-optional-claims
-            return HttpContext.User.Claims.Any(c => c.Type == "idtyp" && c.Value == "app");
+
+            if (GetCurrentClaimsPrincipal() != null)
+            {
+                return GetCurrentClaimsPrincipal().Claims.Any(c => c.Type == "idtyp" && c.Value == "app");
+            }
+
+            return false;
         }
       ```
 
@@ -545,12 +558,18 @@ services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
 
 ## How to deploy this sample to Azure
 
+<details>
+ <summary>Expand the section</summary>
+ 
 ### Deploying web API to Azure App Services
 
 There is one web API in this sample. To deploy it to **Azure App Services**, you'll need to:
 
 - create an **Azure App Service**
 - publish the projects to the **App Services**
+
+> :warning: Please make sure that you have not switched on the *[Automatic authentication provided by App Service](https://docs.microsoft.com/en-us/azure/app-service/scenario-secure-app-authentication-app-service)*. It interferes the authentication code used in this code example.
+
 
 #### Publish your files (TodoListService-aspnetcore-webapi)
 
@@ -563,7 +582,18 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 1. Install the Visual Studio Code extension [Azure App Service](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureappservice).
 1. Follow the link to [Publish with Visual Studio Code](https://docs.microsoft.com/aspnet/core/tutorials/publish-to-azure-webapp-using-vscode)
 
-### Deploying web app to Azure App Services
+
+> :information_source: When calling the web API, your app may receive an error similar to the following:
+>
+> *Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at https://some-url-here. (Reason: additional information here).*
+> 
+> If that's the case, you'll need enable [cross-origin resource sharing (CORS)](https://developer.mozilla.org/docs/Web/HTTP/CORS) for you web API. Follow the steps below to do this:
+>
+> - Go to [Azure portal](https://portal.azure.com), and locate the web API project that you've deployed to App Service.
+> - On the API blade, select **CORS**. Check the box **Enable Access-Control-Allow-Credentials**.
+> - Under **Allowed origins**, add the URL of your published web app **that will call this web API**. 
+
+### Deploying web app to Azure App Service
 
 There is one web app in this sample. To deploy it to **Azure App Services**, you'll need to:
 
@@ -588,9 +618,9 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations (Preview)**.
 1. In the resulting screen, select the `TodoListClient-aspnetcore-webapi` application.
 1. In the app's registration screen, select **Authentication** in the menu.
-   - In the **Redirect URIs** section, update the reply URLs to match the site URL of your Azure deployment. For example:
-      - `https://TodoListClient-aspnetcore-webapi.azurewebsites.net/signin-oidc`
-   - Update the **Front-channel logout URL** fields with the address of your service, for example [https://TodoListClient-aspnetcore-webapi.azurewebsites.net](https://TodoListClient-aspnetcore-webapi.azurewebsites.net)
+    1. In the **Redirect URIs** section, update the reply URLs to match the site URL of your Azure deployment. For example:
+        1. `https://TodoListClient-aspnetcore-webapi.azurewebsites.net/signin-oidc`
+    1. Update the **Front-channel logout URL** fields with the address of your service, for example [https://TodoListClient-aspnetcore-webapi.azurewebsites.net](https://TodoListClient-aspnetcore-webapi.azurewebsites.net)
 
 #### Update authentication configuration parameters (TodoListClient-aspnetcore-webapi)
 
@@ -598,7 +628,9 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
 2. Find the key for **redirect URI** and replace its value with the address of the web app you published, for example, [https://TodoListClient-aspnetcore-webapi.azurewebsites.net/redirect](https://TodoListClient-aspnetcore-webapi.azurewebsites.net/redirect).
 3. Find the key for **web API endpoint** and replace its value with the address of the web API you published, for example, [https://TodoListService-aspnetcore-webapi.azurewebsites.net/api](https://TodoListService-aspnetcore-webapi.azurewebsites.net/api).
 
-> :warning: If your app is using an *in-memory* storage, **Azure App Services** will spin down your web site if it is inactive, and any records that your app was keeping will emptied. In addition, if you increase the instance count of your website, requests will be distributed among the instances. Your app's records, therefore, will not be the same on each instance.
+> :warning: If your app is using an *in-memory* storage, **Azure App Services** will spin down your web site if it is inactive, and any records that your app was keeping will be empty. In addition, if you increase the instance count of your website, requests will be distributed among the instances. Your app's records, therefore, will not be the same on each instance.
+
+</details>
 
 ## Contributing
 
