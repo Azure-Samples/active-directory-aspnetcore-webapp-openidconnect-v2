@@ -94,13 +94,7 @@
             // Add in the optional 'idtyp' claim to check if the access token is coming from an application or user.
             //
             // See: https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-optional-claims
-
-            if (GetCurrentClaimsPrincipal() != null)
-            {
-                return GetCurrentClaimsPrincipal().Claims.Any(c => c.Type == "idtyp" && c.Value == "app");
-            }
-
-            return false;
+            return HttpContext.User.Claims.Any(c => c.Type == "idtyp" && c.Value == "app");
         }
       ```
 

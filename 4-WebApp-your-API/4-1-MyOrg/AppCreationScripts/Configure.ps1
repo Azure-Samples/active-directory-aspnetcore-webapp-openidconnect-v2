@@ -286,7 +286,7 @@ Function ConfigureApplications
 
     # URL of the AAD application in the Azure portal
     # Future? $servicePortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$serviceAadApplication.AppId+"/objectId/"+$serviceAadApplication.Id+"/isMSAApp/"
-    $servicePortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$serviceAadApplication.AppId+"/objectId/"+$serviceAadApplication.Id+"/isMSAApp/"
+    $servicePortalUrl = "https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/Overview/appId/"+$serviceAadApplication.AppId+"/objectId/"+$serviceAadApplication.Id+"/"
     Add-Content -Value "<tr><td>service</td><td>$currentAppId</td><td><a href='$servicePortalUrl'>TodoListService-aspnetcore-webapi</a></td></tr>" -Path createdApps.html
 
    # Create the client AAD application
@@ -342,33 +342,84 @@ Function ConfigureApplications
 
     # URL of the AAD application in the Azure portal
     # Future? $clientPortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$clientAadApplication.AppId+"/objectId/"+$clientAadApplication.Id+"/isMSAApp/"
-    $clientPortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$clientAadApplication.AppId+"/objectId/"+$clientAadApplication.Id+"/isMSAApp/"
+    $clientPortalUrl = "https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/Overview/appId/"+$clientAadApplication.AppId+"/objectId/"+$clientAadApplication.Id+"/"
     Add-Content -Value "<tr><td>client</td><td>$currentAppId</td><td><a href='$clientPortalUrl'>TodoListClient-aspnetcore-webapi</a></td></tr>" -Path createdApps.html
+    # Declare a list to hold RRA items    
     $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphRequiredResourceAccess]
-    
+
     # Add Required Resources Access (from 'client' to 'service')
     Write-Host "Getting access from 'client' to 'service'"
-    $requiredPermissions = GetRequiredPermissions -applicationDisplayName "TodoListService-aspnetcore-webapi" `
-        -requiredDelegatedPermissions "ToDoList.Read|ToDoList.ReadWrite" `
-    
+    $requiredPermission = GetRequiredPermissions -applicationDisplayName "TodoListService-aspnetcore-webapi"`
+        -requiredDelegatedPermissions "ToDoList.Read|ToDoList.ReadWrite"
 
-    $requiredResourcesAccess.Add($requiredPermissions)
+    $requiredResourcesAccess.Add($requiredPermission)
+    Write-Host "Added 'service' to the RRA list."
+    # Useful for RRA troubleshooting
+    # $requiredResourcesAccess.Count
+    # $requiredResourcesAccess
+    
     Update-MgApplication -ApplicationId $clientAadApplication.Id -RequiredResourceAccess $requiredResourcesAccess
     Write-Host "Granted permissions."
+
+    # print the registered app portal URL for any further navigation
+    Write-Host "Successfully registered and configured that app registration for 'TodoListClient-aspnetcore-webapi' at `n $clientPortalUrl"
+    
+    
+Function UpdateLine([string] $line, [string] $value)
+{
+    $index = $line.IndexOf(':')
+    $lineEnd = ''
+
+    if($line[$line.Length - 1] -eq ','){   $lineEnd = ',' }
+    
+    if ($index -ige 0)
+    {
+        $line = $line.Substring(0, $index+1) + " " + '"' + $value+ '"' + $lineEnd
+    }
+    return $line
+}
+
+Function UpdateTextFile([string] $configFilePath, [System.Collections.HashTable] $dictionary)
+{
+    $lines = Get-Content $configFilePath
+    $index = 0
+    while($index -lt $lines.Length)
+    {
+        $line = $lines[$index]
+        foreach($key in $dictionary.Keys)
+        {
+            if ($line.Contains($key))
+            {
+                $lines[$index] = UpdateLine $line $dictionary[$key]
+            }
+        }
+        $index++
+    }
+
+    Set-Content -Path $configFilePath -Value $lines -Force
+}
     
     # Update config file for 'service'
-    $configFile = $pwd.Path + "\..\TodoListService\appsettings.json"
+    # $configFile = $pwd.Path + "\..\TodoListService\appsettings.json"
+    $configFile = $(Resolve-Path ($pwd.Path + "\..\TodoListService\appsettings.json"))
+    
     $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $serviceAadApplication.AppId };
 
-    Write-Host "Updating the sample code ($configFile)"
+    Write-Host "Updating the sample config '$configFile' with the following config values:"
+    $dictionary
+    Write-Host "-----------------"
 
     UpdateTextFile -configFilePath $configFile -dictionary $dictionary
     
     # Update config file for 'client'
-    $configFile = $pwd.Path + "\..\Client\appsettings.json"
+    # $configFile = $pwd.Path + "\..\Client\appsettings.json"
+    $configFile = $(Resolve-Path ($pwd.Path + "\..\Client\appsettings.json"))
+    
     $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $clientAadApplication.AppId;"ClientSecret" = $pwdCredential.SecretText;"TodoListScopes" = "api://$($serviceAadApplication.AppId)/ToDoList.Read api://$($serviceAadApplication.AppId)/ToDoList.ReadWrite";"TodoListBaseAddress" = $serviceAadApplication.Web.HomePageUrl };
 
-    Write-Host "Updating the sample code ($configFile)"
+    Write-Host "Updating the sample config '$configFile' with the following config values:"
+    $dictionary
+    Write-Host "-----------------"
 
     UpdateTextFile -configFilePath $configFile -dictionary $dictionary
     Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
@@ -400,7 +451,16 @@ Add-Content -Value "<thead><tr><th>Application</th><th>AppId</th><th>Url in the 
 $ErrorActionPreference = "Stop"
 
 # Run interactively (will ask you for the tenant ID)
-ConfigureApplications -tenantId $tenantId -environment $azureEnvironmentName
 
+try
+{
+    ConfigureApplications -tenantId $tenantId -environment $azureEnvironmentName
+}
+catch
+{
+    $message = $_
+    Write-Warning $Error[0]
+    Write-Host "Unable to register apps. Error is $message." -ForegroundColor White -BackgroundColor Red
+}
 Write-Host "Disconnecting from tenant"
 Disconnect-MgGraph
