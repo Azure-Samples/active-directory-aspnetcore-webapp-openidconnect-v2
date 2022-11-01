@@ -29,11 +29,11 @@ Function Cleanup
 
     if ($tenantId -eq "") 
     {
-        Connect-MgGraph -Scopes "Organization.Read.All Application.ReadWrite.All" -Environment $azureEnvironmentName
+        Connect-MgGraph -Scopes "User.Read.All Organization.Read.All Application.ReadWrite.All" -Environment $azureEnvironmentName
     }
     else 
     {
-        Connect-MgGraph -TenantId $tenantId -Scopes "Organization.Read.All Application.ReadWrite.All" -Environment $azureEnvironmentName
+        Connect-MgGraph -TenantId $tenantId -Scopes "User.Read.All Organization.Read.All Application.ReadWrite.All" -Environment $azureEnvironmentName
     }
     
     $context = Get-MgContext

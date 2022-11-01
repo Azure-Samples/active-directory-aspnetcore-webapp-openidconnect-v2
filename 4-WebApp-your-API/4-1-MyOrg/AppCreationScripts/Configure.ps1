@@ -199,10 +199,10 @@ Function ConfigureApplications
     # Connect to the Microsoft Graph API, non-interactive is not supported for the moment (Oct 2021)
     Write-Host "Connecting to Microsoft Graph"
     if ($tenantId -eq "") {
-        Connect-MgGraph -Scopes "Organization.Read.All Application.ReadWrite.All" -Environment $azureEnvironmentName
+        Connect-MgGraph -Scopes "User.Read.All Organization.Read.All Application.ReadWrite.All" -Environment $azureEnvironmentName
     }
     else {
-        Connect-MgGraph -TenantId $tenantId -Scopes "Organization.Read.All Application.ReadWrite.All" -Environment $azureEnvironmentName
+        Connect-MgGraph -TenantId $tenantId -Scopes "User.Read.All Organization.Read.All Application.ReadWrite.All" -Environment $azureEnvironmentName
     }
     
     $context = Get-MgContext
@@ -345,8 +345,8 @@ Function ConfigureApplications
     $currentAppId = $clientAadApplication.AppId
     $currentAppObjectId = $clientAadApplication.Id
 
-    $tenantName = (Get-MgApplication -ApplicationId $currentAppId).PublisherDomain
-    Update-MgApplication -ApplicationId $currentAppObjectId -IdentifierUris @("https://$tenantName/TodoListClient-aspnetcore-webapi")
+    $tenantName = (Get-MgApplication -ApplicationId $currentAppObjectId).PublisherDomain
+    #Update-MgApplication -ApplicationId $currentAppObjectId -IdentifierUris @("https://$tenantName/TodoListClient-aspnetcore-webapi")
     
     # create the service principal of the newly created application     
     $clientServicePrincipal = New-MgServicePrincipal -AppId $currentAppId -Tags {WindowsAzureActiveDirectoryIntegratedApp}
@@ -426,7 +426,7 @@ Function ConfigureApplications
     Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
     Write-Host "- For service"
     Write-Host "  - Navigate to $servicePortalUrl"
-    Write-Host "  - Application 'service' publishes application permissions. Do remember to navigate to any client app(s) registration in the app portal and consent for those, if required" -ForegroundColor Red 
+    Write-Host "  - Application 'service' publishes application permissions. Do remember to navigate to any client app(s) registration in the app portal and consent for those, (if required)" -ForegroundColor Red 
     Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
    
 if($isOpenSSL -eq 'Y')
