@@ -37,7 +37,7 @@ This sample was configured to use a client secret, but have an option to use a c
 ]
 ```
 
-1. While inside the sample folder, open a Powershell terminal
+1. While inside the sample folder, open a PowerShell terminal
 
 1. Set next execution policy
 
