@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace TodoListService
 {
@@ -35,7 +36,7 @@ namespace TodoListService
             {
                 Configuration.Bind("AzureAdB2C", options);
 
-                options.TokenValidationParameters.NameClaimType = "name";
+                options.TokenValidationParameters.NameClaimType = "sub";
             },
             options => { Configuration.Bind("AzureAdB2C", options); });
 
@@ -61,6 +62,7 @@ namespace TodoListService
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             app.UseAuthentication();
             app.UseAuthorization();
 
