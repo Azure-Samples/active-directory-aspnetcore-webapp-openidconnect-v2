@@ -7,7 +7,6 @@
     "RepositoryUrl": "microsoft-identity-platform-aspnetcore-webapp-tutorial",
     "Endpoint": "AAD v2.0"
   },
-
   /*
     This section describes the Azure AD Applications to configure, and their dependencies
   */
@@ -22,10 +21,24 @@
       "LogoutUrl": "https://localhost:44321/signout-oidc",
       "PasswordCredentials": "Auto",
       "GroupMembershipClaims": "SecurityGroup",
+      "EnableIdTokenIssuance": true,
       "RequiredResourcesAccess": [
         {
           "Resource": "Microsoft Graph",
-          "DelegatedPermissions": [ "User.Read", "GroupMember.Read.All" ]
+          "DelegatedPermissions": [
+            "User.Read",
+            "GroupMember.Read.All"
+          ]
+        }
+      ],
+      "SecurityGroups": [
+        {
+          "Name": "GroupAdmin",
+          "Description": "Admin Security Group"
+        },
+        {
+          "Name": "GroupMember",
+          "Description": "User Security Group"
         }
       ],
       "ManualSteps": [
@@ -41,7 +54,6 @@
       ]
     }
   ],
-
   /*
     This section describes how to update the code in configuration files from the apps coordinates, once the apps
     are created in Azure AD.
@@ -69,6 +81,14 @@
         {
           "key": "ClientSecret",
           "value": ".AppKey"
+        },
+        {
+          "key": "Enter the objectID for GroupAdmin group copied from Azure Portal",
+          "value": "$GroupAdmin.Id"
+        },
+        {
+          "key": "Enter the objectID for GroupMember group copied from Azure Portal",
+          "value": "$GroupMember.Id"
         }
       ]
     }
