@@ -139,7 +139,6 @@ To manually register the apps, as a first step you'll need to:
     1. For **User consent description** type in *Allow the app to read your ToDo list items via the 'TodoListService-aspnetcore-webapi'*.
     1. Keep **State** as **Enabled**.
     1. Select the **Add scope** button on the bottom to save this scope.
-
     > Repeat the steps above for another scope named **ToDoList.ReadWrite**
 1. Select the **Manifest** blade on the left.
     1. Set `accessTokenAcceptedVersion` property to **2**.
