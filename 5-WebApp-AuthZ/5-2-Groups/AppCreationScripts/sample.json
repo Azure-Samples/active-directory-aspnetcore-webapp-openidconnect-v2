@@ -5,7 +5,22 @@
     "Client": "ASP.NET Core Web App",
     "Service": "Microsoft Graph",
     "RepositoryUrl": "microsoft-identity-platform-aspnetcore-webapp-tutorial",
-    "Endpoint": "AAD v2.0"
+    "Endpoint": "AAD v2.0",
+    "platform": "AspNetCore",
+    "Languages": [
+      "csharp"
+    ],
+    "Products": [
+      "aspnet-core",
+      "azure-active-directory"
+    ],
+    "Library": [
+      "Microsoft.Identity.Web"
+    ],
+    "products": [
+      "azure-active-directory",
+      "ms-graph"
+    ]
   },
   /*
     This section describes the Azure AD Applications to configure, and their dependencies
