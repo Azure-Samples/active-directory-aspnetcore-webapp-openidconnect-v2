@@ -1,13 +1,26 @@
 ---
-services: active-directory
-platforms: dotnet
-author: jmprieur
-level: 200
+page_type: sample
+services: ms-identity
 client: ASP.NET Core Web App
-service: Microsoft Graph
+service: Azure REST Api
+level: 200
+languages:
+ - aspnetcore
+ - charp
+products:
+ - azure-active-directory
+ - microsoft-identity-web
+ - azure-resource-manager
+ - azure-resource-graph
+ - ms-graph
+platform: aspnetcore
 endpoint: Microsoft identity platform
+urlFragment: active-directory-aspnetcore-webapp-openidconnect-v2
+name: An ASP.NET Core Web App which sign-in users with work and school or Microsoft personal accounts and calls Azure REST API and Azure Storage
+description: An ASP.NET Core Web App which sign-in users with work and school or Microsoft personal accounts and calls Azure REST API and Azure Storage
 ---
-# ASP.NET Core 2.2 Web API calling Azure REST API and Azure Storage
+
+# An ASP.NET Core Web App which sign-in users with work and school or Microsoft personal accounts and calls Azure REST API and Azure Storage
 
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
@@ -78,7 +91,7 @@ In the `HomeController.cs` file, replace the blob container `Uri` (line 77) with
 
 ## About The code
 
-Starting from the [previous phase of the tutorial](../../2-WebApp-graph-user/2-1-Call-MSGraph), the code was incrementally updated with the following steps:
+Starting from the [previous phase of the tutorial](../2-WebApp-graph-user/2-1-Call-MSGraph), the code was incrementally updated with the following steps:
 
 ### Update the `Startup.cs` file to enable TokenAcquisition by a MSAL.NET based service
 

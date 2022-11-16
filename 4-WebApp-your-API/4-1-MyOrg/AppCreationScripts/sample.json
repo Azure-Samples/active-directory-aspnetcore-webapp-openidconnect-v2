@@ -1,11 +1,66 @@
 {
   "Sample": {
-    "Title": "How to secure a Web API built with ASP.NET Core using the Microsoft identity platform (formerly Azure Active Directory for developers)",
+    "Author": "v-abeyderman",
+    "Title": "How to secure an ASP.NET Core Web API with the Microsoft identity platform",
     "Level": 200,
     "Client": "ASP.NET Core Web App",
     "Service": "ASP.NET Core Web API",
     "RepositoryUrl": "active-directory-aspnetcore-webapp-openidconnect-v2",
-    "Endpoint": "AAD v2.0"
+    "Endpoint": "AAD v2.0",
+    "Description": "This sample demonstrates an ASP.NET Core Web App signing-in a user and calling an ASP.NET Core Web API that is secured with Azure AD.",
+    "Languages": [ "csharp" ],
+    "Products": [ "aspnet-core", "azure-active-directory" ],
+    "Library": [ "Microsoft.Identity.Web" ],
+    "Platform": "AspNetCore"
+  },
+
+  /*
+    This section describes different regions of readme file
+  */
+  "ReadmeScenario": {
+    "IncludeFilePath": "",
+    "Image": "./ReadmeFiles/topology.png",
+    /* put additional notes, will be displayed right after image*/
+    "AdditionalNotesIncludeFilePath": ""
+  },
+
+  "ReadmePrerequirements": {
+    "FreeText": "",
+    "IncludeFilePath": ""
+  },
+
+  "ReadmeSetup": {
+    "FreeText": "",
+    "IncludeFilePath": "",
+    "CertificateOption": "1", /* 1 when a certificate can be used instead of secret*/
+    "CreateProjectIncludeFilePath": "",
+    "AppRegistrationIncludeFilePath": "",
+    "RunSampleIncludeFilePath": ""
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeTroubleshooting": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeTroubleshooting.md"
+  },
+
+   /* It either can be a text or link to another readme file */
+  "ReadmeHowTheCodeWasCreated": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeHowTheCodeWasCreated.md"
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeAboutTheCode": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeAboutTheCode.md"
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeExploreTheSample": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeExploreTheSample.md"
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeLearnMore": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeLearnMore.md"
   },
 
   /*
@@ -16,33 +71,61 @@
       "Id": "service",
       "Name": "TodoListService-aspnetcore-webapi",
       "Kind": "WebApi",
+      "HomePage": "https://localhost:44351",
       "Audience": "AzureADMyOrg",
-      "HomePage": "https://localhost:44351"
-     
+      "ManualSteps": [],
+      "Sample": {
+        "SampleSubPath": "4-WebApp-Your-API\\4-1-MyOrg",
+        "ProjectDirectory": "\\TodoListService"
+      },
+      "OptionalClaims": {
+        "AccessTokenClaims": [ "idtyp" ]
+      },
+      "Scopes": [ "ToDoList.Read", "ToDoList.ReadWrite" ],
+      "AppRoles": [
+        {
+          "AllowedMemberTypes": [ "Application" ],
+          "Name": "ToDoList.Read.All",
+          "Description": "Allow application to read all ToDo list items"
+        },
+        {
+          "AllowedMemberTypes": [ "Application" ],
+          "Name": "ToDoList.ReadWrite.All",
+          "Description": "Allow application to read and write into ToDo list"
+        }
+      ],
+      "SampleSubPath": "4-WebApp-Your-API\\4-1-MyOrg",
+      "ProjectDirectory": "\\TodoListService"
     },
     {
       "Id": "client",
       "Name": "TodoListClient-aspnetcore-webapi",
       "Kind": "WebApp",
-      "Audience": "AzureADMyOrg",
       "HomePage": "https://localhost:44321/",
-      "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc",
+      "ReplyUrls": "https://localhost:44321/signin-oidc",
       "LogoutUrl": "https://localhost:44321/signout-oidc",
+      "Audience": "AzureADMyOrg",
       "PasswordCredentials": "Auto",
       "RequiredResourcesAccess": [
         {
           "Resource": "service",
-          "DelegatedPermissions": [ "access_as_user" ]
+          "DelegatedPermissions": [ "ToDoList.Read", "ToDoList.ReadWrite" ]
         }
-      ]
-    }
+      ],
+      "OptionalClaims": {
+        "IdTokenClaims": [ "acct" ]
+      },
+      "ManualSteps": [],
+        "SampleSubPath": "4-WebApp-Your-API\\4-1-MyOrg",
+        "ProjectDirectory": "\\Client"
+      }
   ],
 
   /*
     This section describes how to update the code in configuration files from the apps coordinates, once the apps
     are created in Azure AD.
     Each section describes a configuration file, for one of the apps, it's type (XML, JSon, plain text), its location
-    with respect to the root of the sample, and the mappping (which string in the config file is mapped to which value
+    with respect to the root of the sample, and the mapping (which string in the config file is mapped to which value
   */
   "CodeConfiguration": [
     {
@@ -84,11 +167,11 @@
         },
         {
           "key": "ClientSecret",
-          "value": ".AppKey"
+          "value": "$pwdCredential.SecretText"
         },
         {
-          "key": "TodoListScope",
-          "value": "service.Scope"
+          "key": "TodoListScopes",
+          "value": "service.RequiredScopes"
         },
         {
           "key": "TodoListBaseAddress",

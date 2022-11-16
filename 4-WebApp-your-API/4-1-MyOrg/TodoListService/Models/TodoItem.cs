@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace TodoListService.Models
+﻿namespace TodoListService.Models
 {
+    /// <summary>
+    /// Data object to transfer information between client/server/database
+    /// </summary>
     public class Todo
     {
         public int Id { get; set; }

@@ -22,4 +22,4 @@ In this chapter of the tutorial, You'll learn how to use the [Microsoft.Identity
 ## Next chapters
 
 - If you signed-in users with Work or School accounts, or Microsoft personal accounts, you might want to learn how to call an API, starting with [Microsoft Graph](./2-WebApp-graph-user/2-1-Call-MSGraph/README.md).
-- If you wish to protect your web APIs using the Microsoft Identity Platform, please look into [call your own Web API directly](./4-WebApp-your-API/4-1-MyOrg/README.md).
+- If you wish to protect your web APIs using the Microsoft Identity Platform, please look into [call your own Web API directly](./4-1-MyOrg/README.md).

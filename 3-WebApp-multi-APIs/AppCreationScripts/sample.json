@@ -1,11 +1,17 @@
 {
   "Sample": {
-    "Title": "An ASP.NET Core 2.x Web App which lets sign-in users with work and school or Microsoft personal accounts (and calls Microsoft Graph)",
+    "Title": "An ASP.NET Core Web App which sign-in users with work and school or Microsoft personal accounts and calls Azure REST API and Azure Storage",
     "Level": 200,
-    "Client": "ASP.NET Core 2.x Web App",
-    "Service": "Microsoft Graph",
+    "Client": "ASP.NET Core Web App",
+    "Service": "Azure REST Api",
+    "Author":"jmprieur",
+    "Platform":"aspnetcore",
     "RepositoryUrl": "active-directory-aspnetcore-webapp-openidconnect-v2",
-    "Endpoint": "AAD v2.0"
+    "Endpoint": "Microsoft identity platform",
+    "Description":"An ASP.NET Core Web App which sign-in users with work and school or Microsoft personal accounts and calls Azure REST API and Azure Storage",
+    "Languages": ["aspnetcore", "charp"],
+    "Products": ["azure-active-directory","microsoft-identity-web","azure-resource-manager","azure-resource-graph","ms-graph"],
+    "ms.author":["jmprieur"]
   },
 
   /*
@@ -14,7 +20,7 @@
   "AADApps": [
     {
       "Id": "webApp",
-      "Name": "WebApp",
+      "Name": "Azure_Api_WebApp",
       "Kind": "WebApp",
       "HomePage": "https://localhost:44321/",
       "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc",
@@ -46,7 +52,7 @@
   "CodeConfiguration": [
     {
       "App": "webApp",
-      "SettingKind": "JSon",
+      "SettingKind": "JSON",
       "SettingFile": "\\..\\appsettings.json",
       "Mappings": [
         {

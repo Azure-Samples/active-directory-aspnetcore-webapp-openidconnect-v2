@@ -220,13 +220,12 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 
     `EnableTokenAcquisitionToCallDownstreamApi()` and `AddMicrosoftGraph` adds support to call Microsoft Graph. This lines ensures that the GraphAPIService benefits from the optimized `HttpClient` management by ASP.NET Core.
 
-3. In the `Controllers\HomeController.cs`file, the following code is added to allow calling MS Graph:
+3. In the `Controllers\HomeController.cs` file, the following code is added to allow calling MS Graph:
 
  ```CSharp
    private readonly ILogger<HomeController> _logger;
    private readonly GraphServiceClient _graphServiceClient;
   
-   private readonly GraphServiceClient _graphServiceClient;
    public HomeController(ILogger<HomeController> logger,
                       IConfiguration configuration,
                       GraphServiceClient graphServiceClient)

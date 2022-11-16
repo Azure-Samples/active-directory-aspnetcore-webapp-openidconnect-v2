@@ -22,12 +22,12 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         private readonly IArmOperations armOperations;
         private readonly IArmOperationsWithImplicitAuth armOperationsWithImplicitAuth;
 
-        public HomeController(ITokenAcquisition   tokenAcquisition,
+        public HomeController(ITokenAcquisition tokenAcquisition,
                               IGraphApiOperations graphApiOperations,
                               IArmOperations armOperations,
                               IArmOperationsWithImplicitAuth armOperationsWithImplicitAuth)
         {
-            this.tokenAcquisition   = tokenAcquisition;
+            this.tokenAcquisition = tokenAcquisition;
             this.graphApiOperations = graphApiOperations;
             this.armOperations = armOperations;
             this.armOperationsWithImplicitAuth = armOperationsWithImplicitAuth;
@@ -38,11 +38,11 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return View();
         }
 
-        [AuthorizeForScopes(Scopes = new[] { WebApp_OpenIDConnect_DotNet.Infrastructure.Constants.ScopeUserRead})]
+        [AuthorizeForScopes(Scopes = new[] { WebApp_OpenIDConnect_DotNet.Infrastructure.Constants.ScopeUserRead })]
         public async Task<IActionResult> Profile()
         {
             var accessToken =
-                await tokenAcquisition.GetAccessTokenForUserAsync(new[] { WebApp_OpenIDConnect_DotNet.Infrastructure.Constants.ScopeUserRead});
+                await tokenAcquisition.GetAccessTokenForUserAsync(new[] { WebApp_OpenIDConnect_DotNet.Infrastructure.Constants.ScopeUserRead });
 
             var me = await graphApiOperations.GetUserInformation(accessToken);
             var photo = await graphApiOperations.GetPhotoAsBase64Async(accessToken);
@@ -103,7 +103,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                     await blobClient.UploadAsync(stream);
                     message = "Blob successfully created";
                 }
-	            catch (MicrosoftIdentityWebChallengeUserException ex)
+                catch (MicrosoftIdentityWebChallengeUserException ex)
                 {
                     throw ex;
                 }	
@@ -132,7 +132,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

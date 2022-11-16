@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -32,7 +31,6 @@ namespace TodoListClient.Services
     {
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly HttpClient _httpClient;
-        private readonly string _TodoListScope = string.Empty;
         private readonly string _TodoListBaseAddress = string.Empty;
         private readonly ITokenAcquisition _tokenAcquisition;
 
@@ -41,7 +39,6 @@ namespace TodoListClient.Services
             _httpClient = httpClient;
             _tokenAcquisition = tokenAcquisition;
             _contextAccessor = contextAccessor;
-            _TodoListScope = configuration["TodoList:TodoListScope"];
             _TodoListBaseAddress = configuration["TodoList:TodoListBaseAddress"];
         }
 
@@ -61,7 +58,7 @@ namespace TodoListClient.Services
                 return todo;
             }
 
-            throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
+            return null;
         }
 
         public async Task DeleteAsync(int id)
@@ -74,8 +71,6 @@ namespace TodoListClient.Services
             {
                 return;
             }
-
-            throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
         }
 
         public async Task<Todo> EditAsync(Todo todo)
@@ -94,7 +89,7 @@ namespace TodoListClient.Services
                 return todo;
             }
 
-            throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
+            return null;
         }
 
         public async Task<IEnumerable<Todo>> GetAsync()
@@ -109,16 +104,8 @@ namespace TodoListClient.Services
                 return todolist;
             }
 
-            throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
-        }
-
-        private async Task PrepareAuthenticatedClient()
-        {
-            var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new[] { _TodoListScope });
-            Debug.WriteLine($"access token-{accessToken}");
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        }
+            return null;
+        }        
 
         public async Task<Todo> GetAsync(int id)
         {
@@ -132,7 +119,19 @@ namespace TodoListClient.Services
                 return todo;
             }
 
-            throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
+            return null;
+        }
+        
+        //Acquire a token and add it as Bearer to Authorization header
+        private async Task PrepareAuthenticatedClient()
+        {
+            //You would specify the scopes (delegated permissions) here for which you desire an Access token of this API from Azure AD.
+            //Note that these scopes can be different from what you provided in startup.cs.
+            //The scopes provided here can be different or more from the ones provided in Startup.cs. Note that if they are different,
+            //then the user might be prompted to consent again.
+            var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new List<string>());
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
     }
 }

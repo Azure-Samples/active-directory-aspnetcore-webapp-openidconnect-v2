@@ -1,0 +1,39 @@
+﻿@using System.Security.Principal
+
+<ul class="nav navbar-nav navbar-right">
+@if (User.Identity is not null && User.Identity.IsAuthenticated)
+{
+        <li class="nav-item">
+            <span class="nav-link text-dark">Hello @User.Identity.Name!</span>
+        </li>
+        <li class="nav-item">
+            <a id="signout-link" class="nav-link text-dark" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign out</a>
+        </li>
+}
+else
+{
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">Sign in</a>
+        </li>
+}
+</ul>
+
+<script>
+
+    @{ /* Intercept the SignOut link to clear the MSAL.js cache before triggering the server-side logout. */ }
+    var signoutLink = document.getElementById('signout-link');
+
+
+    if (!!signoutLink) {
+        signoutLink.addEventListener('click', e => {
+            e.preventDefault();
+
+            msalInstance.logoutRedirect({
+                onRedirectNavigate: _ => false
+            });
+
+            window.location = e.target.href;
+        });
+    }
+
+</script>

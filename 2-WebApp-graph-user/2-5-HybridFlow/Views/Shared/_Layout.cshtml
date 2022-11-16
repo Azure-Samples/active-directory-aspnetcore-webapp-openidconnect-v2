@@ -1,0 +1,218 @@
+﻿@using Microsoft.Extensions.Configuration
+@using System.Text
+@using Microsoft.Identity.Web
+@inject IConfiguration Configuration
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Hyrid SPA Sample</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <script src="https://alcdn.msauth.net/browser/2.22.0/js/msal-browser.min.js"></script>
+    <script>
+        const msalInstance = new msal.PublicClientApplication({
+            auth: {
+                @{
+                    var clientId = Configuration["AzureAd:ClientId"];
+                    var instance = Configuration["AzureAd:Instance"];
+                    var domain = Configuration["AzureAd:Domain"];
+                    var redirectUri = Configuration["SpaRedirectUri"];
+
+                    @Html.Raw($"clientId: '{clientId}',");
+                    @Html.Raw($"redirectUri: '{redirectUri}',");
+                    @Html.Raw($"authority: '{instance}{domain}',");
+                }
+            },
+            cache: {
+                cacheLocation: 'sessionStorage',
+                    storeAuthStateInCookie: false,
+                }
+            });
+
+        function getTokenFromCache(scopes) {
+            @if (User.Identity is not null)
+            {
+                @Html.Raw($"const username = '{User.Identity.Name}';");
+            }
+            else
+            {
+                @Html.Raw($"const username = '';");
+            }
+
+            const account = msalInstance.getAllAccounts()
+                .find(account => account.username === username);
+
+            return msalInstance.acquireTokenSilent({
+                account,
+                scopes
+            })
+                .catch(error => {
+                    if (error instanceof msal.InteractionRequiredAuthError) {
+                        return msalInstance.acquireTokenRedirect({
+                            account,
+                            scopes
+                        });
+                    }
+                });
+        };
+
+        function callMSGraph(path, token) {
+            @{
+                var graphEndpoint = Configuration["DownstreamApi:BaseUrl"];
+                if (!string.IsNullOrEmpty(graphEndpoint))
+                {
+                    @Html.Raw($"const graphEndpoint = '{graphEndpoint}';");
+                }
+                else
+                {
+                    @Html.Raw($"const graphEndpoint = '';");
+                }
+            }
+
+            const headers = new Headers();
+            const bearer = `Bearer ${token}`;
+            headers.append("Authorization", bearer);
+
+            const options = {
+                method: "GET",
+                headers
+            };
+
+            console.log('request made to Graph API at: ' + new Date().toString());
+
+            return fetch(`${graphEndpoint}${path}`, options)
+                .catch(error => console.log(error))
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Hybrid SPA Sample</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <partial name="_LoginPartial" />
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+
+                        @if(User.Identity is not null && User.Identity.IsAuthenticated) {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Profile">Profile</a>
+                            </li>
+                        }
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2022 - WebApp_OpenIDConnect_DotNet - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            const scopes = 
+            @{
+                var apiScopes = Configuration["DownstreamApi:Scopes"].Split(' ');
+                @Html.Raw("[");
+
+                foreach(var scope in apiScopes) {
+                    @Html.Raw($"'{scope}',")
+                }
+
+                @Html.Raw("];");
+
+                Context.Session.TryGetValue(Constants.SpaAuthCode, out var spaCode);
+
+                if (spaCode is not null && !string.IsNullOrEmpty(Encoding.Default.GetString(spaCode)))
+                {
+                    @Html.Raw($"const code = '{Encoding.Default.GetString(spaCode)}';");
+                    Context.Session.Remove(Constants.SpaAuthCode);
+                }
+                else
+                {
+                    @Html.Raw($"const code = '';");
+                }
+            }
+
+            if (!!code) {
+                msalInstance
+                    .handleRedirectPromise()
+                    .then(result => {
+                        if (result) {
+                            console.log('MSAL: Returning from login');
+                            document.dispatchEvent(new Event('AUTHENTICATED'));
+                            return result;
+                        }
+
+                        const timeLabel = "Time for acquireTokenByCode";
+                        console.time(timeLabel);
+                        console.log('MSAL: acquireTokenByCode hybrid parameters present');
+
+                        return msalInstance.acquireTokenByCode({
+                            code,
+                            scopes,
+                        })
+                            .then(result => {
+                                console.timeEnd(timeLabel);
+                                console.log('MSAL: acquireTokenByCode completed successfully', result);
+                                document.dispatchEvent(new Event('AUTHENTICATED'));
+                            })
+                            .catch(error => {
+                                console.timeEnd(timeLabel);
+                                console.error('MSAL: acquireTokenByCode failed', error);
+                                if (error instanceof msal.InteractionRequiredAuthError) {
+                                    console.log('MSAL: acquireTokenByCode failed, redirecting');
+
+                                    @{
+                                        if (User.Identity is not null)
+                                        {
+                                            @Html.Raw($"const username = '{User.Identity.Name}';");
+                                        }
+                                        else
+                                        {
+                                            @Html.Raw($"const username = '';");
+                                        }
+                                    }
+
+                                    const account = msalInstance.getAllAccounts()
+                                        .find(account => account.username === username);
+
+                                    return msalInstance.acquireTokenRedirect({
+                                        account,
+                                        scopes
+                                    });
+                                }
+                            });
+                    })
+            }
+            else {
+                document.dispatchEvent(new Event('AUTHENTICATED'));
+            }
+        })();
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
