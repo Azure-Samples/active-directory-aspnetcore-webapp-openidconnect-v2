@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Graph;
 using Microsoft.Identity.Web;
 using System.Threading.Tasks;
+using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using Constants = WebApp_OpenIDConnect_DotNet.Infrastructure.Constants;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
@@ -15,9 +16,9 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
         public UserProfileController(GraphServiceClient graphServiceClient)
         {
-            this.graphServiceClient= graphServiceClient;
+            this.graphServiceClient = graphServiceClient;
         }
-        [Authorize(Policy = "GroupAdmin")]
+        [Authorize(Policy = AuthorizationPolicies.AssignmentToGroupMemberGroupRequired)]
         [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]        
         public async Task<IActionResult> Index()
         {

@@ -16,14 +16,8 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
         public IActionResult Index()
         {
-            ViewData["User"] = HttpContext.User;
 
-            // Calls method GetSessionGroupList to get groups from session.
-            var groups = GraphHelper.GetUserGroupsFromSession(HttpContext.Session);
-            if (groups?.Count > 0)
-            {
-                ViewData.Add("groupClaims", groups );
-            }
+            ViewData["User"] = HttpContext.User;
             return View();
         }
 
