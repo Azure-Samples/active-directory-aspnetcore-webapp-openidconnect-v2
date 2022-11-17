@@ -1,3 +1,4 @@
+﻿
 [CmdletBinding()]
 param(    
     [Parameter(Mandatory=$False, HelpMessage='Tenant ID (This is a GUID which represents the "Directory ID" of the AzureAD tenant into which you want to create the apps')]
@@ -5,6 +6,7 @@ param(
     [Parameter(Mandatory=$False, HelpMessage='Azure environment to use while running the script. Default = Global')]
     [string] $azureEnvironmentName
 )
+
 
 Function Cleanup
 {
@@ -22,30 +24,52 @@ Function Cleanup
     # into which you want to create the apps. Look it up in the Azure portal in the "Properties" of the Azure AD. 
 
     # Connect to the Microsoft Graph API
-    Write-Host "Connecting Microsoft Graph"
-    if ($tenantId -eq "") {
-        Connect-MgGraph -Scopes "Application.ReadWrite.All" -Environment $azureEnvironmentName
-        $tenantId = (Get-MgContext).TenantId
+    Write-Host "Connecting to Microsoft Graph"
+
+
+    if ($tenantId -eq "") 
+    {
+        Connect-MgGraph -Scopes "User.Read.All Organization.Read.All Application.ReadWrite.All" -Environment $azureEnvironmentName
     }
-    else {
-        Connect-MgGraph -TenantId $tenantId -Scopes "Application.ReadWrite.All" -Environment $azureEnvironmentName
+    else 
+    {
+        Connect-MgGraph -TenantId $tenantId -Scopes "User.Read.All Organization.Read.All Application.ReadWrite.All" -Environment $azureEnvironmentName
     }
     
+    $context = Get-MgContext
+    $tenantId = $context.TenantId
+
+    # Get the user running the script
+    $currentUserPrincipalName = $context.Account
+    $user = Get-MgUser -Filter "UserPrincipalName eq '$($context.Account)'"
+
+    # get the tenant we signed in to
+    $Tenant = Get-MgOrganization
+    $tenantName = $Tenant.DisplayName
+    
+    $verifiedDomain = $Tenant.VerifiedDomains | where {$_.Isdefault -eq $true}
+    $verifiedDomainName = $verifiedDomain.Name
+    $tenantId = $Tenant.Id
+
+    Write-Host ("Connected to Tenant {0} ({1}) as account '{2}'. Domain is '{3}'" -f  $Tenant.DisplayName, $Tenant.Id, $currentUserPrincipalName, $verifiedDomainName)
+
     # Removes the applications
     Write-Host "Cleaning-up applications from tenant '$tenantId'"
 
     Write-Host "Removing 'service' (WebApi-MultiTenant-v2) if needed"
     try
     {
-        Get-MgApplication -Filter "DisplayName eq 'WebApi-MultiTenant-v2'"  | ForEach-Object {Remove-MgApplication -ApplicationId $_.Id }
+        Get-MgApplication -Filter "DisplayName eq 'WebApi-MultiTenant-v2'" | ForEach-Object {Remove-MgApplication -ApplicationId $_.Id }
     }
     catch
     {
-	    Write-Host "Unable to remove the application 'WebApi-MultiTenant-v2' . Try deleting manually." -ForegroundColor White -BackgroundColor Red
+        $message = $_
+        Write-Warning $Error[0]
+        Write-Host "Unable to remove the application 'WebApi-MultiTenant-v2'. Error is $message. Try deleting manually." -ForegroundColor White -BackgroundColor Red
     }
 
     Write-Host "Making sure there are no more (WebApi-MultiTenant-v2) applications found, will remove if needed..."
-    $apps = Get-MgApplication -Filter "DisplayName eq 'WebApi-MultiTenant-v2'"
+    $apps = Get-MgApplication -Filter "DisplayName eq 'WebApi-MultiTenant-v2'" | Format-List Id, DisplayName, AppId, SignInAudience, PublisherDomain
     
     if ($apps)
     {
@@ -61,24 +85,28 @@ Function Cleanup
     # also remove service principals of this app
     try
     {
-        Get-MgServicePrincipal -filter "DisplayName eq 'WebApi-MultiTenant-v2'" | ForEach-Object {Remove-MgServicePrincipal -ApplicationId $_.Id -Confirm:$false}
+        Get-MgServicePrincipal -filter "DisplayName eq 'WebApi-MultiTenant-v2'" | ForEach-Object {Remove-MgServicePrincipal -ServicePrincipalId $_.Id -Confirm:$false}
     }
     catch
     {
-	    Write-Host "Unable to remove ServicePrincipal 'WebApi-MultiTenant-v2' . Try deleting manually from Enterprise applications." -ForegroundColor White -BackgroundColor Red
+        $message = $_
+        Write-Warning $Error[0]
+        Write-Host "Unable to remove ServicePrincipal 'WebApi-MultiTenant-v2'. Error is $message. Try deleting manually from Enterprise applications." -ForegroundColor White -BackgroundColor Red
     }
     Write-Host "Removing 'client' (WebApp-MultiTenant-v2) if needed"
     try
     {
-        Get-MgApplication -Filter "DisplayName eq 'WebApp-MultiTenant-v2'"  | ForEach-Object {Remove-MgApplication -ApplicationId $_.Id }
+        Get-MgApplication -Filter "DisplayName eq 'WebApp-MultiTenant-v2'" | ForEach-Object {Remove-MgApplication -ApplicationId $_.Id }
     }
     catch
     {
-	    Write-Host "Unable to remove the application 'WebApp-MultiTenant-v2' . Try deleting manually." -ForegroundColor White -BackgroundColor Red
+        $message = $_
+        Write-Warning $Error[0]
+        Write-Host "Unable to remove the application 'WebApp-MultiTenant-v2'. Error is $message. Try deleting manually." -ForegroundColor White -BackgroundColor Red
     }
 
     Write-Host "Making sure there are no more (WebApp-MultiTenant-v2) applications found, will remove if needed..."
-    $apps = Get-MgApplication -Filter "DisplayName eq 'WebApp-MultiTenant-v2'"
+    $apps = Get-MgApplication -Filter "DisplayName eq 'WebApp-MultiTenant-v2'" | Format-List Id, DisplayName, AppId, SignInAudience, PublisherDomain
     
     if ($apps)
     {
@@ -94,23 +122,67 @@ Function Cleanup
     # also remove service principals of this app
     try
     {
-        Get-MgServicePrincipal -filter "DisplayName eq 'WebApp-MultiTenant-v2'" | ForEach-Object {Remove-MgServicePrincipal -ApplicationId $_.Id -Confirm:$false}
+        Get-MgServicePrincipal -filter "DisplayName eq 'WebApp-MultiTenant-v2'" | ForEach-Object {Remove-MgServicePrincipal -ServicePrincipalId $_.Id -Confirm:$false}
     }
     catch
     {
-	    Write-Host "Unable to remove ServicePrincipal 'WebApp-MultiTenant-v2' . Try deleting manually from Enterprise applications." -ForegroundColor White -BackgroundColor Red
+        $message = $_
+        Write-Warning $Error[0]
+        Write-Host "Unable to remove ServicePrincipal 'WebApp-MultiTenant-v2'. Error is $message. Try deleting manually from Enterprise applications." -ForegroundColor White -BackgroundColor Red
     }
 }
 
-if ($null -eq (Get-Module -ListAvailable -Name "Microsoft.Graph.Applications")) { 
-    Install-Module "Microsoft.Graph.Applications" -Scope CurrentUser                                            
-} 
+# Pre-requisites
+if ($null -eq (Get-Module -ListAvailable -Name "Microsoft.Graph")) {
+    Install-Module "Microsoft.Graph" -Scope CurrentUser 
+}
+
+#Import-Module Microsoft.Graph
+
+if ($null -eq (Get-Module -ListAvailable -Name "Microsoft.Graph.Authentication")) {
+    Install-Module "Microsoft.Graph.Authentication" -Scope CurrentUser 
+}
+
+Import-Module Microsoft.Graph.Authentication
+
+if ($null -eq (Get-Module -ListAvailable -Name "Microsoft.Graph.Identity.DirectoryManagement")) {
+    Install-Module "Microsoft.Graph.Identity.DirectoryManagement" -Scope CurrentUser 
+}
+
+Import-Module Microsoft.Graph.Identity.DirectoryManagement
+
+if ($null -eq (Get-Module -ListAvailable -Name "Microsoft.Graph.Applications")) {
+    Install-Module "Microsoft.Graph.Applications" -Scope CurrentUser 
+}
+
 Import-Module Microsoft.Graph.Applications
+
+if ($null -eq (Get-Module -ListAvailable -Name "Microsoft.Graph.Groups")) {
+    Install-Module "Microsoft.Graph.Groups" -Scope CurrentUser 
+}
+
+Import-Module Microsoft.Graph.Groups
+
+if ($null -eq (Get-Module -ListAvailable -Name "Microsoft.Graph.Users")) {
+    Install-Module "Microsoft.Graph.Users" -Scope CurrentUser 
+}
+
+Import-Module Microsoft.Graph.Users
+
 $ErrorActionPreference = "Stop"
 
 
-Cleanup -tenantId $tenantId -environment $azureEnvironmentName
+try
+{
+    Cleanup -tenantId $tenantId -environment $azureEnvironmentName
+}
+catch
+{
+    $_.Exception.ToString() | out-host
+    $message = $_
+    Write-Warning $Error[0]    
+    Write-Host "Unable to register apps. Error is $message." -ForegroundColor White -BackgroundColor Red
+}
 
 Write-Host "Disconnecting from tenant"
 Disconnect-MgGraph
-

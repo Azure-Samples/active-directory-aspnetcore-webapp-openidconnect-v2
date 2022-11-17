@@ -31,7 +31,7 @@
           "Comment": "Navigate to the API Permissions page and select 'Grant admin consent for (your tenant)' to User.Read.All permission"
         },
         {
-          "Comment" : "Open Service's appsettings.json and update 'AllowedTenants' with your tenant id."
+          "Comment": "Open Service's appsettings.json and update 'AllowedTenants' with your tenant id."
         }
       ]
     },
