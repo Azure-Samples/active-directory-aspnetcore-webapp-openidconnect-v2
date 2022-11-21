@@ -30,7 +30,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             _graphScopes = configuration.GetValue<string>("GraphAPI:Scopes")?.Split(' ');
         }
 
-        [Authorize(Policy = AuthorizationPolicies.AssignmentToGroupAdminGroupRequired)]
+        [Authorize(Policy = AuthorizationPolicies.AssignmentToGroupMemberGroupRequired)]
         [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]
         public async Task<IActionResult> Index()
         {

@@ -3,22 +3,19 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using WebApp_OpenIDConnect_DotNet.Models;
 using Microsoft.AspNetCore.Http;
-using WebApp_OpenIDConnect_DotNet.Services;
-using Microsoft.Identity.Web;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
-    [Authorize]
-    public class HomeController : Controller
+    [Authorize(Policy = AuthorizationPolicies.AssignmentToGroupAdminGroupRequired)]
+    public class AdminController : Controller
     {
-        public HomeController()
+        public AdminController()
         {
         }
 
         public IActionResult Index()
         {
-            ViewData["User"] = HttpContext.User;
             return View();
         }
 
