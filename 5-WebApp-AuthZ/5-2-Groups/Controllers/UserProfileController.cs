@@ -18,7 +18,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         {
             this.graphServiceClient = graphServiceClient;
         }
-        [Authorize(Policy = AuthorizationPolicies.AssignmentToGroupMemberGroupRequired)]
+        [Authorize(Policy = AuthorizationPolicies.AssignmentToGroupAdminGroupRequired)]
         [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]        
         public async Task<IActionResult> Index()
         {
