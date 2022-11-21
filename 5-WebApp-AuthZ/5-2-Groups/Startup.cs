@@ -133,6 +133,10 @@ namespace WebApp_OpenIDConnect_DotNet
                 }).AddMicrosoftIdentityUI();
 
             services.AddRazorPages();
+
+            // Add the UI support to handle claims challenges
+            services.AddServerSideBlazor()
+               .AddMicrosoftIdentityConsentHandler();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
