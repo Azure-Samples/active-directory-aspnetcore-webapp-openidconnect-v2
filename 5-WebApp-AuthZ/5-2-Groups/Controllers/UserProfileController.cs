@@ -20,7 +20,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         private string[] _graphScopes;
 
         public UserProfileController(
-            IConfiguration configuration, 
+            IConfiguration configuration,
             GraphServiceClient graphServiceClient,
             MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler)
         {
@@ -34,11 +34,11 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]
         public async Task<IActionResult> Index()
         {
-            User me = await _graphServiceClient.Me.Request().GetAsync();
-            ViewData["Me"] = me;
-
             try
             {
+                User me = await _graphServiceClient.Me.Request().GetAsync();
+                ViewData["Me"] = me;
+
                 var photo = await _graphServiceClient.Me.Photo.Request().GetAsync();
                 ViewData["Photo"] = photo;
             }
@@ -56,10 +56,11 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                     _consentHandler.HandleException(ex2);
                 }
             }
-            catch
+            catch (ServiceException svcex) when (svcex.Error.Code == "ImageNotFound")
             {
                 //swallow
             }
+
             return View();
         }
     }

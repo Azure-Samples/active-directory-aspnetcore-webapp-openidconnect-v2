@@ -11,7 +11,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-        public HomeController(MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler)
+        public HomeController()
         {
         }
 

@@ -80,18 +80,24 @@ These policies can be used in controllers as shown below:
 [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]        
 public async Task<IActionResult> Index()
 {
-    User me = await graphServiceClient.Me.Request().GetAsync();
-    ViewData["Me"] = me;
-
     try
     {
-        var photo = await graphServiceClient.Me.Photo.Request().GetAsync();
+        User me = await _graphServiceClient.Me.Request().GetAsync();
+        ViewData["Me"] = me;
+
+        var photo = await _graphServiceClient.Me.Photo.Request().GetAsync();
         ViewData["Photo"] = photo;
     }
-    catch
+    // See 'Optional - Handle Continuous Access Evaluation (CAE) challenge from Microsoft Graph' for more information.
+    catch (ServiceException svcex) when (svcex.Message.Contains("Continuous access evaluation resulted in claims challenge"))
+    {
+        // Left blank for brevity.
+    }
+    catch (ServiceException svcex) when (svcex.Error.Code == "ImageNotFound")
     {
         //swallow
     }
+
     return View();
 }
 ```

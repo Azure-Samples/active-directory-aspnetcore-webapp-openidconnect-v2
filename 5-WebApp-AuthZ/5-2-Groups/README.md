@@ -27,9 +27,11 @@ extensions:
 * [Scenario](#scenario)
 * [Prerequisites](#prerequisites)
 * [Setup the sample](#setup-the-sample)
-* [Explore the sample](#explore-the-sample)
-* [Troubleshooting](#troubleshooting)
 * [About the code](#about-the-code)
+* [Optional - Handle Continuous Access Evaluation (CAE) challenge from Microsoft Graph](#optional---handle-continuous-access-evaluation-cae-challenge-from-microsoft-graph)
+  * [Declare the CAE capability in the configuration](#declare-the-cae-capability-in-the-configuration)
+  * [Process the CAE challenge from Microsoft Graph](#process-the-cae-challenge-from-microsoft-graph)
+* [Troubleshooting](#troubleshooting)
 * [Next Steps](#next-steps)
 * [Contributing](#contributing)
 * [Learn More](#learn-more)
@@ -136,7 +138,7 @@ To manually register the apps, as a first step you'll need to:
         1. `https://localhost:44321/`
         1. `https://localhost:44321/signin-oidc`
     1. In the **Front-channel logout URL** section, set it to `https://localhost:44321/signout-oidc`.
-     1. In the **Implicit grant** section, check the **ID tokens** option as this sample requires the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to sign-in the user and call an API.
+    1. In the **Implicit grant** section, check the **ID tokens** option as this sample requires the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to sign-in the user and call an API.
     1. Select **ID tokens (used for implicit and hybrid flows)** checkbox.
     1. Click **Save** to save your changes.
 1. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where you can generate secrets and upload certificates.
@@ -336,18 +338,24 @@ These policies can be used in controllers as shown below:
 [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]        
 public async Task<IActionResult> Index()
 {
-    User me = await graphServiceClient.Me.Request().GetAsync();
-    ViewData["Me"] = me;
-
     try
     {
-        var photo = await graphServiceClient.Me.Photo.Request().GetAsync();
+        User me = await _graphServiceClient.Me.Request().GetAsync();
+        ViewData["Me"] = me;
+
+        var photo = await _graphServiceClient.Me.Photo.Request().GetAsync();
         ViewData["Photo"] = photo;
     }
-    catch
+    // See 'Optional - Handle Continuous Access Evaluation (CAE) challenge from Microsoft Graph' for more information.
+    catch (ServiceException svcex) when (svcex.Message.Contains("Continuous access evaluation resulted in claims challenge"))
+    {
+        // Left blank for brevity.
+    }
+    catch (ServiceException svcex) when (svcex.Error.Code == "ImageNotFound")
     {
         //swallow
     }
+
     return View();
 }
 ```
@@ -376,6 +384,90 @@ If a user is member of more groups than the overage limit (**150 for SAML tokens
 
 > You can gain a good familiarity of programming for Microsoft Graph by going through the [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A) recorded session.
 
+## Optional - Handle Continuous Access Evaluation (CAE) challenge from Microsoft Graph
+
+Continuous access evaluation (CAE) enables web APIs to do just-in time token validation, for instance enforcing user session revocation in the case of password change/reset but there are other benefits. For details, see [Continuous access evaluation](https://docs.microsoft.com/azure/active-directory/conditional-access/concept-continuous-access-evaluation).
+
+Microsoft Graph is now CAE-enabled in Preview. This means that it can ask its clients for more claims when conditional access policies require it. Your can enable your application to be ready to consume CAE-enabled APIs by:
+
+1. Declaring that the client app is capable of handling claims challenges from the web API.
+2. Processing these challenges when thrown.
+
+### Declare the CAE capability in the configuration
+
+This sample declares that it's CAE-capable by adding a `ClientCapabilities` property in the configuration, whose value is `[ "cp1" ]`.
+
+```Json
+{
+  "AzureAd": {
+    // ...
+    // the following is required to handle Continuous Access Evaluation challenges
+    "ClientCapabilities": [ "cp1" ],
+    // ...
+  },
+  // ...
+}
+```
+
+### Process the CAE challenge from Microsoft Graph
+
+To process the CAE challenge from Microsoft Graph, the controller actions need to extract it from the `wwwAuthenticate` header. It is returned when MS Graph rejects a seemingly valid Access tokens for MS Graph. For this you need to:
+
+1. Inject and instance of `MicrosoftIdentityConsentAndConditionalAccessHandler` in the controller constructor. The beginning of the HomeController becomes:
+
+   ```CSharp
+    private readonly GraphServiceClient _graphServiceClient;
+    private readonly MicrosoftIdentityConsentAndConditionalAccessHandler _consentHandler;
+    private string[] _graphScopes;
+
+    public UserProfileController(
+        IConfiguration configuration, 
+        GraphServiceClient graphServiceClient,
+        MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler)
+    {
+
+        _consentHandler = consentHandler;
+        _graphServiceClient = graphServiceClient;
+        _graphScopes = configuration.GetValue<string>("GraphAPI:Scopes")?.Split(' ');
+    }
+    
+    // more code here
+    ```
+
+1. The process to handle CAE challenges from MS Graph comprises of the following steps:
+    1. Catch a Microsoft Graph SDK's `ServiceException` and extract the required `claims`. This is done by wrapping the call to Microsoft Graph into a try/catch block that processes the challenge:
+    ```CSharp
+    User me = await _graphServiceClient.Me.Request().GetAsync();
+    ```
+    1. Then redirect the user back to Azure AD with the new requested `claims`. Azure AD will use this `claims` payload to discern what or if any additional processing is required, example being the user needs to sign-in again or do multi-factor authentication.
+  ```CSharp
+    try
+    {
+        User me = await _graphServiceClient.Me.Request().GetAsync();
+        ViewData["Me"] = me;
+
+        var photo = await _graphServiceClient.Me.Photo.Request().GetAsync();
+        ViewData["Photo"] = photo;
+    }
+    // Catch CAE exception from Graph SDK
+    catch (ServiceException svcex) when (svcex.Message.Contains("Continuous access evaluation resulted in claims challenge"))
+    {
+        try
+        {
+            string claimChallenge = WwwAuthenticateParameters.GetClaimChallengeFromResponseHeaders(svcex.ResponseHeaders);
+            _consentHandler.ChallengeUser(_graphScopes, claimChallenge);
+            return new EmptyResult();
+        }
+        catch (Exception ex2)
+        {
+            _consentHandler.HandleException(ex2);
+        }
+    }
+    catch (ServiceException svcex) when (svcex.Error.Code == "ImageNotFound")
+    {
+        //swallow
+    }
+  ```
 
 ### Deploying Web app to Azure App Service
 
