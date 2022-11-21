@@ -55,7 +55,7 @@ namespace WebApp_OpenIDConnect_DotNet
                     .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
                     .AddInMemoryTokenCaches();
 
-            // Add Graph
+            // Add Graph SDK
             services.AddGraphService(Configuration);
 
             // The following lines code instruct the asp.net core middleware to use the data in the "roles" claim in the Authorize attribute and User.IsInrole()
