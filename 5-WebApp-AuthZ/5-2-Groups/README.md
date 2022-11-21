@@ -301,11 +301,17 @@ public static async Task ProcessAnyGroupsOverage(TokenValidatedContext context)
 ```
 
 1. UserProfileController.cs
-    1. Checks authorization of signed-in user for ```[Authorize(Policy = AuthorizationPolicies.AssignmentToGroupAdminGroupRequired)]```. If authorized successfully then obtain information from the [/me](https://docs.microsoft.com/graph/api/user-get?view=graph-rest-1.0) and [/me/photo](https://docs.microsoft.com/graph/api/profilephoto-get) endpoints by using `GraphServiceClient`.
+    1. Checks authorization of signed-in user for ```[Authorize(Policy = AuthorizationPolicies.AssignmentToGroupMemberGroupRequired)]```. If authorized successfully then obtain information from the [/me](https://docs.microsoft.com/graph/api/user-get?view=graph-rest-1.0) and [/me/photo](https://docs.microsoft.com/graph/api/profilephoto-get) endpoints by using `GraphServiceClient`.
 
-1. UserProfile\Index.cshtml
+2. UserProfile\Index.cshtml
     1. Has some client code that prints the signed-in user's information.
 Much of the specifics of implementing **RBAC** with **Security Groups** is the same with implementing **RBAC** with **App Roles** discussed in the [previous tutorial](../5-2-Roles/README.md). In order to avoid redundancy, here we discuss particular issues, such as **groups overage**, that might arise with using the **groups** claim.
+
+1. AdminController.cs
+    1. Checks authorization of signed-in user for ```[Authorize(Policy = AuthorizationPolicies.AssignmentToGroupAdminGroupRequired)]```. If authorized successfully a simple place holder page is displayed.
+
+2. Admin\Index.cshtml
+    1. A simple place holder to show how you can store hidden content only available to members of the **GroupAdmin** group
 
 #### Caching user group memberships in overage scenario
 
@@ -334,7 +340,7 @@ services.AddAuthorization(options =>
 These policies can be used in controllers as shown below:
 
 ```csharp
-[Authorize(Policy = AuthorizationPolicies.AssignmentToGroupAdminGroupRequired)]
+[Authorize(Policy = AuthorizationPolicies.AssignmentToGroupMemberGroupRequired)]
 [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]        
 public async Task<IActionResult> Index()
 {
