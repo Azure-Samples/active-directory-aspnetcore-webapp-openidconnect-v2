@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Graph;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -5,10 +9,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Graph;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 
 namespace WebApp_OpenIDConnect_DotNet.Services
@@ -21,7 +21,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
 
         /// <summary>
         /// This method inspects the claims collection created from the ID or Access token issued to a user and returns the groups that are present in the token.
-        /// If it detects groups overage, the method then makes calls to ProcessUserGroupsForOverage method to get the entire set of security groups and populates 
+        /// If it detects groups overage, the method then makes calls to ProcessUserGroupsForOverage method to get the entire set of security groups and populates
         /// the Claim Principal's "groups" claim with the complete list of groups.
         /// </summary>
         /// <param name="context">TokenValidatedContext</param>
@@ -146,15 +146,11 @@ namespace WebApp_OpenIDConnect_DotNet.Services
                             {
                                 var identity = principal.Identity as ClaimsIdentity;
 
-                                // Checks if token is for protected APIs i.e., if token is 'Access Token'.
-                                if (IsAccessToken(identity))
-                                {
-                                    // Remove existing groups claims
-                                    RemoveExistingGroupsClaims(identity);
+                                // Remove existing groups claims
+                                RemoveExistingGroupsClaims(identity);
 
-                                    // And re-populate
-                                    RepopulateGroupsClaim(allgroups, identity);
-                                }
+                                // And re-populate
+                                RepopulateGroupsClaim(allgroups, identity);
                             }
 
                             // return the full list of security groups

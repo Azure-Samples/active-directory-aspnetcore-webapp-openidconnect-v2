@@ -56,10 +56,6 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                     _consentHandler.HandleException(ex2);
                 }
             }
-            catch
-            {
-                //swallow
-            }
             return View();
         }
     }
