@@ -4,19 +4,19 @@ using System.Diagnostics;
 using WebApp_OpenIDConnect_DotNet.Models;
 using Microsoft.AspNetCore.Http;
 using WebApp_OpenIDConnect_DotNet.Services;
+using Microsoft.Identity.Web;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
-        public HomeController()
+        public HomeController(MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler)
         {
         }
 
         public IActionResult Index()
         {
-
             ViewData["User"] = HttpContext.User;
             return View();
         }
