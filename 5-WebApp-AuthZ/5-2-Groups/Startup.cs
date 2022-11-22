@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -11,7 +10,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 using Microsoft.IdentityModel.Logging;
-using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -24,19 +22,12 @@ namespace WebApp_OpenIDConnect_DotNet
 {
     public class Startup
     {
-        public List<string> allowedClientApps;
-        public List<string> requiredGroupsIds;
         public CacheSettings cacheSettings;
         public IConfiguration Configuration { get; }
 
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-
-            allowedClientApps = new List<string>() { Configuration["AzureAd:ClientId"] };
-
-            requiredGroupsIds = Configuration.GetSection("AzureAd:Groups")
-                .AsEnumerable().Select(x => x.Value).Where(x => x != null).ToList();
 
             cacheSettings = new CacheSettings
             {
@@ -91,6 +82,9 @@ namespace WebApp_OpenIDConnect_DotNet
                         {
                             if (context != null)
                             {
+                                List<string> requiredGroupsIds = Configuration.GetSection("AzureAd:Groups")
+                                    .AsEnumerable().Select(x => x.Value).Where(x => x != null).ToList();
+
                                 // Calls method to process groups overage claim (before policy checks kick-in)
                                 await GraphHelper.ProcessAnyGroupsOverage(context, requiredGroupsIds, cacheSettings);
                             }
@@ -102,11 +96,13 @@ namespace WebApp_OpenIDConnect_DotNet
                 .AddMicrosoftGraph(Configuration.GetSection("GraphAPI"))
                 .AddInMemoryTokenCaches();
 
-
             // Adding authorization policies that enforce authorization using Azure AD security groups.
             services.AddAuthorization(options =>
             {
+                // this policy stipulates that users in both GroupMember and GroupAdmin can access resources
                 options.AddPolicy(AuthorizationPolicies.AssignmentToGroupMemberGroupRequired, policy => policy.RequireRole(Configuration["Groups:GroupMember"], Configuration["Groups:GroupAdmin"]));
+
+                // this policy stipulates that users in GroupAdmin can access resources
                 options.AddPolicy(AuthorizationPolicies.AssignmentToGroupAdminGroupRequired, policy => policy.RequireRole(Configuration["Groups:GroupAdmin"]));
             });
 
@@ -133,6 +129,10 @@ namespace WebApp_OpenIDConnect_DotNet
                 }).AddMicrosoftIdentityUI();
 
             services.AddRazorPages();
+
+            // Add the UI support to handle claims challenges
+            services.AddServerSideBlazor()
+               .AddMicrosoftIdentityConsentHandler();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

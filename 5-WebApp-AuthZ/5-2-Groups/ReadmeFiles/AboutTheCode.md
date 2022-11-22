@@ -42,10 +42,10 @@ public static async Task ProcessAnyGroupsOverage(TokenValidatedContext context)
 }
 ```
 
-1. UserProfileController.cs
+1. `UserProfileController.cs`
     1. Checks authorization of signed-in user for ```[Authorize(Policy = AuthorizationPolicies.AssignmentToGroupAdminGroupRequired)]```. If authorized successfully then obtain information from the [/me](https://docs.microsoft.com/graph/api/user-get?view=graph-rest-1.0) and [/me/photo](https://docs.microsoft.com/graph/api/profilephoto-get) endpoints by using `GraphServiceClient`.
 
-1. UserProfile\Index.cshtml
+1. `UserProfile\Index.cshtml`
     1. Has some client code that prints the signed-in user's information.
 Much of the specifics of implementing **RBAC** with **Security Groups** is the same with implementing **RBAC** with **App Roles** discussed in the [previous tutorial](../5-2-Roles/README.md). In order to avoid redundancy, here we discuss particular issues, such as **groups overage**, that might arise with using the **groups** claim.
 
@@ -80,18 +80,20 @@ These policies can be used in controllers as shown below:
 [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]        
 public async Task<IActionResult> Index()
 {
-    User me = await graphServiceClient.Me.Request().GetAsync();
-    ViewData["Me"] = me;
-
     try
     {
-        var photo = await graphServiceClient.Me.Photo.Request().GetAsync();
+        User me = await _graphServiceClient.Me.Request().GetAsync();
+        ViewData["Me"] = me;
+
+        var photo = await _graphServiceClient.Me.Photo.Request().GetAsync();
         ViewData["Photo"] = photo;
     }
-    catch
+    // See 'Optional - Handle Continuous Access Evaluation (CAE) challenge from Microsoft Graph' for more information.
+    catch (ServiceException svcex) when (svcex.Message.Contains("Continuous access evaluation resulted in claims challenge"))
     {
-        //swallow
+        // Left blank for brevity.
     }
+
     return View();
 }
 ```

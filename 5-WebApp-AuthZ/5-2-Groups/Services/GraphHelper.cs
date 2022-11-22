@@ -13,6 +13,9 @@ using WebApp_OpenIDConnect_DotNet.Infrastructure;
 
 namespace WebApp_OpenIDConnect_DotNet.Services
 {
+    /// <summary>
+    /// Contains a set of methods and a pattern on how to handle group claims overage
+    /// </summary>
     public class GraphHelper
     {
         private const string Cached_Graph_Token_Key = "JwtSecurityTokenUsedToCallWebAPI";
@@ -134,9 +137,6 @@ namespace WebApp_OpenIDConnect_DotNet.Services
                         var memberPage = await graphClient.Me.GetMemberGroups(false).Request().PostAsync();
 
                         allgroups = memberPage.ToList<string>();
-
-                        // There is a limit to number of groups returned in a page, so the method below make further calls to Microsoft graph to get all the groups.
-                        // allgroups = ProcessIGraphServiceMemberOfCollectionPage(memberPage, requiredGroupIds);
 
                         if (allgroups?.Count > 0)
                         {

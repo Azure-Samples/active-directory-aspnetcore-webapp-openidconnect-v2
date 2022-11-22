@@ -27,9 +27,9 @@ extensions:
 * [Scenario](#scenario)
 * [Prerequisites](#prerequisites)
 * [Setup the sample](#setup-the-sample)
-* [Explore the sample](#explore-the-sample)
-* [Troubleshooting](#troubleshooting)
 * [About the code](#about-the-code)
+* [Optional - Handle Continuous Access Evaluation (CAE) challenge from Microsoft Graph](#optional---handle-continuous-access-evaluation-cae-challenge-from-microsoft-graph)
+* [Troubleshooting](#troubleshooting)
 * [Next Steps](#next-steps)
 * [Contributing](#contributing)
 * [Learn More](#learn-more)
@@ -136,7 +136,7 @@ To manually register the apps, as a first step you'll need to:
         1. `https://localhost:44321/`
         1. `https://localhost:44321/signin-oidc`
     1. In the **Front-channel logout URL** section, set it to `https://localhost:44321/signout-oidc`.
-     1. In the **Implicit grant** section, check the **ID tokens** option as this sample requires the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to sign-in the user and call an API.
+    1. In the **Implicit grant** section, check the **ID tokens** option as this sample requires the [Implicit grant flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) to be enabled to sign-in the user and call an API.
     1. Select **ID tokens (used for implicit and hybrid flows)** checkbox.
     1. Click **Save** to save your changes.
 1. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where you can generate secrets and upload certificates.
@@ -256,12 +256,62 @@ You have two different options available to you on how you can further configure
 
 ### Step 4: Running the sample
 
-From your shell or command line, execute the following commands:
+#### Run the sample using Visual Studio
+
+> For Visual Studio Users
+>
+> Clean the solution, rebuild the solution, and run it.
+
+#### Run the sample using a command line interface such as VS Code integrated terminal
+
+##### Step 1. Install .NET Core dependencies
 
 ```console
-    cd 5-WebApp-AuthZ\5-2-Groups
+   dotnet restore
+```
+
+##### Step 2. Trust development certificates
+
+```console
+   dotnet dev-certs https --clean
+   dotnet dev-certs https --trust
+```
+
+Learn more about [HTTPS in .NET Core](https://docs.microsoft.com/aspnet/core/security/enforcing-ssl).
+
+##### Step 3. Run the applications
+
+In the console window execute the below command:
+
+```console
     dotnet run
 ```
+
+## Explore the sample
+
+1. Open your web browser and make a request to the app. The app immediately attempts to authenticate you to the Microsoft identity platform. You can sign-in with a *work or school account* from the tenant where you created this app. If admin consent to `GroupMember.Read.All` permission from portal is not done then sign-in with admin for the first time and consent for the permission.
+1. If the **Overage** scenario occurs for the signed-in user then all the groups are retrieved from Microsoft Graph and added in a list. The [overage](#groups-overage-claim) scenario is discussed later in this article.
+1. On the home page, the app lists the various claims it obtained from your ID token. You'd notice one more claims named `groups`.
+1. On the top menu, click on the signed-in user's name **user@domain.com**, you should now see all kind of information about yourself including their picture.
+1. the *Admin* link leads to an empty page that can only be accessed if the signed-in user is a part of the *GroupAdmin* security group. 
+
+> Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
+
+## Troubleshooting
+
+<details>
+	<summary>Expand for troubleshooting info</summary>
+
+ASP.NET core applications create session cookies that represent the identity of the caller. Some Safari users using iOS 12 had issues which are described in ASP.NET Core #4467 and the Web kit bugs database Bug 188165 - iOS 12 Safari breaks ASP.NET Core 2.1 OIDC authentication.
+
+If your web site needs to be accessed from users using iOS 12, you probably want to disable the SameSite protection, but also ensure that state changes are protected with CSRF anti-forgery mechanism. See the how to fix section of Microsoft Security Advisory: iOS12 breaks social, WSFed and OIDC logins #4647
+
+To provide feedback on or suggest features for Azure Active Directory, visit [User Voice page](https://feedback.azure.com/d365community/forum/79b1327d-d925-ec11-b6e6-000d3a4f06a4).
+</details>
+
+## We'd love your feedback!
+
+Were we successful in addressing your learning objective? Consider taking a moment to [share your experience with us](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR9p5WmglDttMunCjrD00y3NUOEQ1WVhQUEw4MEU4WVcwVzlWNU44U01VNS4u).
 
 ## About the code
 
@@ -345,18 +395,24 @@ These policies can be used in controllers as shown below:
 [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]        
 public async Task<IActionResult> Index()
 {
-    User me = await graphServiceClient.Me.Request().GetAsync();
-    ViewData["Me"] = me;
-
     try
     {
-        var photo = await graphServiceClient.Me.Photo.Request().GetAsync();
+        User me = await _graphServiceClient.Me.Request().GetAsync();
+        ViewData["Me"] = me;
+
+        var photo = await _graphServiceClient.Me.Photo.Request().GetAsync();
         ViewData["Photo"] = photo;
     }
-    catch
+    // See 'Optional - Handle Continuous Access Evaluation (CAE) challenge from Microsoft Graph' for more information.
+    catch (ServiceException svcex) when (svcex.Message.Contains("Continuous access evaluation resulted in claims challenge"))
+    {
+        // Left blank for brevity.
+    }
+    catch (ServiceException svcex) when (svcex.Error.Code == "ImageNotFound")
     {
         //swallow
     }
+
     return View();
 }
 ```
@@ -387,6 +443,90 @@ If a user is member of more groups than the overage limit (**150 for SAML tokens
 
 > You can gain a good familiarity of programming for Microsoft Graph by going through the [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A) recorded session.
 
+## Optional - Handle Continuous Access Evaluation (CAE) challenge from Microsoft Graph
+
+Continuous access evaluation (CAE) enables web APIs to do just-in time token validation, for instance enforcing user session revocation in the case of password change/reset but there are other benefits. For details, see [Continuous access evaluation](https://docs.microsoft.com/azure/active-directory/conditional-access/concept-continuous-access-evaluation).
+
+Microsoft Graph is now CAE-enabled in Preview. This means that it can ask its clients for more claims when conditional access policies require it. Your can enable your application to be ready to consume CAE-enabled APIs by:
+
+1. Declaring that the client app is capable of handling claims challenges from the web API.
+2. Processing these challenges when thrown.
+
+### Declare the CAE capability in the configuration
+
+This sample declares that it's CAE-capable by adding a `ClientCapabilities` property in the configuration, whose value is `[ "cp1" ]`.
+
+```Json
+{
+  "AzureAd": {
+    // ...
+    // the following is required to handle Continuous Access Evaluation challenges
+    "ClientCapabilities": [ "cp1" ],
+    // ...
+  },
+  // ...
+}
+```
+
+### Process the CAE challenge from Microsoft Graph
+
+To process the CAE challenge from Microsoft Graph, the controller actions need to extract it from the `wwwAuthenticate` header. It is returned when MS Graph rejects a seemingly valid Access tokens for MS Graph. For this you need to:
+
+1. Inject and instance of `MicrosoftIdentityConsentAndConditionalAccessHandler` in the controller constructor. The beginning of the HomeController becomes:
+
+   ```CSharp
+    private readonly GraphServiceClient _graphServiceClient;
+    private readonly MicrosoftIdentityConsentAndConditionalAccessHandler _consentHandler;
+    private string[] _graphScopes;
+
+    public UserProfileController(
+        IConfiguration configuration, 
+        GraphServiceClient graphServiceClient,
+        MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler)
+    {
+
+        _consentHandler = consentHandler;
+        _graphServiceClient = graphServiceClient;
+        _graphScopes = configuration.GetValue<string>("GraphAPI:Scopes")?.Split(' ');
+    }
+    
+    // more code here
+    ```
+
+1. The process to handle CAE challenges from MS Graph comprises of the following steps:
+    1. Catch a Microsoft Graph SDK's `ServiceException` and extract the required `claims`. This is done by wrapping the call to Microsoft Graph into a try/catch block that processes the challenge:
+    ```CSharp
+    User me = await _graphServiceClient.Me.Request().GetAsync();
+    ```
+    1. Then redirect the user back to Azure AD with the new requested `claims`. Azure AD will use this `claims` payload to discern what or if any additional processing is required, example being the user needs to sign-in again or do multi-factor authentication.
+  ```CSharp
+    try
+    {
+        User me = await _graphServiceClient.Me.Request().GetAsync();
+        ViewData["Me"] = me;
+
+        var photo = await _graphServiceClient.Me.Photo.Request().GetAsync();
+        ViewData["Photo"] = photo;
+    }
+    // Catch CAE exception from Graph SDK
+    catch (ServiceException svcex) when (svcex.Message.Contains("Continuous access evaluation resulted in claims challenge"))
+    {
+        try
+        {
+            string claimChallenge = WwwAuthenticateParameters.GetClaimChallengeFromResponseHeaders(svcex.ResponseHeaders);
+            _consentHandler.ChallengeUser(_graphScopes, claimChallenge);
+            return new EmptyResult();
+        }
+        catch (Exception ex2)
+        {
+            _consentHandler.HandleException(ex2);
+        }
+    }
+    catch (ServiceException svcex) when (svcex.Error.Code == "ImageNotFound")
+    {
+        //swallow
+    }
+  ```
 
 ### Deploying Web app to Azure App Service
 
@@ -419,20 +559,6 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
     1. Update the **Front-channel logout URL** fields with the address of your service, for example [https://WebApp-GroupClaims.azurewebsites.net](https://WebApp-GroupClaims.azurewebsites.net)
 
 > :warning: If your app is using an *in-memory* storage, **Azure App Services** will spin down your web site if it is inactive, and any records that your app was keeping will be empty. In addition, if you increase the instance count of your website, requests will be distributed among the instances. Your app's records, therefore, will not be the same on each instance.
-
-## Troubleshooting
-
-<details>
-	<summary>Expand for troubleshooting info</summary>
-
-ASP.NET core applications create session cookies that represent the identity of the caller. Some Safari users using iOS 12 had issues which are described in ASP.NET Core #4467 and the Web kit bugs database Bug 188165 - iOS 12 Safari breaks ASP.NET Core 2.1 OIDC authentication.
-
-If your web site needs to be accessed from users using iOS 12, you probably want to disable the SameSite protection, but also ensure that state changes are protected with CSRF anti-forgery mechanism. See the how to fix section of Microsoft Security Advisory: iOS12 breaks social, WSFed and OIDC logins #4647
-</details>
-
-## We'd love your feedback!
-
-Were we successful in addressing your learning objective? Consider taking a moment to [share your experience with us](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR9p5WmglDttMunCjrD00y3NUOEQ1WVhQUEw4MEU4WVcwVzlWNU44U01VNS4u).
 
 ## Next Steps
 
