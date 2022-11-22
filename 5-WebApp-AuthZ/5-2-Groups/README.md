@@ -29,8 +29,6 @@ extensions:
 * [Setup the sample](#setup-the-sample)
 * [About the code](#about-the-code)
 * [Optional - Handle Continuous Access Evaluation (CAE) challenge from Microsoft Graph](#optional---handle-continuous-access-evaluation-cae-challenge-from-microsoft-graph)
-  * [Declare the CAE capability in the configuration](#declare-the-cae-capability-in-the-configuration)
-  * [Process the CAE challenge from Microsoft Graph](#process-the-cae-challenge-from-microsoft-graph)
 * [Troubleshooting](#troubleshooting)
 * [Next Steps](#next-steps)
 * [Contributing](#contributing)
@@ -158,6 +156,15 @@ To manually register the apps, as a first step you'll need to:
     1. Select the **Add permissions** button at the bottom.
    > :warning: To handle the groups overage scenario, please grant [admin consent](https://learn.microsoft.com/azure/active-directory/manage-apps/grant-admin-consent?source=recommendations#grant-admin-consent-in-app-registrations) to the Microsoft Graph **GroupMember.Read.All** [permission](https://learn.microsoft.com/graph/permissions-reference). See the section on how to [create the overage scenario for testing](#create-the-overage-scenario-for-testing) below for more.
 
+##### Configure Optional Claims
+
+1. Still on the same app registration, select the **Token configuration** blade to the left.
+1. Select **Add optional claim**:
+    1. Select **optional claim type**, then choose **ID**.
+    1. Select the optional claim **acct**.
+    > Provides user's account status in tenant. If the user is a **member** of the tenant, the value is *0*. If they're a **guest**, the value is *1*.
+    1. Select **Add** to save your changes.
+
 ##### Configure the webApp app (WebApp-GroupClaims) to use your app registration
 
 Open the project in your IDE (like Visual Studio or Visual Studio Code) to configure the code.
@@ -249,12 +256,62 @@ You have two different options available to you on how you can further configure
 
 ### Step 4: Running the sample
 
-From your shell or command line, execute the following commands:
+#### Run the sample using Visual Studio
+
+> For Visual Studio Users
+>
+> Clean the solution, rebuild the solution, and run it.
+
+#### Run the sample using a command line interface such as VS Code integrated terminal
+
+##### Step 1. Install .NET Core dependencies
 
 ```console
-    cd 5-WebApp-AuthZ\5-2-Groups
+   dotnet restore
+```
+
+##### Step 2. Trust development certificates
+
+```console
+   dotnet dev-certs https --clean
+   dotnet dev-certs https --trust
+```
+
+Learn more about [HTTPS in .NET Core](https://docs.microsoft.com/aspnet/core/security/enforcing-ssl).
+
+##### Step 3. Run the applications
+
+In the console window execute the below command:
+
+```console
     dotnet run
 ```
+
+## Explore the sample
+
+1. Open your web browser and make a request to the app. The app immediately attempts to authenticate you to the Microsoft identity platform. You can sign-in with a *work or school account* from the tenant where you created this app. If admin consent to `GroupMember.Read.All` permission from portal is not done then sign-in with admin for the first time and consent for the permission.
+1. If the **Overage** scenario occurs for the signed-in user then all the groups are retrieved from Microsoft Graph and added in a list. The [overage](#groups-overage-claim) scenario is discussed later in this article.
+1. On the home page, the app lists the various claims it obtained from your ID token. You'd notice one more claims named `groups`.
+1. On the top menu, click on the signed-in user's name **user@domain.com**, you should now see all kind of information about yourself including their picture.
+1. the *Admin* link leads to an empty page that can only be accessed if the signed-in user is a part of the *GroupAdmin* security group. 
+
+> Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
+
+## Troubleshooting
+
+<details>
+	<summary>Expand for troubleshooting info</summary>
+
+ASP.NET core applications create session cookies that represent the identity of the caller. Some Safari users using iOS 12 had issues which are described in ASP.NET Core #4467 and the Web kit bugs database Bug 188165 - iOS 12 Safari breaks ASP.NET Core 2.1 OIDC authentication.
+
+If your web site needs to be accessed from users using iOS 12, you probably want to disable the SameSite protection, but also ensure that state changes are protected with CSRF anti-forgery mechanism. See the how to fix section of Microsoft Security Advisory: iOS12 breaks social, WSFed and OIDC logins #4647
+
+To provide feedback on or suggest features for Azure Active Directory, visit [User Voice page](https://feedback.azure.com/d365community/forum/79b1327d-d925-ec11-b6e6-000d3a4f06a4).
+</details>
+
+## We'd love your feedback!
+
+Were we successful in addressing your learning objective? Consider taking a moment to [share your experience with us](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR9p5WmglDttMunCjrD00y3NUOEQ1WVhQUEw4MEU4WVcwVzlWNU44U01VNS4u).
 
 ## About the code
 
@@ -377,11 +434,13 @@ If a user is member of more groups than the overage limit (**150 for SAML tokens
 1. You can use the [BulkCreateGroups.ps1](./AppCreationScripts/BulkCreateGroups.ps1) provided in the [App Creation Scripts](./AppCreationScripts/) folder to create a large number of groups and assign users to them. This will help test overage scenarios during development. You'll need to enter a user's object ID when prompted by the `BulkCreateGroups.ps1` script. If you would like to delete these groups after your testing, run the [BulkRemoveGroups.ps1](./AppCreationScripts/BulkRemoveGroups.ps1).
 
 > When attending to overage scenarios, which requires a call to [Microsoft Graph](https://graph.microsoft.com) to read the signed-in user's group memberships, your app will need to have the [User.Read](https://docs.microsoft.com/graph/permissions-reference#user-permissions) and [GroupMember.Read.All](https://docs.microsoft.com/graph/permissions-reference#group-permissions) for the [getMemberGroups](https://docs.microsoft.com/graph/api/user-getmembergroups) function to execute successfully.
+
 > :warning: For the overage scenario, make sure you have granted **Admin Consent** for the MS Graph API's **GroupMember.Read.All** scope for both the Client and the Service apps (see the **App Registration** steps above).
 
 ##### Detecting group overage in your code by examining claims
 
 1. When you run this sample and an overage occurred, then you'd see the `_claim_names` in the home page after the user signs-in.
+1. We strongly advise you use the [group filtering feature](#configure-your-application-to-receive-the-groups-claim-values-from-a-filtered-set-of-groups-a-user-may-be-assigned-to) (if possible) to avoid running into group overages.
 
 1. In case you cannot avoid running into group overage, we suggest you use the following logic to process groups claim in your token.  
     1. Check for the claim `_claim_names` with one of the values being `groups`. This indicates overage.
@@ -506,20 +565,6 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
     1. Update the **Front-channel logout URL** fields with the address of your service, for example [https://WebApp-GroupClaims.azurewebsites.net](https://WebApp-GroupClaims.azurewebsites.net)
 
 > :warning: If your app is using an *in-memory* storage, **Azure App Services** will spin down your web site if it is inactive, and any records that your app was keeping will be empty. In addition, if you increase the instance count of your website, requests will be distributed among the instances. Your app's records, therefore, will not be the same on each instance.
-
-## Troubleshooting
-
-<details>
-	<summary>Expand for troubleshooting info</summary>
-
-ASP.NET core applications create session cookies that represent the identity of the caller. Some Safari users using iOS 12 had issues which are described in ASP.NET Core #4467 and the Web kit bugs database Bug 188165 - iOS 12 Safari breaks ASP.NET Core 2.1 OIDC authentication.
-
-If your web site needs to be accessed from users using iOS 12, you probably want to disable the SameSite protection, but also ensure that state changes are protected with CSRF anti-forgery mechanism. See the how to fix section of Microsoft Security Advisory: iOS12 breaks social, WSFed and OIDC logins #4647
-</details>
-
-## We'd love your feedback!
-
-Were we successful in addressing your learning objective? Consider taking a moment to [share your experience with us](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR9p5WmglDttMunCjrD00y3NUOEQ1WVhQUEw4MEU4WVcwVzlWNU44U01VNS4u).
 
 ## Next Steps
 

@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using WebApp_OpenIDConnect_DotNet.Models;
-using Microsoft.AspNetCore.Http;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
+using WebApp_OpenIDConnect_DotNet.Models;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {

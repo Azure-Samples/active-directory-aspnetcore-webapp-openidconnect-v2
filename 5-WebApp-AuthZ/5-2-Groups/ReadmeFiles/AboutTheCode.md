@@ -42,10 +42,10 @@ public static async Task ProcessAnyGroupsOverage(TokenValidatedContext context)
 }
 ```
 
-1. UserProfileController.cs
-    1. Checks authorization of signed-in user for ```[Authorize(Policy = AuthorizationPolicies.AssignmentToGroupMemberGroupRequired)]```. If authorized successfully then obtain information from the [/me](https://docs.microsoft.com/graph/api/user-get?view=graph-rest-1.0) and [/me/photo](https://docs.microsoft.com/graph/api/profilephoto-get) endpoints by using `GraphServiceClient`.
+1. `UserProfileController.cs`
+    1. Checks authorization of signed-in user for ```[Authorize(Policy = AuthorizationPolicies.AssignmentToGroupAdminGroupRequired)]```. If authorized successfully then obtain information from the [/me](https://docs.microsoft.com/graph/api/user-get?view=graph-rest-1.0) and [/me/photo](https://docs.microsoft.com/graph/api/profilephoto-get) endpoints by using `GraphServiceClient`.
 
-2. UserProfile\Index.cshtml
+1. `UserProfile\Index.cshtml`
     1. Has some client code that prints the signed-in user's information.
 Much of the specifics of implementing **RBAC** with **Security Groups** is the same with implementing **RBAC** with **App Roles** discussed in the [previous tutorial](../5-2-Roles/README.md). In order to avoid redundancy, here we discuss particular issues, such as **groups overage**, that might arise with using the **groups** claim.
 
@@ -98,10 +98,6 @@ public async Task<IActionResult> Index()
     catch (ServiceException svcex) when (svcex.Message.Contains("Continuous access evaluation resulted in claims challenge"))
     {
         // Left blank for brevity.
-    }
-    catch (ServiceException svcex) when (svcex.Error.Code == "ImageNotFound")
-    {
-        //swallow
     }
 
     return View();

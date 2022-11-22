@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Graph;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -5,14 +9,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Graph;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 
 namespace WebApp_OpenIDConnect_DotNet.Services
 {
+    /// <summary>
+    /// Contains a set of methods and a pattern on how to handle group claims overage
+    /// </summary>
     public class GraphHelper
     {
         private const string Cached_Graph_Token_Key = "JwtSecurityTokenUsedToCallWebAPI";
@@ -21,7 +24,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
 
         /// <summary>
         /// This method inspects the claims collection created from the ID or Access token issued to a user and returns the groups that are present in the token.
-        /// If it detects groups overage, the method then makes calls to ProcessUserGroupsForOverage method to get the entire set of security groups and populates 
+        /// If it detects groups overage, the method then makes calls to ProcessUserGroupsForOverage method to get the entire set of security groups and populates
         /// the Claim Principal's "groups" claim with the complete list of groups.
         /// </summary>
         /// <param name="context">TokenValidatedContext</param>
@@ -135,9 +138,6 @@ namespace WebApp_OpenIDConnect_DotNet.Services
 
                         allgroups = memberPage.ToList<string>();
 
-                        // There is a limit to number of groups returned in a page, so the method below make further calls to Microsoft graph to get all the groups.
-                        // allgroups = ProcessIGraphServiceMemberOfCollectionPage(memberPage, requiredGroupIds);
-
                         if (allgroups?.Count > 0)
                         {
                             var principal = context.Principal;
@@ -146,15 +146,11 @@ namespace WebApp_OpenIDConnect_DotNet.Services
                             {
                                 var identity = principal.Identity as ClaimsIdentity;
 
-                                // Checks if token is for protected APIs i.e., if token is 'Access Token'.
-                                if (IsAccessToken(identity))
-                                {
-                                    // Remove existing groups claims
-                                    RemoveExistingGroupsClaims(identity);
+                                // Remove existing groups claims
+                                RemoveExistingGroupsClaims(identity);
 
-                                    // And re-populate
-                                    RepopulateGroupsClaim(allgroups, identity);
-                                }
+                                // And re-populate
+                                RepopulateGroupsClaim(allgroups, identity);
                             }
 
                             // return the full list of security groups

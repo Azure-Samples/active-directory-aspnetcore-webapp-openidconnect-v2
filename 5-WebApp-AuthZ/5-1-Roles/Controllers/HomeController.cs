@@ -11,6 +11,9 @@ using WebApp_OpenIDConnect_DotNet.Models;
 using WebApp_OpenIDConnect_DotNet.Services;
 using Graph = Microsoft.Graph;
 using Constants = WebApp_OpenIDConnect_DotNet.Infrastructure.Constants;
+using Microsoft.Graph;
+using Microsoft.Identity.Client;
+using System.Net.Http.Headers;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
@@ -19,11 +22,13 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
     {
         private readonly ITokenAcquisition tokenAcquisition;
         private readonly WebOptions webOptions;
+        private readonly MicrosoftIdentityConsentAndConditionalAccessHandler _consentHandler;
 
-        public HomeController(ITokenAcquisition tokenAcquisition, IOptions<WebOptions> webOptionValue)
+        public HomeController(ITokenAcquisition tokenAcquisition, IOptions<WebOptions> webOptionValue, MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler)
         {
             this.tokenAcquisition = tokenAcquisition;
             this.webOptions = webOptionValue.Value;
+            _consentHandler = consentHandler;
         }
 
         public IActionResult Index()
@@ -35,25 +40,25 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]
         public async Task<IActionResult> Profile()
         {
-            // Initialize the GraphServiceClient.
-            Graph::GraphServiceClient graphClient = GetGraphServiceClient(new[] { Constants.ScopeUserRead });
-
-            var me = await graphClient.Me.Request().GetAsync();
-            ViewData["Me"] = me;
+            GraphServiceClient graphClient;
 
             try
             {
-                // Get user photo
-                var photoStream = await graphClient.Me.Photo.Content.Request().GetAsync();
-                byte[] photoByte = ((MemoryStream)photoStream).ToArray();
-                ViewData["Photo"] = Convert.ToBase64String(photoByte);
-            }
-            catch (System.Exception)
-            {
-                ViewData["Photo"] = null;
+                // Initialize the GraphServiceClient.
+                graphClient = GetGraphServiceClient(new[] { Constants.ScopeUserRead });   
+                ViewData["Me"] = await graphClient.Me.Request().GetAsync();    
             }
 
+            catch (ServiceException ex) when (ex.Message.Contains("Continuous access evaluation resulted in claims challenge")) // CAE challenge occurred
+            {
+                graphClient = GetGraphServiceClientPostCAE(new[] { Constants.ScopeUserRead }, ex.ResponseHeaders);
+                ViewData["Me"] = await graphClient.Me.Request().GetAsync();
+            }
+           
+            ViewData["Photo"] = await GetGraphUserPhoto(graphClient);
+
             return View();
+
         }
 
         /// <summary>
@@ -80,6 +85,35 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                 string result = await tokenAcquisition.GetAccessTokenForUserAsync(scopes);
                 return result;
             }, webOptions.GraphApiUrl);
+        }
+
+        private GraphServiceClient GetGraphServiceClientPostCAE(string[] scopes, HttpResponseHeaders headers)
+        {
+            // Get challenge from response of Graph API
+            var claimChallenge = WwwAuthenticateParameters.GetClaimChallengeFromResponseHeaders(headers);
+
+            _consentHandler.ChallengeUser(scopes, claimChallenge);
+
+            return GraphServiceClientFactory.GetAuthenticatedGraphClient(async () =>
+            {
+                string result = await tokenAcquisition.GetAccessTokenForUserAsync(scopes);
+                return result;
+            }, webOptions.GraphApiUrl);
+        }
+
+        private async Task<string> GetGraphUserPhoto(GraphServiceClient graphServiceClient)
+        {
+            try
+            {
+                // Get user photo
+                var photoStream = await graphServiceClient.Me.Photo.Content.Request().GetAsync();
+                byte[] photoByte = ((MemoryStream)photoStream).ToArray();
+                return Convert.ToBase64String(photoByte);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         [AllowAnonymous]

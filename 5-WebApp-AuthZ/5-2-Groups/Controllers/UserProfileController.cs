@@ -11,8 +11,6 @@ using Constants = WebApp_OpenIDConnect_DotNet.Infrastructure.Constants;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
-    // This is how groups ids/names are used in the Authorize attribute
-    //[Authorize(Roles = "8873daa2-17af-4e72-973e-930c94ef7549")] 
     public class UserProfileController : Controller
     {
         private readonly GraphServiceClient _graphServiceClient;
@@ -24,7 +22,6 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             GraphServiceClient graphServiceClient,
             MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler)
         {
-
             _consentHandler = consentHandler;
             _graphServiceClient = graphServiceClient;
             _graphScopes = configuration.GetValue<string>("GraphAPI:Scopes")?.Split(' ');
