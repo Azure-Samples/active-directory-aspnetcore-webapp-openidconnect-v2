@@ -75,7 +75,7 @@
 
   /* It either can be a text or link to another readme file */
   "ReadmeLearnMore": {
-    "IncludeFilePath": "../ReadmeFiles/ReadmeLearnMore.md"
+    "IncludeFilePath": ""
   },
 
   /*
@@ -116,7 +116,11 @@
         {
           "Comment": "Or you can run the .\\CreateUsersAndAssignRoles.ps1 command to automatically create a number of users, and assign these users to the app roles of this app."
         }
-      ]
+      ],
+      "SampleSubPath":"5-WebApp-AuthZ\\5-1-Roles",
+      "OptionalClaims": {
+        "IdTokenClaims": [ "acct" ]
+      }
     }
   ],
 

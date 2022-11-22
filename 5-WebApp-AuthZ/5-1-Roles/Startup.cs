@@ -56,7 +56,7 @@ namespace WebApp_OpenIDConnect_DotNet
                     .AddInMemoryTokenCaches();
 
             // Add Graph SDK
-            services.AddGraphService(Configuration);
+            //services.AddGraphService(Configuration);
 
             // The following lines code instruct the asp.net core middleware to use the data in the "roles" claim in the Authorize attribute and User.IsInrole()
             // See https://docs.microsoft.com/aspnet/core/security/authorization/roles?view=aspnetcore-2.2 for more info.
@@ -81,6 +81,7 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.Filters.Add(new AuthorizeFilter(policy));
             }).AddMicrosoftIdentityUI();
 
+            services.AddHttpContextAccessor();
             services.AddRazorPages();
 
             services.AddServerSideBlazor()
@@ -148,7 +149,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
+            //app.UseCookiePolicy();
 
             app.UseRouting();
             app.UseAuthentication();

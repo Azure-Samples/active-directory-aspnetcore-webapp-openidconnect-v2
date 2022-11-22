@@ -36,6 +36,7 @@ extensions:
 * [How to deploy this sample to Azure](#how-to-deploy-this-sample-to-azure)
 * [Next Steps](#next-steps)
 * [Contributing](#contributing)
+* [Learn More](#learn-more)
 
 ## Overview
 
@@ -104,7 +105,10 @@ or download and extract the repository *.zip* file.
 > :warning: To avoid path length limitations on Windows, we recommend cloning into a directory near the root of your drive.
 
 ### Step 2: Navigate to project folder
-You don't have to change current folder. 
+
+```console
+cd 5-WebApp-AuthZ\5-1-Roles
+```
 
 ### Step 3: Register the sample application(s) in your tenant
 
@@ -174,7 +178,8 @@ To manually register the apps, as a first step you'll need to:
     1. Select the **Add a permission** button and then:
     1. Ensure that the **Microsoft APIs** tab is selected.
     1. In the *Commonly used Microsoft APIs* section, select **Microsoft Graph**
-    1. In the **Delegated permissions** section, select **User.Read**, **User.ReadBasic.All** in the list. Use the search box if necessary.
+      * Since this app signs-in users, we will now proceed to select **delegated permissions**, which is requested by apps that signs-in users.
+      * In the **Delegated permissions** section, select **User.Read**, **User.ReadBasic.All** in the list. Use the search box if necessary.
     1. Select the **Add permissions** button at the bottom.
 
 ##### Publish Application Roles for users and groups
@@ -197,6 +202,15 @@ To add users to this app role, follow the guidelines here: [Assign users and gro
 
 For more information, see: [How to: Add app roles in your application and receive them in the token](https://docs.microsoft.com/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps)
 
+##### Configure Optional Claims
+
+1. Still on the same app registration, select the **Token configuration** blade to the left.
+1. Select **Add optional claim**:
+    1. Select **optional claim type**, then choose **ID**.
+    1. Select the optional claim **acct**.
+    > Provides user's account status in tenant. If the user is a **member** of the tenant, the value is *0*. If they're a **guest**, the value is *1*.
+    1. Select **Add** to save your changes.
+
 ##### Configure the webApp app (WebApp-RolesClaims) to use your app registration
 
 Open the project in your IDE (like Visual Studio or Visual Studio Code) to configure the code.
@@ -218,7 +232,7 @@ Follow [README-use-certificate.md](README-use-certificate.md) to know how to use
 From your shell or command line, execute the following commands:
 
 ```console
-    # You don't have to change to current folder.
+    cd 5-WebApp-AuthZ\5-1-Roles
     dotnet run
 ```
 
@@ -230,10 +244,13 @@ From your shell or command line, execute the following commands:
 1. Open your web browser and make a request to the app. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in using an user account in that tenant.
 
 ![First time Consent](ReadmeFiles/Sign-in-Consent.png)
+
 2. On the home page, the app lists the various claims it obtained from your [ID token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens). You'd notice a claim named `roles`. There will be one `roles` claim for each app role the signed-in use is assigned to.
 3. There also are two links provided on the home page under the **Try one of the following Azure App Role driven operations** heading. These links will result in an access denied error if the signed-in user is not present in the expected role. Sign-out and sign-in with a user account with the correct role assignment to view the contents of these pages. When you click on the page that fetches the signed-in user's roles and group assignments, the sample will attempt to obtain consent from you for the **User.Read** permission using [incremental consent](https://docs.microsoft.com/azure/active-directory/develop/azure-ad-endpoint-comparison#incremental-and-dynamic-consent).
 4. When a user was not added to any of the required groups (**UserReader** and/or **DirectoryViewers**), clicking on the links will result in `Access Denied` message on the page. Also looking into `Claims from signed-in user's token` don't have **roles** claim.
 5. Add an user to at lease one of the groups. You will be able to get corresponding information when clicking links on main page. Also you can see a **roles** claim printed as part of claims on main page.
+
+> You can use `AppCreationScripts/CreateUsersAndAssignRoles.ps1` and `AppCreationScripts/CleanupUsersAndAssignRoles.ps1` to create and remove 2 users correspondingly. The scripts also will assign roles required by the sample.
 
 > Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
 
@@ -440,4 +457,18 @@ If you'd like to contribute to this sample, see [CONTRIBUTING.MD](/CONTRIBUTING.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information, see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
-Could not find file 'C:\Github\Azure-Samples\active-directory-aspnetcore-webapp-openidconnect-v2\5-WebApp-AuthZ\5-1-Roles\ReadmeFiles\ReadmeLearnMore.md'.
+## Learn More
+
+* [Microsoft identity platform (Azure Active Directory for developers)](https://docs.microsoft.com/azure/active-directory/develop/)
+* [Azure AD code samples](https://docs.microsoft.com/azure/active-directory/develop/sample-v2-code)
+* [Overview of Microsoft Authentication Library (MSAL)](https://docs.microsoft.com/azure/active-directory/develop/msal-overview)
+* [Register an application with the Microsoft identity platform](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
+* [Configure a client application to access web APIs](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
+* [Understanding Azure AD application consent experiences](https://docs.microsoft.com/azure/active-directory/develop/application-consent-experience)
+* [Understand user and admin consent](https://docs.microsoft.com/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant#understand-user-and-admin-consent)
+* [Application and service principal objects in Azure Active Directory](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals)
+* [Authentication Scenarios for Azure AD](https://docs.microsoft.com/azure/active-directory/develop/authentication-flows-app-scenarios)
+* [Building Zero Trust ready apps](https://aka.ms/ztdevsession)
+* [National Clouds](https://docs.microsoft.com/azure/active-directory/develop/authentication-national-cloud#app-registration-endpoints)
+
+* [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web)

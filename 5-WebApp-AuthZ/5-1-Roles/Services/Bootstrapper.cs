@@ -5,9 +5,9 @@ namespace WebApp_OpenIDConnect_DotNet.Services
 {
     public static class Bootstrapper
     {
-        public static void AddGraphService(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.Configure<WebOptions>(configuration);
-        }
+        //public static void AddGraphService(this IServiceCollection services, IConfiguration configuration)
+        //{
+        //    services.Configure<WebOptions>(configuration);
+        //}
     }
 }
