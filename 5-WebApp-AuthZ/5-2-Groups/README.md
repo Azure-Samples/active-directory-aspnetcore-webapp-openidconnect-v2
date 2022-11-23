@@ -242,7 +242,6 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. Open the `appsettings.json` file.
 1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `WebApp-GroupClaims` app copied from the Azure portal.
 1. Find the key `TenantId` and replace the existing value with your Azure AD tenant/directory ID.
-1. Find the key `Domain` and replace the existing value with your Azure AD tenant domain, ex. `contoso.onmicrosoft.com`.
 1. Find the key `ClientSecret` and replace the existing value with the generated secret that you saved during the creation of `WebApp-GroupClaims` copied from the Azure portal.
 1. Find the key `Enter the objectID for GroupAdmin group copied from Azure Portal` and replace the existing value with the `GroupAdmin` object id from Azure.
 1. Find the key `Enter the objectID for GroupMember group copied from Azure Portal` and replace the existing value with the `GroupAdmin` object id from Azure.
