@@ -75,6 +75,10 @@ namespace WebApp_OpenIDConnect_DotNet.Services
                 // Call /me/Photo Api
                 userPhoto = await _graphServiceClient.Me.Photo.Content.Request().GetAsync();
             }
+            catch (ServiceException svcex) when (svcex.Error.Code == "ImageNotFound")
+            {
+                //swallow
+            }
             catch (ServiceException ex) when (ex.Message.Contains("Continuous access evaluation resulted in claims challenge"))
             {
                 // Call the /me endpoint of Graph again with a fresh token
