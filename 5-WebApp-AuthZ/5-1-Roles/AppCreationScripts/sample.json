@@ -1,11 +1,80 @@
 {
   "Sample": {
-    "Title": "Add authorization using app roles & roles claims to an ASP.NET Core Web app that signs-in users with the Microsoft identity platform",
+    "Title": "Add authorization using app roles & roles claims to an ASP.NET Core web app that signs-in users with the Microsoft identity platform",
     "Level": 300,
     "Client": "ASP.NET Core Web App",
     "Service": "Microsoft Graph",
-    "RepositoryUrl": "microsoft-identity-platform-aspnetcore-webapp-tutorial",
-    "Endpoint": "AAD v2.0"
+    "RepositoryUrl": "active-directory-aspnetcore-webapp-openidconnect-v2",
+    "Endpoint": "AAD v2.0",
+    "Products": [ "azure", "dotnet", "azure-active-directory", "office-graph-api" ],
+    "Platform": "AspNetCore",
+    "Languages": [ "csharp" ]
+  },
+
+  /*
+    This section describes different regions of readme file
+  */
+  "ReadmeScenario": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeScenario.md",
+    "Image": "./ReadmeFiles/topology.png",
+    /* put additional notes, will be displayed right after image*/
+    "AdditionalNotesIncludeFilePath": ""
+  },
+
+  "ReadmePrerequirements": {
+    "FreeText": "",
+    "IncludeFilePath": ""
+  },
+
+  "ReadmeSetup": {
+    "FreeText": "",
+    "IncludeFilePath": "",
+    "CertificateOption": "1", /* 1 when a certificate can be used instead of secret*/
+    "CreateProjectIncludeFilePath": "",
+    "AppRegistrationIncludeFilePath": "",
+    "RunSampleIncludeFilePath": ""
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeTroubleshooting": {
+    "IncludeFilePath": ""
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeNextSteps": {
+    "FreeText": "",
+    "IncludeFilePath": ""
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeContributing": {
+    "FreeText": "",
+    "IncludeFilePath": ""
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeHowTheCodeWasCreated": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeHowTheCodeWasCreated.md"
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeAboutTheCode": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeAboutTheCode.md"
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeAzureDeploy": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeHowToDeploy.md"
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeExploreTheSample": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeExploreTheSample.md"
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeLearnMore": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeLearnMore.md"
   },
 
   /*
@@ -23,14 +92,14 @@
       "PasswordCredentials": "Auto",
       "AppRoles": [
         {
-          "Types" :  ["User"],
-          "Name" : "UserReaders",
-          "Description" : "User readers can read basic profiles of all users in the directory."
+          "AllowedMemberTypes": [ "User" ],
+          "Name": "UserReaders",
+          "Description": "User readers can read basic profiles of all users in the directory."
         },
         {
-          "Types" :  ["User"],
-          "Name" : "DirectoryViewers",
-          "Description" : "Directory viewers can view objects in the whole directory."
+          "AllowedMemberTypes": [ "User" ],
+          "Name": "DirectoryViewers",
+          "Description": "Directory viewers can view objects in the whole directory."
         }
       ],
       "RequiredResourcesAccess": [
@@ -38,9 +107,11 @@
           "Resource": "Microsoft Graph",
           "DelegatedPermissions": [ "User.Read", "User.ReadBasic.All" ]
         }
-      ],"ManualSteps": [
-        { "Comment": "You can run the ..\\CreateUsersAndAssignRoles.ps1 command to automatically create a number of users, and assign users to these roles or assign users to this application app roles using the portal.To receive the `roles` claim with the name of the app roles this user is assigned to, make sure that the user accounts you plan to sign-in to this app is assigned to the app roles of this app. The guide, https://docs.microsoft.com/azure/active-directory/manage-apps/assign-user-or-group-access-portal#assign-a-user-to-an-app---portal provides step by step instructions." }
-
+      ],
+      "ManualSteps": [
+        {
+          "Comment": "You can run the ..\\CreateUsersAndAssignRoles.ps1 command to automatically create a number of users, and assign users to these roles or assign users to this application app roles using the portal.To receive the `roles` claim with the name of the app roles this user is assigned to, make sure that the user accounts you plan to sign-in to this app is assigned to the app roles of this app. The guide, https://docs.microsoft.com/azure/active-directory/manage-apps/assign-user-or-group-access-portal#assign-a-user-to-an-app---portal provides step by step instructions."
+        }
       ]
     }
   ],
