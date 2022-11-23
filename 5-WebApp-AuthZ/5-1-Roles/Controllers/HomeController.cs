@@ -75,9 +75,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
             //ViewData["Photo"] = await GetGraphUserPhoto(_graphServiceClient);
             var photoStream = await this._graphHelper.GetMyPhotoAsync();
-            byte[] photoByte = ((MemoryStream)photoStream).ToArray();
-
-            ViewData["Photo"] = Convert.ToBase64String(photoByte);
+            ViewData["Photo"] = photoStream != null ? Convert.ToBase64String(((MemoryStream)photoStream).ToArray()) : null;
 
             return View();
 

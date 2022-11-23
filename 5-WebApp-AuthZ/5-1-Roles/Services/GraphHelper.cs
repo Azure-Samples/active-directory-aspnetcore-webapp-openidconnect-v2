@@ -68,19 +68,20 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         /// <returns></returns>
         public async Task<Stream> GetMyPhotoAsync()
         {
-            Stream userPhoto = null;
-
             try
             {
                 // Call /me/Photo Api
-                userPhoto = await _graphServiceClient.Me.Photo.Content.Request().GetAsync();
+                return await _graphServiceClient.Me.Photo.Content.Request().GetAsync();
             }
             catch (ServiceException ex) when (ex.Message.Contains("Continuous access evaluation resulted in claims challenge"))
             {
                 // Call the /me endpoint of Graph again with a fresh token
-                userPhoto = await _graphServiceClient.Me.Photo.Content.Request().GetAsync();
+                return await _graphServiceClient.Me.Photo.Content.Request().GetAsync();
             }
-            return userPhoto;
+            catch
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -94,7 +95,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
             try
             {
                 // Call /users Api
-                 userspage = await _graphServiceClient.Users.Request().GetAsync();
+                userspage = await _graphServiceClient.Users.Request().GetAsync();
             }
             catch (ServiceException ex) when (ex.Message.Contains("Continuous access evaluation resulted in claims challenge"))
             {
