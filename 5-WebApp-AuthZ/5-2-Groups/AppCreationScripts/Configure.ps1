@@ -341,7 +341,7 @@ Function ConfigureApplications
 
     # URL of the AAD application in the Azure portal
     # Future? $webAppPortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$currentAppId+"/objectId/"+$currentAppObjectId+"/isMSAApp/"
-    $webAppPortalUrl = "https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/Overview/appId/"+$currentAppId+"/isMSAApp~/false"
+    $webAppPortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$currentAppId+"/objectId/"+$currentAppObjectId+"/isMSAApp/"
 
     Add-Content -Value "<tr><td>webApp</td><td>$currentAppId</td><td><a href='$webAppPortalUrl'>WebApp-GroupClaims</a></td></tr>" -Path createdApps.html
     # Declare a list to hold RRA items    
@@ -392,7 +392,7 @@ Function ConfigureApplications
     # $configFile = $pwd.Path + "\..\appsettings.json"
     $configFile = $(Resolve-Path ($pwd.Path + "\..\appsettings.json"))
     
-    $dictionary = @{ "ClientId" = $webAppAadApplication.AppId;"TenantId" = $tenantId;"Domain" = $tenantName;"ClientSecret" = $webAppAppKey;"Enter the objectID for GroupAdmin group copied from Azure Portal" = $GroupAdmin.Id;"Enter the objectID for GroupMember group copied from Azure Portal" = $GroupMember.Id };
+    $dictionary = @{ "ClientId" = $webAppAadApplication.AppId;"TenantId" = $tenantId;"ClientSecret" = $webAppAppKey;"Enter the objectID for GroupAdmin group copied from Azure Portal" = $GroupAdmin.Id;"Enter the objectID for GroupMember group copied from Azure Portal" = $GroupMember.Id };
 
     Write-Host "Updating the sample config '$configFile' with the following config values:" -ForegroundColor Yellow 
     $dictionary
@@ -404,8 +404,6 @@ Function ConfigureApplications
     Write-Host "- For webApp"
     Write-Host "  - Navigate to $webAppPortalUrl"
     Write-Host "  - Navigate to the API Permissions page and select 'Grant admin consent for (your tenant)'" -ForegroundColor Red 
-    Write-Host "  - On Azure Portal, create a security group named 'GroupAdmin', assign some users to it, and configure your ID and Access token to emit GroupID in your app registration. Configure the value for 'GroupAdmin' key in appsettings.json." -ForegroundColor Red 
-    Write-Host "  - On Azure Portal, create a security group named 'GroupMember', assign some users to it, and configure your ID and Access token to emit GroupID in your app registration. Configure the value for 'GroupMember' key in appsettings.json." -ForegroundColor Red 
     Write-Host "  - Security groups matching the names you provided have been created in this tenant (if not present already). On Azure portal, assign some users to it, and configure ID & Access tokens to emit Group IDs" -ForegroundColor Red 
     Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
    

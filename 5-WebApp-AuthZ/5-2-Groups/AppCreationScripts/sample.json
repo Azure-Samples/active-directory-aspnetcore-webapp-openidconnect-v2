@@ -12,7 +12,8 @@
     ],
     "Products": [
       "aspnet-core",
-      "azure-active-directory"
+      "azure-active-directory",
+      "microsoft-identity-web"
     ],
     "Library": [
       "Microsoft.Identity.Web"
@@ -59,12 +60,6 @@
       "ManualSteps": [
         {
           "Comment": "Navigate to the API Permissions page and select 'Grant admin consent for (your tenant)'"
-        },
-        {
-          "Comment": "On Azure Portal, create a security group named 'GroupAdmin', assign some users to it, and configure your ID and Access token to emit GroupID in your app registration. Configure the value for 'GroupAdmin' key in appsettings.json."
-        },
-        {
-          "Comment": "On Azure Portal, create a security group named 'GroupMember', assign some users to it, and configure your ID and Access token to emit GroupID in your app registration. Configure the value for 'GroupMember' key in appsettings.json."
         }
       ],
       "SampleSubPath":"5-WebApp-AuthZ\\5-2-Groups",
@@ -92,10 +87,6 @@
         {
           "key": "TenantId",
           "value": "$tenantId"
-        },
-        {
-          "key": "Domain",
-          "value": "$tenantName"
         },
         {
           "key": "ClientSecret",

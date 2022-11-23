@@ -7,7 +7,7 @@ languages:
 products:
  - aspnet-core
  - azure-active-directory
- - azure-active-directory
+ - microsoft-identity-web
  - ms-graph
 urlFragment: microsoft-identity-platform-aspnetcore-webapp-tutorial
 extensions:
@@ -165,20 +165,6 @@ To manually register the apps, as a first step you'll need to:
     > Provides user's account status in tenant. If the user is a **member** of the tenant, the value is *0*. If they're a **guest**, the value is *1*.
     1. Select **Add** to save your changes.
 
-##### Configure the webApp app (WebApp-GroupClaims) to use your app registration
-
-Open the project in your IDE (like Visual Studio or Visual Studio Code) to configure the code.
-
-> In the steps below, "ClientID" is the same as "Application ID" or "AppId".
-
-1. Open the `appsettings.json` file.
-1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `WebApp-GroupClaims` app copied from the Azure portal.
-1. Find the key `TenantId` and replace the existing value with your Azure AD tenant/directory ID.
-1. Find the key `Domain` and replace the existing value with your Azure AD tenant domain, ex. `contoso.onmicrosoft.com`.
-1. Find the key `ClientSecret` and replace the existing value with the generated secret that you saved during the creation of `WebApp-GroupClaims` copied from the Azure portal.
-1. Find the key `Enter the objectID for GroupAdmin group copied from Azure Portal` and replace the existing value with $GroupAdmin.Id.
-1. Find the key `Enter the objectID for GroupMember group copied from Azure Portal` and replace the existing value with $GroupMember.Id.
-
 ### Create Security Groups
 
 > :warning: You may already have security groups with the names defined below in your tenant and/or you may not have permissions to create new security groups. In that case, skip the steps below and update the configuration files in your project(s) with the desired names/IDs of existing groups in your tenant.
@@ -246,6 +232,20 @@ You have two different options available to you on how you can further configure
 > :bulb: **Important security tip**
 >
 > When you set **User assignment required?** to **Yes**, Azure AD will check that only users assigned to your application in the **Users and groups** blade are able to sign-in to your app.To enable this, follow the instructions [here](https://docs.microsoft.com/azure/active-directory/manage-apps/assign-user-or-group-access-portal#configure-an-application-to-require-user-assignment). You can assign users directly or by assigning security groups they belong to.
+
+##### Configure the webApp app (WebApp-GroupClaims) to use your app registration
+
+Open the project in your IDE (like Visual Studio or Visual Studio Code) to configure the code.
+
+> In the steps below, "ClientID" is the same as "Application ID" or "AppId".
+
+1. Open the `appsettings.json` file.
+1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `WebApp-GroupClaims` app copied from the Azure portal.
+1. Find the key `TenantId` and replace the existing value with your Azure AD tenant/directory ID.
+1. Find the key `Domain` and replace the existing value with your Azure AD tenant domain, ex. `contoso.onmicrosoft.com`.
+1. Find the key `ClientSecret` and replace the existing value with the generated secret that you saved during the creation of `WebApp-GroupClaims` copied from the Azure portal.
+1. Find the key `Enter the objectID for GroupAdmin group copied from Azure Portal` and replace the existing value with the `GroupAdmin` object id from Azure.
+1. Find the key `Enter the objectID for GroupMember group copied from Azure Portal` and replace the existing value with the `GroupAdmin` object id from Azure.
 
 #### Configure the app to recognize Group IDs
 
