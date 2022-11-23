@@ -244,7 +244,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. Find the key `TenantId` and replace the existing value with your Azure AD tenant/directory ID.
 1. Find the key `ClientSecret` and replace the existing value with the generated secret that you saved during the creation of `WebApp-GroupClaims` copied from the Azure portal.
 1. Find the key `Enter the objectID for GroupAdmin group copied from Azure Portal` and replace the existing value with the `GroupAdmin` object id from Azure.
-1. Find the key `Enter the objectID for GroupMember group copied from Azure Portal` and replace the existing value with the `GroupAdmin` object id from Azure.
+1. Find the key `Enter the objectID for GroupMember group copied from Azure Portal` and replace the existing value with the `GroupMember` object id from Azure.
 
 #### Configure the app to recognize Group IDs
 
