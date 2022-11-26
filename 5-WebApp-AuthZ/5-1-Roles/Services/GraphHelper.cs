@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Web;
@@ -37,29 +38,15 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         /// <returns></returns>
         public async Task<User> GetMeAsync()
         {
-            User graphUser = null;
-
-            try
+            return await Task.Run(() =>
             {
-                // Call /me Api
-                graphUser = await _graphServiceClient.Me.Request().GetAsync();
-            }
-            catch (ServiceException svcex) when (svcex.Message.Contains("Continuous access evaluation resulted in claims challenge")) // CAE challenge occurred
-            {
-                try
-                {
-                    // Get challenge from response of Graph API
-                    var claimChallenge = WwwAuthenticateParameters.GetClaimChallengeFromResponseHeaders(svcex.ResponseHeaders);
-
-                    _consentHandler.ChallengeUser(_graphScopes, claimChallenge);
-                }
-                catch (Exception ex2)
-                {
-                    _consentHandler.HandleException(ex2);
-                }
-            }
-
-            return graphUser;
+                return ProcessWithCAE<User>(
+                    async () =>
+                    {
+                        // Call /me
+                        return await _graphServiceClient.Me.Request().GetAsync();
+                    });
+            });
         }
 
         /// <summary>
@@ -68,41 +55,15 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         /// <returns></returns>
         public async Task<Stream> GetMyPhotoAsync()
         {
-            try
+            return await Task.Run(() =>
             {
-                // Call /me/Photo Api
-                return await _graphServiceClient.Me.Photo.Content.Request().GetAsync();
-            }
-            catch (ServiceException ex) when (ex.Message.Contains("Continuous access evaluation resulted in claims challenge"))
-            {
-                // Call the /me endpoint of Graph again with a fresh token
-                return await _graphServiceClient.Me.Photo.Content.Request().GetAsync();
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Calls the MS Graph /me/photo endpoint
-        /// </summary>
-        /// <returns></returns>
-        public async Task<IEnumerable<User>> GetUsersAsync()
-        {
-            IGraphServiceUsersCollectionPage userspage = null;
-
-            try
-            {
-                // Call /users Api
-                userspage = await _graphServiceClient.Users.Request().GetAsync();
-            }
-            catch (ServiceException ex) when (ex.Message.Contains("Continuous access evaluation resulted in claims challenge"))
-            {
-                // Call the /me endpoint of Graph again with a fresh token
-                userspage = await _graphServiceClient.Users.Request().GetAsync();
-            }
-            return await CollectionProcessor<User>.ProcessGraphCollectionPageAsync(_graphServiceClient, userspage, 50);
+                return ProcessWithCAE<Stream>(
+                    async () =>
+                    {
+                        // Call /me/Photo Api
+                        return await _graphServiceClient.Me.Photo.Content.Request().GetAsync();
+                    });
+            });
         }
 
         /// <summary>
@@ -111,19 +72,69 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         /// <returns></returns>
         public async Task<IEnumerable<Group>> GetMemberOfAsync()
         {
-            IUserMemberOfCollectionWithReferencesPage mymemberships = null;
+            return await Task.Run(() =>
+            {
+                return ProcessWithCAE<IEnumerable<Group>>(
+                    async () =>
+                    {
+                        return ProcessIGraphServiceMemberOfCollectionPage(await _graphServiceClient.Me.MemberOf.Request().GetAsync());
+                    });
+            });
+        }
 
+        /// <summary>
+        /// Calls the MS Graph /me/photo endpoint
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IEnumerable<User>> GetUsersAsync()
+        {
+
+            return await Task.Run(() =>
+            {
+                return ProcessWithCAE<IEnumerable<User>>(
+                    async () =>
+                    {
+                        return await CollectionProcessor<User>.ProcessGraphCollectionPageAsync(_graphServiceClient, await _graphServiceClient.Users.Request().GetAsync(), 50);
+                    });
+            });
+        }
+
+        private T ProcessWithCAE<T>(Func<Task<T>> processor)
+        {
             try
             {
-                // Call /users Api
-                mymemberships = await _graphServiceClient.Me.MemberOf.Request().GetAsync();
+                return processor().Result;
             }
-            catch (ServiceException ex) when (ex.Message.Contains("Continuous access evaluation resulted in claims challenge"))
+
+            catch (AggregateException aex)
             {
-                // Call the /me endpoint of Graph again with a fresh token
-                mymemberships = await _graphServiceClient.Me.MemberOf.Request().GetAsync();
+                if (aex.InnerException is ServiceException exception && aex.InnerException.Message.Contains("Continuous access evaluation resulted in claims challenge"))
+                {
+                    try
+                    {
+                        // Get challenge from response of Graph API
+                        var claimChallenge = WwwAuthenticateParameters.GetClaimChallengeFromResponseHeaders(exception.ResponseHeaders);
+
+                        _consentHandler.ChallengeUser(_graphScopes, claimChallenge);
+                    }
+                    catch (Exception ex2)
+                    {
+                        _consentHandler.HandleException(ex2);
+                    }
+                }
+
+                else if (aex.InnerException is ServiceException photoException && photoException.Error.Code == "ImageNotFound")
+                {
+                    return default;
+                }
+
+                else
+                {
+                    throw new Exception($"Unknown error just occured. Message: {aex.InnerException.Message}");
+                }
+
+                return default;
             }
-            return ProcessIGraphServiceMemberOfCollectionPage(mymemberships);
         }
 
         /// <summary>
@@ -133,10 +144,10 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         /// <returns>List of groups</returns>
         private static List<Group> ProcessIGraphServiceMemberOfCollectionPage(IUserMemberOfCollectionWithReferencesPage membersCollectionPage)
         {
-            List<Group> allGroups = new List<Group>();
-
             try
             {
+                List<Group> allGroups = new List<Group>();
+
                 if (membersCollectionPage != null)
                 {
                     do
@@ -163,13 +174,14 @@ namespace WebApp_OpenIDConnect_DotNet.Services
                         }
                     } while (membersCollectionPage != null);
                 }
+
+                return allGroups;
             }
             catch (ServiceException ex)
             {
                 Console.WriteLine($"We could not process the groups list: {ex}");
                 return null;
             }
-            return allGroups;
         }
     }
 }
