@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Web;
@@ -16,6 +15,7 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         private readonly HttpContext _httpContext;
         private readonly MicrosoftIdentityConsentAndConditionalAccessHandler _consentHandler;
         private string[] _graphScopes;
+        private readonly int _grapCollectionMaxRows = 50;
 
         public GraphHelper(HttpContext httpContext, string[] graphScopes)
         {
@@ -38,15 +38,12 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         /// <returns></returns>
         public async Task<User> GetMeAsync()
         {
-            return await Task.Run(() =>
-            {
-                return ProcessWithCAE<User>(
-                    async () =>
-                    {
-                        // Call /me
-                        return await _graphServiceClient.Me.Request().GetAsync();
-                    });
-            });
+            return await CallGraphWithCAEFallback<User>(
+                async () =>
+                {
+                    // Call /me
+                    return await _graphServiceClient.Me.Request().GetAsync();
+                });
         }
 
         /// <summary>
@@ -55,15 +52,21 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         /// <returns></returns>
         public async Task<Stream> GetMyPhotoAsync()
         {
-            return await Task.Run(() =>
+            try
             {
-                return ProcessWithCAE<Stream>(
-                    async () =>
-                    {
-                        // Call /me/Photo Api
-                        return await _graphServiceClient.Me.Photo.Content.Request().GetAsync();
-                    });
-            });
+                return await
+                    CallGraphWithCAEFallback<Stream>(
+                        async () =>
+                        {
+                            // Call /me/Photo Api
+                            return await _graphServiceClient.Me.Photo.Content.Request().GetAsync();
+                        });
+            }
+
+            catch (ServiceException svcex) when (svcex.Error.Code == "ImageNotFound")
+            {
+                return default;
+            }
         }
 
         /// <summary>
@@ -72,14 +75,13 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         /// <returns></returns>
         public async Task<IEnumerable<Group>> GetMemberOfAsync()
         {
-            return await Task.Run(() =>
-            {
-                return ProcessWithCAE<IEnumerable<Group>>(
+            return ProcessIGraphServiceMemberOfCollectionPage(
+                await CallGraphWithCAEFallback<IUserMemberOfCollectionWithReferencesPage>(
                     async () =>
                     {
-                        return ProcessIGraphServiceMemberOfCollectionPage(await _graphServiceClient.Me.MemberOf.Request().GetAsync());
-                    });
-            });
+                        return await _graphServiceClient.Me.MemberOf.Request().GetAsync();
+                    })
+                );
         }
 
         /// <summary>
@@ -88,52 +90,46 @@ namespace WebApp_OpenIDConnect_DotNet.Services
         /// <returns></returns>
         public async Task<IEnumerable<User>> GetUsersAsync()
         {
+            return await CollectionProcessor<User>.ProcessGraphCollectionPageAsync(
+                _graphServiceClient
 
-            return await Task.Run(() =>
-            {
-                return ProcessWithCAE<IEnumerable<User>>(
+                , await CallGraphWithCAEFallback<ICollectionPage<User>>(
                     async () =>
                     {
-                        return await CollectionProcessor<User>.ProcessGraphCollectionPageAsync(_graphServiceClient, await _graphServiceClient.Users.Request().GetAsync(), 50);
-                    });
-            });
+                        return await _graphServiceClient.Users.Request().GetAsync();
+                    })
+
+                , _grapCollectionMaxRows
+            );
         }
 
-        private T ProcessWithCAE<T>(Func<Task<T>> processor)
+        private async Task<T> CallGraphWithCAEFallback<T>(Func<Task<T>> graphApiCaller)
         {
             try
             {
-                return processor().Result;
+                return await graphApiCaller();
             }
-
-            catch (AggregateException aex)
+            catch (ServiceException ex) when (ex.Message.Contains("Continuous access evaluation resulted in claims challenge"))
             {
-                if (aex.InnerException is ServiceException exception && aex.InnerException.Message.Contains("Continuous access evaluation resulted in claims challenge"))
+                try
                 {
-                    try
-                    {
-                        // Get challenge from response of Graph API
-                        var claimChallenge = WwwAuthenticateParameters.GetClaimChallengeFromResponseHeaders(exception.ResponseHeaders);
+                    // Get challenge from response of Graph API
+                    var claimChallenge = WwwAuthenticateParameters.GetClaimChallengeFromResponseHeaders(ex.ResponseHeaders);
 
-                        _consentHandler.ChallengeUser(_graphScopes, claimChallenge);
-                    }
-                    catch (Exception ex2)
-                    {
-                        _consentHandler.HandleException(ex2);
-                    }
+                    _consentHandler.ChallengeUser(_graphScopes, claimChallenge);
                 }
-
-                else if (aex.InnerException is ServiceException photoException && photoException.Error.Code == "ImageNotFound")
+                catch (Exception ex2)
                 {
-                    return default;
-                }
-
-                else
-                {
-                    throw new Exception($"Unknown error just occured. Message: {aex.InnerException.Message}");
+                    _consentHandler.HandleException(ex2);
                 }
 
                 return default;
+            }
+
+            //in case there is unknown exception which is not Image not found
+            catch (Exception ex) when (!ex.Message.Contains("ImageNotFound"))
+            {
+                throw new Exception($"Unknown error just occured. Message: {ex.Message}");
             }
         }
 

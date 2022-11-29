@@ -39,11 +39,6 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         {
             ViewData["Groups"] = await _graphHelper.GetMemberOfAsync();
 
-            if (ViewData["Groups"] == null)
-            {
-                return new EmptyResult();
-            }
-
             return View();
         }
     }
