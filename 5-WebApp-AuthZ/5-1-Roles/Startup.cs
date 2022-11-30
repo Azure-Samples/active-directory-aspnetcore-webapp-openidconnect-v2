@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
 using System.IdentityModel.Tokens.Jwt;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
-using WebApp_OpenIDConnect_DotNet.Services;
 using Constants = WebApp_OpenIDConnect_DotNet.Infrastructure.Constants;
 using Microsoft.Identity.Web.UI;
 using System.Net;
@@ -54,9 +53,6 @@ namespace WebApp_OpenIDConnect_DotNet
                     .EnableTokenAcquisitionToCallDownstreamApi(Configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' '))
                     .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
                     .AddInMemoryTokenCaches();
-
-            // Add Graph SDK
-            //services.AddGraphService(Configuration);
 
             // The following lines code instruct the asp.net core middleware to use the data in the "roles" claim in the Authorize attribute and User.IsInrole()
             // See https://docs.microsoft.com/aspnet/core/security/authorization/roles?view=aspnetcore-2.2 for more info.
@@ -149,7 +145,6 @@ namespace WebApp_OpenIDConnect_DotNet
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            //app.UseCookiePolicy();
 
             app.UseRouting();
             app.UseAuthentication();

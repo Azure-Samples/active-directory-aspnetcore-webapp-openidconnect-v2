@@ -20,25 +20,29 @@
         <th>Name</th>
     </tr>
 
-    @foreach (var directoryObject in directoryObjects)
+    @if (directoryObjects != null)
     {
-        <tr>
-            @{ if (directoryObject is Group)
-                {
-                    Group group = directoryObject as Group;
-                    <td><b>Group</b></td>
-                    <td>@group.Id</td>
-                    <td><b>@group.DisplayName</b></td>
+        @foreach (var directoryObject in directoryObjects)
+        {
+            <tr>
+                @{
+                    if (directoryObject is Group)
+                    {
+                        Group group = directoryObject as Group;
+                        <td><b>Group</b></td>
+                        <td>@group.Id</td>
+                        <td><b>@group.DisplayName</b></td>
+                    }
+                    else if (directoryObject is DirectoryRole)
+                    {
+                        DirectoryRole role = directoryObject as DirectoryRole;
+                        <td><b>Role</b></td>
+                        <td>@role.Id</td>
+                        <td><b>@role.DisplayName</b></td>
+                    }
                 }
-                else if (directoryObject is DirectoryRole)
-                {
-                    DirectoryRole role = directoryObject as DirectoryRole;
-                    <td><b>Role</b></td>
-                    <td>@role.Id</td>
-                    <td><b>@role.DisplayName</b></td>
-                }
-            }
-        </tr>
+            </tr>
+        }
     }
 
 </table>
