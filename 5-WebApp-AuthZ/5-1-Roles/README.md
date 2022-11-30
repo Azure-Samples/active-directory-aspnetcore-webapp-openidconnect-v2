@@ -88,6 +88,7 @@ NOTE: Role claims will not be present for guest users in a tenant if the `https:
 * Either [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/download) and [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
 * An **Azure AD** tenant. For more information, see: [How to get an Azure AD tenant](https://docs.microsoft.com/azure/active-directory/develop/test-setup-environment#get-a-test-tenant)
 * A user account in your **Azure AD** tenant.
+
 >This sample will not work with a **personal Microsoft account**. If you're signed in to the [Azure portal](https://portal.azure.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
 
 ## Setup the sample
@@ -119,7 +120,7 @@ There is one project in this sample. To register it, you can:
   - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you.
   - modify the projects' configuration files.
 
-  <details>
+<details>
    <summary>Expand this section if you want to use this automation:</summary>
 
     > :warning: If you have never used **Microsoft Graph PowerShell** before, we recommend you go through the [App Creation Scripts Guide](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
@@ -317,6 +318,7 @@ public void ConfigureServices(IServiceCollection services)
 User.IsInRole("UserReaders"); // In methods
 ```
 
+The class *GraphHelper.cs* is where the logic to initialize the MS Graph SDK along with logic to enable this app for [Continuous Access Evaluation](http://aka.ms/clientcaet)
 
 
  </details>

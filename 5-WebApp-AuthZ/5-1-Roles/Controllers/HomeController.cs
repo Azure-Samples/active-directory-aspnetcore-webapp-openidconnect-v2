@@ -23,8 +23,6 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         private readonly GraphHelper _graphHelper;
 
         public HomeController(IHttpContextAccessor httpContextAccessor,
-            GraphServiceClient graphServiceClient,
-            MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler,
             IConfiguration configuration)
         {
             string[] graphScopes = configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
