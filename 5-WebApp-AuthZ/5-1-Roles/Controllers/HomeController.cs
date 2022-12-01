@@ -9,56 +9,51 @@ using System.Threading.Tasks;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Models;
 using WebApp_OpenIDConnect_DotNet.Services;
-using Graph = Microsoft.Graph;
-using Constants = WebApp_OpenIDConnect_DotNet.Infrastructure.Constants;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
-using System.Net.Http.Headers;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
-        private readonly ITokenAcquisition tokenAcquisition;
-        private readonly WebOptions webOptions;
-        private readonly MicrosoftIdentityConsentAndConditionalAccessHandler _consentHandler;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly GraphHelper _graphHelper;
 
-        public HomeController(ITokenAcquisition tokenAcquisition, IOptions<WebOptions> webOptionValue, MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler)
+        public HomeController(IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration)
         {
-            this.tokenAcquisition = tokenAcquisition;
-            this.webOptions = webOptionValue.Value;
-            _consentHandler = consentHandler;
+            string[] graphScopes = configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
+            _httpContextAccessor = httpContextAccessor;
+
+            if (this._httpContextAccessor.HttpContext != null)
+            {
+                this._graphHelper = new GraphHelper(this._httpContextAccessor.HttpContext, graphScopes);
+            }
         }
 
         public IActionResult Index()
         {
-            ViewData["User"] = HttpContext.User;
+            ViewData["User"] = _httpContextAccessor.HttpContext.User;
             return View();
         }
 
-        [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]
+        [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
         public async Task<IActionResult> Profile()
         {
-            GraphServiceClient graphClient;
+            ViewData["Me"] = await _graphHelper.GetMeAsync();
 
-            try
+            if (ViewData["Me"] == null)
             {
-                // Initialize the GraphServiceClient.
-                graphClient = GetGraphServiceClient(new[] { Constants.ScopeUserRead });   
-                ViewData["Me"] = await graphClient.Me.Request().GetAsync();    
+                return new EmptyResult();
             }
 
-            catch (ServiceException ex) when (ex.Message.Contains("Continuous access evaluation resulted in claims challenge")) // CAE challenge occurred
-            {
-                graphClient = GetGraphServiceClientPostCAE(new[] { Constants.ScopeUserRead }, ex.ResponseHeaders);
-                ViewData["Me"] = await graphClient.Me.Request().GetAsync();
-            }
-           
-            ViewData["Photo"] = await GetGraphUserPhoto(graphClient);
+            var photoStream = await this._graphHelper.GetMyPhotoAsync();
+            ViewData["Photo"] = photoStream != null ? Convert.ToBase64String(((MemoryStream)photoStream).ToArray()) : null;
 
             return View();
-
         }
 
         /// <summary>
@@ -69,51 +64,14 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         [Authorize(Policy = AuthorizationPolicies.AssignmentToUserReaderRoleRequired)]
         public async Task<IActionResult> Users()
         {
-            // Initialize the GraphServiceClient.
-            Graph::GraphServiceClient graphClient = GetGraphServiceClient(new[] { GraphScopes.UserReadBasicAll });
+            ViewData["Users"] = await this._graphHelper.GetUsersAsync();
 
-            var users = await graphClient.Users.Request().GetAsync();
-            ViewData["Users"] = users.CurrentPage;
+            if (ViewData["Users"] == null)
+            {
+                return new EmptyResult();
+            }
 
             return View();
-        }
-
-        private Graph::GraphServiceClient GetGraphServiceClient(string[] scopes)
-        {
-            return GraphServiceClientFactory.GetAuthenticatedGraphClient(async () =>
-            {
-                string result = await tokenAcquisition.GetAccessTokenForUserAsync(scopes);
-                return result;
-            }, webOptions.GraphApiUrl);
-        }
-
-        private GraphServiceClient GetGraphServiceClientPostCAE(string[] scopes, HttpResponseHeaders headers)
-        {
-            // Get challenge from response of Graph API
-            var claimChallenge = WwwAuthenticateParameters.GetClaimChallengeFromResponseHeaders(headers);
-
-            _consentHandler.ChallengeUser(scopes, claimChallenge);
-
-            return GraphServiceClientFactory.GetAuthenticatedGraphClient(async () =>
-            {
-                string result = await tokenAcquisition.GetAccessTokenForUserAsync(scopes);
-                return result;
-            }, webOptions.GraphApiUrl);
-        }
-
-        private async Task<string> GetGraphUserPhoto(GraphServiceClient graphServiceClient)
-        {
-            try
-            {
-                // Get user photo
-                var photoStream = await graphServiceClient.Me.Photo.Content.Request().GetAsync();
-                byte[] photoByte = ((MemoryStream)photoStream).ToArray();
-                return Convert.ToBase64String(photoByte);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
         }
 
         [AllowAnonymous]

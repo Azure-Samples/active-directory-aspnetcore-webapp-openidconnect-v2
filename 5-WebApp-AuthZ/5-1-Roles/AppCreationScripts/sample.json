@@ -8,7 +8,8 @@
     "Endpoint": "AAD v2.0",
     "Products": [ "azure", "dotnet", "azure-active-directory", "office-graph-api" ],
     "Platform": "AspNetCore",
-    "Languages": [ "csharp" ]
+    "Languages": [ "csharp" ],
+    "Library": [ "Microsoft.Identity.Web" ]
   },
 
   /*
@@ -74,7 +75,7 @@
 
   /* It either can be a text or link to another readme file */
   "ReadmeLearnMore": {
-    "IncludeFilePath": "../ReadmeFiles/ReadmeLearnMore.md"
+    "IncludeFilePath": ""
   },
 
   /*
@@ -110,9 +111,16 @@
       ],
       "ManualSteps": [
         {
-          "Comment": "You can run the ..\\CreateUsersAndAssignRoles.ps1 command to automatically create a number of users, and assign users to these roles or assign users to this application app roles using the portal.To receive the `roles` claim with the name of the app roles this user is assigned to, make sure that the user accounts you plan to sign-in to this app is assigned to the app roles of this app. The guide, https://docs.microsoft.com/azure/active-directory/manage-apps/assign-user-or-group-access-portal#assign-a-user-to-an-app---portal provides step by step instructions."
+          "Comment": "To receive the 'roles' claim with the name of the App Roles this user is assigned to, make sure that the user accounts you plan to sign-in to this app is assigned to the app roles of this SPA app. The guide, https://aka.ms/userassignmentrequired provides step by step instructions."
+        },
+        {
+          "Comment": "Or you can run the .\\CreateUsersAndAssignRoles.ps1 command to automatically create a number of users, and assign these users to the app roles of this app."
         }
-      ]
+      ],
+      "SampleSubPath":"5-WebApp-AuthZ\\5-1-Roles",
+      "OptionalClaims": {
+        "IdTokenClaims": [ "acct" ]
+      }
     }
   ],
 
