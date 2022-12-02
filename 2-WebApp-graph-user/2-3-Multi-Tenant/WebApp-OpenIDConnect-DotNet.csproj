@@ -8,25 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="AppCreationScripts\**" />
-    <Compile Remove="ReadmeFiles\**" />
-    <Content Remove="AppCreationScripts\**" />
-    <Content Remove="ReadmeFiles\**" />
-    <EmbeddedResource Remove="AppCreationScripts\**" />
-    <EmbeddedResource Remove="ReadmeFiles\**" />
-    <None Remove="AppCreationScripts\**" />
-    <None Remove="ReadmeFiles\**" />
+    <None Remove="AppCreationScripts\createdApps.html" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.3">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.3" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.22.2" />
-    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.22.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.25.9" />
+    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.25.9" />
   </ItemGroup>
 
 </Project>

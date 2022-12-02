@@ -6,11 +6,76 @@
     "Service": "Microsoft Graph",
     "RepositoryUrl": "microsoft-identity-platform-aspnetcore-webapp-tutorial",
     "Endpoint": "Microsoft identity platform",
-    "platforms": ["aspnetcore"],
-    "Description":"Protect a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect",
-    "Languages": ["aspnetcore", "csharp"],
-    "Products": ["azure-active-directory","ms-graph","microsoft-identity-web"],
-    "ms.author":["TiagoBrenck"]
+    "platforms": [ "aspnetcore" ],
+    "Description": "Protect a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect",
+    "Languages": [ "aspnetcore", "csharp" ],
+    "Products": [ "azure-active-directory", "ms-graph", "microsoft-identity-web" ]
+  },
+
+  /*
+    This section describes different regions of readme file
+  */
+  "ReadmeScenario": {
+    "IncludeFilePath": "",
+    "Image": "./ReadmeFiles/topology.png",
+    /* put additional notes, will be displayed right after image*/
+    "AdditionalNotesIncludeFilePath": ""
+  },
+
+  "ReadmePrerequirements": {
+    "FreeText": "",
+    "IncludeFilePath": ""
+  },
+
+  "ReadmeSetup": {
+    "FreeText": "",
+    "IncludeFilePath": "",
+    "CertificateOption": "1", /* 1 when a certificate can be used instead of secret*/
+    "CreateProjectIncludeFilePath": "",
+    "AppRegistrationIncludeFilePath": "",
+    "RunSampleIncludeFilePath": ""
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeTroubleshooting": {
+    "IncludeFilePath": ""
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeNextSteps": {
+    "FreeText": "",
+    "IncludeFilePath": ""
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeContributing": {
+    "FreeText": "",
+    "IncludeFilePath": ""
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeHowTheCodeWasCreated": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeHowTheCodeWasCreated.md"
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeAboutTheCode": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeAboutTheCode.md"
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeAzureDeploy": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeHowToDeploy.md"
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeExploreTheSample": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeExploreTheSample.md"
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeLearnMore": {
+    "IncludeFilePath": ""
   },
 
   /*
