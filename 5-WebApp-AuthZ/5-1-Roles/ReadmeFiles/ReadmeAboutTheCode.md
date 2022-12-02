@@ -45,6 +45,7 @@ public void ConfigureServices(IServiceCollection services)
 User.IsInRole("UserReaders"); // In methods
 ```
 
+The class *GraphHelper.cs* is where the logic to initialize the MS Graph SDK along with logic to enable this app for [Continuous Access Evaluation](http://aka.ms/clientcaet)
 
 
  </details>
