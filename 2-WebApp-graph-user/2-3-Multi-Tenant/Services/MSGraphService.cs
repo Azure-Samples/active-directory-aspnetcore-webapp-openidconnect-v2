@@ -30,10 +30,10 @@ using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace WebApp_OpenIDConnect_DotNet.Services
+namespace WebApp_MultiTenant_v2.Services
 {
     /// <summary>Provides helper methods built over MS Graph SDK</summary>
-    /// <seealso cref="WebApp_OpenIDConnect_DotNet.Services.IMSGraphService" />
+    /// <seealso cref="WebApp_MultiTenant_v2.Services.IMSGraphService" />
     public class MSGraphService : IMSGraphService
     {
         // the Graph SDK's GraphServiceClient

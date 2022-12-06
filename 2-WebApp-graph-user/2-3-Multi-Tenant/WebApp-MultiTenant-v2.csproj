@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <UserSecretsId>aspnet-WebApp_OpenIDConnect_DotNet-99C23405-82C0-4B27-8A15-F3B0744E06BE</UserSecretsId>
+    <UserSecretsId>WebApp-MultiTenant-v2-99C23405-82C0-4B27-8A15-F3B0744E06BE</UserSecretsId>
     <WebProject_DirectoryAccessLevelKey>0</WebProject_DirectoryAccessLevelKey>
     <RootNamespace>WebApp_OpenIDConnect_DotNet</RootNamespace>
   </PropertyGroup>

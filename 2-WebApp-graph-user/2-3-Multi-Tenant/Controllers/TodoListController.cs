@@ -28,11 +28,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Identity.Web;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApp_OpenIDConnect_DotNet.Models;
-using WebApp_OpenIDConnect_DotNet.Services;
-using WebApp_OpenIDConnect_DotNet.Utils;
+using WebApp_MultiTenant_v2.Models;
+using WebApp_MultiTenant_v2.Services;
+using WebApp_MultiTenant_v2.Utils;
 
-namespace WebApp_OpenIDConnect_DotNet.Controllers
+namespace WebApp_MultiTenant_v2.Controllers
 {
     [Authorize]
     public class TodoListController : Controller

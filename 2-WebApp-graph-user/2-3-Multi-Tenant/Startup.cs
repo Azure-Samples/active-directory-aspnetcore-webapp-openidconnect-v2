@@ -15,13 +15,13 @@ using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApp_OpenIDConnect_DotNet.DAL;
-using WebApp_OpenIDConnect_DotNet.Services;
-using WebApp_OpenIDConnect_DotNet.Utils;
+using WebApp_MultiTenant_v2.DAL;
+using WebApp_MultiTenant_v2.Services;
+using WebApp_MultiTenant_v2.Utils;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web.UI;
 
-namespace WebApp_OpenIDConnect_DotNet
+namespace WebApp_MultiTenant_v2
 {
     public class Startup
     {

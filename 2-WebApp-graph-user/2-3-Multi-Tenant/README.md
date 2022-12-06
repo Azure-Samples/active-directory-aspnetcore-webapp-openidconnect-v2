@@ -1,7 +1,7 @@
 ---
 page_type: sample
-name: Integrate a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect
-description: Protect a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect
+name: Integrate an app that authenticates users and calls Microsoft Graph using the multi-tenant integration pattern (SaaS)
+description: Integrate an app that authenticates users and calls Microsoft Graph using the multi-tenant integration pattern (SaaS)
 languages:
  - aspnetcore
  - csharp
@@ -20,9 +20,9 @@ extensions:
 - service: Microsoft Graph
 ---
 
-# Integrate a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect
+# Integrate an app that authenticates users and calls Microsoft Graph using the multi-tenant integration pattern (SaaS)
 
-[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=XXX)
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 * [Overview](#overview)
 * [Scenario](#scenario)
@@ -39,16 +39,6 @@ extensions:
 
 ## Overview
 
-This sample demonstrates a ASP.NET Core Web App calling Microsoft Graph.
-
-> :information_source: To learn how to integrate an application with Azure AD as a [multi-tenant](https://aka.ms/multi-tenant) app, consider going through the recorded session:[Develop multi-tenant applications with the Microsoft identity platform](https://www.youtube.com/watch?v=B416AxHoMJ4).
-
-> :information_source: To learn how applications integrate with [Microsoft Graph](https://aka.ms/graph), consider going through the recorded session:: [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A)
-
-## Scenario
-
-### Overview
-
 When it comes to developing apps, developers can choose to configure their app to be either single-tenant or multi-tenant during app registration in the [Azure portal](https://portal.azure.com).
 
 - `Single-tenant` apps are only available in the tenant they were registered in, also known as their home tenant.
@@ -57,6 +47,8 @@ When it comes to developing apps, developers can choose to configure their app t
 For more information about apps and tenancy, see [Tenancy in Azure Active Directory](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps)
 
 > A recording of a Microsoft Identity Platform developer session that covered this topic of developing a multi-tenant app with Azure Active Directory is available at [Develop multi-tenant applications with Microsoft identity platform](https://www.youtube.com/watch?v=B416AxHoMJ4).
+
+> :information_source: To learn how applications integrate with [Microsoft Graph](https://aka.ms/graph), consider going through the recorded session:: [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A)
 
 ## Scenario
 
@@ -72,13 +64,15 @@ The application puts forward a scenario where a SaaS application invites the adm
 > Looking for previous versions of this code sample? Check out the tags on the [releases](../../releases) GitHub page.
 
 ![Scenario Image](./ReadmeFiles/topology.png)
+
 ## Prerequisites
 
 * Either [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/download) and [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
 * An **Azure AD** tenant. For more information, see: [How to get an Azure AD tenant](https://docs.microsoft.com/azure/active-directory/develop/test-setup-environment#get-a-test-tenant)
 * A user account in your **Azure AD** tenant.
+* [Microsoft SQL Server](https://www.microsoft.com/sql-server/sql-server-downloads). [Express](https://learn.microsoft.com/sql/sql-server/editions-and-components-of-sql-server-2022?view=sql-server-ver16#sql-server-editions) version will will be adequate.
+
 >This sample will not work with a **personal Microsoft account**. If you're signed in to the [Azure portal](https://portal.azure.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
-* [Microsoft SQL Server](https://www.microsoft.com/sql-server/sql-server-downloads). [Express](https://learn.microsoft.com/sql/sql-server/editions-and-components-of-sql-server-2022?view=sql-server-ver16#sql-server-editions) version will be more than enough.
 
 ## Setup the sample
 
@@ -109,7 +103,7 @@ There is one project in this sample. To register it, you can:
   - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you.
   - modify the projects' configuration files.
 
-  <details>
+<details>
    <summary>Expand this section if you want to use this automation:</summary>
 
     > :warning: If you have never used **Microsoft Graph PowerShell** before, we recommend you go through the [App Creation Scripts Guide](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
@@ -131,7 +125,7 @@ There is one project in this sample. To register it, you can:
 
     > Other ways of running the scripts are described in [App Creation Scripts guide](./AppCreationScripts/AppCreationScripts.md). The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
 
-  </details>
+</details>
 
 #### Choose the Azure AD tenant where you want to create your applications
 
@@ -169,10 +163,11 @@ To manually register the apps, as a first step you'll need to:
     1. Select the **Add a permission** button and then:
     1. Ensure that the **Microsoft APIs** tab is selected.
     1. In the *Commonly used Microsoft APIs* section, select **Microsoft Graph**
-    1. In the **Delegated permissions** section, select **User.Read.All** in the list. Use the search box if necessary.
+      * Since this app signs-in users, we will now proceed to select **delegated permissions**, which is requested by apps that signs-in users.
+      * In the **Delegated permissions** section, select **User.Read.All** in the list. Use the search box if necessary.
     1. Select the **Add permissions** button at the bottom.
 
-##### Configure the webApp app (WebApp-MultiTenant-v2) to use your app registration
+#### Configure the webApp app (WebApp-MultiTenant-v2) to use your app registration
 
 Open the project in your IDE (like Visual Studio or Visual Studio Code) to configure the code.
 
@@ -184,7 +179,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. Find the key `Domain` and replace the existing value with your Azure AD tenant domain, ex. `contoso.onmicrosoft.com`.
 1. Find the key `ClientSecret` and replace the existing value with the generated secret that you saved during the creation of `WebApp-MultiTenant-v2` copied from the Azure portal.
 
-### Variation: web app using client certificates
+#### Variation: Using certificates instead of client secrets
 
 Follow [README-use-certificate.md](README-use-certificate.md) to know how to use this option.
 
@@ -205,7 +200,7 @@ From your shell or command line, execute the following commands:
 Clean the solution, rebuild the solution, and run it.
 The sample implements two distinct tasks: the onboarding of a new tenant and a basic ToDo List CRUD operation.
 
-Ideally, you would want to have two Azure AD tenants so you can test the multi-tenant aspect of this sample. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
+Ideally, you would want to have two Azure AD tenants so you can test the multi-tenant aspect of this sample. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://docs.microsoft.com/azure/active-directory/develop/test-setup-environment#get-a-test-tenant).
 
 #### Signing-in
 
@@ -470,7 +465,7 @@ AuthenticationResult result = await confidentialClientApplication
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
-                // Handling SameSite cookie according to https://docs.microsoft.com/en-us/aspnet/core/security/samesite?view=aspnetcore-3.1
+                // Handling SameSite cookie according to https://docs.microsoft.com/en-us/aspnet/core/security/samesite
                 options.HandleSameSiteCookieCompatibility();
             });
 ```

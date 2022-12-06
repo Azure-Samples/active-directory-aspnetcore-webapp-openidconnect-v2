@@ -170,13 +170,13 @@ Function ConfigureApplications
     Write-Host ("Connected to Tenant {0} ({1}) as account '{2}'. Domain is '{3}'" -f  $Tenant.DisplayName, $Tenant.Id, $currentUserPrincipalName, $verifiedDomainName)
 
    # Create the webApp AAD application
-   Write-Host "Creating the AAD application (WebApp-MultiTenant-v2)"
+   Write-Host "Creating the AAD application (WebApp_MultiTenant_v2)"
    # Get a 6 months application key for the webApp Application
    $fromDate = [DateTime]::Now;
    $key = CreateAppKey -fromDate $fromDate -durationInMonths 6
    
    # create the application 
-   $webAppAadApplication = New-MgApplication -DisplayName "WebApp-MultiTenant-v2" `
+   $webAppAadApplication = New-MgApplication -DisplayName "WebApp_MultiTenant_v2" `
                                                       -Web `
                                                       @{ `
                                                           RedirectUris = "https://localhost:44321/", "https://localhost:44321/signin-oidc", "https://localhost:44321/Onboarding/ProcessCode"; `
@@ -194,7 +194,7 @@ Function ConfigureApplications
     $currentAppObjectId = $webAppAadApplication.Id
 
     $tenantName = (Get-MgApplication -ApplicationId $currentAppObjectId).PublisherDomain
-    #Update-MgApplication -ApplicationId $currentAppObjectId -IdentifierUris @("https://$tenantName/WebApp-MultiTenant-v2")
+    #Update-MgApplication -ApplicationId $currentAppObjectId -IdentifierUris @("https://$tenantName/WebApp_MultiTenant_v2")
     
     # create the service principal of the newly created application     
     $webAppServicePrincipal = New-MgServicePrincipal -AppId $currentAppId -Tags {WindowsAzureActiveDirectoryIntegratedApp}
@@ -206,13 +206,13 @@ Function ConfigureApplications
         New-MgApplicationOwnerByRef -ApplicationId $currentAppObjectId  -BodyParameter = @{"@odata.id" = "htps://graph.microsoft.com/v1.0/directoryObjects/$user.ObjectId"}
         Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($webAppServicePrincipal.DisplayName)'"
     }
-    Write-Host "Done creating the webApp application (WebApp-MultiTenant-v2)"
+    Write-Host "Done creating the webApp application (WebApp_MultiTenant_v2)"
 
     # URL of the AAD application in the Azure portal
     # Future? $webAppPortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$currentAppId+"/objectId/"+$currentAppObjectId+"/isMSAApp/"
-    $webAppPortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$currentAppId+"/objectId/"+$currentAppObjectId+"/isMSAApp/"
+    $webAppPortalUrl = "https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/Overview/appId/"+$currentAppId+"/isMSAApp~/false"
 
-    Add-Content -Value "<tr><td>webApp</td><td>$currentAppId</td><td><a href='$webAppPortalUrl'>WebApp-MultiTenant-v2</a></td></tr>" -Path createdApps.html
+    Add-Content -Value "<tr><td>webApp</td><td>$currentAppId</td><td><a href='$webAppPortalUrl'>WebApp_MultiTenant_v2</a></td></tr>" -Path createdApps.html
     # Declare a list to hold RRA items    
     $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphRequiredResourceAccess]
 
@@ -232,7 +232,7 @@ Function ConfigureApplications
     
 
     # print the registered app portal URL for any further navigation
-    Write-Host "Successfully registered and configured that app registration for 'WebApp-MultiTenant-v2' at `n $webAppPortalUrl" -ForegroundColor Green 
+    Write-Host "Successfully registered and configured that app registration for 'WebApp_MultiTenant_v2' at `n $webAppPortalUrl" -ForegroundColor Green 
     
     # Update config file for 'webApp'
     # $configFile = $pwd.Path + "\..\appsettings.json"

@@ -1,13 +1,13 @@
 {
   "Sample": {
-    "Title": "Integrate a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect",
+    "Title": "Integrate an app that authenticates users and calls Microsoft Graph using the multi-tenant integration pattern (SaaS)",
     "Level": 400,
     "Client": "ASP.NET Core Web App",
     "Service": "Microsoft Graph",
     "RepositoryUrl": "microsoft-identity-platform-aspnetcore-webapp-tutorial",
     "Endpoint": "Microsoft identity platform",
     "platforms": [ "aspnetcore" ],
-    "Description": "Protect a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect",
+    "Description": "Integrate an app that authenticates users and calls Microsoft Graph using the multi-tenant integration pattern (SaaS)",
     "Languages": [ "aspnetcore", "csharp" ],
     "Products": [ "azure-active-directory", "ms-graph", "microsoft-identity-web", "ms sql server" ]
   },
@@ -84,7 +84,7 @@
   "AADApps": [
     {
       "Id": "webApp",
-      "Name": "WebApp-MultiTenant-v2",
+      "Name": "WebApp_MultiTenant_v2",
       "Kind": "WebApp",
       "Audience": "AzureADMultipleOrgs",
       "HomePage": "https://localhost:44321/",
