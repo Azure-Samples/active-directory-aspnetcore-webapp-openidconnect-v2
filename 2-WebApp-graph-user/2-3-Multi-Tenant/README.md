@@ -22,7 +22,7 @@ extensions:
 
 # Integrate an app that authenticates users and calls Microsoft Graph using the multi-tenant integration pattern (SaaS)
 
-[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=XXX)
 
 * [Overview](#overview)
 * [Scenario](#scenario)
@@ -39,6 +39,16 @@ extensions:
 
 ## Overview
 
+This sample demonstrates a ASP.NET Core Web App calling Microsoft Graph.
+
+> :information_source: To learn how to integrate an application with Azure AD as a [multi-tenant](https://aka.ms/multi-tenant) app, consider going through the recorded session:[Develop multi-tenant applications with the Microsoft identity platform](https://www.youtube.com/watch?v=B416AxHoMJ4).
+
+> :information_source: To learn how applications integrate with [Microsoft Graph](https://aka.ms/graph), consider going through the recorded session:: [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A)
+
+## Scenario
+
+### Overview
+
 When it comes to developing apps, developers can choose to configure their app to be either single-tenant or multi-tenant during app registration in the [Azure portal](https://portal.azure.com).
 
 - `Single-tenant` apps are only available in the tenant they were registered in, also known as their home tenant.
@@ -47,8 +57,6 @@ When it comes to developing apps, developers can choose to configure their app t
 For more information about apps and tenancy, see [Tenancy in Azure Active Directory](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps)
 
 > A recording of a Microsoft Identity Platform developer session that covered this topic of developing a multi-tenant app with Azure Active Directory is available at [Develop multi-tenant applications with Microsoft identity platform](https://www.youtube.com/watch?v=B416AxHoMJ4).
-
-> :information_source: To learn how applications integrate with [Microsoft Graph](https://aka.ms/graph), consider going through the recorded session:: [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A)
 
 ## Scenario
 
@@ -64,15 +72,13 @@ The application puts forward a scenario where a SaaS application invites the adm
 > Looking for previous versions of this code sample? Check out the tags on the [releases](../../releases) GitHub page.
 
 ![Scenario Image](./ReadmeFiles/topology.png)
-
 ## Prerequisites
 
 * Either [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/download) and [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
 * An **Azure AD** tenant. For more information, see: [How to get an Azure AD tenant](https://docs.microsoft.com/azure/active-directory/develop/test-setup-environment#get-a-test-tenant)
 * A user account in your **Azure AD** tenant.
-* [Microsoft SQL Server](https://www.microsoft.com/sql-server/sql-server-downloads). [Express](https://learn.microsoft.com/sql/sql-server/editions-and-components-of-sql-server-2022?view=sql-server-ver16#sql-server-editions) version will will be adequate.
-
 >This sample will not work with a **personal Microsoft account**. If you're signed in to the [Azure portal](https://portal.azure.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
+* [Microsoft SQL Server](https://www.microsoft.com/sql-server/sql-server-downloads). [Express](https://learn.microsoft.com/sql/sql-server/editions-and-components-of-sql-server-2022?view=sql-server-ver16#sql-server-editions) version will be more than enough.
 
 ## Setup the sample
 
@@ -103,7 +109,7 @@ There is one project in this sample. To register it, you can:
   - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you.
   - modify the projects' configuration files.
 
-<details>
+  <details>
    <summary>Expand this section if you want to use this automation:</summary>
 
     > :warning: If you have never used **Microsoft Graph PowerShell** before, we recommend you go through the [App Creation Scripts Guide](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
@@ -125,7 +131,7 @@ There is one project in this sample. To register it, you can:
 
     > Other ways of running the scripts are described in [App Creation Scripts guide](./AppCreationScripts/AppCreationScripts.md). The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
 
-</details>
+  </details>
 
 #### Choose the Azure AD tenant where you want to create your applications
 
@@ -134,12 +140,12 @@ To manually register the apps, as a first step you'll need to:
 1. Sign in to the [Azure portal](https://portal.azure.com).
 1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant.
 
-#### Register the webApp app (WebApp-MultiTenant-v2)
+#### Register the webApp app (WebApp_MultiTenant_v2)
 
 1. Navigate to the [Azure portal](https://portal.azure.com) and select the **Azure Active Directory** service.
 1. Select the **App Registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
-    1. In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp-MultiTenant-v2`.
+    1. In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp_MultiTenant_v2`.
     1. Under **Supported account types**, select **Accounts in any organizational directory**
     1. Select **Register** to create the application.
 1. In the **Overview** blade, find and note the **Application (client) ID**. You use this value in your app's configuration file(s) later in your code.
@@ -163,23 +169,31 @@ To manually register the apps, as a first step you'll need to:
     1. Select the **Add a permission** button and then:
     1. Ensure that the **Microsoft APIs** tab is selected.
     1. In the *Commonly used Microsoft APIs* section, select **Microsoft Graph**
-      * Since this app signs-in users, we will now proceed to select **delegated permissions**, which is requested by apps that signs-in users.
-      * In the **Delegated permissions** section, select **User.Read.All** in the list. Use the search box if necessary.
+    1. In the **Delegated permissions** section, select **User.Read.All** in the list. Use the search box if necessary.
     1. Select the **Add permissions** button at the bottom.
 
-#### Configure the webApp app (WebApp-MultiTenant-v2) to use your app registration
+##### Configure Optional Claims
+
+1. Still on the same app registration, select the **Token configuration** blade to the left.
+1. Select **Add optional claim**:
+    1. Select **optional claim type**, then choose **ID**.
+    1. Select the optional claim **acct**.
+    > Provides user's account status in tenant. If the user is a **member** of the tenant, the value is *0*. If they're a **guest**, the value is *1*.
+    1. Select **Add** to save your changes.
+
+##### Configure the webApp app (WebApp_MultiTenant_v2) to use your app registration
 
 Open the project in your IDE (like Visual Studio or Visual Studio Code) to configure the code.
 
 > In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
 1. Open the `appsettings.json` file.
-1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `WebApp-MultiTenant-v2` app copied from the Azure portal.
+1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `WebApp_MultiTenant_v2` app copied from the Azure portal.
 1. Find the key `TenantId` and replace the existing value with 'organizations'.
 1. Find the key `Domain` and replace the existing value with your Azure AD tenant domain, ex. `contoso.onmicrosoft.com`.
-1. Find the key `ClientSecret` and replace the existing value with the generated secret that you saved during the creation of `WebApp-MultiTenant-v2` copied from the Azure portal.
+1. Find the key `ClientSecret` and replace the existing value with the generated secret that you saved during the creation of `WebApp_MultiTenant_v2` copied from the Azure portal.
 
-#### Variation: Using certificates instead of client secrets
+### Variation: web app using client certificates
 
 Follow [README-use-certificate.md](README-use-certificate.md) to know how to use this option.
 
@@ -200,7 +214,7 @@ From your shell or command line, execute the following commands:
 Clean the solution, rebuild the solution, and run it.
 The sample implements two distinct tasks: the onboarding of a new tenant and a basic ToDo List CRUD operation.
 
-Ideally, you would want to have two Azure AD tenants so you can test the multi-tenant aspect of this sample. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://docs.microsoft.com/azure/active-directory/develop/test-setup-environment#get-a-test-tenant).
+Ideally, you would want to have two Azure AD tenants so you can test the multi-tenant aspect of this sample. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
 
 #### Signing-in
 
@@ -237,7 +251,7 @@ The list of users will be presented in the **Assigned To** dropdown:
 
  ### Error AADSTS650051
 
-If you are receiving the following error message, you might need to **delete older service principals of this application**. Please [delete the existing [service principal](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals) from the **enterprise app** blade of the tenant before re-creating this application]. Click on the **Enterprise Applications** blade in the portal, locate this application `WebApp-MultiTenant-v2`, navigate to its **properties** and click **Delete** to delete the service principal.
+If you are receiving the following error message, you might need to **delete older service principals of this application**. Please [delete the existing [service principal](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals) from the **enterprise app** blade of the tenant before re-creating this application]. Click on the **Enterprise Applications** blade in the portal, locate this application `WebApp_MultiTenant_v2`, navigate to its **properties** and click **Delete** to delete the service principal.
 
 > OpenIdConnectProtocolException: Message contains error: 'invalid_client', error_description: 'AADSTS650051: Application '{applicationId}' is requesting permissions that are either invalid or out of date.
 
@@ -465,7 +479,7 @@ AuthenticationResult result = await confidentialClientApplication
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
-                // Handling SameSite cookie according to https://docs.microsoft.com/en-us/aspnet/core/security/samesite
+                // Handling SameSite cookie according to https://docs.microsoft.com/en-us/aspnet/core/security/samesite?view=aspnetcore-3.1
                 options.HandleSameSiteCookieCompatibility();
             });
 ```
@@ -513,7 +527,7 @@ There is one web app in this sample. To deploy it to **Azure App Services**, you
 - publish the projects to the **App Services**, and
 - update its client(s) to call the website instead of the local environment.
 
-#### Publish your files (WebApp-MultiTenant-v2)
+#### Publish your files (WebApp_MultiTenant_v2)
 
 ##### Publish using Visual Studio
 
@@ -524,17 +538,17 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 1. Install the Visual Studio Code extension [Azure App Service](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureappservice).
 1. Follow the link to [Publish with Visual Studio Code](https://docs.microsoft.com/aspnet/core/tutorials/publish-to-azure-webapp-using-vscode)
 
-#### Update the Azure AD app registration (WebApp-MultiTenant-v2)
+#### Update the Azure AD app registration (WebApp_MultiTenant_v2)
 
 1. Navigate back to to the [Azure portal](https://portal.azure.com).
 In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations (Preview)**.
-1. In the resulting screen, select the `WebApp-MultiTenant-v2` application.
+1. In the resulting screen, select the `WebApp_MultiTenant_v2` application.
 1. In the app's registration screen, select **Authentication** in the menu.
     1. In the **Redirect URIs** section, update the reply URLs to match the site URL of your Azure deployment. For example:
-        1. `https://WebApp-MultiTenant-v2.azurewebsites.net/`
-        1. `https://WebApp-MultiTenant-v2.azurewebsites.net/signin-oidc`
-        1. `https://WebApp-MultiTenant-v2.azurewebsites.net/Onboarding/ProcessCode`
-    1. Update the **Front-channel logout URL** fields with the address of your service, for example [https://WebApp-MultiTenant-v2.azurewebsites.net](https://WebApp-MultiTenant-v2.azurewebsites.net)
+        1. `https://WebApp_MultiTenant_v2.azurewebsites.net/`
+        1. `https://WebApp_MultiTenant_v2.azurewebsites.net/signin-oidc`
+        1. `https://WebApp_MultiTenant_v2.azurewebsites.net/Onboarding/ProcessCode`
+    1. Update the **Front-channel logout URL** fields with the address of your service, for example [https://WebApp_MultiTenant_v2.azurewebsites.net](https://WebApp_MultiTenant_v2.azurewebsites.net)
 
 > :warning: If your app is using an *in-memory* storage, **Azure App Services** will spin down your web site if it is inactive, and any records that your app was keeping will be empty. In addition, if you increase the instance count of your website, requests will be distributed among the instances. Your app's records, therefore, will not be the same on each instance.
 

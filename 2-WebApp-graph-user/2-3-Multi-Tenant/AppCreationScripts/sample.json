@@ -97,6 +97,9 @@
           "DelegatedPermissions": [ "User.Read.All" ]
         }
       ],
+      "OptionalClaims": {
+        "IdTokenClaims": [ "acct" ]
+      },
       "SampleSubPath": "2-WebApp-graph-user\\2-3-Multi-Tenant"
     }
   ],
