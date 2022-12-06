@@ -9,14 +9,14 @@
     "platforms": [ "aspnetcore" ],
     "Description": "Protect a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect",
     "Languages": [ "aspnetcore", "csharp" ],
-    "Products": [ "azure-active-directory", "ms-graph", "microsoft-identity-web" ]
+    "Products": [ "azure-active-directory", "ms-graph", "microsoft-identity-web", "ms sql server" ]
   },
 
   /*
     This section describes different regions of readme file
   */
   "ReadmeScenario": {
-    "IncludeFilePath": "",
+    "IncludeFilePath": "../ReadmeFiles/ReadmeScenario.md",
     "Image": "./ReadmeFiles/topology.png",
     /* put additional notes, will be displayed right after image*/
     "AdditionalNotesIncludeFilePath": ""
@@ -38,7 +38,7 @@
 
   /* It either can be a text or link to another readme file */
   "ReadmeTroubleshooting": {
-    "IncludeFilePath": ""
+    "IncludeFilePath": "../ReadmeFiles/ReadmeTroubleshooting.md"
   },
 
   /* It either can be a text or link to another readme file */
@@ -65,7 +65,7 @@
 
   /* It either can be a text or link to another readme file */
   "ReadmeAzureDeploy": {
-    "IncludeFilePath": "../ReadmeFiles/ReadmeHowToDeploy.md"
+    "IncludeFilePath": ""
   },
 
   /* It either can be a text or link to another readme file */
@@ -96,7 +96,8 @@
           "Resource": "Microsoft Graph",
           "DelegatedPermissions": [ "User.Read.All" ]
         }
-      ]
+      ],
+      "SampleSubPath": "2-WebApp-graph-user\\2-3-Multi-Tenant"
     }
   ],
 

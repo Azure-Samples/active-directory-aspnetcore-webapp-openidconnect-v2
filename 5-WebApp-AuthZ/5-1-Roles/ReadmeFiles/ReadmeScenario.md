@@ -27,4 +27,3 @@ These App roles are defined in the [Azure portal](https://portal.azure.com) in t
 
 NOTE: Role claims will not be present for guest users in a tenant if the `https://login.microsoftonline.com/common/` endpoint is used as the authority to sign in users. Azure AD can emit app roles only if the tenanted end point `https://login.microsoftonline.com/{tenant Id}/` is being used.
 
-![Sign in with the Microsoft identity platform](ReadmeFiles/topology.png)

@@ -101,6 +101,7 @@ namespace WebApp_OpenIDConnect_DotNet
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             }).AddMicrosoftIdentityUI();
+
             services.AddRazorPages();
         }
 

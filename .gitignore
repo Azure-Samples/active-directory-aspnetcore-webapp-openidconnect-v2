@@ -137,3 +137,4 @@ packages
 /5-WebApp-AuthZ/5-1-Roles/.vscode/settings.json
 /.vscode
 /2-WebApp-graph-user/2-1-Call-MSGraph/Properties/PublishProfiles
+/2-WebApp-graph-user/2-3-Multi-Tenant/AppCreationScripts/createdApps.html
