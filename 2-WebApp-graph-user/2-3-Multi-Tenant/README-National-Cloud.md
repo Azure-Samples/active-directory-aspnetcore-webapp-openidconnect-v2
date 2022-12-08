@@ -141,12 +141,12 @@ As a first step you'll need to:
 1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory**.
    Change your portal session to the desired Azure AD tenant.
 
-#### Register the web app (WebApp-MultiTenant-v2)
+#### Register the web app (WebApp_MultiTenant_v2)
 
 1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
 1. Click **New registration** on top.
 1. In the **Register an application page** that appears, enter your application's registration information:
-   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp-MultiTenant-v2`.
+   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp_MultiTenant_v2`.
    - Change **Supported account types** to **Accounts in any organizational directory**.
      > Note that there are more than one redirect URIs used in this sample. You'll need to add them from the **Authentication** tab later after the app has been created successfully.
 1. Click on the **Register** button in bottom to create the application.
@@ -180,10 +180,10 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 
 1. Open the `appsettings.json` file
 1. Find the app key `Instance` and replace the existing value with the corresponding [Azure AD endpoint](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-national-cloud#azure-ad-authentication-endpoints) for the national cloud you want to target.
-1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `WebApp-MultiTenant-v2` application copied from the Azure portal.
+1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `WebApp_MultiTenant_v2` application copied from the Azure portal.
 1. Find the app key `TenantId` and replace the existing value with `organizations`.
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
-1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp-MultiTenant-v2` app, in the Azure portal.
+1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp_MultiTenant_v2` app, in the Azure portal.
 1. Find the app keys `GraphAPI:Endpoint` and `GraphAPI:StaticScope` and replace the existing value with the corresponding [Microsoft Graph endpoint](https://docs.microsoft.com/en-us/graph/deployments#microsoft-graph-and-graph-explorer-service-root-endpoints) for the  national cloud you want to target.
 
 ### Step 4: Run the sample
@@ -349,7 +349,7 @@ AuthenticationResult result = await confidentialClientApplication
 
 ### Error AADSTS650051
 
-If you are receiving the following error message, you might need to **delete older service principals of this application**. Please [delete the existing [service principal](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals) from the **enterprise app** blade of the tenant before re-creating this application]. Click on the **Enterprise Applications** blade in the portal, locate this application `WebApp-MultiTenant-v2`, navigate to its **properties** and click **Delete** to delete the service principal.
+If you are receiving the following error message, you might need to **delete older service principals of this application**. Please [delete the existing [service principal](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals) from the **enterprise app** blade of the tenant before re-creating this application]. Click on the **Enterprise Applications** blade in the portal, locate this application `WebApp_MultiTenant_v2`, navigate to its **properties** and click **Delete** to delete the service principal.
 
 > OpenIdConnectProtocolException: Message contains error: 'invalid_client', error_description: 'AADSTS650051: Application '{applicationId}' is requesting permissions that are either invalid or out of date.
 
