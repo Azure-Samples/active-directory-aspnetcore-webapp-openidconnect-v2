@@ -8,7 +8,7 @@ service: Microsoft Graph
 endpoint: Microsoft identity platform
 ---
 
-# Call the Microsoft Graph API from an An ASP.NET Core Web App, using Sql Server for caching tokens
+# Call the Microsoft Graph API from an An ASP.NET Core Web App, using Sql Server or Redis for caching tokens
 
 ## About this sample
 
@@ -16,7 +16,7 @@ endpoint: Microsoft identity platform
 
 ## Scenario
 
-Starting from a .NET Core MVC Web app that uses OpenID Connect to sign in users, this chapter of the tutorial shows how to make a call to Microsoft Graph `/me` endpoint on behalf of the signed-in user. This sample additionally provides instructions on how to use Sql Server for caching tokens.
+Starting from a .NET Core MVC Web app that uses OpenID Connect to sign in users, this chapter of the tutorial shows how to make a call to Microsoft Graph `/me` endpoint on behalf of the signed-in user. This sample additionally provides instructions on how to use Sql Server or Redis for caching tokens.
 
 It leverages the ASP.NET Core OpenID Connect middleware and Microsoft Authentication Library for .NET (MSAL.NET). The complexities of the library's integration with the ASP.NET Core dependency Injection patterns is encapsulated into the `Microsoft.Identity.Web` library project, which is a part of this tutorial.
 
@@ -135,7 +135,7 @@ Note: if you had used the automation to setup your application mentioned in [Ste
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
 1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp-OpenIDConnect-DotNet-code-v2` app, in the Azure portal.
 
-#### In the appsettings.json file, configure a Sql server database for token caching, if you have not already done so:
+#### In the appsettings.json file, configure a Sql server database for token caching:
 
 1. In the `TokenCacheDbConnStr` key, provide the Sql server connection string to the database you wish to use for token caching.
    > Note:
@@ -143,8 +143,9 @@ Note: if you had used the automation to setup your application mentioned in [Ste
    > In that case, use the following connection string:
    >
    > ```XML
-   >  "ConnectionStrings": {
+   > "ConnectionStrings": {
    >   "TokenCacheDbConnStr": "Data Source=(LocalDb)\\MSSQLLocalDB;Database=MY_TOKEN_CACHE_DATABASE;Trusted_Connection=True;"
+   >   // Rest of strings...
    > },
    > ```
 
@@ -154,6 +155,18 @@ Note: if you had used the automation to setup your application mentioned in [Ste
     dotnet tool install --global dotnet-sql-cache
     dotnet sql-cache create "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MY_TOKEN_CACHE_DATABASE;Integrated Security=True;" dbo TokenCache
     ```
+
+#### [OPTIONAL] In the appsettings.json file, configure a Redis instance for token caching:
+
+1. In the `TokenCacheRedisConnStr` key, provide the Redis domain for your instance or `localhost` if testing on a local Redis database. Replace the value of the `TokenCacheRedisInstaceName` key with the name of your instance.
+   > Note:
+   > ```XML
+   >"ConnectionStrings": {
+   >   // Rest of strings...
+   >  "TokenCacheRedisConnStr": "[Replace with your domain like so: <your-domain>.redis.cache.windows.net:6380,password=SomeLongPassword,ssl=True,abortConnect=False or with 'localhost' if running locally]",
+   >  "TokenCacheRedisInstaceName": "[Replace with your instance name]"
+   > },
+   > ```
 
 - In case you want to deploy your app in Sovereign or national clouds, ensure the `GraphApiUrl` option matches the one you want. By default this is Microsoft Graph in the Azure public cloud
 
@@ -179,9 +192,9 @@ Starting from the [previous phase of the tutorial](../../2-WebApp-graph-user/2-1
 
 ### Reference Microsoft.Extensions.Caching.SqlServer
 
-This sample proposes a distributed SQL token cache. To use it, you'll need to add a reference to the `Microsoft.Extensions.Caching.SqlServer` NuGet package
+This sample can use a distributed SQL token cache. To use it, you'll need to add a reference to the `Microsoft.Extensions.Caching.SqlServer` NuGet package
 
-### Update the `Startup.cs` file to enable Token caching using Sql database.
+### Update the `Startup.cs` file to enable Token caching using Sql database
 
 ```CSharp
 public void ConfigureServices(IServiceCollection services)
@@ -207,17 +220,31 @@ public void ConfigureServices(IServiceCollection services)
     });
 ```
 
-The aforementioned lines of code are explained below.
-
 1. The first two lines enable MSAL.NET to hook-up to the OpenID Connect events to redeem the authorization code obtained by the ASP.NET Core middleware. After obtaining a token for Microsoft Graph, it saves it into the token cache, for use by the Controllers.
 1. The last two lines hook up the Sql server database based token caching solution to MSAL.NET. The Sql based token cache requires a **Connection string** named `TokenCacheDbConnStr` available in the **ConnectionStrings** collections of the **appsettings.json** configuration file.
 
-The files `MSALAppSqlTokenCacheProvider.cs` and `MSALPerUserSqlTokenCacheProvider` of the `Microsoft.Identity.Web` project contains the app and per-user token cache implementations that use Sql server as the token cache.
+### Reference Microsoft.Extensions.Caching.StackExchangeRedis
+
+This sample also has an optional distributed Redis token cache. To use it, you'll need to add a reference to the `Microsoft.Extensions.Caching.StackExchangeRedis` NuGet package
+
+### Update the `Startup.cs` file to enable Token caching using Redis
+
+```CSharp
+// Uncomment for Redis configuration. Be sure you DO NOT ADD BOTH an SQL cache and Redis cache
+services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = Configuration.GetConnectionString("TokenCacheRedisConnStr");
+    options.InstanceName = Configuration.GetConnectionString("TokenCacheRedisInstanceName");
+});
+```
+
+1. The code above hooks up the Redis database based token caching solution to MSAL.NET. The Redis based token cache requires a **Connection string** named `TokenCacheRedisConnStr` to connect to the Redis database and a **Connection string** named `TokenCacheRedisInstanceName` to name the instance tokens are stored to available in the **ConnectionStrings** collections of the **appsettings.json** configuration file.
 
 ## Next steps
 
 - Learn how to enable distributed caches in [token cache serialization](../2.2.%20token%20cache%20serialization)
 - Learn more about the [Distributed SQL Server Cache](https://docs.microsoft.com/aspnet/core/performance/caching/distributed#distributed-sql-server-cache)
+- Learn more about the [Distributed Redis Cache](https://learn.microsoft.com/azure/azure-cache-for-redis/cache-overview)
 - Learn how the same principle you've just learnt can be used to call:
   - [several Microsoft APIs](../../3-WebApp-multi-APIs), which will enable you to learn how incremental consent and conditional access is managed in your Web App
   - 3rd party, or even [your own Web API](../../4-WebApp-your-API), which will enable you to learn about custom scopes
@@ -226,7 +253,6 @@ The files `MSALAppSqlTokenCacheProvider.cs` and `MSALPerUserSqlTokenCacheProvide
 
 - Learn how [Microsoft.Identity.Web](../../Microsoft.Identity.Web) works, in particular hooks-up to the ASP.NET Core OIDC events
 - [Use HttpClientFactory to implement resilient HTTP requests](https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests) used by the Graph custom service
-
 
 ## How to deploy this sample to Azure
 
@@ -243,15 +269,20 @@ This project has one WebApp project. To deploy it to the Azure Web Site, you'll 
 1. Thereafter select the `Subscription`, `Resource Group`, `App service plan and Location`. `OS` will be **Windows** and `Publish` will be **Code**.
 1. Click `Create` and wait for the App Service to be created.
 1. Once you get the `Deployment succeeded` notification, then click on `Go to resource` to navigate to the newly created App service.
-1. The following steps provide instructions to create a Sql database that the sample needs. If you already have a Sql Server and database present and a connection string available, skip the steps till we ask you to provide the connections string in the `Application Settings`.
-1. Click `Create a resource` in the top left-hand corner again, select **Databases** --> **SQL Database**, to create a new database. Follow the `Quickstart tutorial` if needed.
+1. The following steps provide instructions to create a Sql database. Steps for setting up a Redis database are further down. If you already have a Redis or Sql Server and database present and a connection string available, skip the steps till we ask you to provide the connections string in the `Application Settings`.
+1. Click `Create a resource` in the top left-hand corner.
+1. If you want to setup an SQL database, select **Databases** --> **SQL Database**, to create a new database. Follow the `Quickstart tutorial` if needed.
 1. You can name the Sql server and database whatever you want to.
 1. Select or create a database server, and enter server login credentials. Carefully note down the username and password for the Sql server as you'll need it when constructing your Sql conenction string later.
 1. Wait for the `Deployment succeeded` notification, then click on `Go to resource` to navigate to the newly created database's manage screen.
-1. Click on **Connection Strings** on left menu and copy the **ADO.NET (SQL authentication)** connection string. Populate  **User ID={your_username};Password={your_password};** with values your provided during database creation.Copy this connection string.
-1. Once the web site is created, locate it it in the **Dashboard** and click it to open **App Services** **Overview** screen.
-1. Click on **Application settings** in the left menu of the App service and add the copied Sql connection string in the **Connection strings** section as `DefaultConnection`.
+1. Click on **Application settings** in the left menu of the App service and add the copied Sql connection string in the **Connection strings** section as `DefaultConnection`. Click on **Connection Strings** on left menu and copy the **ADO.NET (SQL authentication)** connection string. Populate  **User ID={your_username};Password={your_password};** with values your provided during database creation.Copy this connection string.
 1. Choose `SQLAzure` in the **Type** dropdown. **Save** the setting.
+1. If you want to setup a Redis Cache instead search for `Azure Cache for Redis` and select the matching option from the screen.
+1. Follow the steps to create a cache that will meet your needs then press the `Create` button and wait for the cache to be successfully deployed.
+1. Wait for the `Deployment succeeded` notification, then click o1 `Go to resource` to navigate to the newly created database's manage screen.
+1. Navigate to the `Access Keys` option in the menu on the left. Copy either the `Primary connection string` and `Secondary connection string` values are the connection strings to the Redis database.
+1. Update the `TokenCacheRedisConnStr` value in the `appsettings.json` file with either the `Primary connection string` and `Secondary connection string` and be sure that the `TokenCacheRedisInstanceName` value is set. You can even test that sessions are stored to the cache by running the application locally if you wish.
+1. Once the web site is created, locate it it in the **Dashboard** and click it to open **App Services** **Overview** screen.
 1. From the **Overview** tab of the App Service, download the publish profile by clicking the **Get publish profile** link and save it.  Other deployment mechanisms, such as from source control, can also be used.
 1. Switch to Visual Studio and go to the WebApp-OpenIDConnect-DotNet-code-v2 project.  Right click on the project in the Solution Explorer and select **Publish**.  Click **Import Profile** on the bottom bar, and import the publish profile that you downloaded earlier.
 1. Click on **Configure** and in the `Connection tab`, update the Destination URL so that it is a `https` in the home page url, for example [https://WebApp-OpenIDConnect-DotNet-code-v2-contoso.azurewebsites.net](https://WebApp-OpenIDConnect-DotNet-code-v2-contoso.azurewebsites.net). Click **Next**.
