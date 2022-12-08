@@ -65,6 +65,14 @@ namespace _2_1_Call_MSGraph
                 options.DefaultSlidingExpiration = TimeSpan.FromMinutes(90);
             });
 
+            // Uncomment for Redis configuration
+            //services.AddStackExchangeRedisCache(options =>
+            //{
+            //    options.Configuration = "localhost";//Configuration.GetConnectionString("TokenCacheRedisConnStr");
+            //    options.InstanceName = Configuration.GetConnectionString("TokenCacheRedisInstaceName");
+            //});
+
+
             services.AddControllersWithViews(options =>
             {
                 var policy = new AuthorizationPolicyBuilder()
