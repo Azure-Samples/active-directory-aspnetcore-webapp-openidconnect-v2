@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -53,7 +52,7 @@ namespace WebApp_MultiTenant_v2
             services.AddScoped<ITodoItemService, TodoItemService>();
 
             // Add Microsoft Graph support
-            services.AddScoped<IMSGraphService, MSGraphService>();
+            services.AddSingleton<IMSGraphService, MSGraphService>();
 
             // Sign-in users with the Microsoft identity platform
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
@@ -86,12 +85,13 @@ namespace WebApp_MultiTenant_v2
                             };
                         }
                     )
-                    .EnableTokenAcquisitionToCallDownstreamApi(options =>                
+                    .EnableTokenAcquisitionToCallDownstreamApi(options =>
                         {
                             Configuration.Bind("AzureAd", options);
                         },
                         new string[] { GraphScope.UserReadAll }
                     )
+                    .AddMicrosoftGraph("https://graph.microsoft.com/1.0", "user.read user.readbasic.all")
                     .AddInMemoryTokenCaches();
 
             services.AddControllersWithViews(options =>
@@ -102,7 +102,11 @@ namespace WebApp_MultiTenant_v2
                 options.Filters.Add(new AuthorizeFilter(policy));
             }).AddMicrosoftIdentityUI();
 
+            services.AddHttpContextAccessor();
             services.AddRazorPages();
+
+            services.AddServerSideBlazor()
+               .AddMicrosoftIdentityConsentHandler();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
