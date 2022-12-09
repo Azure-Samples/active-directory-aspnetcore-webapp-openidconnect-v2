@@ -65,6 +65,14 @@ namespace _2_1_Call_MSGraph
                 options.DefaultSlidingExpiration = TimeSpan.FromMinutes(90);
             });
 
+            // Uncomment for Redis configuration. Be sure you DO NOT ADD BOTH an SQL cache and Redis cache
+            //services.AddStackExchangeRedisCache(options =>
+            //{
+            //    options.Configuration = Configuration.GetConnectionString("TokenCacheRedisConnStr");
+            //    options.InstanceName = Configuration.GetConnectionString("TokenCacheRedisInstanceName");
+            //});
+
+
             services.AddControllersWithViews(options =>
             {
                 var policy = new AuthorizationPolicyBuilder()
