@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@inject IConfiguration _config
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -32,6 +34,14 @@
                 <ul class="nav navbar-nav">
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
                     <li><a asp-area="" asp-controller="UserProfile" asp-action="Index">Profile</a></li>
+                    @{
+                        // Only show this link when the user is a member of the 'GroupAdmin' group.
+                        var userIsAdmin = User.Claims.Any(c => c.Type == "groups" && c.Value == _config["Groups:GroupAdmin"]);
+                        @if(userIsAdmin)
+                        {
+                    <li><a asp-area="" asp-controller="Admin" asp-action="Index">Admin</a></li>
+                        }
+                    }
                 </ul>
                 <partial name="_LoginPartial" />
             </div>
@@ -44,7 +54,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2018 -  WebApp_OpenIDConnect_DotNet</p>
+            <p>&copy; @DateTime.Now.Year -  WebApp_OpenIDConnect_DotNet</p>
         </footer>
     </div>
 
