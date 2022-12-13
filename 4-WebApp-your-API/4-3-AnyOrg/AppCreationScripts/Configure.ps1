@@ -279,7 +279,6 @@ Function ConfigureApplications
     # rename the user_impersonation scope if it exists to match the readme steps or add a new scope
        
     # delete default scope i.e. User_impersonation
-    # Alex: the scope deletion doesn't work - see open issue - https://github.com/microsoftgraph/msgraph-sdk-powershell/issues/1054
     $scopes = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphPermissionScope]
     $scope = $serviceAadApplication.Api.Oauth2PermissionScopes | Where-Object { $_.Value -eq "User_impersonation" }
     
@@ -295,18 +294,18 @@ Function ConfigureApplications
     }
 
     $scopes = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphPermissionScope]
-    $scope = CreateScope -value Write.User.Data  `
-        -userConsentDisplayName "Write.User.Data"  `
-        -userConsentDescription "eg. Allows the app to read your files."  `
-        -adminConsentDisplayName "Write.User.Data"  `
-        -adminConsentDescription "e.g. Allows the app to read the signed-in user's files."
+    $scope = CreateScope -value ToDoList.Read  `
+        -userConsentDisplayName "Read users ToDo list using the 'WebApi-MultiTenant-v2'"  `
+        -userConsentDescription "Allow the app to read your ToDo list items via the 'WebApi-MultiTenant-v2'"  `
+        -adminConsentDisplayName "Read users ToDo list using the 'WebApi-MultiTenant-v2'"  `
+        -adminConsentDescription "Allow the app to read the user's ToDo list using the 'WebApi-MultiTenant-v2'"
             
     $scopes.Add($scope)
-    $scope = CreateScope -value Read.User.Data  `
-        -userConsentDisplayName "Read.User.Data"  `
-        -userConsentDescription "eg. Allows the app to read your files."  `
-        -adminConsentDisplayName "Read.User.Data"  `
-        -adminConsentDescription "e.g. Allows the app to read the signed-in user's files."
+    $scope = CreateScope -value ToDoList.ReadWrite  `
+        -userConsentDisplayName "Read and Write user's ToDo list using the 'WebApi-MultiTenant-v2'"  `
+        -userConsentDescription "Allow the app to read and write your ToDo list items via the 'WebApi-MultiTenant-v2'"  `
+        -adminConsentDisplayName "Read and Write user's ToDo list using the 'WebApi-MultiTenant-v2'"  `
+        -adminConsentDescription "Allow the app to read and write user's ToDo list using the 'WebApi-MultiTenant-v2'"
             
     $scopes.Add($scope)
     
@@ -316,7 +315,7 @@ Function ConfigureApplications
 
     # URL of the AAD application in the Azure portal
     # Future? $servicePortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$currentAppId+"/objectId/"+$currentAppObjectId+"/isMSAApp/"
-    $servicePortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$currentAppId+"/objectId/"+$currentAppObjectId+"/isMSAApp/"
+    $servicePortalUrl = "https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/Overview/appId/"+$currentAppId+"/isMSAApp~/false"
 
     Add-Content -Value "<tr><td>service</td><td>$currentAppId</td><td><a href='$servicePortalUrl'>WebApi-MultiTenant-v2</a></td></tr>" -Path createdApps.html
     # Declare a list to hold RRA items    
@@ -365,6 +364,38 @@ Function ConfigureApplications
 
     $tenantName = (Get-MgApplication -ApplicationId $currentAppObjectId).PublisherDomain
     #Update-MgApplication -ApplicationId $currentAppObjectId -IdentifierUris @("https://$tenantName/WebApp-MultiTenant-v2")
+        # Generate a certificate
+        Write-Host "Creating the client application (WebApp-MultiTenant-v2)"
+
+        $certificateName = 'WebApp-MultiTenant-v2'
+
+        # temporarily disable the option and procees to certificate creation
+        #$isOpenSSL = Read-Host ' By default certificate is generated using New-SelfSignedCertificate. Do you want to generate cert using OpenSSL(Y/N)?'
+        $isOpenSSl = 'N'
+        if($isOpenSSL -eq 'Y')
+        {
+            $certificate=openssl req -x509 -newkey rsa:2048 -days 365 -keyout "$certificateName.key" -out "$certificateName.cer" -subj "/CN=$certificateName.com" -nodes
+            openssl pkcs12 -export -out "$certificateName.pfx" -inkey $certificateName.key -in "$certificateName.cer"
+        }
+        else
+        {
+            $certificate=New-SelfSignedCertificate -Subject $certificateName `
+                                                    -CertStoreLocation "Cert:\CurrentUser\My" `
+                                                    -KeyExportPolicy Exportable `
+                                                    -KeySpec Signature
+
+            $thumbprint = $certificate.Thumbprint
+            $certificatePassword = Read-Host -Prompt "Enter password for your certificate (Please remember the password, you will need it when uploading to KeyVault): " -AsSecureString
+            Write-Host "Exporting certificate as a PFX file"
+            Export-PfxCertificate -Cert "Cert:\Currentuser\My\$thumbprint" -FilePath "$pwd\$certificateName.pfx" -ChainOption EndEntityCertOnly -NoProperties -Password $certificatePassword
+            Write-Host "PFX written to:"
+            Write-Host "$pwd\$certificateName.pfx"
+
+            # Add a Azure Key Credentials from the certificate for the application
+            $clientKeyCredentials = Update-MgApplication -ApplicationId $currentAppObjectId `
+                -KeyCredentials @(@{Type = "AsymmetricX509Cert"; Usage = "Verify"; Key= $certificate.RawData; StartDateTime = $certificate.NotBefore; EndDateTime = $certificate.NotAfter;})       
+       
+        }  
     
     # create the service principal of the newly created application     
     $clientServicePrincipal = New-MgServicePrincipal -AppId $currentAppId -Tags {WindowsAzureActiveDirectoryIntegratedApp}
@@ -376,11 +407,24 @@ Function ConfigureApplications
         New-MgApplicationOwnerByRef -ApplicationId $currentAppObjectId  -BodyParameter = @{"@odata.id" = "htps://graph.microsoft.com/v1.0/directoryObjects/$user.ObjectId"}
         Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($clientServicePrincipal.DisplayName)'"
     }
+
+    # Add Claims
+
+    $optionalClaims = New-Object Microsoft.Graph.PowerShell.Models.MicrosoftGraphOptionalClaims
+    $optionalClaims.AccessToken = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphOptionalClaim]
+    $optionalClaims.IdToken = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphOptionalClaim]
+    $optionalClaims.Saml2Token = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphOptionalClaim]
+
+    # Add Optional Claims
+
+    $newClaim =  CreateOptionalClaim  -name "acct" 
+    $optionalClaims.IdToken += ($newClaim)
+    Update-MgApplication -ApplicationId $currentAppObjectId -OptionalClaims $optionalClaims
     Write-Host "Done creating the client application (WebApp-MultiTenant-v2)"
 
     # URL of the AAD application in the Azure portal
     # Future? $clientPortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$currentAppId+"/objectId/"+$currentAppObjectId+"/isMSAApp/"
-    $clientPortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$currentAppId+"/objectId/"+$currentAppObjectId+"/isMSAApp/"
+    $clientPortalUrl = "https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/Overview/appId/"+$currentAppId+"/isMSAApp~/false"
 
     Add-Content -Value "<tr><td>client</td><td>$currentAppId</td><td><a href='$clientPortalUrl'>WebApp-MultiTenant-v2</a></td></tr>" -Path createdApps.html
     # Declare a list to hold RRA items    
@@ -389,7 +433,7 @@ Function ConfigureApplications
     # Add Required Resources Access (from 'client' to 'service')
     Write-Host "Getting access from 'client' to 'service'"
     $requiredPermission = GetRequiredPermissions -applicationDisplayName "WebApi-MultiTenant-v2"`
-        -requiredDelegatedPermissions "Write.User.Data|Read.User.Data"
+        -requiredDelegatedPermissions "ToDoList.Read|ToDoList.ReadWrite"
 
     $requiredResourcesAccess.Add($requiredPermission)
     Write-Host "Added 'service' to the RRA list."
@@ -406,9 +450,9 @@ Function ConfigureApplications
 
     # Configure known client applications for service 
     Write-Host "Configure known client applications for the 'service'"
-    $knowApplications = New-Object System.Collections.Generic.List[System.String]
-    $knowApplications.Add($clientAadApplication.AppId)
-    Update-MgApplication -ApplicationId $currentAppObjectId -Api @{KnownClientApplications = $knowApplications}
+    $knownApplications = New-Object System.Collections.Generic.List[System.String]
+    $knownApplications.Add($clientAadApplication.AppId)
+    Update-MgApplication -ApplicationId $serviceAadApplication.Id -Api @{KnownClientApplications = $knownApplications}
     Write-Host "knownclientapplication setting configured."
 
     
@@ -439,7 +483,7 @@ Function ConfigureApplications
     Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
     Write-Host "- For service"
     Write-Host "  - Navigate to $servicePortalUrl"
-    Write-Host "  - Navigate to the API Permissions page and select 'Grant admin consent for (your tenant)' to User.Read.All permission" -ForegroundColor Red 
+    Write-Host "  - Navigate to the API Permissions page and select 'Grant admin consent for (your tenant)' to User.Read.All permission for Graph API" -ForegroundColor Red 
     Write-Host "  - Open Service's appsettings.json and update 'AllowedTenants' with your tenant id." -ForegroundColor Red 
     Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
    

@@ -130,6 +130,9 @@ Function Cleanup
         Write-Warning $Error[0]
         Write-Host "Unable to remove ServicePrincipal 'WebApp-MultiTenant-v2'. Error is $message. Try deleting manually from Enterprise applications." -ForegroundColor White -BackgroundColor Red
     }
+     # remove self-signed certificate
+     Write-Host "Removing CN=WebApp-MultiTenant-v2 certificate from Cert:/CurrentUser/My"
+     Get-ChildItem -Path Cert:\CurrentUser\My | where { $_.subject -eq "CN=WebApp-MultiTenant-v2" } | Remove-Item
 }
 
 # Pre-requisites

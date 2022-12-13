@@ -5,8 +5,79 @@
     "Client": "ASP.NET Core Web App",
     "Service": "ASP.NET Core Web API",
     "RepositoryUrl": "microsoft-identity-platform-aspnetcore-webapp-tutorial",
-    "Endpoint": "AAD v2.0"
+    "Endpoint": "AAD v2.0",
+    "Products": [ "azure", "dotnet", "azure-active-directory", "office-graph-api" ],
+    "Platform": "AspNetCore",
+    "Languages": [ "csharp" ],
+    "Library": [ "Microsoft.Identity.Web" ]
   },
+
+  /*
+    This section describes different regions of readme file
+  */
+  "ReadmeScenario": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeScenario.md",
+    "Image": "./ReadmeFiles/topology.png",
+    /* put additional notes, will be displayed right after image*/
+    "AdditionalNotesIncludeFilePath": ""
+  },
+
+  "ReadmePrerequirements": {
+    "FreeText": "",
+    "IncludeFilePath": ""
+  },
+
+  "ReadmeSetup": {
+    "FreeText": "",
+    "IncludeFilePath": "",
+    "CertificateOption": "1", /* 1 when a certificate can be used instead of secret*/
+    "CreateProjectIncludeFilePath": "",
+    "AppRegistrationIncludeFilePath": "",
+    "RunSampleIncludeFilePath": ""
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeTroubleshooting": {
+    "IncludeFilePath": ""
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeNextSteps": {
+    "FreeText": "",
+    "IncludeFilePath": ""
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeContributing": {
+    "FreeText": "",
+    "IncludeFilePath": ""
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeHowTheCodeWasCreated": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeHowTheCodeWasCreated.md"
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeAboutTheCode": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeAboutTheCode.md"
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeAzureDeploy": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeHowToDeploy.md"
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeExploreTheSample": {
+    "IncludeFilePath": "../ReadmeFiles/ReadmeExploreTheSample.md"
+  },
+
+  /* It either can be a text or link to another readme file */
+  "ReadmeLearnMore": {
+    "IncludeFilePath": ""
+  },
+
   /*
     This section describes the Azure AD Applications to configure, and their dependencies
   */
@@ -25,15 +96,16 @@
           "DelegatedPermissions": [ "User.Read.All" ]
         }
       ],
-      "Scopes": [ "Read.User.Data", "Write.User.Data" ],
+      "Scopes": [ "ToDoList.Read", "ToDoList.ReadWrite" ],
       "ManualSteps": [
         {
-          "Comment": "Navigate to the API Permissions page and select 'Grant admin consent for (your tenant)' to User.Read.All permission"
+          "Comment": "Navigate to the API Permissions page and select 'Grant admin consent for (your tenant)' to User.Read.All permission for Graph API"
         },
         {
           "Comment": "Open Service's appsettings.json and update 'AllowedTenants' with your tenant id."
         }
-      ]
+      ],
+      "SampleSubPath": "4-WebApp-your-API\\4-3-AnyOrg\\TodoListService"
     },
     {
       "Id": "client",
@@ -47,10 +119,16 @@
       "RequiredResourcesAccess": [
         {
           "Resource": "service",
-          "DelegatedPermissions": [ "Write.User.Data", "Read.User.Data" ]
+          "DelegatedPermissions": [ "ToDoList.Read", "ToDoList.ReadWrite" ]
         }
       ],
-      "ManualSteps": []
+      "OptionalClaims": {
+        "IdTokenClaims": [ "acct" ]
+      },
+      "Certificate": "the name will be assigned automatically by PowerShell script and it will be equal to the Application name",
+      "ManualSteps": [],
+      "SampleSubPath": "4-WebApp-your-API\\4-3-AnyOrg",
+      "ProjectDirectory": "\\ToDoListClient"
     }
   ],
   /*

@@ -13,6 +13,7 @@ using Microsoft.Identity.Client;
 using System.Net.Http.Headers;
 using Microsoft.Graph;
 using System.Net;
+using Microsoft.Extensions.Configuration;
 
 namespace ToDoListService.Controllers
 {
@@ -23,16 +24,20 @@ namespace ToDoListService.Controllers
     {
         private readonly TodoContext _context;
         private ITokenAcquisition _tokenAcquisition;
+        private readonly string[] _graphScopes;
+        private readonly string _graphApiUrl;
      
-        public TodoListController(TodoContext context,ITokenAcquisition tokenAcquisition)
+        public TodoListController(TodoContext context,ITokenAcquisition tokenAcquisition, IConfiguration configuration)
         {
             _context = context;
             _tokenAcquisition = tokenAcquisition;
+            _graphScopes = configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
+            _graphApiUrl = configuration.GetValue<string>("DownstreamApi:GraphApiUrl");
         }
 
         // GET: api/TodoItems
         [HttpGet]
-        [RequiredScope("Read.User.Data")]
+        [RequiredScope("ToDoList.Read")]
         public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
         {
             string userTenantId = HttpContext.User.GetTenantId();
@@ -51,7 +56,7 @@ namespace ToDoListService.Controllers
 
         // GET: api/TodoItems/5
         [HttpGet("{id}")]
-        [RequiredScope("Read.User.Data")]
+        [RequiredScope("ToDoList.Read")]
         public async Task<ActionResult<TodoItem>> GetTodoItem(int id)
         { 
             var todoItem = await _context.TodoItems.FindAsync(id);
@@ -64,7 +69,7 @@ namespace ToDoListService.Controllers
             return todoItem;
         }
         [HttpGet("getallusers")]
-        [RequiredScope("Read.User.Data")]
+        [RequiredScope("ToDoList.Read")]
         public async Task<ActionResult<IEnumerable<string>>> GetAllUsers()
         {
             try
@@ -85,7 +90,7 @@ namespace ToDoListService.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        [RequiredScope("Write.User.Data")]
+        [RequiredScope("ToDoList.ReadWrite")]
         public async Task<IActionResult> PutTodoItem(int id, TodoItem todoItem)
         {
             if (id != todoItem.Id)
@@ -118,7 +123,7 @@ namespace ToDoListService.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        [RequiredScope("Write.User.Data")]
+        [RequiredScope("ToDoList.ReadWrite")]
         public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
         {
             var random = new Random();
@@ -134,7 +139,7 @@ namespace ToDoListService.Controllers
 
         // DELETE: api/TodoItems/5
         [HttpDelete("{id}")]
-        [RequiredScope("Write.User.Data")]
+        [RequiredScope("ToDoList.ReadWrite")]
         public async Task<ActionResult<TodoItem>> DeleteTodoItem(int id)
         {
             var todoItem = await _context.TodoItems.FindAsync(id);
@@ -155,27 +160,26 @@ namespace ToDoListService.Controllers
         }
         private async Task<List<string>> CallGraphApiOnBehalfOfUser()
         {
-            string[] scopes = { "user.read.all" };
-
             // we use MSAL.NET to get a token to call the API On Behalf Of the current user
             try
             {
                 List<string> userList = new List<string>();
-                string accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
+                string accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(_graphScopes);
                 IEnumerable<User> users = await CallGraphApiOnBehalfOfUser(accessToken);
                 userList = users.Select(x => x.UserPrincipalName).ToList();
                 return userList;
             }
             catch (MsalUiRequiredException ex)
             {
-                _tokenAcquisition.ReplyForbiddenWithWwwAuthenticateHeader(scopes, ex);
+                _tokenAcquisition.ReplyForbiddenWithWwwAuthenticateHeader(_graphScopes, ex);
                 throw ex;
             }
         }
-        private static async Task<IEnumerable<User>> CallGraphApiOnBehalfOfUser(string accessToken)
+        private async Task<IEnumerable<User>> CallGraphApiOnBehalfOfUser(string accessToken)
         {
             // Call the Graph API and retrieve the user's profile.
             GraphServiceClient graphServiceClient = GetGraphServiceClient(accessToken);
+            
             IGraphServiceUsersCollectionPage users = await graphServiceClient.Users.Request()
                                                       .Filter($"accountEnabled eq true")
                                                       .Select("id, userPrincipalName")
@@ -191,7 +195,7 @@ namespace ToDoListService.Controllers
         /// Prepares the authenticated client.
         /// </summary>
         /// <param name="accessToken">The access token.</param>
-        private static GraphServiceClient GetGraphServiceClient(string accessToken)
+        private GraphServiceClient GetGraphServiceClient(string accessToken)
         {
             try
             {
@@ -203,16 +207,15 @@ namespace ToDoListService.Controllers
                 'https://microsoftgraph.chinacloudapi.cn' Microsoft Graph China
                  ***/
 
-                string graphEndpoint = "https://graph.microsoft.com/v1.0/";
-                GraphServiceClient graphServiceClient = new GraphServiceClient(graphEndpoint,
-                                                                     new DelegateAuthenticationProvider(
-                                                                         async (requestMessage) =>
-                                                                         {
-                                                                             await Task.Run(() =>
-                                                                             {
-                                                                                 requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
-                                                                             });
-                                                                         }));
+                GraphServiceClient graphServiceClient = new GraphServiceClient(_graphApiUrl,
+                        new DelegateAuthenticationProvider(
+                            async (requestMessage) =>
+                            {
+                                await Task.Run(() =>
+                                {
+                                    requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
+                                });
+                            }));
                 return graphServiceClient;
             }
             catch (Exception)
