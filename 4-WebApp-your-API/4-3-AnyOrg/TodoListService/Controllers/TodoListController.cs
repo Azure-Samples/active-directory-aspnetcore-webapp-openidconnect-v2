@@ -10,7 +10,6 @@ using ToDoListService.Models;
 using Microsoft.Identity.Web.Resource;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Client;
-using System.Net.Http.Headers;
 using Microsoft.Graph;
 using System.Net;
 using Microsoft.Extensions.Configuration;
@@ -26,13 +25,24 @@ namespace ToDoListService.Controllers
         private ITokenAcquisition _tokenAcquisition;
         private readonly string[] _graphScopes;
         private readonly string _graphApiUrl;
-     
-        public TodoListController(TodoContext context,ITokenAcquisition tokenAcquisition, IConfiguration configuration)
+        private readonly MicrosoftIdentityConsentAndConditionalAccessHandler _consentHandler;
+        private readonly GraphServiceClient _graphServiceClient;
+
+        public TodoListController(TodoContext context, ITokenAcquisition tokenAcquisition, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _tokenAcquisition = tokenAcquisition;
             _graphScopes = configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
             _graphApiUrl = configuration.GetValue<string>("DownstreamApi:GraphApiUrl");
+
+            var services = httpContextAccessor.HttpContext.RequestServices;
+
+            this._graphServiceClient = (GraphServiceClient)services.GetService(typeof(GraphServiceClient));
+            if (this._graphServiceClient == null) throw new NullReferenceException("The GraphServiceClient has not been added to the services collection during the ConfigureServices()");
+
+            this._consentHandler = (MicrosoftIdentityConsentAndConditionalAccessHandler)services.GetService(typeof(MicrosoftIdentityConsentAndConditionalAccessHandler));
+            if (this._consentHandler == null) throw new NullReferenceException("The MicrosoftIdentityConsentAndConditionalAccessHandler has not been added to the services collection during the ConfigureServices()");
+
         }
 
         // GET: api/TodoItems
@@ -46,19 +56,19 @@ namespace ToDoListService.Controllers
             {
                 await _context.TodoItems.ToListAsync();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }
             return await _context.TodoItems.Where
-                (x => x.TenantId == userTenantId && (x.AssignedTo == signedInUser || x.Assignedby== signedInUser)).ToListAsync();
+                (x => x.TenantId == userTenantId && (x.AssignedTo == signedInUser || x.Assignedby == signedInUser)).ToListAsync();
         }
 
         // GET: api/TodoItems/5
         [HttpGet("{id}")]
         [RequiredScope("ToDoList.Read")]
         public async Task<ActionResult<TodoItem>> GetTodoItem(int id)
-        { 
+        {
             var todoItem = await _context.TodoItems.FindAsync(id);
 
             if (todoItem == null)
@@ -129,7 +139,7 @@ namespace ToDoListService.Controllers
             var random = new Random();
             todoItem.Id = random.Next();
 
-            
+
             _context.TodoItems.Add(todoItem);
             await _context.SaveChangesAsync();
 
@@ -158,16 +168,29 @@ namespace ToDoListService.Controllers
         {
             return _context.TodoItems.Any(e => e.Id == id);
         }
+
         private async Task<List<string>> CallGraphApiOnBehalfOfUser()
         {
             // we use MSAL.NET to get a token to call the API On Behalf Of the current user
             try
             {
-                List<string> userList = new List<string>();
-                string accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(_graphScopes);
-                IEnumerable<User> users = await CallGraphApiOnBehalfOfUser(accessToken);
-                userList = users.Select(x => x.UserPrincipalName).ToList();
-                return userList;
+                // Call the Graph API and retrieve the user's profile.
+                IGraphServiceUsersCollectionPage users =
+                await CallGraphWithCAEFallback(
+                    async () =>
+                    {
+                        return await _graphServiceClient.Users.Request()
+                                                              .Filter($"accountEnabled eq true")
+                                                              .Select("id, userPrincipalName")
+                                                              .GetAsync();
+                    }
+                );
+
+                if (users != null)
+                {
+                    return users.Select(x => x.UserPrincipalName).ToList();
+                }
+                throw new Exception();
             }
             catch (MsalUiRequiredException ex)
             {
@@ -175,52 +198,36 @@ namespace ToDoListService.Controllers
                 throw ex;
             }
         }
-        private async Task<IEnumerable<User>> CallGraphApiOnBehalfOfUser(string accessToken)
-        {
-            // Call the Graph API and retrieve the user's profile.
-            GraphServiceClient graphServiceClient = GetGraphServiceClient(accessToken);
-            
-            IGraphServiceUsersCollectionPage users = await graphServiceClient.Users.Request()
-                                                      .Filter($"accountEnabled eq true")
-                                                      .Select("id, userPrincipalName")
-                                                      .GetAsync();
-            if (users != null)
-            {
 
-                return users;
-            }
-            throw new Exception();
-        }
         /// <summary>
-        /// Prepares the authenticated client.
+        /// Calls a Microsoft Graph API, but wraps and handle a CAE exception, if thrown
         /// </summary>
-        /// <param name="accessToken">The access token.</param>
-        private GraphServiceClient GetGraphServiceClient(string accessToken)
+        /// <typeparam name="T">The type of the object to return from MS Graph call</typeparam>
+        /// <param name="graphAPIMethod">The graph API method to call.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">Unknown error just occurred. Message: {ex.Message}</exception>
+        /// <autogeneratedoc />
+        private async Task<T> CallGraphWithCAEFallback<T>(Func<Task<T>> graphAPIMethod)
         {
             try
             {
-                /***
-                //Microsoft Azure AD Graph API endpoint,
-                'https://graph.microsoft.com'   Microsoft Graph global service
-                'https://graph.microsoft.us' Microsoft Graph for US Government
-                'https://graph.microsoft.de' Microsoft Graph Germany
-                'https://microsoftgraph.chinacloudapi.cn' Microsoft Graph China
-                 ***/
-
-                GraphServiceClient graphServiceClient = new GraphServiceClient(_graphApiUrl,
-                        new DelegateAuthenticationProvider(
-                            async (requestMessage) =>
-                            {
-                                await Task.Run(() =>
-                                {
-                                    requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
-                                });
-                            }));
-                return graphServiceClient;
+                return await graphAPIMethod();
             }
-            catch (Exception)
+            catch (ServiceException ex) when (ex.Message.Contains("Continuous access evaluation resulted in claims challenge"))
             {
-                return null;   
+                try
+                {
+                    // Get challenge from response of Graph API
+                    var claimChallenge = WwwAuthenticateParameters.GetClaimChallengeFromResponseHeaders(ex.ResponseHeaders);
+
+                    _consentHandler.ChallengeUser(_graphScopes, claimChallenge);
+                }
+                catch (Exception ex2)
+                {
+                    _consentHandler.HandleException(ex2);
+                }
+
+                return default;
             }
         }
     }

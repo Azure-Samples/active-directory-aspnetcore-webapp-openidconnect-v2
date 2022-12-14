@@ -30,6 +30,7 @@ namespace ToDoListService
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(Configuration)
                 .EnableTokenAcquisitionToCallDownstreamApi()
+                .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
                 .AddInMemoryTokenCaches();
 
             //get list of allowed tenants from configuration
@@ -85,6 +86,12 @@ namespace ToDoListService
             //           .AllowAnyMethod()
             //           .AllowAnyHeader();
             //}));
+
+            services.AddHttpContextAccessor();
+            services.AddRazorPages();
+
+            services.AddServerSideBlazor()
+               .AddMicrosoftIdentityConsentHandler();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
