@@ -85,9 +85,10 @@
   "AADApps": [
     {
       "Id": "service",
-      "Name": "WebApi-MultiTenant-v2",
+      "Name": "WebApi_MultiTenant_v2",
       "Kind": "WebApi",
       "HomePage": "https://localhost:44351/",
+      "ReplyUrls": "https://localhost:44351/api/Home",
       "Audience": "AzureADMultipleOrgs",
       "PasswordCredentials": "Auto",
       "RequiredResourcesAccess": [
@@ -125,7 +126,7 @@
     },
     {
       "Id": "client",
-      "Name": "WebApp-MultiTenant-v2",
+      "Name": "WebApp_MultiTenant_v2",
       "Kind": "WebApp",
       "HomePage": "https://localhost:44321/",
       "ReplyUrls": "https://localhost:44321/,https://localhost:44321/signin-oidc",

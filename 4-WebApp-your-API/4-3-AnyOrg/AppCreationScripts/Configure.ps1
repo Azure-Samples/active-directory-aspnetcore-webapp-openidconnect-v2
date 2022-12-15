@@ -223,15 +223,16 @@ Function ConfigureApplications
     Write-Host ("Connected to Tenant {0} ({1}) as account '{2}'. Domain is '{3}'" -f  $Tenant.DisplayName, $Tenant.Id, $currentUserPrincipalName, $verifiedDomainName)
 
    # Create the service AAD application
-   Write-Host "Creating the AAD application (WebApi-MultiTenant-v2)"
+   Write-Host "Creating the AAD application (WebApi_MultiTenant_v2)"
    # Get a 6 months application key for the service Application
    $fromDate = [DateTime]::Now;
    $key = CreateAppKey -fromDate $fromDate -durationInMonths 6
    
    # create the application 
-   $serviceAadApplication = New-MgApplication -DisplayName "WebApi-MultiTenant-v2" `
+   $serviceAadApplication = New-MgApplication -DisplayName "WebApi_MultiTenant_v2" `
                                                        -Web `
                                                        @{ `
+                                                           RedirectUris = "https://localhost:44351/api/Home"; `
                                                            HomePageUrl = "https://localhost:44351/"; `
                                                          } `
                                                          -Api `
@@ -277,9 +278,9 @@ Function ConfigureApplications
     
     # Publish Application Permissions
     $appRoles = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphAppRole]
-    $newRole = CreateAppRole -types "Application" -name "ToDoList.Read.All" -description "Allow the app to read every user's ToDo list using the 'WebApi-MultiTenant-v2'"
+    $newRole = CreateAppRole -types "Application" -name "ToDoList.Read.All" -description "Allow the app to read every user's ToDo list using the 'WebApi_MultiTenant_v2'"
     $appRoles.Add($newRole)
-    $newRole = CreateAppRole -types "Application" -name "ToDoList.ReadWrite.All" -description "Allow the app to read every user's ToDo list using the 'WebApi-MultiTenant-v2'"
+    $newRole = CreateAppRole -types "Application" -name "ToDoList.ReadWrite.All" -description "Allow the app to read every user's ToDo list using the 'WebApi_MultiTenant_v2'"
     $appRoles.Add($newRole)
     Update-MgApplication -ApplicationId $currentAppObjectId -AppRoles $appRoles
     
@@ -302,29 +303,29 @@ Function ConfigureApplications
 
     $scopes = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphPermissionScope]
     $scope = CreateScope -value ToDoList.Read  `
-        -userConsentDisplayName "Read users ToDo list using the 'WebApi-MultiTenant-v2'"  `
-        -userConsentDescription "Allow the app to read your ToDo list items via the 'WebApi-MultiTenant-v2'"  `
-        -adminConsentDisplayName "Read users ToDo list using the 'WebApi-MultiTenant-v2'"  `
-        -adminConsentDescription "Allow the app to read the user's ToDo list using the 'WebApi-MultiTenant-v2'"
+        -userConsentDisplayName "Read users ToDo list using the 'WebApi_MultiTenant_v2'"  `
+        -userConsentDescription "Allow the app to read your ToDo list items via the 'WebApi_MultiTenant_v2'"  `
+        -adminConsentDisplayName "Read users ToDo list using the 'WebApi_MultiTenant_v2'"  `
+        -adminConsentDescription "Allow the app to read the user's ToDo list using the 'WebApi_MultiTenant_v2'"
             
     $scopes.Add($scope)
     $scope = CreateScope -value ToDoList.ReadWrite  `
-        -userConsentDisplayName "Read and Write user's ToDo list using the 'WebApi-MultiTenant-v2'"  `
-        -userConsentDescription "Allow the app to read and write your ToDo list items via the 'WebApi-MultiTenant-v2'"  `
-        -adminConsentDisplayName "Read and Write user's ToDo list using the 'WebApi-MultiTenant-v2'"  `
-        -adminConsentDescription "Allow the app to read and write user's ToDo list using the 'WebApi-MultiTenant-v2'"
+        -userConsentDisplayName "Read and Write user's ToDo list using the 'WebApi_MultiTenant_v2'"  `
+        -userConsentDescription "Allow the app to read and write your ToDo list items via the 'WebApi_MultiTenant_v2'"  `
+        -adminConsentDisplayName "Read and Write user's ToDo list using the 'WebApi_MultiTenant_v2'"  `
+        -adminConsentDescription "Allow the app to read and write user's ToDo list using the 'WebApi_MultiTenant_v2'"
             
     $scopes.Add($scope)
     
     # add/update scopes
     Update-MgApplication -ApplicationId $currentAppObjectId -Api @{Oauth2PermissionScopes = @($scopes)}
-    Write-Host "Done creating the service application (WebApi-MultiTenant-v2)"
+    Write-Host "Done creating the service application (WebApi_MultiTenant_v2)"
 
     # URL of the AAD application in the Azure portal
     # Future? $servicePortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$currentAppId+"/objectId/"+$currentAppObjectId+"/isMSAApp/"
     $servicePortalUrl = "https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/Overview/appId/"+$currentAppId+"/isMSAApp~/false"
 
-    Add-Content -Value "<tr><td>service</td><td>$currentAppId</td><td><a href='$servicePortalUrl'>WebApi-MultiTenant-v2</a></td></tr>" -Path createdApps.html
+    Add-Content -Value "<tr><td>service</td><td>$currentAppId</td><td><a href='$servicePortalUrl'>WebApi_MultiTenant_v2</a></td></tr>" -Path createdApps.html
     # Declare a list to hold RRA items    
     $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphRequiredResourceAccess]
 
@@ -344,15 +345,15 @@ Function ConfigureApplications
     
 
     # print the registered app portal URL for any further navigation
-    Write-Host "Successfully registered and configured that app registration for 'WebApi-MultiTenant-v2' at `n $servicePortalUrl" -ForegroundColor Green 
+    Write-Host "Successfully registered and configured that app registration for 'WebApi_MultiTenant_v2' at `n $servicePortalUrl" -ForegroundColor Green 
    # Create the client AAD application
-   Write-Host "Creating the AAD application (WebApp-MultiTenant-v2)"
+   Write-Host "Creating the AAD application (WebApp_MultiTenant_v2)"
    # Get a 6 months application key for the client Application
    $fromDate = [DateTime]::Now;
    $key = CreateAppKey -fromDate $fromDate -durationInMonths 6
    
    # create the application 
-   $clientAadApplication = New-MgApplication -DisplayName "WebApp-MultiTenant-v2" `
+   $clientAadApplication = New-MgApplication -DisplayName "WebApp_MultiTenant_v2" `
                                                       -Web `
                                                       @{ `
                                                           RedirectUris = "https://localhost:44321/", "https://localhost:44321/signin-oidc"; `
@@ -370,11 +371,11 @@ Function ConfigureApplications
     $currentAppObjectId = $clientAadApplication.Id
 
     $tenantName = (Get-MgApplication -ApplicationId $currentAppObjectId).PublisherDomain
-    #Update-MgApplication -ApplicationId $currentAppObjectId -IdentifierUris @("https://$tenantName/WebApp-MultiTenant-v2")
+    #Update-MgApplication -ApplicationId $currentAppObjectId -IdentifierUris @("https://$tenantName/WebApp_MultiTenant_v2")
         # Generate a certificate
-        Write-Host "Creating the client application (WebApp-MultiTenant-v2)"
+        Write-Host "Creating the client application (WebApp_MultiTenant_v2)"
 
-        $certificateName = 'WebApp-MultiTenant-v2'
+        $certificateName = 'WebApp_MultiTenant_v2'
 
         # temporarily disable the option and procees to certificate creation
         #$isOpenSSL = Read-Host ' By default certificate is generated using New-SelfSignedCertificate. Do you want to generate cert using OpenSSL(Y/N)?'
@@ -427,19 +428,19 @@ Function ConfigureApplications
     $newClaim =  CreateOptionalClaim  -name "acct" 
     $optionalClaims.IdToken += ($newClaim)
     Update-MgApplication -ApplicationId $currentAppObjectId -OptionalClaims $optionalClaims
-    Write-Host "Done creating the client application (WebApp-MultiTenant-v2)"
+    Write-Host "Done creating the client application (WebApp_MultiTenant_v2)"
 
     # URL of the AAD application in the Azure portal
     # Future? $clientPortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$currentAppId+"/objectId/"+$currentAppObjectId+"/isMSAApp/"
     $clientPortalUrl = "https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/Overview/appId/"+$currentAppId+"/isMSAApp~/false"
 
-    Add-Content -Value "<tr><td>client</td><td>$currentAppId</td><td><a href='$clientPortalUrl'>WebApp-MultiTenant-v2</a></td></tr>" -Path createdApps.html
+    Add-Content -Value "<tr><td>client</td><td>$currentAppId</td><td><a href='$clientPortalUrl'>WebApp_MultiTenant_v2</a></td></tr>" -Path createdApps.html
     # Declare a list to hold RRA items    
     $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphRequiredResourceAccess]
 
     # Add Required Resources Access (from 'client' to 'service')
     Write-Host "Getting access from 'client' to 'service'"
-    $requiredPermission = GetRequiredPermissions -applicationDisplayName "WebApi-MultiTenant-v2"`
+    $requiredPermission = GetRequiredPermissions -applicationDisplayName "WebApi_MultiTenant_v2"`
         -requiredDelegatedPermissions "ToDoList.Read|ToDoList.ReadWrite"
 
     $requiredResourcesAccess.Add($requiredPermission)
@@ -453,7 +454,7 @@ Function ConfigureApplications
     
 
     # print the registered app portal URL for any further navigation
-    Write-Host "Successfully registered and configured that app registration for 'WebApp-MultiTenant-v2' at `n $clientPortalUrl" -ForegroundColor Green 
+    Write-Host "Successfully registered and configured that app registration for 'WebApp_MultiTenant_v2' at `n $clientPortalUrl" -ForegroundColor Green 
 
     # Configure known client applications for service 
     Write-Host "Configure known client applications for the 'service'"

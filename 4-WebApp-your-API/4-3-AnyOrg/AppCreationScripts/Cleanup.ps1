@@ -56,20 +56,20 @@ Function Cleanup
     # Removes the applications
     Write-Host "Cleaning-up applications from tenant '$tenantId'"
 
-    Write-Host "Removing 'service' (WebApi-MultiTenant-v2) if needed"
+    Write-Host "Removing 'service' (WebApi_MultiTenant_v2) if needed"
     try
     {
-        Get-MgApplication -Filter "DisplayName eq 'WebApi-MultiTenant-v2'" | ForEach-Object {Remove-MgApplication -ApplicationId $_.Id }
+        Get-MgApplication -Filter "DisplayName eq 'WebApi_MultiTenant_v2'" | ForEach-Object {Remove-MgApplication -ApplicationId $_.Id }
     }
     catch
     {
         $message = $_
         Write-Warning $Error[0]
-        Write-Host "Unable to remove the application 'WebApi-MultiTenant-v2'. Error is $message. Try deleting manually." -ForegroundColor White -BackgroundColor Red
+        Write-Host "Unable to remove the application 'WebApi_MultiTenant_v2'. Error is $message. Try deleting manually." -ForegroundColor White -BackgroundColor Red
     }
 
-    Write-Host "Making sure there are no more (WebApi-MultiTenant-v2) applications found, will remove if needed..."
-    $apps = Get-MgApplication -Filter "DisplayName eq 'WebApi-MultiTenant-v2'" | Format-List Id, DisplayName, AppId, SignInAudience, PublisherDomain
+    Write-Host "Making sure there are no more (WebApi_MultiTenant_v2) applications found, will remove if needed..."
+    $apps = Get-MgApplication -Filter "DisplayName eq 'WebApi_MultiTenant_v2'" | Format-List Id, DisplayName, AppId, SignInAudience, PublisherDomain
     
     if ($apps)
     {
@@ -79,34 +79,34 @@ Function Cleanup
     foreach ($app in $apps) 
     {
         Remove-MgApplication -ApplicationId $app.Id
-        Write-Host "Removed WebApi-MultiTenant-v2.."
+        Write-Host "Removed WebApi_MultiTenant_v2.."
     }
 
     # also remove service principals of this app
     try
     {
-        Get-MgServicePrincipal -filter "DisplayName eq 'WebApi-MultiTenant-v2'" | ForEach-Object {Remove-MgServicePrincipal -ServicePrincipalId $_.Id -Confirm:$false}
+        Get-MgServicePrincipal -filter "DisplayName eq 'WebApi_MultiTenant_v2'" | ForEach-Object {Remove-MgServicePrincipal -ServicePrincipalId $_.Id -Confirm:$false}
     }
     catch
     {
         $message = $_
         Write-Warning $Error[0]
-        Write-Host "Unable to remove ServicePrincipal 'WebApi-MultiTenant-v2'. Error is $message. Try deleting manually from Enterprise applications." -ForegroundColor White -BackgroundColor Red
+        Write-Host "Unable to remove ServicePrincipal 'WebApi_MultiTenant_v2'. Error is $message. Try deleting manually from Enterprise applications." -ForegroundColor White -BackgroundColor Red
     }
-    Write-Host "Removing 'client' (WebApp-MultiTenant-v2) if needed"
+    Write-Host "Removing 'client' (WebApp_MultiTenant_v2) if needed"
     try
     {
-        Get-MgApplication -Filter "DisplayName eq 'WebApp-MultiTenant-v2'" | ForEach-Object {Remove-MgApplication -ApplicationId $_.Id }
+        Get-MgApplication -Filter "DisplayName eq 'WebApp_MultiTenant_v2'" | ForEach-Object {Remove-MgApplication -ApplicationId $_.Id }
     }
     catch
     {
         $message = $_
         Write-Warning $Error[0]
-        Write-Host "Unable to remove the application 'WebApp-MultiTenant-v2'. Error is $message. Try deleting manually." -ForegroundColor White -BackgroundColor Red
+        Write-Host "Unable to remove the application 'WebApp_MultiTenant_v2'. Error is $message. Try deleting manually." -ForegroundColor White -BackgroundColor Red
     }
 
-    Write-Host "Making sure there are no more (WebApp-MultiTenant-v2) applications found, will remove if needed..."
-    $apps = Get-MgApplication -Filter "DisplayName eq 'WebApp-MultiTenant-v2'" | Format-List Id, DisplayName, AppId, SignInAudience, PublisherDomain
+    Write-Host "Making sure there are no more (WebApp_MultiTenant_v2) applications found, will remove if needed..."
+    $apps = Get-MgApplication -Filter "DisplayName eq 'WebApp_MultiTenant_v2'" | Format-List Id, DisplayName, AppId, SignInAudience, PublisherDomain
     
     if ($apps)
     {
@@ -116,23 +116,23 @@ Function Cleanup
     foreach ($app in $apps) 
     {
         Remove-MgApplication -ApplicationId $app.Id
-        Write-Host "Removed WebApp-MultiTenant-v2.."
+        Write-Host "Removed WebApp_MultiTenant_v2.."
     }
 
     # also remove service principals of this app
     try
     {
-        Get-MgServicePrincipal -filter "DisplayName eq 'WebApp-MultiTenant-v2'" | ForEach-Object {Remove-MgServicePrincipal -ServicePrincipalId $_.Id -Confirm:$false}
+        Get-MgServicePrincipal -filter "DisplayName eq 'WebApp_MultiTenant_v2'" | ForEach-Object {Remove-MgServicePrincipal -ServicePrincipalId $_.Id -Confirm:$false}
     }
     catch
     {
         $message = $_
         Write-Warning $Error[0]
-        Write-Host "Unable to remove ServicePrincipal 'WebApp-MultiTenant-v2'. Error is $message. Try deleting manually from Enterprise applications." -ForegroundColor White -BackgroundColor Red
+        Write-Host "Unable to remove ServicePrincipal 'WebApp_MultiTenant_v2'. Error is $message. Try deleting manually from Enterprise applications." -ForegroundColor White -BackgroundColor Red
     }
      # remove self-signed certificate
-     Write-Host "Removing CN=WebApp-MultiTenant-v2 certificate from Cert:/CurrentUser/My"
-     Get-ChildItem -Path Cert:\CurrentUser\My | where { $_.subject -eq "CN=WebApp-MultiTenant-v2" } | Remove-Item
+     Write-Host "Removing CN=WebApp_MultiTenant_v2 certificate from Cert:/CurrentUser/My"
+     Get-ChildItem -Path Cert:\CurrentUser\My | where { $_.subject -eq "CN=WebApp_MultiTenant_v2" } | Remove-Item
 }
 
 # Pre-requisites
