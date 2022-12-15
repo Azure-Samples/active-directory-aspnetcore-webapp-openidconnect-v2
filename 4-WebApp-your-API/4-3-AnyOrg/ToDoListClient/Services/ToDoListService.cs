@@ -89,7 +89,7 @@ namespace ToDoListClient.Services
 
             var jsonRequest = JsonConvert.SerializeObject(todo);
             var jsoncontent = new StringContent(jsonRequest, Encoding.UTF8, "application/json-patch+json");
-            var response = await _httpClient.PutAsync($"{ _TodoListBaseAddress}api/todolist/{todo.Id}", jsoncontent);
+            var response = await _httpClient.PatchAsync($"{ _TodoListBaseAddress}api/todolist/{todo.Id}", jsoncontent);
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -116,10 +116,10 @@ namespace ToDoListClient.Services
 
             throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
         }
-        public async Task<IEnumerable<string>> GetAllUsersAsync()
+        public async Task<IEnumerable<string>> GetAllGraphUsersAsync()
         {
             await PrepareAuthenticatedClient();
-            var response = await _httpClient.GetAsync($"{ _TodoListBaseAddress}api/todolist/getallusers");
+            var response = await _httpClient.GetAsync($"{ _TodoListBaseAddress}api/todolist/getallgraphusers");
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var content = await response.Content.ReadAsStringAsync();

@@ -33,7 +33,7 @@ namespace ToDoListClient.Controllers
             ToDoItem todo = new ToDoItem();
             try
             {
-                List<string> result = (await _todoListService.GetAllUsersAsync()).ToList();
+                List<string> result = (await _todoListService.GetAllGraphUsersAsync()).ToList();
 
                 TempData["UsersDropDown"] = result
                 .Select(u => new SelectListItem
