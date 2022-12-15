@@ -10,8 +10,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		AppCreationScripts\Cleanup.ps1 = AppCreationScripts\Cleanup.ps1
 		AppCreationScripts\Configure.ps1 = AppCreationScripts\Configure.ps1
+		README-use-certificate.md = README-use-certificate.md
 		Readme.md = Readme.md
 		AppCreationScripts\sample.json = AppCreationScripts\sample.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReadmeFiles", "ReadmeFiles", "{A377DECB-5870-4B9D-889C-49D274CA0170}"
+	ProjectSection(SolutionItems) = preProject
+		ReadmeFiles\ReadmeAboutTheCode.md = ReadmeFiles\ReadmeAboutTheCode.md
+		ReadmeExploreTheSample.md = ReadmeExploreTheSample.md
+		ReadmeFiles\ReadmeHowTheCodeWasCreated.md = ReadmeFiles\ReadmeHowTheCodeWasCreated.md
+		ReadmeFiles\ReadmeScenario.md = ReadmeFiles\ReadmeScenario.md
 	EndProjectSection
 EndProject
 Global
