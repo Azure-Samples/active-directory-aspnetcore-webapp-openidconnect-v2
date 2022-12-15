@@ -232,14 +232,13 @@ Function ConfigureApplications
    $serviceAadApplication = New-MgApplication -DisplayName "WebApi-MultiTenant-v2" `
                                                        -Web `
                                                        @{ `
-                                                           RedirectUris = "https://localhost:44351/api/Home"; `
                                                            HomePageUrl = "https://localhost:44351/"; `
                                                          } `
                                                          -Api `
                                                          @{ `
                                                             RequestedAccessTokenVersion = 2 `
                                                          } `
-                                                        -SignInAudience AzureADandPersonalMicrosoftAccount `
+                                                        -SignInAudience AzureADMultipleOrgs `
                                                        #end of command
 
     #add a secret to the application
@@ -275,6 +274,14 @@ Function ConfigureApplications
     $newClaim =  CreateOptionalClaim  -name "idtyp" 
     $optionalClaims.AccessToken += ($newClaim)
     Update-MgApplication -ApplicationId $currentAppObjectId -OptionalClaims $optionalClaims
+    
+    # Publish Application Permissions
+    $appRoles = New-Object System.Collections.Generic.List[Microsoft.Graph.PowerShell.Models.MicrosoftGraphAppRole]
+    $newRole = CreateAppRole -types "Application" -name "ToDoList.Read.All" -description "Allow the app to read every user's ToDo list using the 'WebApi-MultiTenant-v2'"
+    $appRoles.Add($newRole)
+    $newRole = CreateAppRole -types "Application" -name "ToDoList.ReadWrite.All" -description "Allow the app to read every user's ToDo list using the 'WebApi-MultiTenant-v2'"
+    $appRoles.Add($newRole)
+    Update-MgApplication -ApplicationId $currentAppObjectId -AppRoles $appRoles
     
     # rename the user_impersonation scope if it exists to match the readme steps or add a new scope
        
@@ -352,7 +359,7 @@ Function ConfigureApplications
                                                           HomePageUrl = "https://localhost:44321/"; `
                                                           LogoutUrl = "https://localhost:44321/signout-oidc"; `
                                                         } `
-                                                       -SignInAudience AzureADandPersonalMicrosoftAccount `
+                                                       -SignInAudience AzureADMultipleOrgs `
                                                       #end of command
 
     #add a secret to the application
@@ -484,7 +491,8 @@ Function ConfigureApplications
     Write-Host "- For service"
     Write-Host "  - Navigate to $servicePortalUrl"
     Write-Host "  - Navigate to the API Permissions page and select 'Grant admin consent for (your tenant)' to User.Read.All permission for Graph API" -ForegroundColor Red 
-    Write-Host "  - Open Service's appsettings.json and update 'AllowedTenants' with your tenant id." -ForegroundColor Red 
+    Write-Host "  - Open the service project's appsettings.json and update 'AllowedTenants' with your tenant id." -ForegroundColor Red 
+    Write-Host "  - Application 'service' publishes application permissions. Do remember to navigate to any client app(s) registration in the app portal and consent for those, (if required)" -ForegroundColor Red 
     Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
    
 if($isOpenSSL -eq 'Y')

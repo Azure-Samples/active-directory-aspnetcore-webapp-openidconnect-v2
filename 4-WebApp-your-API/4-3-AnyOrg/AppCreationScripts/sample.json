@@ -1,6 +1,6 @@
 {
   "Sample": {
-    "Title": "Protect a multi-tenant SaaS web application and a Web API which calls Microsoft Graph on-behalf of the user with the Microsoft Identity Platform",
+    "Title": "Integrate a web app and Web Api that authenticates users and calls a web API and Microsoft Graph using the multi-tenant integration pattern (SaaS)",
     "Level": 400,
     "Client": "ASP.NET Core Web App",
     "Service": "ASP.NET Core Web API",
@@ -9,7 +9,8 @@
     "Products": [ "azure", "dotnet", "azure-active-directory", "office-graph-api" ],
     "Platform": "AspNetCore",
     "Languages": [ "csharp" ],
-    "Library": [ "Microsoft.Identity.Web" ]
+    "Library": [ "Microsoft.Identity.Web" ],
+    "Description": "Integrate a web app and Web Api that authenticates users and calls the protected Web API and Microsoft Graph using the multi-tenant integration pattern (SaaS)"
   },
 
   /*
@@ -87,8 +88,7 @@
       "Name": "WebApi-MultiTenant-v2",
       "Kind": "WebApi",
       "HomePage": "https://localhost:44351/",
-      "ReplyUrls": "https://localhost:44351/api/Home",
-      "Audience": "AzureADandPersonalMicrosoftAccount",
+      "Audience": "AzureADMultipleOrgs",
       "PasswordCredentials": "Auto",
       "RequiredResourcesAccess": [
         {
@@ -97,15 +97,31 @@
         }
       ],
       "Scopes": [ "ToDoList.Read", "ToDoList.ReadWrite" ],
+      "AppRoles": [
+        {
+          "AllowedMemberTypes": [ "Application" ],
+          "Name": "ToDoList.Read.All",
+          "Description": "Allow application to read all ToDo list items"
+        },
+        {
+          "AllowedMemberTypes": [ "Application" ],
+          "Name": "ToDoList.ReadWrite.All",
+          "Description": "Allow application to read and write into ToDo list"
+        }
+      ],
       "ManualSteps": [
         {
           "Comment": "Navigate to the API Permissions page and select 'Grant admin consent for (your tenant)' to User.Read.All permission for Graph API"
         },
         {
-          "Comment": "Open Service's appsettings.json and update 'AllowedTenants' with your tenant id."
+          "Comment": "Open the service project's appsettings.json and update 'AllowedTenants' with your tenant id."
         }
       ],
-      "SampleSubPath": "4-WebApp-your-API\\4-3-AnyOrg\\TodoListService"
+      "SampleSubPath": "4-WebApp-your-API\\4-3-AnyOrg\\TodoListService",
+      "ProjectDirectory": "\\TodoListService",
+      "OptionalClaims": {
+        "AccessTokenClaims": [ "idtyp" ]
+      }
     },
     {
       "Id": "client",
@@ -114,7 +130,7 @@
       "HomePage": "https://localhost:44321/",
       "ReplyUrls": "https://localhost:44321/,https://localhost:44321/signin-oidc",
       "LogoutUrl": "https://localhost:44321/signout-oidc",
-      "Audience": "AzureADandPersonalMicrosoftAccount",
+      "Audience": "AzureADMultipleOrgs",
       "PasswordCredentials": "Auto",
       "RequiredResourcesAccess": [
         {

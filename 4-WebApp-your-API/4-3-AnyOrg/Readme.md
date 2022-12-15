@@ -1,23 +1,25 @@
 ---
-services: active-directory
-platforms: dotnet
-author: Shama-K
-level: 400
-client: ASP.NET Core Web App
-service: ASP.NET Core Web API
-endpoint: Microsoft identity platform
 page_type: sample
+name: Integrate a web app and Web Api that authenticates users and calls a web API and Microsoft Graph using the multi-tenant integration pattern (SaaS)
+description: Integrate a web app and Web Api that authenticates users and calls the protected Web API and Microsoft Graph using the multi-tenant integration pattern (SaaS)
 languages:
-  - csharp  
+ - csharp
 products:
-  - azure
-  - azure-active-directory  
-  - dotnet
-  - office-ms-graph
-description: "Protect a multi-tenant SaaS web application and a Web API which calls Microsoft Graph on-behalf of the user with the Microsoft Identity Platform"
+ - azure
+ - dotnet
+ - azure-active-directory
+ - office-graph-api
+urlFragment: microsoft-identity-platform-aspnetcore-webapp-tutorial
+extensions:
+- services: ms-identity
+- platform: AspNetCore
+- endpoint: AAD v2.0
+- level: 400
+- client: ASP.NET Core Web App
+- service: ASP.NET Core Web API
 ---
 
-# Protect a multi-tenant SaaS web application and a Web API which calls Microsoft Graph on-behalf of the user with the Microsoft Identity Platform
+# Integrate a web app and Web Api that authenticates users and calls a web API and Microsoft Graph using the multi-tenant integration pattern (SaaS)
 
 > This sample is for Azure AD, not Azure AD B2C.
 
@@ -26,11 +28,12 @@ description: "Protect a multi-tenant SaaS web application and a Web API which ca
 - [About this sample](#about-this-sample)
 - [Scenario](#scenario)
 - [Overview](#overview)
-- [Pre-requisites](#pre-requisites)
-- [Setup](#setup)
+- [Prerequisites](#prerequisites)
+- [Setup the sample](#setup-the-sample)
   - [Step 1:  Clone or download this repository](#step-1--clone-or-download-this-repository)
-  - [Step 2:  Register the sample applications with your Azure Active Directory tenant](#step-2--register-the-sample-applications-with-your-azure-active-directory-tenant)
-  - [Step 4: Run the sample](#step-4-run-the-sample)
+  - [Step 2: Navigate to project folder](#step-2-navigate-to-project-folder)
+  - [Step 2:  Register the sample application(s) in your tenant](#step-2--register-the-sample-applications-in-your-tenant)
+  - [Step 3: Running the sample](#step-3-running-the-sample)
   - [Testing the Application](#testing-the-application)
   - [The different ways of obtaining admin consent](#the-different-ways-of-obtaining-admin-consent)
   - [Explore the sample](#explore-the-sample)
@@ -46,13 +49,13 @@ description: "Protect a multi-tenant SaaS web application and a Web API which ca
 
 ## About this sample
 
-This sample demonstrates how to secure a [multi-tenant](https://docs.microsoft.com/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant) ASP.NET Core MVC web application (TodoListClient) which calls another protected **multi-tenant** ASP.NET Core Web API (ToDoListService) with the Microsoft Identity Platform. This sample builds on the concepts introduced in the [Build a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect](../../2-WebApp-graph-user/2-3-Multi-Tenant) sample. We advise you go through that sample once before trying this sample.  
+This sample demonstrates how to secure a [multi-tenant](https://docs.microsoft.com/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant) ASP.NET Core MVC web application (TodoListClient) which calls another protected **multi-tenant** ASP.NET Core Web API (ToDoListService) with the Microsoft Identity Platform. This sample builds on the concepts introduced in the [Integrate an app that authenticates users and calls Microsoft Graph using the multi-tenant integration pattern (SaaS)](../../2-WebApp-graph-user/2-3-Multi-Tenant) sample. We advise you go through that sample once before trying this sample.  
   
 ## Scenario
 
-In this sample, we would protect an ASP.Net Core Web API using the Microsoft Identity Platform. The Web API will be protected using Azure Active Directory [OAuth 2.0 Bearer Authorization](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow). The API will support authenticated users with Work and School accounts. Further on the API will also call a downstream API ([Microsoft Graph](https://aka.ms/graph)) on-behalf of the signed-in user to provide additional value to its client apps.
+In this sample, we would protect an ASP.Net Core Web API using the Microsoft Identity Platform. The Web API will be protected using Azure Active Directory [OAuth 2.0 Bearer Authorization](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow). The API will support authenticated users with Work and School accounts. Further on the API will also call a downstream API ([Microsoft Graph](https://aka.ms/graph)) **on behalf of the signed-in user** using the [OAuth 2.0 on-behalf-of flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow) to provide additional value to its client apps.
 
-The Web API is marked as a [multi-tenant](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps) app, so that it can be [provisioned](#provisioning-your-multi-tenant-apps-in-another-azure-ad-tenant) into Azure AD tenants where the registered client applications in that tenant can then obtain [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) for this web API and make calls to it.
+The Web API is marked as a [multi-tenant](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps) app, so that it can be [provisioned](#provisioning-your-multi-tenant-apps-in-another-azure-ad-tenant-programmatically) into Azure AD tenants where the registered client applications in that tenant can then obtain [Access Tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) for this web API and make calls to it.
 
 > Note that the client applications that want to call this web API do not need to be multi-tenant themselves to be able to do so.
 
@@ -65,7 +68,7 @@ Both applications use the [Microsoft.Identity.Web](https://aka.ms/microsoft-iden
 The client Web App:
 
 1. Signs-in users using the [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) and [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) libraries.
-1. Acquires an [Access Token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) for the Web API.
+1. Acquires an [Access Token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) for the protected Web API.
 1. Calls the ASP.NET Core Web API by using the access token as a bearer token in the authentication header of the Http request.
 
 The Web API:
@@ -78,40 +81,49 @@ The Web API:
 
 ![Topology](./ReadmeFiles/topology.png)
 
-## Pre-requisites
+## Prerequisites
 
-- [Visual Studio](https://visualstudio.microsoft.com/downloads/)
-- At least two Azure Active Directory (Azure AD) tenants. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://docs.microsoft.com/azure/active-directory/develop/test-setup-environment/)
-- A user account in your Azure AD tenant. This sample will not work with a **personal Microsoft account**. Therefore, if you signed in to the [Azure portal](https://portal.azure.com) with a personal account and have never created a user account in your directory before, you need to do that now.
+* Either [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/download) and [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
+* At least two Azure Active Directory (Azure AD) tenants. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://docs.microsoft.com/azure/active-directory/develop/test-setup-environment/)
+* A user account in each of your **Azure AD** tenants.
 
-## Setup
+>This sample will not work with a **personal Microsoft account**. If you're signed in to the [Azure portal](https://portal.azure.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
+
+## Setup the sample
 
 ### Step 1:  Clone or download this repository
 
 From your shell or command line:
 
-```Shell
+```console
 git clone https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2.git
 cd "4-WebApp-your-API\4-3-AnyOrg"
 ```
 
-or download and extract the repository .zip file.
+or download and extract the repository *.zip* file.
 
-> :warning: Given that the name of the sample is quite long, and so are the names of the referenced packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
+> :warning: To avoid path length limitations on Windows, we recommend cloning into a directory near the root of your drive.
 
-### Step 2:  Register the sample applications with your Azure Active Directory tenant
+### Step 2: Navigate to project folder
+
+```console
+cd 4-WebApp-your-API\4-3-AnyOrg\TodoListService
+```
+
+### Step 2:  Register the sample application(s) in your tenant
 
 There are two projects in this sample. Each needs to be separately registered in your Azure AD tenant. To register these projects, you can:
 
-- either follow the steps below for manually register your apps
+- follow the steps below for manually register your apps
 - or use PowerShell scripts that:
   - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you.
   - modify the projects' configuration files.
 
 <details>
   <summary>Expand this section if you want to use this automation:</summary>
+> :warning: If you have never used **Microsoft Graph PowerShell** before, we recommend you go through the [App Creation Scripts Guide](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
 
-1. On Windows, run PowerShell and navigate to the root of the cloned directory
+1. On Windows, run PowerShell as **Administrator** and navigate to the root of the cloned directory
 1. In PowerShell run:
 
    ```PowerShell
@@ -119,137 +131,181 @@ There are two projects in this sample. Each needs to be separately registered in
    ```
 
 1. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
-1. In PowerShell run:
+1. For interactive process -in PowerShell, run:
 
    ```PowerShell
    cd .\AppCreationScripts\
-   .\Configure.ps1
+    .\Configure.ps1 -TenantId "[Optional] - your tenant id" -AzureEnvironmentName "[Optional] - Azure environment, defaults to 'Global'"
    ```
 
-   > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
-   > The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
+> Other ways of running the scripts are described in [App Creation Scripts guide](./AppCreationScripts/AppCreationScripts.md). The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
 
-   > ***Inside TodoListService/appsettings.json, find the app key 'AllowedTenants' and add your tenant (for which you've registered the application). Add the Tenant/Directory Id that you've noted earlier during registering the app. You can also add more tenants into this array if you want apps from those tenant being able to access this Web API***.
+> ***Inside TodoListService/appsettings.json, find the app key 'AllowedTenants' and add your tenant (for which you've registered the application). Add the Tenant/Directory Id that you've noted earlier during registering the app. You can also add more tenants into this array if you want apps from those tenant being able to access this Web API***.
 
 </details>
 
-Follow the steps below to manually walk through the steps to register and configure the applications in the Azure portal.
-
 #### Choose the Azure AD tenant where you want to create your applications
 
-As a first step you'll need to:
+To manually register the apps, as a first step you'll need to:
 
 1. Sign in to the [Azure portal](https://portal.azure.com).
-2. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant..
+1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant.
 
-#### Register the service app (WebApi-MultiTenant-ToDoListService-v2)
+#### Register the service app (WebApi-MultiTenant-v2)
 
-1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
-1. Select **New registration**.
+1. Navigate to the [Azure portal](https://portal.azure.com) and select the **Azure Active Directory** service.
+1. Select the **App Registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
-   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApi-MultiTenant-ToDoListService-v2`.
-   - Under **Supported account types**, select **Accounts in any organizational directory**.
-   - In the **Redirect URI (optional)** section, select **Web** in the combo-box and enter the following redirect URI: `https://localhost:44351/api/Home`.
-1. Select **Register** to create the application.
-1. In the app's registration screen, find and note the **Application (client) ID**. You use this value in your app's configuration file(s) later in your code.
-1. Select **Save** to save your changes.
-1. In the app's registration screen, click on the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
-1. In the **Client secrets** section, click on **New client secret**:
-   - Type a key description (for instance `app secret`),
-   - Select one of the available key durations (**In 1 year**, **In 2 years**, or **Never Expires**) as per your security posture.
-   - The generated key value will be displayed when you click the **Add** button. Copy the generated value for use in the steps later.
-   - You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
-1. In the app's registration screen, click on the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
-   - Click the **Add a permission** button and then,
-   - Ensure that the **Microsoft APIs** tab is selected.
-   - In the *Commonly used Microsoft APIs* section, click on **Microsoft Graph**
-   - In the **Delegated permissions** section, select the **User.Read.All** in the list. Use the search box if necessary.
-   - Click on the **Add permissions** button at the bottom.
-1. In the app's registration screen, select the **Expose an API** blade to the left to open the page where you can declare the parameters to expose this app as an Api for which client applications can obtain [access tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) for.
-The first thing that we need to do is to declare the unique [resource](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow) URI that the clients will be using to obtain access tokens for this Api. To declare an resource URI, follow the following steps:
-   - Click `Set` next to the **Application ID URI** to generate a URI that is unique for this app.
-   - For this sample, accept the proposed Application ID URI (api://{clientId}) by selecting **Save**.
-1. All Apis have to publish a minimum of two [scope](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-authorization-code) for the client's to obtain an access token successfully. To publish a scope, follow the following steps:
-   - Select **Add a scope** button open the **Add a scope** screen and Enter the values as indicated below:
-        - For **Scope name**, use `Read.User.Data`.
-        - Select **Admins and users** options for **Who can consent?**
-        - For **Admin consent display name** type `Access WebApi-MultiTenant-v2`
-        - For **Admin consent description** type `Allows the app to have the same access to information in the directory on behalf of the signed-in user.`
-        - For **User consent display name** type `Access WebApi-MultiTenant-v2`
-        - For **User consent description** type `Allow the application to access WebApi-MultiTenant-v2 on your behalf.`
-        - Keep **State** as **Enabled**
-        - Click on the **Add scope** button on the bottom to save this scope.
-   - Select **Add a scope** button open the **Add a scope** screen and Enter the values as indicated below:
-        - For **Scope name**, use `Write.User.Data`.
-        - Select **Admins and users** options for **Who can consent?**
-        - For **Admin consent display name** type `Access WebApi-MultiTenant-v2`
-        - For **Admin consent description** type `Allows the app to have the same access to information in the directory on behalf of the signed-in user.`
-        - For **User consent display name** type `Access WebApi-MultiTenant-v2`
-        - For **User consent description** type `Allow the application to access WebApi-MultiTenant-v2 on your behalf.`
-        - Keep **State** as **Enabled**
-        - Click on the **Add scope** button on the bottom to save this scope.
+    1. In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApi-MultiTenant-v2`.
+    1. Under **Supported account types**, select **Accounts in any organizational directory**
+    1. Select **Register** to create the application.
+1. In the **Overview** blade, find and note the **Application (client) ID**. You use this value in your app's configuration file(s) later in your code.
+1. In the app's registration screen, select the **Authentication** blade to the left.
+1. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where you can generate secrets and upload certificates.
+1. In the **Client secrets** section, select **New client secret**:
+    1. Type a key description (for instance `app secret`).
+    1. Select one of the available key durations (**6 months**, **12 months** or **Custom**) as per your security posture.
+    1. The generated key value will be displayed when you select the **Add** button. Copy and save the generated value for use in later steps.
+    1. You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
+    > :bulb: For enhanced security, instead of using client secrets, consider [using certificates](./README-use-certificate.md) and [Azure KeyVault](https://azure.microsoft.com/services/key-vault/#product-overview).
+    1. Since this app signs-in users, we will now proceed to select **delegated permissions**, which is is required by apps signing-in users.
+    1. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs:
+    1. Select the **Add a permission** button and then:
+    1. Ensure that the **Microsoft APIs** tab is selected.
+    1. In the *Commonly used Microsoft APIs* section, select **Microsoft Graph**
+    1. In the **Delegated permissions** section, select **User.Read.All** in the list. Use the search box if necessary.
+    1. Select the **Add permissions** button at the bottom.
+1. In the app's registration screen, select the **Expose an API** blade to the left to open the page where you can publish the permission as an API for which client applications can obtain [access tokens](https://aka.ms/access-tokens) for. The first thing that we need to do is to declare the unique [resource](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow) URI that the clients will be using to obtain access tokens for this API. To declare an resource URI(Application ID URI), follow the following steps:
+    1. Select **Set** next to the **Application ID URI** to generate a URI that is unique for this app.
+    1. For this sample, accept the proposed Application ID URI (`api://{clientId}`) by selecting **Save**.
+        > :information_source: Read more about Application ID URI at [Validation differences by supported account types (signInAudience)](https://docs.microsoft.com/azure/active-directory/develop/supported-accounts-validation).
+    
+##### Publish Delegated Permissions
 
-#### Configure the service app (WebApi-MultiTenant-ToDoListService-v2) to use your app registration
+1. All APIs must publish a minimum of one [scope](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-authorization-code), also called [Delegated Permission](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent#permission-types), for the client apps to obtain an access token for a *user* successfully. To publish a scope, follow these steps:
+1. Select **Add a scope** button open the **Add a scope** screen and Enter the values as indicated below:
+    1. For **Scope name**, use `ToDoList.Read`.
+    1. Select **Admins and users** options for **Who can consent?**.
+    1. For **Admin consent display name** type in *Read users ToDo list using the 'WebApi-MultiTenant-v2'*.
+    1. For **Admin consent description** type in *Allow the app to read the user's ToDo list using the 'WebApi-MultiTenant-v2'*.
+    1. For **User consent display name** type in *Read your ToDo list items via the 'WebApi-MultiTenant-v2'*.
+    1. For **User consent description** type in *Allow the app to read your ToDo list items via the 'WebApi-MultiTenant-v2'*.
+    1. Keep **State** as **Enabled**.
+    1. Select the **Add scope** button on the bottom to save this scope.
+    > Repeat the steps above for another scope named **ToDoList.ReadWrite**
+1. Select the **Manifest** blade on the left.
+    1. Set `accessTokenAcceptedVersion` property to **2**.
+    1. Select on **Save**.
+
+> :information_source:  Follow [the principle of least privilege when publishing permissions](https://learn.microsoft.com/security/zero-trust/develop/protected-api-example) for a web API.
+
+##### Publish Application Permissions
+
+1. All APIs should publish a minimum of one [App role for applications](https://docs.microsoft.com/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps#assign-app-roles-to-applications), also called [Application Permission](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent#permission-types), for the client apps to obtain an access token as *themselves*, i.e. when they are not signing-in a user. **Application permissions** are the type of permissions that APIs should publish when they want to enable client applications to successfully authenticate as themselves and not need to sign-in users. To publish an application permission, follow these steps:
+1. Still on the same app registration, select the **App roles** blade to the left.
+1. Select **Create app role**:
+    1. For **Display name**, enter a suitable name for your application permission, for instance **ToDoList.Read.All**.
+    1. For **Allowed member types**, choose **Application** to ensure other applications can be granted this permission.
+    1. For **Value**, enter **ToDoList.Read.All**.
+    1. For **Description**, enter *Allow the app to read every user's ToDo list using the 'WebApi-MultiTenant-v2'*.
+    1. Select **Apply** to save your changes.
+
+    > Repeat the steps above for another app permission named **ToDoList.ReadWrite.All**
+
+##### Configure Optional Claims
+
+1. Still on the same app registration, select the **Token configuration** blade to the left.
+1. Select **Add optional claim**:
+    1. Select **optional claim type**, then choose **Access**.
+     1. Select the optional claim **idtyp**.
+    > Indicates token type. This claim is the most accurate way for an API to determine if a token is an app token or an app+user token. This is not issued in tokens issued to users.
+    1. Select **Add** to save your changes.
+
+##### Configure the service app (WebApi-MultiTenant-v2) to use your app registration
 
 Open the project in your IDE (like Visual Studio or Visual Studio Code) to configure the code.
 
->In the steps below, "ClientID" is the same as "Application ID" or "AppId".
+> In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
-1. Open the `ToDoListService\appsettings.json` file
-1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
-1. Find the app key `TenantId` and replace the existing value with 'common'.
-1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `WebApi-MultiTenant-ToDoListService-v2` application copied from the Azure portal.
-1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApi-MultiTenant-ToDoListService-v2` app, in the Azure portal.
-1. Find the app key `AllowedTenants` and add your tenant (for which you've registered the application). You can add as many tenants as you wish into this array and all of them will have access to Web API.
+1. Open the `ToDoListService\appsettings.json` file.
+1. Find the key `Domain` and replace the existing value with your Azure AD tenant domain, ex. `contoso.onmicrosoft.com`.
+1. Find the key `TenantId` and replace the existing value with 'common'.
+1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `WebApi-MultiTenant-v2` app copied from the Azure portal.
+1. Find the key `ClientSecret` and replace the existing value with the generated secret that you saved during the creation of `WebApi-MultiTenant-v2` copied from the Azure portal.
 
-#### Register the client app (WebApp-MultiTenant-ToDoListClient-v2)
+#### Register the client app (WebApp-MultiTenant-v2)
 
-1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
-1. Select **New registration**.
+1. Navigate to the [Azure portal](https://portal.azure.com) and select the **Azure Active Directory** service.
+1. Select the **App Registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
-   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp-MultiTenant-ToDoListClient-v2`.
-   - Under **Supported account types**, select **Accounts in any organizational directory**.
-   - In the **Redirect URI (optional)** section, select **Web** in the combo-box and enter the following redirect URI: `https://localhost:44321/`.
-     > Note that there are more than one redirect URIs used in this sample. You'll need to add them from the **Authentication** tab later after the app has been created successfully.
-1. Select **Register** to create the application.
-1. In the app's registration screen, find and note the **Application (client) ID**. You use this value in your app's configuration file(s) later in your code.
-1. In the app's registration screen, select **Authentication** in the menu.
-   - If you don't have a platform added, select **Add a platform** and select the **Web** option.
-   - In the **Redirect URIs** section, enter the following redirect URIs.
-      - `https://localhost:44321/signin-oidc`
-   - In the **Logout URL** section, set it to `https://localhost:44321/signout-oidc`.
-1. Select **Save** to save your changes.
-1. In the app's registration screen, click on the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
-1. In the **Client secrets** section, click on **New client secret**:
-   - Type a key description (for instance `app secret`),
-   - Select one of the available key durations (**In 1 year**, **In 2 years**, or **Never Expires**) as per your security posture.
-   - The generated key value will be displayed when you click the **Add** button. Copy the generated value for use in the steps later.
-   - You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
-1. In the app's registration screen, click on the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
-   - Click the **Add a permission** button and then,
-   - Ensure that the **My APIs** tab is selected.
-   - In the list of APIs, select the API `WebApi-MultiTenant-ToDoListService-v2`.
-   - In the **Delegated permissions** section, select the **Access 'WebApi-MultiTenant-ToDoListService-v2'** in the list. Use the search box if necessary.
-   - Click on the **Add permissions** button at the bottom.
+    1. In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp-MultiTenant-v2`.
+    1. Under **Supported account types**, select **Accounts in any organizational directory**
+    1. Select **Register** to create the application.
+1. In the **Overview** blade, find and note the **Application (client) ID**. You use this value in your app's configuration file(s) later in your code.
+1. In the app's registration screen, select the **Authentication** blade to the left.
+1. If you don't have a platform added, select **Add a platform** and select the **Web** option.
+    1. In the **Redirect URI** section enter the following redirect URIs:
+        1. `https://localhost:44321/`
+        1. `https://localhost:44321/signin-oidc`
+    1. In the **Front-channel logout URL** section, set it to `https://localhost:44321/signout-oidc`.
+    1. Click **Save** to save your changes.
+1. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where you can generate secrets and upload certificates.
+1. In the **Client secrets** section, select **New client secret**:
+    1. Type a key description (for instance `app secret`).
+    1. Select one of the available key durations (**6 months**, **12 months** or **Custom**) as per your security posture.
+    1. The generated key value will be displayed when you select the **Add** button. Copy and save the generated value for use in later steps.
+    1. You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
+    > :bulb: For enhanced security, instead of using client secrets, consider [using certificates](./README-use-certificate.md) and [Azure KeyVault](https://azure.microsoft.com/services/key-vault/#product-overview).
+    1. Since this app signs-in users, we will now proceed to select **delegated permissions**, which is is required by apps signing-in users.
+    1. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs:
+    1. Select the **Add a permission** button and then:
+    1. Ensure that the **My APIs** tab is selected.
+    1. In the list of APIs, select the API `WebApi-MultiTenant-v2`.
+    1. In the **Delegated permissions** section, select **ToDoList.Read**, **ToDoList.ReadWrite** in the list. Use the search box if necessary.
+    1. Select the **Add permissions** button at the bottom.
 
-#### Configure the client app (WebApp-MultiTenant-ToDoListClient-v2) to use your app registration
+##### Configure Optional Claims
+
+1. Still on the same app registration, select the **Token configuration** blade to the left.
+1. Select **Add optional claim**:
+    1. Select **optional claim type**, then choose **ID**.
+    1. Select the optional claim **acct**.
+    > Provides user's account status in tenant. If the user is a **member** of the tenant, the value is *0*. If they're a **guest**, the value is *1*.
+    1. Select **Add** to save your changes.
+
+##### Configure the client app (WebApp-MultiTenant-v2) to use your app registration
 
 Open the project in your IDE (like Visual Studio or Visual Studio Code) to configure the code.
 
->In the steps below, "ClientID" is the same as "Application ID" or "AppId".
+> In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
-1. Open the `ToDoListClient\appsettings.json` file
-1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `WebApp-MultiTenant-ToDoListClient-v2` application copied from the Azure portal.
-1. Find the app key `TenantId` and replace the existing value with 'common'.
-1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
-1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp-MultiTenant-ToDoListClient-v2` app, in the Azure portal.
-1. Find the app key `RedirectUri` and replace the existing value with the base address of the WebApp-MultiTenant-ToDoListClient-v2 project (by default `https://localhost:44321/`).
-1. Find the app key `TodoListScope` and replace the existing value with ScopeDefault.
-1. Find the app key `TodoListAppId` and replace the existing value with the application ID (clientId) of the `WebApi-MultiTenant-ToDoListService-v2` application copied from the Azure portal.
-1. Find the app key `TodoListBaseAddress` and replace the existing value with the base address of the WebApi-MultiTenant-ToDoListService-v2 project (by default `https://localhost:44351/`).
-1. Find the app key `AdminConsentRedirectApi` and replace the existing value with "https://localhost:44351/api/Home"
+1. Open the `ToDoListClient\appsettings.json` file.
+1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `WebApp-MultiTenant-v2` app copied from the Azure portal.
+1. Find the key `TenantId` and replace the existing value with 'common'.
+1. Find the key `Domain` and replace the existing value with your Azure AD tenant domain, ex. `contoso.onmicrosoft.com`.
+1. Find the key `ClientSecret` and replace the existing value with the generated secret that you saved during the creation of `WebApp-MultiTenant-v2` copied from the Azure portal.
+1. Find the key `RedirectUri` and replace the existing value with the base address of `WebApp-MultiTenant-v2` (by default `https://localhost:44321/`).
+1. Find the key `TodoListScope` and replace the existing value with ScopeDefault.
+1. Find the key `TodoListAppId` and replace the existing value with the application ID (clientId) of `WebApi-MultiTenant-v2` app copied from the Azure portal.
+1. Find the key `TodoListBaseAddress` and replace the existing value with the base address of `WebApi-MultiTenant-v2` (by default `https://localhost:44351/`).
+1. Find the key `AdminConsentRedirectApi` and replace the existing value with the Redirect URI for `WebApi-MultiTenant-v2`. (by default `https://localhost:44351/`).
 
-### Step 4: Run the sample
+#### Configure Known Client Applications for service (WebApi-MultiTenant-v2)
+
+For a middle-tier web API (`WebApi-MultiTenant-v2`) to be able to call a downstream web API, the middle tier app needs to be granted the required permissions as well. However, since the middle-tier cannot interact with the signed-in user, it needs to be explicitly bound to the client app in its **Azure AD** registration. This binding merges the permissions required by both the client and the middle-tier web API and presents it to the end user in a single consent dialog. The user then consent to this combined set of permissions. To achieve this, you need to add the **Application Id** of the client app to the `knownClientApplications` property in the **manifest** of the web API. Here's how:
+
+1. In the [Azure portal](https://portal.azure.com), navigate to your `WebApi-MultiTenant-v2` app registration, and select the **Manifest** blade.
+1. In the manifest editor, change the `knownClientApplications: []` line so that the array contains the Client ID of the client application (`WebApp-MultiTenant-v2`) as an element of the array.
+
+For instance:
+
+```json
+    "knownClientApplications": ["ca8dca8d-f828-4f08-82f5-325e1a1c6428"],
+```
+
+1. **Save** the changes to the manifest.
+
+### Step 3: Running the sample
 
 You can run the sample by using either Visual Studio or command line interface as shown below:
 
@@ -582,6 +638,7 @@ Another way to control who is allowed into API is to use Policies. This is confi
 
 During registaring Web API Application, two scopes were created **Read.User.Data** and **Write.User.Data**.
 For enhanced and secure access we can decide what scope can access what operation. For example Read.User.Data scope is required for GET:
+
 ```csharp
     // GET: api/TodoItems
     [HttpGet]
@@ -604,6 +661,7 @@ For enhanced and secure access we can decide what scope can access what operatio
 ```
 
 **Write.User.Data** will let user access POST:
+
 ```csharp
     [HttpPost]
     [RequiredScope("Write.User.Data")]
