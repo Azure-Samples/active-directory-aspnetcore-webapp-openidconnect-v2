@@ -292,8 +292,8 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. Find the key `Domain` and replace the existing value with your Azure AD tenant domain, ex. `contoso.onmicrosoft.com`.
 1. Find the key `ClientSecret` and replace the existing value with the generated secret that you saved during the creation of `WebApp_MultiTenant_v2` copied from the Azure portal.
 1. Find the key `RedirectUri` and replace the existing value with the base address of `WebApp_MultiTenant_v2` (by default `https://localhost:44321/`).
-1. Find the key `TodoListScope` and replace the existing value with ScopeDefault.
-1. Find the key `TodoListAppId` and replace the existing value with the application ID (clientId) of `WebApi_MultiTenant_v2` app copied from the Azure portal.
+1. Find the key `TodoListServiceScope` and replace the existing value with ScopeDefault.
+1. Find the key `TodoListServiceAppId` and replace the existing value with the application ID (clientId) of `WebApi_MultiTenant_v2` app copied from the Azure portal.
 1. Find the key `TodoListBaseAddress` and replace the existing value with the base address of `WebApi_MultiTenant_v2` (by default `https://localhost:44351/`).
 1. Find the key `AdminConsentRedirectApi` and replace the existing value with the Redirect URI for `WebApi_MultiTenant_v2`. (by default `https://localhost:44351/`).
 1. Find the app key `ClientCertificates` and add the keys as displayed below:

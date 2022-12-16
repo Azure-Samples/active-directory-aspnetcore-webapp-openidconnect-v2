@@ -358,7 +358,7 @@ Function ConfigureApplications
                                                       @{ `
                                                           RedirectUris = "https://localhost:44321/", "https://localhost:44321/signin-oidc"; `
                                                           HomePageUrl = "https://localhost:44321/"; `
-                                                          LogoutUrl = "https://localhost:44321/signout-oidc"; `
+                                                          LogoutUrl = "https://localhost:44321/signout-callback-oidc"; `
                                                         } `
                                                        -SignInAudience AzureADMultipleOrgs `
                                                       #end of command
@@ -480,7 +480,7 @@ Function ConfigureApplications
     # $configFile = $pwd.Path + "\..\ToDoListClient\appsettings.json"
     $configFile = $(Resolve-Path ($pwd.Path + "\..\ToDoListClient\appsettings.json"))
     
-    $dictionary = @{ "ClientId" = $clientAadApplication.AppId;"TenantId" = 'common';"Domain" = $tenantName;"ClientSecret" = $clientAppKey;"RedirectUri" = $clientAadApplication.Web.HomePageUrl;"TodoListScope" = ("api://"+$serviceAadApplication.AppId+"/.default");"TodoListAppId" = $serviceAadApplication.AppId;"TodoListBaseAddress" = $serviceAadApplication.Web.HomePageUrl;"AdminConsentRedirectApi" = $serviceAadApplication.Web.RedirectUris };
+    $dictionary = @{ "ClientId" = $clientAadApplication.AppId;"TenantId" = 'common';"Domain" = $tenantName;"ClientSecret" = $clientAppKey;"RedirectUri" = $clientAadApplication.Web.HomePageUrl;"TodoListServiceScope" = ("api://"+$serviceAadApplication.AppId+"/.default");"TodoListServiceAppId" = $serviceAadApplication.AppId;"TodoListBaseAddress" = $serviceAadApplication.Web.HomePageUrl;"AdminConsentRedirectApi" = $serviceAadApplication.Web.RedirectUris };
 
     Write-Host "Updating the sample config '$configFile' with the following config values:" -ForegroundColor Yellow 
     $dictionary

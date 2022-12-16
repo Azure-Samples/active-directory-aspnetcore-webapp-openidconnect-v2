@@ -18,10 +18,10 @@ namespace ToDoListClient.Controllers
 
         public HomeController(IConfiguration configuration)
         {
-            _TodoListScope = configuration["TodoList:TodoListScope"];
+            _TodoListScope = configuration["TodoList:TodoListServiceScope"];
             _ClientId = configuration["AzureAd:ClientId"];
             _RedirectUri = configuration["RedirectUri"];
-            _ApiClientId = configuration["TodoList:TodoListAppId"];
+            _ApiClientId = configuration["TodoList:TodoListServiceAppId"];
             _ApiRedirectUri = configuration["TodoList:AdminConsentRedirectApi"];
             if (!string.IsNullOrEmpty(_RedirectUri))
             {

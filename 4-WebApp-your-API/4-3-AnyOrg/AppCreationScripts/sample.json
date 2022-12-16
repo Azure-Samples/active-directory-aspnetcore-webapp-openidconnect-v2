@@ -204,11 +204,11 @@
           "value": "client.HomePage"
         },
         {
-          "key": "TodoListScope",
+          "key": "TodoListServiceScope",
           "value": "service.ScopeDefault"
         },
         {
-          "Key": "TodoListAppId",
+          "Key": "TodoListServiceAppId",
           "value": "service.AppId"
         },
         {
