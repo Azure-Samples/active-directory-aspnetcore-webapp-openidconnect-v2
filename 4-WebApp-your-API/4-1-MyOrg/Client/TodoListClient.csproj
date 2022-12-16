@@ -18,8 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Identity.Web" Version="2.0.4-preview" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.0.4-preview" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="2.0.8-preview" />
+    <PackageReference Include="Microsoft.Identity.Web.DownstreamRestApi" Version="2.0.8-preview" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.0.8-preview" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
