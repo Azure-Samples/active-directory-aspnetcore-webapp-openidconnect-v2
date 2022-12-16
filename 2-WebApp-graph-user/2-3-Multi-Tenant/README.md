@@ -403,7 +403,7 @@ AuthenticationResult result = await confidentialClientApplication
  The sample is based on [ASP.NET CORE API template](https://learn.microsoft.com/aspnet/core/tutorials/first-web-api?view=aspnetcore-7.0&tabs=visual-studio)
  During the project configuration, specify `Microsoft Identity Platform` inside `Authentication Type` dropdown box. As IDE installs the solution, it might require to install an additional components.
  
- After the initial project was created, we have to continue with firther configuration and tweaking:
+ After the initial project was created, we have to continue with further configuration and tweaking:
 
  1. Replace initial Microsoft Identity Web code
 
