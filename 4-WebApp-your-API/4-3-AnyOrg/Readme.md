@@ -239,7 +239,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
     1. In the **Redirect URI** section enter the following redirect URIs:
         1. `https://localhost:44321/`
         1. `https://localhost:44321/signin-oidc`
-    1. In the **Front-channel logout URL** section, set it to `https://localhost:44321/signout-oidc`.
+    1. In the **Front-channel logout URL** section, set it to `https://localhost:44321/signout-callback-oidc`.
     1. Click **Save** to save your changes.
 1. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where you can generate secrets and upload certificates.
 1. In the **Client secrets** section, select **New client secret**:
@@ -277,8 +277,8 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. Find the key `Domain` and replace the existing value with your Azure AD tenant domain, ex. `contoso.onmicrosoft.com`.
 1. Find the key `ClientSecret` and replace the existing value with the generated secret that you saved during the creation of `WebApp_MultiTenant_v2` copied from the Azure portal.
 1. Find the key `RedirectUri` and replace the existing value with the base address of `WebApp_MultiTenant_v2` (by default `https://localhost:44321/`).
-1. Find the key `TodoListScope` and replace the existing value with ScopeDefault.
-1. Find the key `TodoListAppId` and replace the existing value with the application ID (clientId) of `WebApi_MultiTenant_v2` app copied from the Azure portal.
+1. Find the key `TodoListServiceScope` and replace the existing value with ScopeDefault.
+1. Find the key `TodoListServiceAppId` and replace the existing value with the application ID (clientId) of `WebApi_MultiTenant_v2` app copied from the Azure portal.
 1. Find the key `TodoListBaseAddress` and replace the existing value with the base address of `WebApi_MultiTenant_v2` (by default `https://localhost:44351/`).
 1. Find the key `AdminConsentRedirectApi` and replace the existing value with the Redirect URI for `WebApi_MultiTenant_v2`. (by default `https://localhost:44351/`).
 
