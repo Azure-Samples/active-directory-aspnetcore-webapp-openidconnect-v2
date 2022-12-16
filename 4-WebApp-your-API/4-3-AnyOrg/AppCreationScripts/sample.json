@@ -1,16 +1,16 @@
 {
   "Sample": {
-    "Title": "Integrate a web app and Web Api that authenticates users and calls a web API and Microsoft Graph using the multi-tenant integration pattern (SaaS)",
+    "Title": "Integrate a web app and Web Api that authenticates users and calls a custom Web API and Microsoft Graph using the multi-tenant integration pattern (SaaS)",
     "Level": 400,
     "Client": "ASP.NET Core Web App",
     "Service": "ASP.NET Core Web API",
     "RepositoryUrl": "microsoft-identity-platform-aspnetcore-webapp-tutorial",
     "Endpoint": "AAD v2.0",
-    "Products": [ "azure", "dotnet", "azure-active-directory", "office-graph-api" ],
+    "Products": [ "azure", "dotnet", "azure-active-directory", "ms-graph" ],
     "Platform": "AspNetCore",
     "Languages": [ "csharp" ],
     "Library": [ "Microsoft.Identity.Web" ],
-    "Description": "Integrate a web app and Web Api that authenticates users and calls the protected Web API and Microsoft Graph using the multi-tenant integration pattern (SaaS)"
+    "Description": "Integrate a web app and Web Api that authenticates users and calls a protected Web API and Microsoft Graph using the multi-tenant integration pattern (SaaS)"
   },
 
   /*
