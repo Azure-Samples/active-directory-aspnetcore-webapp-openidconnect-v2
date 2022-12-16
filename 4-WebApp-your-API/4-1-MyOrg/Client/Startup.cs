@@ -48,7 +48,7 @@ namespace WebApp_OpenIDConnect_DotNet
             // Refer to https://github.com/AzureAD/microsoft-identity-web/wiki/web-apps to learn more
             services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
                     .EnableTokenAcquisitionToCallDownstreamApi(
-                        Configuration.GetSection("TodoList:TodoListScopes").Get<string>().Split(" ", System.StringSplitOptions.RemoveEmptyEntries)
+                        Configuration.GetSection("TodoList:Scopes").Get<string[]>()
                      )
                     .AddInMemoryTokenCaches();
 
@@ -71,7 +71,9 @@ namespace WebApp_OpenIDConnect_DotNet
 
 
             // Add APIs
-            services.AddTodoListService(Configuration);
+            //services.AddTodoListService(Configuration);
+            services.AddDownstreamRestApi("TodoList", Configuration.GetSection("TodoList"));
+
 
             // The following flag can be used to get more descriptive errors in development environments
             // Enable diagnostic logging to help with troubleshooting.  For more details, see https://aka.ms/IdentityModel/PII.
