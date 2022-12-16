@@ -254,7 +254,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
     1. In the **Redirect URI** section enter the following redirect URIs:
         1. `https://localhost:44321/`
         1. `https://localhost:44321/signin-oidc`
-    1. In the **Front-channel logout URL** section, set it to `https://localhost:44321/signout-oidc`.
+    1. In the **Front-channel logout URL** section, set it to `https://localhost:44321/signout-callback-oidc`.
     1. Click **Save** to save your changes.
 1. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where you can generate secrets and upload certificates.
 1. In the **Client secrets** section, select **New client secret**:
