@@ -15,7 +15,7 @@ In `Startup.cs`, below lines of code enables Microsoft identity platform endpoin
 
 ```csharp
 services.AddMicrosoftWebAppAuthentication(Configuration)
-    .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Configuration["TodoList:TodoListScope"] })
+    .AddMicrosoftWebAppCallsWebApi(Configuration, new string[] { Configuration["TodoList:TodoListServiceScope"] })
    .AddInMemoryTokenCaches();
 ```
 
@@ -51,7 +51,7 @@ public IActionResult AdminConsentClient()
 {
     string adminConsent2 = "https://login.microsoftonline.com/organizations/v2.0/adminconsent?client_id=" + _ClientId
         + "&redirect_uri=" + _RedirectUri
-        + "&state=123&scope=" + _TodoListScope;
+        + "&state=123&scope=" + _TodoListServiceScope;
 
     return Redirect(adminConsent2);
 }

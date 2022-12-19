@@ -27,7 +27,7 @@ namespace ToDoListClient.Services
     public class ToDoListService : IToDoListService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _TodoListScope = string.Empty;
+        private readonly string _TodoListServiceScope = string.Empty;
         private readonly string _TodoListBaseAddress = string.Empty;
         private readonly string _RedirectUri = string.Empty;
         private readonly string _ApiRedirectUri = string.Empty;
@@ -37,7 +37,7 @@ namespace ToDoListClient.Services
         {
             _httpClient = httpClient;
             _tokenAcquisition = tokenAcquisition;
-            _TodoListScope = configuration["TodoList:TodoListScope"];
+            _TodoListServiceScope = configuration["TodoList:TodoListServiceScope"];
             _TodoListBaseAddress = configuration["TodoList:TodoListBaseAddress"];
             _RedirectUri = configuration["RedirectUri"];
             _ApiRedirectUri = configuration["TodoList:AdminConsentRedirectApi"];
@@ -151,7 +151,7 @@ namespace ToDoListClient.Services
 
         private async Task PrepareAuthenticatedClient()
         {
-            var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new[] { _TodoListScope });
+            var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new[] { _TodoListServiceScope });
             Debug.WriteLine($"access token-{accessToken}");
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

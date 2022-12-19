@@ -10,7 +10,7 @@ using ToDoListClient.Utils;
 
 namespace ToDoListClient.Controllers
 {
-    [AuthorizeForScopes(ScopeKeySection = "TodoList:TodoListScope")]
+    [AuthorizeForScopes(ScopeKeySection = "TodoList:TodoListServiceScope")]
     public class ToDoListController : Controller
     {
         private IToDoListService _todoListService;
@@ -31,9 +31,14 @@ namespace ToDoListClient.Controllers
         public async Task<IActionResult> Create()
         {
             ToDoItem todo = new ToDoItem();
+            var signedInUser = HttpContext.User.GetDisplayName();
             try
             {
                 List<string> result = (await _todoListService.GetAllGraphUsersAsync()).ToList();
+
+                //move signed in user to top of the list so it will be selected on Create ToDo item page
+                result.Remove(signedInUser);
+                result.Insert(0, signedInUser);
 
                 TempData["UsersDropDown"] = result
                 .Select(u => new SelectListItem
@@ -41,7 +46,7 @@ namespace ToDoListClient.Controllers
                     Text = u
                 }).ToList();
                 TempData["TenantId"] = HttpContext.User.GetTenantId();
-                TempData["AssignedBy"] = HttpContext.User.GetDisplayName();
+                TempData["AssignedBy"] = signedInUser;
                 return View(todo);
             }
             catch (WebApiMsalUiRequiredException ex)
