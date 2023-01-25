@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Graph;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Client;
+using Microsoft.Graph;
 
 namespace TodoListBFF.Controllers;
 
-[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-[AuthorizeForScopes(Scopes = new string[] { "user.read" })]
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class ProfileController : Controller
@@ -38,7 +37,7 @@ public class ProfileController : Controller
         }
         catch (Exception ex)
         {
-            return BadRequest("An error occurred while calling the downstream API\n" + ex.Message);
+            return BadRequest(ex.Message);
         }
     }
 }

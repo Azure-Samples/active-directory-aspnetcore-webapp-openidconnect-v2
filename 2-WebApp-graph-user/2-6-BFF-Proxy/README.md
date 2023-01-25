@@ -35,7 +35,7 @@ extensions:
 
 ## Overview
 
-This sample demonstrates a ASP.NET Core web app calling Microsoft Graph.
+This sample demonstrates a React single-page application with an ASP.NET Core backend authenticating users and calling the Microsoft Graph API using the backend for frontend proxy pattern.
 
 > :information_source: To learn how applications integrate with [Microsoft Graph](https://aka.ms/graph), consider going through the recorded session: [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A)
 
@@ -171,20 +171,23 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 From your shell or command line, execute the following commands:
 
 ```console
-    cd 2-WebApp-graph-user/2-6-BFF-Proxy
+    cd 2-WebApp-graph-user/2-6-BFF-Proxy/CallGraphBFF
     dotnet run
 ```
 
 ## Explore the sample
 
-> * Explain how to explore the sample.
-> * Insert a screenshot of the client application.
+1. Open your browser and navigate to `https://localhost:7000`.
+1. Select the **Login** button on the navigation bar to sign-in.
+1. Select the **Profile** button on the navigation bar to call Microsoft Graph.
+
+![Screenshot Image](./ReadmeFiles/screenshot.png)
 
 > :information_source: Did the sample not work for you as expected? Then please reach out to us using the [GitHub Issues](../../../../issues) page.
 
 ## We'd love your feedback!
 
-Were we successful in addressing your learning objective? Consider taking a moment to [share your experience with us](Enter_Survey_Form_Link).
+Were we successful in addressing your learning objective? Consider taking a moment to [share your experience with us](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR73pcsbpbxNJuZCMKN0lURpUNEFCQ0FSMFlPQTJURkJZMTRZWVJRNkdRMCQlQCN0PWcu).
 
 ## Troubleshooting
 
@@ -225,8 +228,8 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 #### Update the Azure AD app registration (CallGraphBFF)
 
 1. Navigate back to to the [Azure portal](https://portal.azure.com).
-In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations (Preview)**.
-1. In the resulting screen, select the `callgraphbff` application.
+In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations**.
+1. In the resulting screen, select the `CallGraphBFF` application.
 1. In the app's registration screen, select **Authentication** in the menu.
     1. In the **Redirect URIs** section, update the reply URLs to match the site URL of your Azure deployment. For example:
         1. `https://callgraphbff.azurewebsites.net/api/auth/signin-oidc`
