@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.UI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,8 @@ builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefa
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 
+    options.Events = new RejectSessionCookieWhenAccountNotInCacheEvents();
+
     //options.Events.OnRedirectToLogin = context =>
     //{
     //    context.Response.StatusCode = 401;
@@ -35,9 +38,8 @@ builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefa
     //};
 });
 
-builder.Services.AddControllersWithViews();
-
-builder.Services.AddHttpClient();
+builder.Services.AddControllersWithViews()
+    .AddMicrosoftIdentityUI();
 
 var app = builder.Build();
 

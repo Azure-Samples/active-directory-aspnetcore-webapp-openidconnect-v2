@@ -25,7 +25,7 @@ public class AuthController : Controller
         await HttpContext.SignOutAsync();
 
         List<string> optionList = new List<string> { 
-            CookieAuthenticationDefaults.AuthenticationScheme, 
+            CookieAuthenticationDefaults.AuthenticationScheme,
             OpenIdConnectDefaults.AuthenticationScheme 
         };
 
