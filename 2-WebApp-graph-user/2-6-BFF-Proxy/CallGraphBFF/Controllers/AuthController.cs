@@ -38,7 +38,7 @@ public class AuthController : Controller
     [HttpGet("account")]
     public ActionResult GetAccount()
     {
-        if (User.Identity.IsAuthenticated)
+        if (User.Identity != null && User.Identity.IsAuthenticated)
         {
             var claims = ((ClaimsIdentity)this.User.Identity).Claims
                 .Select(c => new { type = c.Type, value = c.Value })

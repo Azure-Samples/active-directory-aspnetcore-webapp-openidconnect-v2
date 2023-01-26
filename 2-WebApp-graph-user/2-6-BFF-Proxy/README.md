@@ -71,10 +71,19 @@ or download and extract the repository *.zip* file.
 ### Step 2: Navigate to project folder
 
 ```console
-    cd 2-WebApp-graph-user/2-6-BFF-Proxy
+    cd 2-WebApp-graph-user/2-6-BFF-Proxy/CallGraphBFF
 ```
 
-### Step 3: Register the sample application(s) in your tenant
+### Step 3. Trust development certificates
+
+```console
+   dotnet dev-certs https --clean
+   dotnet dev-certs https --trust
+```
+
+For more information and potential issues, see: [HTTPS in .NET Core](https://docs.microsoft.com/aspnet/core/security/enforcing-ssl).
+
+### Step 4: Register the sample application(s) in your tenant
 
 There is one project in this sample. To register it, you can:
 
@@ -166,12 +175,12 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `CallGraphBFF` app copied from the Azure portal.
 1. Find the key `ClientSecret` and replace the existing value with the generated secret that you saved during the creation of `CallGraphBFF` copied from the Azure portal.
 
-### Step 4: Running the sample
+### Step 5: Running the sample
 
 From your shell or command line, execute the following commands:
 
 ```console
-    cd 2-WebApp-graph-user/2-6-BFF-Proxy
+    cd 2-WebApp-graph-user/2-6-BFF-Proxy/CallGraphBFF
     dotnet run
 ```
 

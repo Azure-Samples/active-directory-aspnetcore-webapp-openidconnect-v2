@@ -24,18 +24,6 @@ builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefa
     options.Cookie.IsEssential = true;
 
     options.Events = new RejectSessionCookieWhenAccountNotInCacheEvents();
-
-    //options.Events.OnRedirectToLogin = context =>
-    //{
-    //    context.Response.StatusCode = 401;
-    //    return Task.CompletedTask;
-    //};
-
-    //options.Events.OnRedirectToAccessDenied = context =>
-    //{
-    //    context.Response.StatusCode = 401;
-    //    return Task.CompletedTask;
-    //};
 });
 
 builder.Services.AddControllersWithViews()

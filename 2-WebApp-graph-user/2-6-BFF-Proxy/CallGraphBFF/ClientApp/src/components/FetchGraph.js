@@ -37,9 +37,12 @@ export class FetchGraph extends Component {
   getGraphProfile = async () => {
     try {
       const response = await fetch('api/profile');
+
       if (response.ok) {
         const data = await response.json();
         this.setState({ profile: data, loading: false }); 
+      } else if (response.status === 401) {
+        this.props.login();
       }
     } catch (error) {
       console.log(error);
