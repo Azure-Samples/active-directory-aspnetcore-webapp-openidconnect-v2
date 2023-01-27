@@ -15,16 +15,41 @@ const AuthProviderHOC = (C) =>
             await this.getAccount();
         }
 
-        login = () => {
-            window.location.replace('api/auth/login');
+        login = (postLoginRedirectUri, claimsChallenge) => {
+            let url = "api/auth/login";
+
+            const searchParams = new URLSearchParams({});
+
+            if (postLoginRedirectUri) {
+                searchParams.append('postLoginRedirectUri', encodeURIComponent(postLoginRedirectUri));
+            }
+
+            if (claimsChallenge) {
+                searchParams.append('claimsChallenge', JSON.stringify(claimsChallenge));
+            }
+
+            url = `${url}?${searchParams.toString()}`;
+
+            window.location.replace(url);
         }
 
-        logout = () =>{
+        logout = (postLogoutRedirectUri) => {
             this.setState({ isAuthenticated: false, account: null });
-            window.location.replace('api/auth/logout');
+
+            let url = "api/auth/login";
+
+            const searchParams = new URLSearchParams({});
+
+            if (postLogoutRedirectUri) {
+                searchParams.append('postLoginRedirectUri', encodeURIComponent(postLogoutRedirectUri));
+            }
+
+            url = `${url}?${searchParams.toString()}`;
+
+            window.location.replace(url);
         }
 
-        getAccount = async() => {
+        getAccount = async () => {
             const response = await fetch('api/auth/account');
             const data = await response.json();
 

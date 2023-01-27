@@ -40,9 +40,13 @@ export class FetchGraph extends Component {
 
       if (response.ok) {
         const data = await response.json();
-        this.setState({ profile: data, loading: false }); 
+        this.setState({ profile: data, loading: false });
       } else if (response.status === 401) {
-        this.props.login();
+        if (response.body) {
+          const claims = await response.json();
+          this.props.login(window.location.href, claims);
+        }
+        this.props.login(window.location.href);
       }
     } catch (error) {
       console.log(error);

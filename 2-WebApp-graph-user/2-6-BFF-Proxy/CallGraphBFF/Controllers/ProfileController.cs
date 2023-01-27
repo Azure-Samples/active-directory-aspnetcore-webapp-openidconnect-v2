@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Identity.Client;
 using Microsoft.Identity.Web;
 using Microsoft.Graph;
 
@@ -25,18 +26,22 @@ public class ProfileController : Controller
         {
             User profile = await _graphServiceClient.Me
                 .Request()
-                .WithScopes("user.read")
                 .GetAsync();
 
             return Ok(profile);
         }
-        catch (ServiceException svcex) when (svcex.InnerException != null && svcex.InnerException.Message.Contains("MsalUiRequiredException"))
+        catch (ServiceException svcex) 
+        when (svcex.InnerException is MicrosoftIdentityWebChallengeUserException)
         {
-            return Unauthorized("MsalUiRequiredException occurred. Please sign-in again.\n" + svcex.Message);
+            return Unauthorized("MicrosoftIdentityWebChallengeUserException occurred.\n" + svcex.Message);
         }
-        catch (ServiceException svcex) when (svcex.Message.Contains("Continuous access evaluation"))
+        catch (ServiceException svcex) 
+        when (svcex.Message.Contains("Continuous access evaluation"))
         {
-            return Unauthorized("Continuous access evaluation challenge occurred. Please sign-in again.\n" + svcex.Message);
+            string claimChallenge = WwwAuthenticateParameters
+                .GetClaimChallengeFromResponseHeaders(svcex.ResponseHeaders);
+
+            return Unauthorized(claimChallenge);
         }
         catch (Exception ex)
         {

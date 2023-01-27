@@ -9,12 +9,12 @@ internal class RejectSessionCookieWhenAccountNotInCacheEvents : CookieAuthentica
         try
         {
             var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
+
             string token = await tokenAcquisition.GetAccessTokenForUserAsync(
                 scopes: new[] { "user.read" },
                 user: context.Principal);
         }
-        catch (MicrosoftIdentityWebChallengeUserException ex)
-           when (AccountDoesNotExitInTokenCache(ex))
+        catch (MicrosoftIdentityWebChallengeUserException ex) when (AccountDoesNotExitInTokenCache(ex))
         {
             context.RejectPrincipal();
         }

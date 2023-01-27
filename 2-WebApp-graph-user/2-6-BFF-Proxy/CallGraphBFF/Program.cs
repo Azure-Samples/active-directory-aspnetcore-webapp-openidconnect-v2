@@ -23,6 +23,7 @@ builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefa
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 
+    options.Events = new RespondUnauthorizedWhenSessionCookieNotFoundEvents();
     options.Events = new RejectSessionCookieWhenAccountNotInCacheEvents();
 });
 

@@ -1,9 +1,11 @@
 ﻿using System.Security.Claims;
+using System.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static Microsoft.Graph.Constants;
 
 namespace TodoListBFF.Controllers;
 
@@ -11,11 +13,27 @@ namespace TodoListBFF.Controllers;
 public class AuthController : Controller
 {
     [HttpGet("login")]
-    public ActionResult Login()
+    public ActionResult Login(string? postLoginRedirectUri, string? claimsChallenge)
     {
-        return Challenge(new AuthenticationProperties { 
-            RedirectUri = "/"
-        });
+        string redirectUri = !string.IsNullOrEmpty(postLoginRedirectUri) ? HttpUtility
+            .UrlDecode(postLoginRedirectUri) : "/";
+
+        var props = new AuthenticationProperties { RedirectUri = redirectUri };
+
+        if (claimsChallenge != null)
+        {
+            string jsonString = claimsChallenge
+                .Replace("\\", "")
+                .Trim(new char[1] { '"' });
+
+            string? loginHint = (this.User.Identity as ClaimsIdentity)?.Claims
+                .FirstOrDefault(c => c.Type == "login_hint")?.Value;
+
+            props.Items["claims"] = jsonString;
+            props.Items["login_hint"] = loginHint;
+        }
+
+        return Challenge(props);
     }
 
     [Authorize]
@@ -24,15 +42,14 @@ public class AuthController : Controller
     {
         await HttpContext.SignOutAsync();
 
+        var props = new AuthenticationProperties { RedirectUri = "/" };
+
         List<string> optionList = new List<string> { 
             CookieAuthenticationDefaults.AuthenticationScheme,
             OpenIdConnectDefaults.AuthenticationScheme 
         };
 
-        return new SignOutResult(optionList, new AuthenticationProperties
-        {
-            RedirectUri = "/"
-        });
+        return new SignOutResult(optionList, props);
     }
 
     [HttpGet("account")]
