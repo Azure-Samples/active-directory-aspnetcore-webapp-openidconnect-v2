@@ -1,11 +1,16 @@
 {
   "Sample": {
-    "Title": "An ASP.NET Core 2.x Web App which lets sign-in users with work and school in my org",
-    "Level": 200,
-    "Client": "ASP.NET Core 2.x Web App",
+    "Title": "An ASP.NET Core Web App which authenticates users with work and school account in your Azure AD tenant",
+    "Level": 100,
+    "Client": "ASP.NET Core Web App",
     "Service": "Microsoft Graph",
     "RepositoryUrl": "microsoft-identity-platform-aspnetcore-webapp-tutorial",
-    "Endpoint": "AAD v2.0"
+    "Endpoint": "AAD v2.0",
+    "Languages": [ "csharp" ],
+    "Products": [ "aspnet-core", "azure-active-directory" ],
+    "Library": [ "Microsoft.Identity.Web" ],
+    "Provider": "AAD",
+    "Description":"An ASP.NET Core Web App which authenticates users with work and school account in your Azure AD tenant"
   },
 
   /*
@@ -17,9 +22,15 @@
       "Name": "WebApp",
       "Kind": "WebApp",
       "Audience": "AzureADMyOrg",
+      "SDK": "MicrosoftIdentityWeb",
+      "SampleSubPath": "1-WebApp-OIDC\\1-1-MyOrg",
       "HomePage": "https://localhost:44321/",
       "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc",
       "LogoutUrl": "https://localhost:44321/signout-oidc",
+      "OptionalClaims": {
+        "IdTokenClaims": [ "acct" ]
+      },
+      "EnableIdTokenIssuance":true
     }
   ],
 
