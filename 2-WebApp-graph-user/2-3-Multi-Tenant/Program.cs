@@ -25,7 +25,7 @@ SOFTWARE.
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace WebApp_OpenIDConnect_DotNet
+namespace WebApp_MultiTenant_v2
 {
     public class Program
     {

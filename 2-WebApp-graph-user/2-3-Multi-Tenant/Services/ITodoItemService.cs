@@ -25,9 +25,9 @@ SOFTWARE.
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using WebApp_OpenIDConnect_DotNet.Models;
+using WebApp_MultiTenant_v2.Models;
 
-namespace WebApp_OpenIDConnect_DotNet.Services
+namespace WebApp_MultiTenant_v2.Services
 {
     public interface ITodoItemService
     {

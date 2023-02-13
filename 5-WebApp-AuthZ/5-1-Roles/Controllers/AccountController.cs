@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.Graph;
 using Microsoft.Identity.Web;
 using System.Threading.Tasks;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
@@ -11,14 +10,11 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly ITokenAcquisition tokenAcquisition;
-        private readonly WebOptions webOptions;
+        private readonly GraphHelper _graphHelper;
 
-        public AccountController(ITokenAcquisition tokenAcquisition,
-                      IOptions<WebOptions> webOptionValue)
+        public AccountController(IHttpContextAccessor httpContextAccessor)
         {
-            this.tokenAcquisition = tokenAcquisition;
-            this.webOptions = webOptionValue.Value;
+            this._graphHelper = new GraphHelper(httpContextAccessor.HttpContext, new[] { GraphScopes.DirectoryReadAll });
         }
 
         /// <summary>
@@ -41,17 +37,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         [Authorize(Policy = AuthorizationPolicies.AssignmentToDirectoryViewerRoleRequired)]
         public async Task<IActionResult> Groups()
         {
-            string[] scopes = new[] { GraphScopes.DirectoryReadAll };
-
-            GraphServiceClient graphServiceClient = GraphServiceClientFactory.GetAuthenticatedGraphClient(async () =>
-            {
-                string result = await tokenAcquisition.GetAccessTokenForUserAsync(scopes);
-                return result;
-            }, webOptions.GraphApiUrl);
-
-            var groups = await graphServiceClient.Me.MemberOf.Request().GetAsync();
-
-            ViewData["Groups"] = groups.CurrentPage;
+            ViewData["Groups"] = await _graphHelper.GetMemberOfAsync();
 
             return View();
         }

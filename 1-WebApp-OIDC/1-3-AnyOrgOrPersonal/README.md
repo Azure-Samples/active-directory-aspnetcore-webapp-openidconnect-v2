@@ -34,20 +34,25 @@ There is one project in this sample. To register it, you can:
 - either use PowerShell scripts that **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you and modify the Visual Studio projects' configuration files. If you want to use this automation:
 
 1. On Windows run PowerShell and navigate to the solution's folder
-2. In PowerShell run:
 
-     ```PowerShell
-     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
-     ```
+    > :warning: If you have never used **Microsoft Graph PowerShell** before, we recommend you go through the [App Creation Scripts Guide](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
+  
+    1. On Windows, run PowerShell as **Administrator** and navigate to the root of the cloned directory
+    1. In PowerShell run:
 
-3. Run the following script to create and configure your Azure AD application and configure the code of the sample application as well.
+       ```PowerShell
+       Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+       ```
 
-     ```PowerShell
-     cd .\AppCreationScripts\   
-     .\Configure.ps1
-     ```
+    1. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
+    1. For interactive process -in PowerShell, run:
 
-   > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
+       ```PowerShell
+       cd .\AppCreationScripts\
+       .\Configure.ps1 -TenantId "[Optional] - your tenant id" -AzureEnvironmentName "[Optional] - Azure environment, defaults to 'Global'"
+       ```
+
+    > Other ways of running the scripts are described in [App Creation Scripts guide](./AppCreationScripts/AppCreationScripts.md). The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
 
 4. Once you've run the script, please ensure that you've followed the following manual steps. Azure AD PowerShell does not yet create an app whose audience is `Work or School + personal accounts`. This audience setting is only possible from the Azure portal as of today:
 5. Sign in to the [Azure portal](https://portal.azure.com) using either a work or school account or a personal Microsoft account.

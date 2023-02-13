@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace WebApp_OpenIDConnect_DotNet.Models
+namespace WebApp_MultiTenant_v2.Models
 {
     public class TodoItem
     {

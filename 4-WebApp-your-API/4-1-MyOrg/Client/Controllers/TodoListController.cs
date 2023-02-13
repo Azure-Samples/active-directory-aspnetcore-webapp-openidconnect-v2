@@ -14,23 +14,23 @@ namespace TodoListClient.Controllers
         "api://c53a1bc4-9757-407d-a76a-51a2032d2afb/ToDoList.ReadWrite"})]
     public class TodoListController : Controller
     {
-        private IDownstreamRestApi _downstreamRestApi;
+        private IDownstreamApi _downstreamApi;
 
-        public TodoListController(IDownstreamRestApi todoListService)
+        public TodoListController(IDownstreamApi todoListService)
         {
-            _downstreamRestApi = todoListService;
+            _downstreamApi = todoListService;
         }
 
         public async Task<ActionResult> Index()
         {
-            var result = await _downstreamRestApi.GetForUserAsync<IEnumerable<Todo>>("TodoList");
+            var result = await _downstreamApi.GetForUserAsync<IEnumerable<Todo>>("TodoList");
             return View(result);
         }
 
         // GET: TodoList/Details/5
         public async Task<ActionResult> Details(int id)
         {
-            return View(await _downstreamRestApi.GetForUserAsync<Todo>(
+            return View(await _downstreamApi.GetForUserAsync<Todo>(
                 "TodoList", 
                 options => options.RelativePath = $"{id}"));
         }
@@ -47,14 +47,14 @@ namespace TodoListClient.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create([Bind("Title,Owner")] Todo todo)
         {
-            await _downstreamRestApi.PostForUserAsync("TodoList", todo);
+            await _downstreamApi.PostForUserAsync("TodoList", todo);
             return RedirectToAction("Index");
         }
 
         // GET: TodoList/Edit/5
         public async Task<ActionResult> Edit(int id)
         {
-            Todo todo = await _downstreamRestApi.GetForUserAsync<Todo>(
+            Todo todo = await _downstreamApi.GetForUserAsync<Todo>(
                  "TodoList",
                  options => options.RelativePath = $"{id}");
 
@@ -71,7 +71,7 @@ namespace TodoListClient.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(int id, [Bind("Id,Title,Owner")] Todo todo)
         {
-            todo = await _downstreamRestApi.CallRestApiForUserAsync<Todo, Todo>(
+            todo = await _downstreamApi.CallApiForUserAsync<Todo, Todo>(
                  "TodoList", todo,
                  options => { options.RelativePath = $"{id}"; options.HttpMethod = HttpMethod.Patch; }) ;
             return RedirectToAction("Index");
@@ -80,7 +80,7 @@ namespace TodoListClient.Controllers
         // GET: TodoList/Delete/5
         public async Task<ActionResult> DeleteItem(int id)
         {
-            Todo todo = await _downstreamRestApi.GetForUserAsync<Todo>(
+            Todo todo = await _downstreamApi.GetForUserAsync<Todo>(
                       "TodoList",
                       options => options.RelativePath = $"{id}");
 
@@ -97,7 +97,7 @@ namespace TodoListClient.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteItem(int id, [Bind("Id,Title,Owner")] Todo todo)
         {
-            await _downstreamRestApi.DeleteForUserAsync("TodoList", todo,
+            await _downstreamApi.DeleteForUserAsync("TodoList", todo,
                 options  => options.RelativePath = $"{id}");
             return RedirectToAction("Index");
         }

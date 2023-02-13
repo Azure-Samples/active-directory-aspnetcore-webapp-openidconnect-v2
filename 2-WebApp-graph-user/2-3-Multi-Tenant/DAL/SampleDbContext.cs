@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebApp_OpenIDConnect_DotNet.Models;
+using WebApp_MultiTenant_v2.Models;
 
-namespace WebApp_OpenIDConnect_DotNet.DAL
+namespace WebApp_MultiTenant_v2.DAL
 {
     public class SampleDbContext : DbContext
     {
