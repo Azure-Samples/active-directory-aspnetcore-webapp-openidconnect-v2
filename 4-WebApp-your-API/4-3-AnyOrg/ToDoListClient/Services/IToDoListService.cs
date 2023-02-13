@@ -12,7 +12,7 @@ namespace ToDoListClient.Services
         Task<IEnumerable<ToDoItem>> GetAsync();
 
         Task<ToDoItem> GetAsync(int id);
-        Task<IEnumerable<string>> GetAllUsersAsync();
+        Task<IEnumerable<string>> GetAllGraphUsersAsync();
         Task DeleteAsync(int id);
 
         Task<ToDoItem> AddAsync(ToDoItem todo);

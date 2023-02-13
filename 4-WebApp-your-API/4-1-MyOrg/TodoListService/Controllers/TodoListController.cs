@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using TodoListService.Models;
 
 namespace TodoListService.Controllers
@@ -33,9 +34,9 @@ namespace TodoListService.Controllers
         private const string _todoListReadWriteAllPermission = "ToDoList.ReadWrite.All";
 
         /// <summary>
-        /// We store the object id of the user derived from the presented Access token
+        /// We store the object id of the user/app derived from the presented Access token
         /// </summary>
-        private string _currentLoggedUser = string.Empty;
+        private string _currentPrincipalId = string.Empty;
 
         /// <summary>
         /// The API controller that manages an instance of ToDo list
@@ -45,8 +46,10 @@ namespace TodoListService.Controllers
         {
             _contextAccessor = contextAccessor;
 
-            // We seek the details of the user represented by the access token presented to this API, can be empty
             /**
+             * When the Access Token belongs to a user (signing-in to a client app), the following claims should
+             * help API developer further fine tune their business logic
+             *
              * The 'oid' (object id) is the only claim that should be used to uniquely identify
              * a user in an Azure AD tenant. The token might have one or more of the following claim,
              * that might seem like a unique identifier, but is not and should not be used as such,
@@ -58,25 +61,37 @@ namespace TodoListService.Controllers
              *
              * - email: might be unique amongst the active set of users in a tenant but tend to get
              * reassigned to new employees as employees leave the organization and others take their place.
+             *
+             * - acct: Helps distinguish homed versus guest users
              **/
 
-            _currentLoggedUser = _contextAccessor?.HttpContext?.User?.GetObjectId();
+            /**
+             * When the Access Token belongs to an application signing-in as itself (using client credentials flow/SP authN, app-only AuthN),
+             * the following claims are of interest
+             *
+             * The 'oid' (object id) contains the id of the service principal of the client app. This value is immutable,
+             *
+             * - idtyp : helps distinguish tokens obtained using app-only flow, not included in tokens issued to users.
+             * - "azp" (or "appid" in v1 tokens) - the client/app id of the client application
+             **/
 
-            if (!string.IsNullOrWhiteSpace(_currentLoggedUser))
+            // We seek the details of the user/app represented by the access token presented to this API, This can be empty unless authN succeeded
+            // If a user signed-in, the value will be the unique identifier of the user.
+            _currentPrincipalId = GetCurrentClaimsPrincipal()?.GetObjectId();
+
+            if (!IsAppOnlyToken() && !string.IsNullOrWhiteSpace(_currentPrincipalId))
             {
                 // Pre-populate with sample data
-                if (TodoStore.Count == 0 && !string.IsNullOrEmpty(_currentLoggedUser))
+                if (TodoStore.Count == 0 && !string.IsNullOrEmpty(_currentPrincipalId))
                 {
-                    TodoStore.Add(1, new Todo() { Id = 1, Owner = $"{_currentLoggedUser}", Title = "Pick up groceries" });
-                    TodoStore.Add(2, new Todo() { Id = 2, Owner = $"{_currentLoggedUser}", Title = "Finish invoice report" });
-                    TodoStore.Add(3, new Todo() { Id = 3, Owner = "Fake id of another User", Title = "Rent a car" });
-                    TodoStore.Add(4, new Todo() { Id = 4, Owner = "made up id of another ", Title = "Get vaccinated" });
+                    TodoStore.Add(1, new Todo() { Id = 1, Owner = $"{_currentPrincipalId}", Title = "Pick up groceries" });
+                    TodoStore.Add(2, new Todo() { Id = 2, Owner = $"{_currentPrincipalId}", Title = "Finish invoice report" });
                 }
             }
         }
 
         /// <summary>
-        /// Indicates of the AT presented was for a app or not.
+        /// Indicates of the AT presented was for an app-only token or not.
         /// </summary>
         /// <returns></returns>
         private bool IsAppOnlyToken()
@@ -84,7 +99,30 @@ namespace TodoListService.Controllers
             // Add in the optional 'idtyp' claim to check if the access token is coming from an application or user.
             //
             // See: https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-optional-claims
-            return HttpContext.User.Claims.Any(c => c.Type == "idtyp" && c.Value == "app");
+
+            if (GetCurrentClaimsPrincipal() != null)
+            {
+                return GetCurrentClaimsPrincipal().Claims.Any(c => c.Type == "idtyp" && c.Value == "app");
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// returns the current claimsPrincipal (user/Client app) dehydrated from the Access token
+        /// </summary>
+        /// <returns></returns>
+        private ClaimsPrincipal GetCurrentClaimsPrincipal()
+        {
+            // Irrespective of whether a user signs in or not, the AspNet security middle-ware dehydrates the claims in the
+            // HttpContext.User.Claims collection
+
+            if (_contextAccessor.HttpContext != null && _contextAccessor.HttpContext.User != null)
+            {
+                return _contextAccessor.HttpContext.User;
+            }
+
+            return null;
         }
 
         // GET: api/values
@@ -102,7 +140,7 @@ namespace TodoListService.Controllers
             if (!IsAppOnlyToken())
             {
                 // this is a request for all ToDo list items of a certain user.
-                return TodoStore.Values.Where(x => x.Owner == _currentLoggedUser);
+                return TodoStore.Values.Where(x => x.Owner == _currentPrincipalId);
             }
             else
             {
@@ -118,17 +156,17 @@ namespace TodoListService.Controllers
             AcceptedAppPermission = new string[] { _todoListReadAllPermission, _todoListReadWriteAllPermission })]
         public Todo Get(int id)
         {
-            //if it only has delegated permissions
-            //then it will be t.id==id && x.Owner == owner
-            //if it has app permissions the it will return  t.id==id
+            // if it only has delegated permissions, i.e. a user has signed-in
+            // then we'd filter by t.id==id && x.Owner == owner
+            // if it has app permissions (app-only authN) the it will return t.id==id
 
             if (!IsAppOnlyToken())
             {
-                return TodoStore.Values.FirstOrDefault(t => t.Id == id && t.Owner == _currentLoggedUser);
+                return TodoStore.Values.FirstOrDefault(todo => todo.Id == id && todo.Owner == _currentPrincipalId);
             }
             else
             {
-                return TodoStore.Values.FirstOrDefault(t => t.Id == id);
+                return TodoStore.Values.FirstOrDefault(todo => todo.Id == id);
             }
         }
 
@@ -142,7 +180,7 @@ namespace TodoListService.Controllers
             if (!IsAppOnlyToken())
             {
                 // only delete if the ToDo list item belonged to this user
-                if (TodoStore.Values.Any(x => x.Id == id && x.Owner == _currentLoggedUser))
+                if (TodoStore.Values.Any(todo => todo.Id == id && todo.Owner == _currentPrincipalId))
                 {
                     TodoStore.Remove(id);
                 }
@@ -175,7 +213,7 @@ namespace TodoListService.Controllers
             else
             {
                 // The signed-in user becomes the owner
-                todo.Owner = _currentLoggedUser;
+                todo.Owner = _currentPrincipalId;
             }
 
             int nextid = TodoStore.Values.OrderByDescending(x => x.Id).FirstOrDefault().Id + 1;
@@ -191,7 +229,7 @@ namespace TodoListService.Controllers
             AcceptedAppPermission = new string[] { _todoListReadWriteAllPermission })]
         public IActionResult Patch(int id, [FromBody] Todo todo)
         {
-            Todo existingToDo = TodoStore.Values.FirstOrDefault(x => x.Id == id);
+            Todo existingToDo = TodoStore.Values.FirstOrDefault(todo => todo.Id == id);
 
             if (id != todo.Id || existingToDo == null)
             {
@@ -201,13 +239,13 @@ namespace TodoListService.Controllers
             if (!IsAppOnlyToken())
             {
                 // a user can only modify their own ToDos
-                if (existingToDo.Owner != _currentLoggedUser)
+                if (existingToDo.Owner != _currentPrincipalId)
                 {
                     return Unauthorized();
                 }
 
                 // Overwrite ownership, just in case
-                todo.Owner = _currentLoggedUser;
+                todo.Owner = _currentPrincipalId;
             }
 
             TodoStore.Remove(id);

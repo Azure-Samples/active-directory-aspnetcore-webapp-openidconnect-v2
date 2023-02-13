@@ -24,7 +24,7 @@ SOFTWARE.
 
 using System;
 
-namespace WebApp_OpenIDConnect_DotNet.Utils
+namespace WebApp_MultiTenant_v2.Utils
 {
     public class UnauthorizedTenantException : UnauthorizedAccessException
     {

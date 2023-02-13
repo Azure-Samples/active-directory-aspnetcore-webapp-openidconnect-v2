@@ -7,19 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="AppCreationScripts\**" />
-    <Compile Remove="ReadmeFiles\**" />
-    <Content Remove="AppCreationScripts\**" />
-    <Content Remove="ReadmeFiles\**" />
-    <EmbeddedResource Remove="AppCreationScripts\**" />
-    <EmbeddedResource Remove="ReadmeFiles\**" />
-    <None Remove="AppCreationScripts\**" />
-    <None Remove="ReadmeFiles\**" />
+    <Compile Remove="Services\Bootstrapper.cs" />
+    <Compile Remove="Services\GraphServiceClientFactory.cs" />
+    <Compile Remove="Services\WebOptions.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.0.8-preview" />
-    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="2.0.8-preview" />
+    <None Remove="Cleanup.ps1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.4.0" />
+    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="2.4.0" />
   </ItemGroup>
 
 </Project>

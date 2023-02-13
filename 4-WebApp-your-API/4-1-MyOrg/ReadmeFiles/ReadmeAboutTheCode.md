@@ -22,9 +22,11 @@
     * `AddMicrosoftIdentityWebApiAuthentication()` protects the Web API by [validating Access tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens#validating-tokens) sent tho this API. Check out [Protected web API: Code configuration](https://docs.microsoft.com/azure/active-directory/develop/scenario-protected-web-api-app-configuration) which explains the inner workings of this method in more detail.
 
     * There is a bit of code (commented) provided under this method that can be used to used do **extended token validation** and do checks based on additional claims, such as:
-      * check if the client app's appid (azp) is in some sort of an allowed  list via the 'azp' claim, in case you wanted to restrict the API to a list of client apps.
-      * check if the caller's account is homed or guest via the 'acct' optional claim
-      * check if the caller belongs to right roles or groups via the 'roles' or 'groups' claim, respectively
+      * check if the client app's `appid (azp)` is in some sort of an allowed  list via the 'azp' claim, in case you wanted to restrict the API to a list of client apps.
+      * check if the caller's account is homed or guest via the `acct` optional claim
+      * check if the caller belongs to right roles or groups via the `roles` or `groups` claim, respectively
+
+    See [How to manually validate a JWT access token using the Microsoft identity platform](https://aka.ms/extendtokenvalidation) for more details on to further verify the caller using this method.
 
 1. Then in the controllers `TodoListController.cs`, the `[Authorize]` added on top of the class to protect this route.
     * Further in the controller, the [RequiredScopeOrAppPermission](https://github.com/AzureAD/microsoft-identity-web/wiki/web-apis#checking-for-scopes-or-app-permissions=) is used to list the ([Delegated permissions](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent)), that the user should consent for, before the method can be called.  
@@ -92,7 +94,13 @@
             // Add in the optional 'idtyp' claim to check if the access token is coming from an application or user.
             //
             // See: https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-optional-claims
-            return HttpContext.User.Claims.Any(c => c.Type == "idtyp" && c.Value == "app");
+
+            if (GetCurrentClaimsPrincipal() != null)
+            {
+                return GetCurrentClaimsPrincipal().Claims.Any(c => c.Type == "idtyp" && c.Value == "app");
+            }
+
+            return false;
         }
       ```
 

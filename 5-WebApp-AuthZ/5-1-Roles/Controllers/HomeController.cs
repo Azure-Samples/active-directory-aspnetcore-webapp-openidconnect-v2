@@ -9,49 +9,49 @@ using System.Threading.Tasks;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
 using WebApp_OpenIDConnect_DotNet.Models;
 using WebApp_OpenIDConnect_DotNet.Services;
-using Graph = Microsoft.Graph;
-using Constants = WebApp_OpenIDConnect_DotNet.Infrastructure.Constants;
+using Microsoft.Graph;
+using Microsoft.Identity.Client;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
-        private readonly ITokenAcquisition tokenAcquisition;
-        private readonly WebOptions webOptions;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly GraphHelper _graphHelper;
 
-        public HomeController(ITokenAcquisition tokenAcquisition, IOptions<WebOptions> webOptionValue)
+        public HomeController(IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration)
         {
-            this.tokenAcquisition = tokenAcquisition;
-            this.webOptions = webOptionValue.Value;
+            string[] graphScopes = configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
+            _httpContextAccessor = httpContextAccessor;
+
+            if (this._httpContextAccessor.HttpContext != null)
+            {
+                this._graphHelper = new GraphHelper(this._httpContextAccessor.HttpContext, graphScopes);
+            }
         }
 
         public IActionResult Index()
         {
-            ViewData["User"] = HttpContext.User;
+            ViewData["User"] = _httpContextAccessor.HttpContext.User;
             return View();
         }
 
-        [AuthorizeForScopes(Scopes = new[] { Constants.ScopeUserRead })]
+        [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
         public async Task<IActionResult> Profile()
         {
-            // Initialize the GraphServiceClient.
-            Graph::GraphServiceClient graphClient = GetGraphServiceClient(new[] { Constants.ScopeUserRead });
+            ViewData["Me"] = await _graphHelper.GetMeAsync();
 
-            var me = await graphClient.Me.Request().GetAsync();
-            ViewData["Me"] = me;
+            if (ViewData["Me"] == null)
+            {
+                return new EmptyResult();
+            }
 
-            try
-            {
-                // Get user photo
-                var photoStream = await graphClient.Me.Photo.Content.Request().GetAsync();
-                byte[] photoByte = ((MemoryStream)photoStream).ToArray();
-                ViewData["Photo"] = Convert.ToBase64String(photoByte);
-            }
-            catch (System.Exception)
-            {
-                ViewData["Photo"] = null;
-            }
+            var photoStream = await this._graphHelper.GetMyPhotoAsync();
+            ViewData["Photo"] = photoStream != null ? Convert.ToBase64String(((MemoryStream)photoStream).ToArray()) : null;
 
             return View();
         }
@@ -64,22 +64,14 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         [Authorize(Policy = AuthorizationPolicies.AssignmentToUserReaderRoleRequired)]
         public async Task<IActionResult> Users()
         {
-            // Initialize the GraphServiceClient.
-            Graph::GraphServiceClient graphClient = GetGraphServiceClient(new[] { GraphScopes.UserReadBasicAll });
+            ViewData["Users"] = await this._graphHelper.GetUsersAsync();
 
-            var users = await graphClient.Users.Request().GetAsync();
-            ViewData["Users"] = users.CurrentPage;
+            if (ViewData["Users"] == null)
+            {
+                return new EmptyResult();
+            }
 
             return View();
-        }
-
-        private Graph::GraphServiceClient GetGraphServiceClient(string[] scopes)
-        {
-            return GraphServiceClientFactory.GetAuthenticatedGraphClient(async () =>
-            {
-                string result = await tokenAcquisition.GetAccessTokenForUserAsync(scopes);
-                return result;
-            }, webOptions.GraphApiUrl);
         }
 
         [AllowAnonymous]

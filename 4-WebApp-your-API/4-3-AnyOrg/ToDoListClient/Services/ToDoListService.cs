@@ -27,7 +27,7 @@ namespace ToDoListClient.Services
     public class ToDoListService : IToDoListService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _TodoListScope = string.Empty;
+        private readonly string _TodoListServiceScope = string.Empty;
         private readonly string _TodoListBaseAddress = string.Empty;
         private readonly string _RedirectUri = string.Empty;
         private readonly string _ApiRedirectUri = string.Empty;
@@ -37,10 +37,11 @@ namespace ToDoListClient.Services
         {
             _httpClient = httpClient;
             _tokenAcquisition = tokenAcquisition;
-            _TodoListScope = configuration["TodoList:TodoListScope"];
+            _TodoListServiceScope = configuration["TodoList:TodoListServiceScope"];
             _TodoListBaseAddress = configuration["TodoList:TodoListBaseAddress"];
             _RedirectUri = configuration["RedirectUri"];
             _ApiRedirectUri = configuration["TodoList:AdminConsentRedirectApi"];
+
             if (!string.IsNullOrEmpty(_TodoListBaseAddress))
             {
                 if (!_TodoListBaseAddress.EndsWith("/"))
@@ -88,7 +89,7 @@ namespace ToDoListClient.Services
 
             var jsonRequest = JsonConvert.SerializeObject(todo);
             var jsoncontent = new StringContent(jsonRequest, Encoding.UTF8, "application/json-patch+json");
-            var response = await _httpClient.PutAsync($"{ _TodoListBaseAddress}api/todolist/{todo.Id}", jsoncontent);
+            var response = await _httpClient.PatchAsync($"{ _TodoListBaseAddress}api/todolist/{todo.Id}", jsoncontent);
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -115,10 +116,10 @@ namespace ToDoListClient.Services
 
             throw new HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
         }
-        public async Task<IEnumerable<string>> GetAllUsersAsync()
+        public async Task<IEnumerable<string>> GetAllGraphUsersAsync()
         {
             await PrepareAuthenticatedClient();
-            var response = await _httpClient.GetAsync($"{ _TodoListBaseAddress}api/todolist/getallusers");
+            var response = await _httpClient.GetAsync($"{ _TodoListBaseAddress}api/todolist/getallgraphusers");
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -150,12 +151,18 @@ namespace ToDoListClient.Services
 
         private async Task PrepareAuthenticatedClient()
         {
-            var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new[] { _TodoListScope });
+            var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new[] { _TodoListServiceScope });
             Debug.WriteLine($"access token-{accessToken}");
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
+        /// <summary>
+        /// If signed-in user does not have consent for a permission on the Web API, for instance "user.read.all" in this sample, 
+        /// then Web API will throw MsalUiRequiredException. The response contains the details about consent Uri and proposed action. 
+        /// </summary>
+        /// <param name="response"></param>
+        /// <exception cref="WebApiMsalUiRequiredException"></exception>
         private void HandleChallengeFromWebApi(HttpResponseMessage response)
         {
             //proposedAction="consent"

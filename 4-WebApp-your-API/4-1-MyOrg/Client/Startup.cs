@@ -70,8 +70,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
 
             // Add APIs
-            //services.AddTodoListService(Configuration);
-            services.AddDownstreamRestApi("TodoList", Configuration.GetSection("TodoList"));
+            services.AddDownstreamApi("TodoList", Configuration.GetSection("TodoList"));
 
 
             // The following flag can be used to get more descriptive errors in development environments
@@ -106,7 +105,7 @@ namespace WebApp_OpenIDConnect_DotNet
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
+            //app.UseCookiePolicy();
 
             app.UseRouting();
             app.UseAuthentication();

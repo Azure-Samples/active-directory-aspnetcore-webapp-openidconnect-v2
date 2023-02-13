@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
 using System.IdentityModel.Tokens.Jwt;
 using WebApp_OpenIDConnect_DotNet.Infrastructure;
-using WebApp_OpenIDConnect_DotNet.Services;
 using Constants = WebApp_OpenIDConnect_DotNet.Infrastructure.Constants;
 using Microsoft.Identity.Web.UI;
 using System.Net;
@@ -51,11 +50,9 @@ namespace WebApp_OpenIDConnect_DotNet
 
             // Sign-in users with the Microsoft identity platform
             services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
-                    .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Constants.ScopeUserRead })
+                    .EnableTokenAcquisitionToCallDownstreamApi(Configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' '))
+                    .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
                     .AddInMemoryTokenCaches();
-
-            // Add Graph
-            services.AddGraphService(Configuration);
 
             // The following lines code instruct the asp.net core middleware to use the data in the "roles" claim in the Authorize attribute and User.IsInrole()
             // See https://docs.microsoft.com/aspnet/core/security/authorization/roles?view=aspnetcore-2.2 for more info.
@@ -80,7 +77,11 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.Filters.Add(new AuthorizeFilter(policy));
             }).AddMicrosoftIdentityUI();
 
+            services.AddHttpContextAccessor();
             services.AddRazorPages();
+
+            services.AddServerSideBlazor()
+               .AddMicrosoftIdentityConsentHandler();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -144,7 +145,6 @@ namespace WebApp_OpenIDConnect_DotNet
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
 
             app.UseRouting();
             app.UseAuthentication();

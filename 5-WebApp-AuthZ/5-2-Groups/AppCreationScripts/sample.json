@@ -5,9 +5,24 @@
     "Client": "ASP.NET Core Web App",
     "Service": "Microsoft Graph",
     "RepositoryUrl": "microsoft-identity-platform-aspnetcore-webapp-tutorial",
-    "Endpoint": "AAD v2.0"
+    "Endpoint": "AAD v2.0",
+    "platform": "AspNetCore",
+    "Languages": [
+      "csharp"
+    ],
+    "Products": [
+      "aspnet-core",
+      "azure-active-directory",
+      "microsoft-identity-web"
+    ],
+    "Library": [
+      "Microsoft.Identity.Web"
+    ],
+    "products": [
+      "azure-active-directory",
+      "ms-graph"
+    ]
   },
-
   /*
     This section describes the Azure AD Applications to configure, and their dependencies
   */
@@ -22,26 +37,37 @@
       "LogoutUrl": "https://localhost:44321/signout-oidc",
       "PasswordCredentials": "Auto",
       "GroupMembershipClaims": "SecurityGroup",
+      "EnableIdTokenIssuance": true,
       "RequiredResourcesAccess": [
         {
           "Resource": "Microsoft Graph",
-          "DelegatedPermissions": [ "User.Read", "GroupMember.Read.All" ]
+          "DelegatedPermissions": [
+            "User.Read",
+            "GroupMember.Read.All"
+          ]
+        }
+      ],
+      "SecurityGroups": [
+        {
+          "Name": "GroupAdmin",
+          "Description": "Admin Security Group"
+        },
+        {
+          "Name": "GroupMember",
+          "Description": "User Security Group"
         }
       ],
       "ManualSteps": [
         {
           "Comment": "Navigate to the API Permissions page and select 'Grant admin consent for (your tenant)'"
-        },
-        {
-          "Comment": "On Azure Portal, create a security group named GroupAdmin, assign some users to it, and configure your ID and Access token to emit GroupID in your app registration. Configure the value for 'GroupAdmin' key in appsettings.json."
-        },
-        {
-          "Comment": "On Azure Portal, create a security group named GroupMember, assign some users to it, and configure your ID and Access token to emit GroupID in your app registration. Configure the value for 'GroupMember' key in appsettings.json."
         }
-      ]
+      ],
+      "SampleSubPath":"5-WebApp-AuthZ\\5-2-Groups",
+      "OptionalClaims": {
+        "IdTokenClaims": [ "acct" ]
+      }
     }
   ],
-
   /*
     This section describes how to update the code in configuration files from the apps coordinates, once the apps
     are created in Azure AD.
@@ -63,12 +89,16 @@
           "value": "$tenantId"
         },
         {
-          "key": "Domain",
-          "value": "$tenantName"
-        },
-        {
           "key": "ClientSecret",
           "value": ".AppKey"
+        },
+        {
+          "key": "Enter the objectID for GroupAdmin group copied from Azure Portal",
+          "value": "$GroupAdmin.Id"
+        },
+        {
+          "key": "Enter the objectID for GroupMember group copied from Azure Portal",
+          "value": "$GroupMember.Id"
         }
       ]
     }

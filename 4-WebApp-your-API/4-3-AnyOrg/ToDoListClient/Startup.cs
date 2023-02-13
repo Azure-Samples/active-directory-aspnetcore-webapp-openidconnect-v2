@@ -1,5 +1,4 @@
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using Microsoft.Identity.Web.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -34,9 +33,9 @@ namespace ToDoListClient
                 options.HandleSameSiteCookieCompatibility();
             });
 
-            //Add authentication with Microsoft identity platform.
+            //Add authentication with the Microsoft identity platform.
             services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
-                    .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Configuration["TodoList:TodoListScope"] })
+                    .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Configuration["TodoList:TodoListServiceScope"] })
                     .AddInMemoryTokenCaches();
 
             //Enables to add client service to use the HttpClient by dependency injection.

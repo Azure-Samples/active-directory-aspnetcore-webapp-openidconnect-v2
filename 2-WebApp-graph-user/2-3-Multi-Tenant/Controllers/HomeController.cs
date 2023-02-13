@@ -27,10 +27,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using System.Diagnostics;
 using System.Linq;
-using WebApp_OpenIDConnect_DotNet.DAL;
-using WebApp_OpenIDConnect_DotNet.Models;
+using WebApp_MultiTenant_v2.DAL;
+using WebApp_MultiTenant_v2.Models;
 
-namespace WebApp_OpenIDConnect_DotNet.Controllers
+namespace WebApp_MultiTenant_v2.Controllers
 {
     [AllowAnonymous]
     public class HomeController : Controller
