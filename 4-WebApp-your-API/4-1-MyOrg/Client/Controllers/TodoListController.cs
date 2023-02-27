@@ -9,6 +9,8 @@ using System.Collections.Generic;
 
 namespace TodoListClient.Controllers
 {
+    // TODO: Change the "c53a1bc4-9757-407d-a76a-51a2032d2afb" GUID
+    // by the Application ID of the web API
     [AuthorizeForScopes(Scopes = new string[]{
         "api://c53a1bc4-9757-407d-a76a-51a2032d2afb/ToDoList.Read",
         "api://c53a1bc4-9757-407d-a76a-51a2032d2afb/ToDoList.ReadWrite"})]
@@ -32,7 +34,7 @@ namespace TodoListClient.Controllers
         {
             return View(await _downstreamApi.GetForUserAsync<Todo>(
                 "TodoList", 
-                options => options.RelativePath = $"{id}"));
+                options => options.RelativePath = $"api/todolist/{id}"));
         }
 
         // GET: TodoList/Create
@@ -56,7 +58,7 @@ namespace TodoListClient.Controllers
         {
             Todo todo = await _downstreamApi.GetForUserAsync<Todo>(
                  "TodoList",
-                 options => options.RelativePath = $"{id}");
+                 options => options.RelativePath = $"api/todolist/{id}");
 
             if (todo == null)
             {
@@ -73,7 +75,7 @@ namespace TodoListClient.Controllers
         {
             todo = await _downstreamApi.CallApiForUserAsync<Todo, Todo>(
                  "TodoList", todo,
-                 options => { options.RelativePath = $"{id}"; options.HttpMethod = HttpMethod.Patch; }) ;
+                 options => { options.RelativePath = $"api/todolist/{id}"; options.HttpMethod = HttpMethod.Patch; }) ;
             return RedirectToAction("Index");
         }
 
@@ -82,7 +84,7 @@ namespace TodoListClient.Controllers
         {
             Todo todo = await _downstreamApi.GetForUserAsync<Todo>(
                       "TodoList",
-                      options => options.RelativePath = $"{id}");
+                      options => options.RelativePath = $"api/todolist/{id}");
 
             if (todo == null)
             {
@@ -98,7 +100,7 @@ namespace TodoListClient.Controllers
         public async Task<ActionResult> DeleteItem(int id, [Bind("Id,Title,Owner")] Todo todo)
         {
             await _downstreamApi.DeleteForUserAsync("TodoList", todo,
-                options  => options.RelativePath = $"{id}");
+                options  => options.RelativePath = $"api/todolist/{id}");
             return RedirectToAction("Index");
         }
     }
