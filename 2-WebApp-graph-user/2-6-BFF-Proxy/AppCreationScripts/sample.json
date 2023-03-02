@@ -27,7 +27,7 @@
             "HomePage": "https://localhost:7000",
             "ReplyUrls": "https://localhost:7000/api/auth/signin-oidc, https://localhost:7000/api/auth/signout-oidc",
             "SDK": "MicrosoftIdentityWeb",
-            "SampleSubPath": "2-WebApp-graph-user\\2-6-BFF-Proxy",
+            "SampleSubPath": "2-WebApp-graph-user\\2-6-BFF-Proxy\\CallGraphBFF",
             "PasswordCredentials": "Auto",
             "Certificate": "Auto",
             "RequiredResourcesAccess": [

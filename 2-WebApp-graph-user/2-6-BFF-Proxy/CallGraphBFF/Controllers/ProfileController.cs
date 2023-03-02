@@ -33,15 +33,18 @@ public class ProfileController : Controller
         catch (ServiceException svcex) 
         when (svcex.InnerException is MicrosoftIdentityWebChallengeUserException)
         {
-            return Unauthorized("MicrosoftIdentityWebChallengeUserException occurred.\n" + svcex.Message);
+            return Unauthorized("MicrosoftIdentityWebChallengeUserException occurred\n" + svcex.Message);
         }
         catch (ServiceException svcex) 
         when (svcex.Message.Contains("Continuous access evaluation"))
         {
-            string claimChallenge = WwwAuthenticateParameters
+            string claimsChallenge = WwwAuthenticateParameters
                 .GetClaimChallengeFromResponseHeaders(svcex.ResponseHeaders);
 
-            return Unauthorized(claimChallenge);
+            // Set the claims challenge string to session, which will be used during the next login request
+            HttpContext.Session.SetString("claimsChallenge", claimsChallenge);
+
+            return Unauthorized("Continuous access evaluation resulted in claims challenge\n" + svcex.Message);
         }
         catch (Exception ex)
         {

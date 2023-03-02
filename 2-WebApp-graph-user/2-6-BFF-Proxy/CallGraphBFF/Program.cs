@@ -11,20 +11,30 @@ var builder = WebApplication.CreateBuilder(args);
 // This flag ensures that the ClaimsIdentity claims collection will be built from the claims in the token
 JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
-// Add services to the container.
+builder.Services.AddDistributedMemoryCache();
+
+// Add Microsoft.Identity.Web services to the container.
 builder.Services.AddMicrosoftIdentityWebAppAuthentication(builder.Configuration)
     .EnableTokenAcquisitionToCallDownstreamApi(builder.Configuration.GetSection("DownstreamApi:Scopes").Value.Split(' '))
     .AddMicrosoftGraph(builder.Configuration.GetValue<string>("DownstreamApi:BaseUrl"), builder.Configuration.GetValue<string>("DownstreamApi:Scopes"))
     .AddInMemoryTokenCaches();
 
+// Add session for sharing non-sensitive strings between routes.
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromSeconds(30);
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+// Configure cookie properties for ASP.NET Core cookie authentication.
 builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options => {
     options.Cookie.SameSite = SameSiteMode.Strict;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
-
-    options.Events = new RespondUnauthorizedWhenSessionCookieNotFoundEvents();
-    options.Events = new RejectSessionCookieWhenAccountNotInCacheEvents();
+    options.Events = new CustomCookieAuthenticationEvents(); // modifies the behavior of certain cookie authentication events.
 });
 
 builder.Services.AddControllersWithViews()
@@ -45,6 +55,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",

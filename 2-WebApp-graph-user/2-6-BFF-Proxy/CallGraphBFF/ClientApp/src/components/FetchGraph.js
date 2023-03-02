@@ -42,10 +42,6 @@ export class FetchGraph extends Component {
         const data = await response.json();
         this.setState({ profile: data, loading: false });
       } else if (response.status === 401) {
-        if (response.body) {
-          const claims = await response.json();
-          this.props.login(window.location.href, claims);
-        }
         this.props.login(window.location.href);
       }
     } catch (error) {

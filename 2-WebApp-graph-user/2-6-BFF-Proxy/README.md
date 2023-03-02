@@ -1,7 +1,7 @@
 ---
 page_type: sample
-name: React SPA with ASP.NET Core backend calling Microsoft Graph using the backend for frontend proxy pattern
-description: A React single-page application with an ASP.NET Core backend authenticating users and calling the Microsoft Graph API using the backend for frontend proxy pattern
+name: React SPA with ASP.NET Core backend calling Microsoft Graph using the backend for frontend proxy architecture
+description: A React single-page application with an ASP.NET Core backend authenticating users and calling the Microsoft Graph API using the backend for frontend proxy architecture
 languages:
  - csharp
  - javascript
@@ -18,7 +18,7 @@ extensions:
 - service: Microsoft Graph
 ---
 
-# React SPA with ASP.NET Core backend calling Microsoft Graph using the backend for frontend proxy pattern
+# React SPA with ASP.NET Core backend calling Microsoft Graph using the backend for frontend (BFF) proxy architecture
 
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=XXX)
 
@@ -35,24 +35,24 @@ extensions:
 
 ## Overview
 
-This sample demonstrates a React single-page application with an ASP.NET Core backend authenticating users and calling the Microsoft Graph API using the backend for frontend proxy pattern.
+This sample demonstrates a React single-page application (SPA) with an ASP.NET Core backend that authenticates users and calls the Microsoft Graph API using the backend for frontend (BFF) proxy architecture. In this architecture, access tokens are retrieved and stored within the secure backend context, and the client side JavaScript application, which is served by the ASP.NET web app, is only indirectly involved in the authN/authZ process by routing the token and API requests to the backend. The trust between the frontend and backend is established via a secure cookie upon successful sign-in.
 
 > :information_source: To learn how applications integrate with [Microsoft Graph](https://aka.ms/graph), consider going through the recorded session: [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A)
 
 ## Scenario
 
-1. The client ASP.NET Core web app uses **Microsoft.Identity.Web** to sign-in a user and obtain a JWT [ID Token](https://aka.ms/id-tokens) and an [Access Token](https://aka.ms/access-tokens) from **Azure AD**.
-1. The **access token** is used as a *bearer* token to authorize the user to call the Microsoft Graph protected by **Azure AD**.
+1. The client-side React SPA initiates token acquisition by calling the login endpoint of the ASP.NET core web app.
+1. ASP.NET Core web app uses **Microsoft.Identity.Web** to sign-in a user and obtain a JWT [ID Token](https://aka.ms/id-tokens) and an [Access Token](https://aka.ms/access-tokens) from **Azure AD**.
+1. ASP.NET Core web app uses the **access token** as a *bearer* token to authorize the user to call the Microsoft Graph API protected by **Azure AD**.
+1. ASP.NET Core web app returns the Microsoft Graph `/me` endpoint response back to the React SPA.
 
-![Scenario Image](./ReadmeFiles/topology.png)
+![Scenario Image](./ReadmeFiles/sequence.png)
 
 ## Prerequisites
 
 * Either [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/download) and [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
 * An **Azure AD** tenant. For more information, see: [How to get an Azure AD tenant](https://docs.microsoft.com/azure/active-directory/develop/test-setup-environment#get-a-test-tenant)
 * A user account in your **Azure AD** tenant.
-
->This sample will not work with a **personal Microsoft account**. If you're signed in to the [Azure portal](https://portal.azure.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
 
 ## Setup the sample
 
@@ -112,9 +112,9 @@ There is one project in this sample. To register it, you can:
        .\Configure.ps1 -TenantId "[Optional] - your tenant id" -AzureEnvironmentName "[Optional] - Azure environment, defaults to 'Global'"
        ```
 
-    > Other ways of running the scripts are described in [App Creation Scripts guide](./AppCreationScripts/AppCreationScripts.md). The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
+    Other ways of running the scripts are described in [App Creation Scripts guide](./AppCreationScripts/AppCreationScripts.md). The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
     
-        > :information_source: This sample can make use of client certificates. You can use **AppCreationScripts** to register an Azure AD application with certificates. See: [How to use certificates instead of client secrets](./README-use-certificate.md)
+    > :information_source: This sample can make use of client certificates. You can use **AppCreationScripts** to register an Azure AD application with certificates. See: [How to use certificates instead of client secrets](./README-use-certificate.md)
 
 </details>
 
@@ -203,17 +203,163 @@ Were we successful in addressing your learning objective? Consider taking a mome
 <details>
 	<summary>Expand for troubleshooting info</summary>
 
-ASP.NET core applications create session cookies that represent the identity of the caller. Some Safari users using iOS 12 had issues which are described in ASP.NET Core #4467 and the Web kit bugs database Bug 188165 - iOS 12 Safari breaks ASP.NET Core 2.1 OIDC authentication.
-
-If your web site needs to be accessed from users using iOS 12, you probably want to disable the SameSite protection, but also ensure that state changes are protected with CSRF anti-forgery mechanism. See the how to fix section of Microsoft Security Advisory: iOS12 breaks social, WSFed and OIDC logins #4647
+> * Use [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) to get support from the community. Ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
+Ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
+Make sure that your questions or comments are tagged with [`microsoft-identity-web` `ms-identity` `adal` `msal-net` `msal`].
 
 To provide feedback on or suggest features for Azure Active Directory, visit [User Voice page](https://feedback.azure.com/d365community/forum/79b1327d-d925-ec11-b6e6-000d3a4f06a4).
 </details>
 
 ## About the code
 
-> * Describe where the code uses auth libraries, or calls the graph
-> * Describe specific aspects (e.g. caching, validation etc.)
+### Login and logout
+
+In [Program.cs](./CallGraphBFF/Program.cs), **Microsoft Identity Web** service is configured to obtain tokens to call downstream web APIs (here, Microsoft Graph):
+
+```csharp
+// Add Microsoft.Identity.Web services to the container.
+builder.Services.AddMicrosoftIdentityWebAppAuthentication(builder.Configuration)
+    .EnableTokenAcquisitionToCallDownstreamApi(builder.Configuration.GetSection("DownstreamApi:Scopes").Value.Split(' '))
+    .AddMicrosoftGraph(builder.Configuration.GetValue<string>("DownstreamApi:BaseUrl"), builder.Configuration.GetValue<string>("DownstreamApi:Scopes"))
+    .AddInMemoryTokenCaches();
+```
+
+On the frontend side, the React SPA uses the [AuthProvider HOC](./CallGraphBFF/ClientApp/src/AuthProvider.js), which makes a GET call to the `/api/auth/login` endpoint of the ASP.NET Core web app.
+
+```javascript
+login = (postLoginRedirectUri) => {
+    let url = "api/auth/login";
+
+    const searchParams = new URLSearchParams({});
+
+    if (postLoginRedirectUri) {
+        searchParams.append('postLoginRedirectUri', encodeURIComponent(postLoginRedirectUri));
+    }
+
+    url = `${url}?${searchParams.toString()}`;
+
+    window.location.replace(url);
+}
+```
+
+The controller in [AuthController.cs](./CallGraphBFF/Controllers/AuthController.cs) processes the request and initiates a token request against Azure AD via the `Challenge()` method:
+
+```csharp
+[HttpGet("login")]
+public ActionResult Login(string? postLoginRedirectUri)
+{
+    string redirectUri = !string.IsNullOrEmpty(postLoginRedirectUri) ? HttpUtility
+        .UrlDecode(postLoginRedirectUri) : "/";
+
+    var props = new AuthenticationProperties { RedirectUri = redirectUri };
+    
+    return Challenge(props);
+}
+```
+
+Once the authentication is successful, the authentication state can be shared with the frontend. The claims in the user's ID token is sent back to the frontend to update the UI via the `/api/auth/account` endpoint.
+
+### Cookie policies
+
+The sample makes use of HTTP only, strict cookies to secure the calls between the frontend and the backend. The default ASP.NET Core authentication cookie behavior will attempt to redirect unauthenticated requests to the identity provider (in this case, Azure AD). As this is not the desired behavior in BFF proxy architecture, custom cookie authenticated events is used to modify the default behavior (see [CustomCookieAuthenticationEvents.cs](./CallGraphBFF/Utils/CustomCookieAuthenticationEvents.cs)).
+
+```csharp
+// Configure cookie properties for ASP.NET Core cookie authentication.
+builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options => {
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Events = new CustomCookieAuthenticationEvents();
+});
+```
+
+### Handle Continuous Access Evaluation (CAE) challenge from Microsoft Graph
+
+Continuous access evaluation (CAE) enables applications to do just-in time token validation, for instance enforcing user session revocation in the case of password change/reset but there are other benefits. For details, see [Continuous access evaluation](https://docs.microsoft.com/azure/active-directory/conditional-access/concept-continuous-access-evaluation).
+
+Microsoft Graph is now CAE-enabled in Preview. This means that it can ask its client apps for more claims when conditional access policies require it. Your can enable your application to be ready to consume CAE-enabled APIs by:
+
+1. Declaring that the client app is capable of handling claims challenges.
+2. Processing these challenges when they are thrown by the web API
+
+#### Declare the CAE capability in the configuration
+
+This sample app declares that it's CAE-capable by adding the `ClientCapabilities` field to the configuration in [appsettings.json](./CallGraphBFF/appsettings.json):
+
+```json
+{
+  "AzureAd": {
+    "Instance": "https://login.microsoftonline.com/",
+    "TenantId": "[Enter 'common', or 'organizations' or the Tenant Id obtained from the Azure portal]",
+    "ClientId": "[Enter the Client Id aka Application ID obtained from the Azure portal]",
+    "ClientSecret": "[Copy the client secret added to the app from the Azure portal]",
+    "ClientCapabilities": [ "CP1" ],
+    "CallbackPath": "/api/auth/signin-oidc",
+    "SignedOutCallbackPath": "/api/auth/signout-oidc"
+  },
+}
+```
+
+#### Processing the CAE challenge from Microsoft Graph
+
+When a CAE event occurs, the Graph service will throw an exception. You can catch this exception and retrieve the claims challenge inside. Here, we set the challenge as a session variable, and a 401 status is sent to the frontend afterwards, indicating that another login request must be made:
+
+```csharp
+catch (ServiceException svcex) when (svcex.Message.Contains("Continuous access evaluation"))
+{
+    string claimsChallenge = WwwAuthenticateParameters
+        .GetClaimChallengeFromResponseHeaders(svcex.ResponseHeaders);
+
+    // Set the claims challenge string to session, which will be used during the next login request
+    HttpContext.Session.SetString("claimsChallenge", claimsChallenge);
+
+    return Unauthorized("Continuous access evaluation resulted in claims challenge\n" + svcex.Message);
+}
+```
+
+Next time when a login request is made to the backend, the claims challenge is retrieved from the session, and is used to present the user with a prompt for satisfying the challenge via Azure AD authorization endpoint.
+
+```csharp
+[HttpGet("login")]
+public ActionResult Login(string? postLoginRedirectUri)
+{
+    string redirectUri = !string.IsNullOrEmpty(postLoginRedirectUri) ? HttpUtility
+        .UrlDecode(postLoginRedirectUri) : "/";
+
+    string claims = HttpContext.Session.GetString("claimsChallenge") ?? "";
+
+    var props = new AuthenticationProperties { RedirectUri = redirectUri };
+
+    if (!string.IsNullOrEmpty(claims))
+    {
+        props.Items["claims"] = claims;
+        HttpContext.Session.Remove("claimsChallenge"); // discard the challenge
+    }
+
+    return Challenge(props);
+}
+```
+
+### Access token validation
+
+Client apps should treat access tokens as opaque strings, as the contents of the token are intended for the **resource only** (such as a web API or Microsoft Graph). For validation and debugging purposes, developers can decode **JWT**s (*JSON Web Tokens*) using a site like [jwt.ms](https://jwt.ms).
+
+For more details on what's inside the access token, clients should use the token response data that's returned with the access token to your client. When your client requests an access token, the Microsoft identity platform also returns some metadata about the access token for your app's consumption. This information includes the expiry time of the access token and the scopes for which it's valid. For more details about access tokens, please see [Microsoft identity platform access tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens)
+
+### Calling Microsoft Graph
+
+To make bearer token calls to the Microsoft Graph API, **Microsoft.Identity.Web** makes use of the Microsoft Graph SDK internally. This is shown in [Program.cs](./CallGraphBFF/Program.cs):
+
+```csharp
+// Add services to the container.
+builder.Services.AddMicrosoftIdentityWebAppAuthentication(builder.Configuration)
+    .EnableTokenAcquisitionToCallDownstreamApi(builder.Configuration.GetSection("DownstreamApi:Scopes").Value.Split(' '))
+    .AddMicrosoftGraph(builder.Configuration.GetValue<string>("DownstreamApi:BaseUrl"), builder.Configuration.GetValue<string>("DownstreamApi:Scopes"))
+    .AddInMemoryTokenCaches();
+```
+
+The service can then be injected into controllers to make Graph calls afterwards. See [ProfileController.cs](./CallGraphBFF/Controllers/ProfileController.cs) for more.
 
 ### Deploying Web app to Azure App Service
 

@@ -15,7 +15,7 @@ const AuthProviderHOC = (C) =>
             await this.getAccount();
         }
 
-        login = (postLoginRedirectUri, claimsChallenge) => {
+        login = (postLoginRedirectUri, scopesToConsent) => {
             let url = "api/auth/login";
 
             const searchParams = new URLSearchParams({});
@@ -24,8 +24,8 @@ const AuthProviderHOC = (C) =>
                 searchParams.append('postLoginRedirectUri', encodeURIComponent(postLoginRedirectUri));
             }
 
-            if (claimsChallenge) {
-                searchParams.append('claimsChallenge', JSON.stringify(claimsChallenge));
+            if (scopesToConsent) {
+                searchParams.append('scopesToConsent', scopesToConsent.join(' '));
             }
 
             url = `${url}?${searchParams.toString()}`;
@@ -36,12 +36,12 @@ const AuthProviderHOC = (C) =>
         logout = (postLogoutRedirectUri) => {
             this.setState({ isAuthenticated: false, account: null });
 
-            let url = "api/auth/login";
+            let url = "api/auth/logout";
 
             const searchParams = new URLSearchParams({});
 
             if (postLogoutRedirectUri) {
-                searchParams.append('postLoginRedirectUri', encodeURIComponent(postLogoutRedirectUri));
+                searchParams.append('postLogoutRedirectUri', encodeURIComponent(postLogoutRedirectUri));
             }
 
             url = `${url}?${searchParams.toString()}`;
