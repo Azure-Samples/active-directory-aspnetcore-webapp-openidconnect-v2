@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
-using TodoListClient.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web.UI;
 using Microsoft.IdentityModel.Logging;
@@ -48,7 +47,7 @@ namespace WebApp_OpenIDConnect_DotNet
             // Refer to https://github.com/AzureAD/microsoft-identity-web/wiki/web-apps to learn more
             services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
                     .EnableTokenAcquisitionToCallDownstreamApi(
-                        Configuration.GetSection("TodoList:TodoListScopes").Get<string>().Split(" ", System.StringSplitOptions.RemoveEmptyEntries)
+                        Configuration.GetSection("TodoList:Scopes").Get<string[]>()
                      )
                     .AddInMemoryTokenCaches();
 
@@ -71,7 +70,8 @@ namespace WebApp_OpenIDConnect_DotNet
 
 
             // Add APIs
-            services.AddTodoListService(Configuration);
+            services.AddDownstreamApi("TodoList", Configuration.GetSection("TodoList"));
+
 
             // The following flag can be used to get more descriptive errors in development environments
             // Enable diagnostic logging to help with troubleshooting.  For more details, see https://aka.ms/IdentityModel/PII.
