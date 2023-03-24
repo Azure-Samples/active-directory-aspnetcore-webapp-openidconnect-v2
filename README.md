@@ -17,6 +17,8 @@ urlFragment: enable-webapp-signin
 
 # Tutorial - Enable your Web Apps to sign-in users and call APIs with the Microsoft identity platform for developers
 
+[![.NET](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/actions/workflows/dotnet.yml)
+
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 ## About this tutorial
