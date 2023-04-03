@@ -34,6 +34,7 @@ builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefa
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+
     options.Events = new CustomCookieAuthenticationEvents(); // modifies the behavior of certain cookie authentication events.
 });
 
