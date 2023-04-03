@@ -6,7 +6,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
     public class AccountController : Controller
     {
         [Authorize]
-        public IActionResult SignOut()
+        public new IActionResult SignOut()
         {
             HttpContext.Session.Clear();
             return RedirectToAction("SignOut", "Account", new { area = "MicrosoftIdentity" });
