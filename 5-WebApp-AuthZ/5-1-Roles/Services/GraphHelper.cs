@@ -15,7 +15,6 @@ namespace WebApp_OpenIDConnect_DotNet.Services
     public class GraphHelper
     {
         private readonly GraphServiceClient _graphServiceClient;
-        private readonly HttpContext _httpContext;
         private readonly MicrosoftIdentityConsentAndConditionalAccessHandler _consentHandler;
         private string[] _graphScopes;
         private readonly int _grapCollectionMaxRows = 50;
