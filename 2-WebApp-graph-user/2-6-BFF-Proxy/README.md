@@ -97,13 +97,7 @@ There is one project in this sample. To register it, you can:
 
     > :warning: If you have never used **Microsoft Graph PowerShell** before, we recommend you go through the [App Creation Scripts Guide](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
   
-    1. On Windows, run PowerShell as **Administrator** and navigate to the root of the cloned directory
-    1. In PowerShell run:
-
-       ```PowerShell
-       Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
-       ```
-
+    1. Ensure that you have PowerShell 7 or later.
     1. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
     1. For interactive process -in PowerShell, run:
 
