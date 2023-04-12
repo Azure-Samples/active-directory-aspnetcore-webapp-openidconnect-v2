@@ -46,12 +46,13 @@ namespace TodoListService.Controllers
         public TodoListController(IHttpContextAccessor contextAccessor)
         {
             this._contextAccessor = contextAccessor;
+            string owner = this._contextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value;
 
             // Pre-populate with sample data
             if (TodoStore.Count == 0)
             {
-                TodoStore.Add(1, new Todo() { Id = 1, Owner = $"{this._contextAccessor.HttpContext.User.Identity.Name}", Title = "Pick up groceries" });
-                TodoStore.Add(2, new Todo() { Id = 2, Owner = $"{this._contextAccessor.HttpContext.User.Identity.Name}", Title = "Finish invoice report" });
+                TodoStore.Add(1, new Todo() { Id = 1, Owner = owner, Title = "Pick up groceries" });
+                TodoStore.Add(2, new Todo() { Id = 2, Owner = owner, Title = "Finish invoice report" });
             }
         }
 
@@ -59,7 +60,7 @@ namespace TodoListService.Controllers
         [HttpGet]
         public IEnumerable<Todo> Get()
         {
-            string owner = User.Identity.Name;
+            string owner = User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value;
             return TodoStore.Values.Where(x => x.Owner == owner);
         }
 
@@ -80,8 +81,10 @@ namespace TodoListService.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Todo todo)
         {
+            string owner = User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value;
             int id = TodoStore.Values.OrderByDescending(x => x.Id).FirstOrDefault().Id + 1;
-            Todo todonew = new Todo() { Id = id, Owner = HttpContext.User.Identity.Name, Title = todo.Title };
+
+            Todo todonew = new Todo() { Id = id, Owner = owner, Title = todo.Title };
             TodoStore.Add(id, todonew);
 
             return Ok(todo);
