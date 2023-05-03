@@ -20,6 +20,8 @@
       "HomePage": "https://localhost:44321/",
       "ReplyUrls": "https://localhost:44321/, https://localhost:44321/signin-oidc",
       "LogoutUrl": "https://localhost:44321/signout-oidc",
+      "SDK": "MicrosoftIdentityWeb",
+	"EnableIdTokenIssuance": true
     }
   ],
 
