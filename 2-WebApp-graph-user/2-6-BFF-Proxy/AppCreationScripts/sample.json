@@ -48,19 +48,19 @@
     "CodeConfiguration": [
         {
             "App": "client",
-            "SettingKind": "JSON",
+            "SettingKind": "Replace",
             "SettingFile": "\\..\\CallGraphBFF\\appsettings.json",
             "Mappings": [
                 {
-                    "key": "TenantId",
+                    "key": "Enter_the_Tenant_Id_Here",
                     "value": "$tenantId"
                 },
                 {
-                    "key": "ClientId",
+                    "key": "Enter_the_Application_Id_Here",
                     "value": ".AppId"
                 },
                 {
-                    "key": "ClientSecret",
+                    "key": "Enter_the_Client_Secret_Here",
                     "value": ".AppKey"
                 }
             ]

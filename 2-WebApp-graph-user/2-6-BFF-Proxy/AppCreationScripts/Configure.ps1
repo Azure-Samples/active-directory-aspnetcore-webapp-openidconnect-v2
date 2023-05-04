@@ -127,6 +127,44 @@ Function UpdateTextFile([string] $configFilePath, [System.Collections.HashTable]
 }
 
 <#.Description
+   This function takes a string input as a single line, matches a key value and replaces with the replacement value
+#>     
+Function ReplaceInLine([string] $line, [string] $key, [string] $value)
+{
+    $index = $line.IndexOf($key)
+    if ($index -ige 0)
+    {
+        $index2 = $index+$key.Length
+        $line = $line.Substring(0, $index) + $value + $line.Substring($index2)
+    }
+    return $line
+}
+
+<#.Description
+   This function takes a dictionary of keys to search and their replacements and replaces the placeholders in a text file
+#>     
+Function ReplaceInTextFile([string] $configFilePath, [System.Collections.HashTable] $dictionary)
+{
+    $lines = Get-Content $configFilePath
+    $index = 0
+    while($index -lt $lines.Length)
+    {
+        $line = $lines[$index]
+        foreach($key in $dictionary.Keys)
+        {
+            if ($line.Contains($key))
+            {
+                $lines[$index] = ReplaceInLine $line $key $dictionary[$key]
+            }
+        }
+        $index++
+    }
+
+    Set-Content -Path $configFilePath -Value $lines -Force
+}
+
+
+<#.Description
    This function takes a string as input and creates an instance of an Optional claim object
 #> 
 Function CreateOptionalClaim([string] $name)
@@ -266,13 +304,13 @@ Function ConfigureApplications
     # $configFile = $pwd.Path + "\..\CallGraphBFF\appsettings.json"
     $configFile = $(Resolve-Path ($pwd.Path + "\..\CallGraphBFF\appsettings.json"))
     
-    $dictionary = @{ "TenantId" = $tenantId;"ClientId" = $clientAadApplication.AppId;"ClientSecret" = $clientAppKey };
+    $dictionary = @{ "Enter_the_Tenant_Id_Here" = $tenantId;"Enter_the_Application_Id_Here" = $clientAadApplication.AppId;"Enter_the_Client_Secret_Here" = $clientAppKey };
 
     Write-Host "Updating the sample config '$configFile' with the following config values:" -ForegroundColor Yellow 
     $dictionary
     Write-Host "-----------------"
 
-    UpdateTextFile -configFilePath $configFile -dictionary $dictionary
+    ReplaceInTextFile -configFilePath $configFile -dictionary $dictionary
     Write-Host "- App client  - created at $clientPortalUrl"
 
 

@@ -27,7 +27,7 @@ internal class CustomCookieAuthenticationEvents : CookieAuthenticationEvents
             var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
 
             string token = await tokenAcquisition.GetAccessTokenForUserAsync(
-                scopes: new[] { "User.Read" },
+                scopes: new[] { "openid" },
                 user: context.Principal);
         }
         catch (MicrosoftIdentityWebChallengeUserException ex) when (AccountDoesNotExitInTokenCache(ex))

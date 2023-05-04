@@ -38,6 +38,8 @@ builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefa
     options.Events = new CustomCookieAuthenticationEvents(); // modifies the behavior of certain cookie authentication events.
 });
 
+builder.Services.AddControllersWithViews();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
