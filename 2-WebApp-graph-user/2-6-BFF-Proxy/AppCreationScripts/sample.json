@@ -61,7 +61,7 @@
                 },
                 {
                     "key": "ClientSecret",
-                    "value": "$pwdCredential.SecretText"
+                    "value": ".AppKey"
                 }
             ]
         }

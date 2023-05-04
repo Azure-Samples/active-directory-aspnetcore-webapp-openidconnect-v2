@@ -35,7 +35,7 @@ extensions:
 
 ## Overview
 
-This sample demonstrates a React single-page application (SPA) with an ASP.NET Core backend that authenticates users and calls the Microsoft Graph API using the backend for frontend (BFF) proxy architecture. In this architecture, access tokens are retrieved and stored within the secure backend context, and the client side JavaScript application, which is served by the ASP.NET web app, is only indirectly involved in the authN/authZ process by routing the token and API requests to the backend. The trust between the frontend and backend is established via a secure cookie upon successful sign-in.
+This sample demonstrates a React single-page application (SPA) with an ASP.NET Core backend that authenticates users and calls the Microsoft Graph API using the [backend for frontend (BFF) proxy architecture](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps-13). In this architecture, access tokens are retrieved and stored within the secure backend context, and the client side JavaScript application, which is served by the ASP.NET web app, is only indirectly involved in the authN/authZ process by routing the token and API requests to the backend. The trust between the frontend and backend is established via a secure cookie upon successful sign-in.
 
 > :information_source: To learn how applications integrate with [Microsoft Graph](https://aka.ms/graph), consider going through the recorded session: [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A)
 
@@ -46,7 +46,21 @@ This sample demonstrates a React single-page application (SPA) with an ASP.NET C
 1. ASP.NET Core web app uses the **access token** as a *bearer* token to authorize the user to call the Microsoft Graph API protected by **Azure AD**.
 1. ASP.NET Core web app returns the Microsoft Graph `/me` endpoint response back to the React SPA.
 
-![Scenario Image](./ReadmeFiles/sequence.png)
+```mermaid
+sequenceDiagram
+    participant Frontend
+    participant Backend
+    participant Azure AD
+    participant Graph
+    Frontend-)+Backend: /login
+    Backend-)+Azure AD: login.microsoftonline.com
+    Azure AD--)-Backend: token response
+    Backend--)-Frontend: /login response (auth state)
+    Frontend-)+Backend: /profile
+    Backend-)+Graph: graph.microsoft.com/v1.0/me
+    Graph--)-Backend: /me endpoint response
+    Backend--)-Frontend: /profile response (/me data)
+```
 
 ## Prerequisites
 

@@ -9,7 +9,7 @@ In production, you should purchase a certificate signed by a well-known certific
 
 <details>
 <summary>:information_source: Expand this to use automation</summary>
- 
+
 1. While inside *AppCreationScripts* folder, open a terminal.
 
 2. Run the [Cleanup-withCertCertificates.ps1](./Cleanup-withCertCertificates.ps1) script to delete any existing app registrations and certificates for the sample.

@@ -15,14 +15,14 @@
 
 - [Goal of the provided scripts](#goal-of-the-provided-scripts)
   - [Presentation of the scripts](#presentation-of-the-scripts)
-  - [Usage pattern for tests and DevOps scenarios](#usage-pattern-for-tests-and-DevOps-scenarios)
+  - [Usage pattern for tests and DevOps scenarios](#usage-pattern-for-tests-and-devops-scenarios)
 - [How to use the app creation scripts?](#how-to-use-the-app-creation-scripts)
   - [Pre-requisites](#pre-requisites)
   - [Run the script and start running](#run-the-script-and-start-running)
-  - [Four ways to run the script](#four-ways-to-run-the-script)
+  - [Two ways to run the script](#two-ways-to-run-the-script)
     - [Option 1 (interactive)](#option-1-interactive)
-    - [Option 2 (Interactive, but create apps in a specified tenant)](#option-3-Interactive-but-create-apps-in-a-specified-tenant)
-  - [Running the script on Azure Sovereign clouds](#running-the-script-on-Azure-Sovereign-clouds)
+    - [Option 2 (Interactive, but create apps in a specified tenant)](#option-2-Interactive-but-create-apps-in-a-specified-tenant)
+  - [Running the script on Azure Sovereign clouds](#running-the-script-on-azure-sovereign-clouds)
 
 ## Goal of the provided scripts
 
@@ -52,7 +52,7 @@ The `Configure.ps1` will stop if it tries to create an Azure AD application whic
 
 ### Pre-requisites
 
-1. PowerShell 7 or later (see: [installing PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell))
+1. PowerShell 7 or later (see: [installing PowerShell](https://learn.microsoft.com/powershell/scripting/install/installing-powershell))
 1. Open PowerShell (On Windows, press  `Windows-R` and type `PowerShell` in the search window)
 
 ### (Optionally) install Microsoft.Graph.Applications PowerShell modules
@@ -82,7 +82,7 @@ The scripts install the required PowerShell module (Microsoft.Graph.Applications
     cd AppCreationScripts
     ```
 
-1. Run the scripts. See below for the [four options](#four-ways-to-run-the-script) to do that.
+1. Run the scripts. See below for the [two options](#two-ways-to-run-the-script) to do that.
 1. Open the Visual Studio solution, and in the solution's context menu, choose **Set Startup Projects**.
 1. select **Start** for the projects
 
