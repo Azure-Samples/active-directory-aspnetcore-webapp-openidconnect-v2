@@ -48,17 +48,19 @@ In this tutorial, you will learn, incrementally, how to add sign-in users to you
    1. If your application wants to connect with your customers, or with small business partners, you can have your application [sign-in users with their social identities](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-5-B2C/README.md) using Microsoft Azure AD B2C.
    1. Finally, you'll want to let users [sign-out](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-6-SignOut/README.md) from your application, or globally from their browser session.
 
-2. If your Web app  only needs to sign-in users, in that case you have all you need from the options provided above, but if your app needs to call APIs that you've developed yourselves or popular Microsoft APIs like Microsoft Graph, then the following chapters will help extend your work so far to also call these Web APIs.
+2. If your Web app only needs to sign-in users, in that case you have all you need from the options provided above, but if your app needs to call APIs that you've developed yourselves or popular Microsoft APIs like Microsoft Graph, then the following chapters will help extend your work so far to also call these Web APIs.
 
    ![Web apps calls Microsoft Graph](ReadmeFiles/Web-app-calls-Microsoft-Graph.svg)
 
    Learn how to update your Web app to [call Microsoft Graph](https://graph.microsoft.com):
 
-   1. We'd use the the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web)  library again to extend the web app to [sign-in users and also call Microsoft Graph](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/2-WebApp-graph-user/2-1-Call-MSGraph/README.md)
+   1. We'd use the the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) library again to extend the web app to [sign-in users and also call Microsoft Graph](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/2-WebApp-graph-user/2-1-Call-MSGraph/README.md)
    1. In this chapter we'd explain the token cache and how [customize the token cache serialization](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/2-WebApp-graph-user/2-2-TokenCache/README-incremental-instructions.md)
  with different technologies depending on your needs (in-memory cache, Session token cache, SQL Server Cache, Redis Cache)
    1. Learn how to [secure a multi-tenant SaaS application](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/2-WebApp-graph-user/2-3-Multi-Tenant/README.md)
    1. Learn how to call Microsoft Graph in [national and sovereign clouds](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph/README.md).
+   1. Learn how to [authenticate users on both the frontend and backend side simultaneously](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/master/2-WebApp-graph-user/2-5-HybridFlow/README.md) using the **Hybrid SPA code flow** and call Microsoft Graph.
+   1. Learn how to [authenticate users on the backend side and share the authentication state with the frontend side](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/master/2-WebApp-graph-user/2-6-BFF-Proxy/README.md) using the **Backend for Frontend proxy** architecture and call Microsoft Graph.
 
 3. Your Web App might also want to call other Web APIs than Microsoft Graph.
 

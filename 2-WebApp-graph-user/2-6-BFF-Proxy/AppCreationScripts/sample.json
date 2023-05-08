@@ -1,0 +1,69 @@
+{
+    "Sample": {
+        "Author": "derisen",
+        "Title": "React SPA with ASP.NET Core backend calling Microsoft Graph on behalf of the signed-in user",
+        "Level": 300,
+        "Client": "ASP.NET Core web app",
+        "Service": "Microsoft Graph",
+        "RepositoryUrl": "active-directory-aspnetcore-webapp-openidconnect-v2",
+        "Endpoint": "AAD v2.0",
+        "Platform": ".NET Core",
+        "Languages": [
+            "csharp",
+            "javascript"
+        ],
+        "Products": [
+            "azure-active-directory",
+            "microsoft-identity-web"
+        ],
+        "Description": "A React single-page application with an ASP.NET Core backend authenticating users and calling the Microsoft Graph API using the backend for frontend proxy pattern."
+    },
+    "AADApps": [
+        {
+            "Id": "client",
+            "Name": "CallGraphBFF",
+            "Kind": "WebApp",
+            "Audience": "AzureADMyOrg",
+            "HomePage": "https://localhost:7000",
+            "ReplyUrls": "https://localhost:7000/api/auth/signin-oidc, https://localhost:7000/api/auth/signout-oidc",
+            "SDK": "MicrosoftIdentityWeb",
+            "SampleSubPath": "2-WebApp-graph-user\\2-6-BFF-Proxy\\CallGraphBFF",
+            "PasswordCredentials": "Auto",
+            "Certificate": "Auto",
+            "RequiredResourcesAccess": [
+                {
+                    "Resource": "Microsoft Graph",
+                    "DelegatedPermissions": [
+                        "User.Read"
+                    ]
+                }
+            ],
+            "OptionalClaims": {
+                "IdTokenClaims": [
+                    "acct"
+                ]
+            }
+        }
+    ],
+    "CodeConfiguration": [
+        {
+            "App": "client",
+            "SettingKind": "Replace",
+            "SettingFile": "\\..\\CallGraphBFF\\appsettings.json",
+            "Mappings": [
+                {
+                    "key": "Enter_the_Tenant_Id_Here",
+                    "value": "$tenantId"
+                },
+                {
+                    "key": "Enter_the_Application_Id_Here",
+                    "value": ".AppId"
+                },
+                {
+                    "key": "Enter_the_Client_Secret_Here",
+                    "value": ".AppKey"
+                }
+            ]
+        }
+    ]
+}
