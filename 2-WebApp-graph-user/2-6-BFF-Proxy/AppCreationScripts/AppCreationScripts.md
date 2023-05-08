@@ -4,6 +4,12 @@
 
 ### Quick summary
 
+1. Set the execution policy if this is the first time you are running external scripts:
+
+   ```PowerShell
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+   ```
+
 1. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
 
    ```PowerShell
