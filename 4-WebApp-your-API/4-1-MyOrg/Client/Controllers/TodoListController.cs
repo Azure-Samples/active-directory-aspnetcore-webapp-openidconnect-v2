@@ -9,11 +9,7 @@ using System.Collections.Generic;
 
 namespace TodoListClient.Controllers
 {
-    // TODO: Change the "c53a1bc4-9757-407d-a76a-51a2032d2afb" GUID
-    // by the Application ID of the web API
-    [AuthorizeForScopes(Scopes = new string[]{
-        "api://c53a1bc4-9757-407d-a76a-51a2032d2afb/ToDoList.Read",
-        "api://c53a1bc4-9757-407d-a76a-51a2032d2afb/ToDoList.ReadWrite"})]
+    [AuthorizeForScopes(ScopeKeySection = "TodoList:Scopes")]
     public class TodoListController : Controller
     {
         private IDownstreamApi _downstreamApi;
