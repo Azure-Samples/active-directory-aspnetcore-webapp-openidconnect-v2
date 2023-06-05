@@ -1,0 +1,116 @@
+name: Bug report
+description: Broken or unintended behavior with one of the samples.
+labels: [bug-unconfirmed, question]
+body:
+- type: markdown
+  attributes:
+    value: |
+      ## Issue details
+
+- type: input
+  attributes:
+    label: Microsoft.Identity.Web version
+    description: "Please enter the latest version this issue can be reproduced in. "
+    placeholder: "2.11.1"
+  validations:
+    required: true
+
+- type: dropdown
+  attributes:
+    label: Web app sign-in
+    options:
+      - "1-WebApp-OIDC/1-1-MyOrg"
+      - "1-WebApp-OIDC/1-2-AnyOrg"
+      - "1-WebApp-OIDC/1-3-AnyOrgOrPersonal"
+      - "1-WebApp-OIDC/1-4-Sovereign"
+      - "1-WebApp-OIDC/1-5-B2C"
+      - "1-WebApp-OIDC/1-6-SignOut"
+      - "Not applicable"
+  validations:
+    required: true
+
+- type: dropdown
+  attributes:
+    label: Web API (call Graph or downstream APIs)
+    options:
+      - "2-WebApp-graph-user/2-1-Call-MSGraph"
+      - "2-WebApp-graph-user/2-2-TokenCache"
+      - "2-WebApp-graph-user/2-3-Multi-Tenant"
+      - "2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph"
+      - "2-WebApp-graph-user/2-5-HybridFlow"
+      - "2-WebApp-graph-user/2-6-BFF-Proxy"
+      - "3-WebApp-multi-APIs"
+      - "4-WebApp-your-API/4-1-MyOrg"
+      - "4-WebApp-your-API/4-2-B2C"
+      - "4-WebApp-your-API/4-3-AnyOrg"
+      - "Not applicable"
+  validations:
+    required: true
+
+- type: dropdown
+  attributes:
+    label: Deploy to Azure
+    options:
+      - "5-WebApp-AuthZ/5-1-Roles"
+      - "5-WebApp-AuthZ/5-2-Groups"
+      - "Not applicable"
+  validations:
+    required: true
+
+- type: dropdown
+  attributes:
+    label: Auth Z
+    options:
+      - "6-Deploy-to-Azure"
+      - "Not applicable"
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: Description
+    description: "Please briefly describe your issue. "
+  validations: 
+    required: true
+
+- type: textarea
+  attributes:
+    label: Reproduction steps
+    description: "Please provide clear steps to reproduce or a link to a sample which demonstrates this behavior."
+    placeholder: |
+      1.
+      2.
+      3.
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: Error message
+    description: "Please provide any error messages you are receiving and a stack trace. Do not include PII. "
+
+- type: textarea
+  attributes:
+    label: Id Web logs
+    description: "Please provide verbose level log messages. See https://aka.ms/ms-id-web/logging for details on setting up the logs. You can enable Middleware diagnostics by uncommenting the following [lines](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/418e4880ce3307befb25c7af600a886560cadcaa/Microsoft.Identity.Web/StartupHelpers.cs#L81-L83)"
+
+- type: textarea
+  attributes:
+    label: Relevant code snippets
+    description: "Please provide relevant code snippets that can be used to reproduce this issue."
+    render: csharp
+  validations:
+    required: true
+
+- type: input
+  attributes:
+    label: Regression
+    description: "If this behavior worked before, please enter the last working version(s)."
+    placeholder: "Id Web 2.11.1"
+
+- type: textarea
+  attributes:
+    label: Expected behavior
+    description: "Please describe what you expect the behavior to be. "
+  validations:
+    required: true

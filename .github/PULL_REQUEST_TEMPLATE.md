@@ -1,45 +1,20 @@
-## Purpose
-<!-- Describe the intention of the changes being proposed. What problem does it solve or functionality does it add? -->
-* ...
+# {PR title}
+<!-- Thank you for submitting a pull request to our repo. -->
 
-## Does this introduce a breaking change?
-<!-- Mark one with an "x". -->
-```
-[ ] Yes
-[ ] No
-```
+<!-- If this is your first PR in the ASP.NET Core repo, please run through the checklist
+below to ensure a smooth review and merge process for your PR. -->
 
-## Pull Request Type
-What kind of change does this Pull Request introduce?
+- [ ] You've read the [Contributor Guide](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/master/CONTRIBUTING.md) and [Code of Conduct](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/master/CODE-OF-CONDUCT.md).
+- [ ] You've included unit or integration tests for your change, where applicable.
+- [ ] You've included inline docs for your change, where applicable.
+- [ ] There's an open issue for the PR that you are making. If you'd like to propose a new feature or change, please open an issue to discuss the change or find an existing issue.
 
-<!-- Please check the one that applies to this PR using "x". -->
-```
-[ ] Bugfix
-[ ] Feature
-[ ] Code style update (formatting, local variables)
-[ ] Refactoring (no functional changes, no api changes)
-[ ] Documentation content changes
-[ ] Other... Please describe:
-```
+<!-- Once all that is done, you're ready to go. Open the PR with the content below. -->
 
-## How to Test
-*  Get the code
+Summary of the changes (Less than 80 chars)
 
-```
-git clone [repo-address]
-cd [repo-name]
-git checkout [branch-name]
-npm install
-```
+## Description
 
-* Test the code
-<!-- Add steps to run the tests suite and/or manually test -->
-```
-```
+{Detail}
 
-## What to Check
-Verify that the following are valid
-* ...
-
-## Other Information
-<!-- Add any other helpful information that may be needed here. -->
+Fixes #{bug number} (in this specific format)
