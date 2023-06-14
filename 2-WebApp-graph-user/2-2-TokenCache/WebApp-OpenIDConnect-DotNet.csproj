@@ -21,8 +21,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.11.1" />
-    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="2.11.1" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.12.1" />
+    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="2.12.1" />
   </ItemGroup>
   
 
