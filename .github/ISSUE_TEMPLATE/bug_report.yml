@@ -11,7 +11,7 @@ body:
   attributes:
     label: Microsoft.Identity.Web version
     description: "Please enter the latest version this issue can be reproduced in. "
-    placeholder: "2.11.1"
+    placeholder: "2.12.0"
   validations:
     required: true
 
@@ -106,7 +106,7 @@ body:
   attributes:
     label: Regression
     description: "If this behavior worked before, please enter the last working version(s)."
-    placeholder: "Id Web 2.11.1"
+    placeholder: "Id Web 2.12.0"
 
 - type: textarea
   attributes:
