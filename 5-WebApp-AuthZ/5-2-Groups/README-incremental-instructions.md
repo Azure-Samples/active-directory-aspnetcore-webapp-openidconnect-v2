@@ -403,10 +403,10 @@ public async Task<IActionResult> Index()
 {
     try
     {
-        User me = await _graphServiceClient.Me.Request().GetAsync();
+        User me = await _graphServiceClient.Me.GetAsync();
         ViewData["Me"] = me;
 
-        var photo = await _graphServiceClient.Me.Photo.Request().GetAsync();
+        var photo = await _graphServiceClient.Me.Photo.GetAsync();
         ViewData["Photo"] = photo;
     }
     // See 'Optional - Handle Continuous Access Evaluation (CAE) challenge from Microsoft Graph' for more information.
@@ -502,16 +502,16 @@ To process the CAE challenge from Microsoft Graph, the controller actions need t
 1. The process to handle CAE challenges from MS Graph comprises of the following steps:
     1. Catch a Microsoft Graph SDK's `ServiceException` and extract the required `claims`. This is done by wrapping the call to Microsoft Graph into a try/catch block that processes the challenge:
     ```CSharp
-    User me = await _graphServiceClient.Me.Request().GetAsync();
+    User me = await _graphServiceClient.Me.GetAsync();
     ```
     1. Then redirect the user back to Azure AD with the new requested `claims`. Azure AD will use this `claims` payload to discern what or if any additional processing is required, example being the user needs to sign-in again or do multi-factor authentication.
   ```CSharp
     try
     {
-        User me = await _graphServiceClient.Me.Request().GetAsync();
+        User me = await _graphServiceClient.Me.GetAsync();
         ViewData["Me"] = me;
 
-        var photo = await _graphServiceClient.Me.Photo.Request().GetAsync();
+        var photo = await _graphServiceClient.Me.Photo.GetAsync();
         ViewData["Photo"] = photo;
     }
     // Catch CAE exception from Graph SDK

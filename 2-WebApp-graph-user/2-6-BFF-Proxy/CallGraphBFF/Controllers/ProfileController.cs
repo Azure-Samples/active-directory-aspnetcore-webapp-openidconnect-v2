@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Web;
 using Microsoft.Graph;
+using Microsoft.Graph.Models;
 
 namespace TodoListBFF.Controllers;
 
@@ -25,7 +26,6 @@ public class ProfileController : Controller
         try
         {
             User profile = await _graphServiceClient.Me
-                .Request()
                 .GetAsync();
 
             return Ok(profile);

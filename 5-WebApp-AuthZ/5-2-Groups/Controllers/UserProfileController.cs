@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Graph;
+using Microsoft.Graph.Models;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Web;
 using System;
@@ -33,10 +34,10 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         {
             try
             {
-                User me = await _graphServiceClient.Me.Request().GetAsync();
+                User me = await _graphServiceClient.Me.GetAsync();
                 ViewData["Me"] = me;
 
-                var photo = await _graphServiceClient.Me.Photo.Request().GetAsync();
+                var photo = await _graphServiceClient.Me.Photo.GetAsync();
                 ViewData["Photo"] = photo;
             }
             // Catch CAE exception from Graph SDK
@@ -53,7 +54,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                     _consentHandler.HandleException(ex2);
                 }
             }
-            catch (ServiceException svcex) when (svcex.Error.Code == "ImageNotFound")
+            catch (ServiceException svcex) when (svcex.IsMatch("ImageNotFound"))
             {
                 //swallow
             }

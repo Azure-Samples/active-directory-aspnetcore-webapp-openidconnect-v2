@@ -122,7 +122,7 @@ The two new lines of code:
 
 ### Add additional files to call Microsoft Graph
 
-Add the `Microsoft.Identity.Web.MicrosoftGraph` package, to use [Microsoft Graph SDK](https://github.com/microsoftgraph/msgraph-sdk-dotnet/blob/dev/docs/overview.md).
+Add the `Microsoft.Identity.Web.GraphServiceClient` package, to use [Microsoft Graph SDK](https://github.com/microsoftgraph/msgraph-sdk-dotnet/blob/dev/docs/overview.md).
 
 ### Update the `Startup.cs` file to enable the Microsoft Graph custom service
 
@@ -160,13 +160,13 @@ public HomeController(ILogger<HomeController> logger,
 [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
 public async Task<IActionResult> Profile()
 {
-    var me = await _graphServiceClient.Me.Request().GetAsync();
+    var me = await _graphServiceClient.Me.GetAsync();
     ViewData["Me"] = me;
 
     try
     {
         // Get user photo
-        using (var photoStream = await _graphServiceClient.Me.Photo.Content.Request().GetAsync())
+        using (var photoStream = await _graphServiceClient.Me.Photo.Content.GetAsync())
         {
             byte[] photoByte = ((MemoryStream)photoStream).ToArray();
             ViewData["Photo"] = Convert.ToBase64String(photoByte);
@@ -290,7 +290,7 @@ To process the CAE challenge from Microsoft Graph, the controller actions need t
     1. Catch a Microsoft Graph SDK's `ServiceException` and extract the required `claims`. This is done by wrapping the call to Microsoft Graph into a try/catch block that processes the challenge:
 
     ```CSharp
-    currentUser = await _graphServiceClient.Me.Request().GetAsync();
+    currentUser = await _graphServiceClient.Me.GetAsync();
     ```
 
     1. Then redirect the user back to Azure AD with the new requested `claims`. Azure AD will use this `claims` payload to discern what or if any additional processing is required, example being the user needs to sign-in again or do multi-factor authentication.
@@ -298,7 +298,7 @@ To process the CAE challenge from Microsoft Graph, the controller actions need t
   ```CSharp
     try
     {
-        currentUser = await _graphServiceClient.Me.Request().GetAsync();
+        currentUser = await _graphServiceClient.Me.GetAsync();
     }
     // Catch CAE exception from Graph SDK
     catch (ServiceException svcex) when (svcex.Message.Contains("Continuous access evaluation resulted in claims challenge"))

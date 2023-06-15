@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Identity.Web" Version="2.12.1" />
-    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="2.12.1" />
+    <PackageReference Include="Microsoft.Identity.Web.GraphServiceClient" Version="2.12.1" />
     <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.12.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.3" />
   </ItemGroup>

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Graph;
+using Microsoft.Graph.Me.GetMemberGroups;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -133,10 +134,8 @@ namespace WebApp_OpenIDConnect_DotNet.Services
                     try
                     {
                         // Request to get groups and directory roles that the user is a direct member of.
-                        //var memberPage = await graphClient.Me.GetMemberGroups().Request().PostAsync().ConfigureAwait(false);
-                        var memberPage = await graphClient.Me.GetMemberGroups(false).Request().PostAsync();
-
-                        allgroups = memberPage.ToList<string>();
+                        var memberPage = await graphClient.Me.GetMemberGroups.PostAsync(new GetMemberGroupsPostRequestBody() { SecurityEnabledOnly = false});
+                        allgroups = memberPage.Value.ToList<string>();
 
                         if (allgroups?.Count > 0)
                         {
