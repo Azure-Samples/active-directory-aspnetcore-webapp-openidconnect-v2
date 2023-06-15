@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
+using Microsoft.Graph.Models;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Web;
 using System;
@@ -25,7 +26,7 @@ namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
 
         private readonly MicrosoftIdentityConsentAndConditionalAccessHandler _consentHandler;
 
-        private string[] _graphScopes;
+        private readonly string[] _graphScopes;
 
         public HomeController(ILogger<HomeController> logger,
                             IConfiguration configuration,
@@ -34,7 +35,7 @@ namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
         {
             _logger = logger;
             _graphServiceClient = graphServiceClient;
-            this._consentHandler = consentHandler;
+            _consentHandler = consentHandler;
 
             // Capture the Scopes for Graph that were used in the original request for an Access token (AT) for MS Graph as
             // they'd be needed again when requesting a fresh AT for Graph during claims challenge processing
@@ -54,7 +55,7 @@ namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
 
             try
             {
-                currentUser = await _graphServiceClient.Me.Request().GetAsync();
+                currentUser = await _graphServiceClient.Me.GetAsync();
             }
             // Catch CAE exception from Graph SDK
             catch (ServiceException svcex) when (svcex.Message.Contains("Continuous access evaluation resulted in claims challenge"))
@@ -75,7 +76,7 @@ namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
             try
             {
                 // Get user photo
-                using (var photoStream = await _graphServiceClient.Me.Photo.Content.Request().GetAsync())
+                using (var photoStream = await _graphServiceClient.Me.Photo.Content.GetAsync())
                 {
                     byte[] photoByte = ((MemoryStream)photoStream).ToArray();
                     ViewData["Photo"] = Convert.ToBase64String(photoByte);
