@@ -88,10 +88,10 @@ public async Task<IActionResult> Index()
 {
     try
     {
-        User me = await _graphServiceClient.Me.Request().GetAsync();
+        User me = await _graphServiceClient.Me.GetAsync();
         ViewData["Me"] = me;
 
-        var photo = await _graphServiceClient.Me.Photo.Request().GetAsync();
+        var photo = await _graphServiceClient.Me.Photo.GetAsync();
         ViewData["Photo"] = photo;
     }
     // See 'Optional - Handle Continuous Access Evaluation (CAE) challenge from Microsoft Graph' for more information.

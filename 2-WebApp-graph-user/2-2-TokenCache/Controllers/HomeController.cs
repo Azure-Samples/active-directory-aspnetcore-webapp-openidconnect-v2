@@ -32,7 +32,7 @@ namespace _2_1_Call_MSGraph.Controllers
         [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
         public async Task<IActionResult> Index()
         {
-            var user = await _graphServiceClient.Me.Request().GetAsync();
+            var user = await _graphServiceClient.Me.GetAsync();
             ViewData["ApiResult"] = user.DisplayName;
             var encodedCachedTimeUTC = await _cache.GetAsync("cachedTimeUTC");
 
@@ -42,13 +42,13 @@ namespace _2_1_Call_MSGraph.Controllers
         [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
         public async Task<IActionResult> Profile()
         {
-            var me = await _graphServiceClient.Me.Request().GetAsync();
+            var me = await _graphServiceClient.Me.GetAsync();
             ViewData["Me"] = me;
 
             try
             {
                 // Get user photo
-                using (var photoStream = await _graphServiceClient.Me.Photo.Content.Request().GetAsync())
+                using (var photoStream = await _graphServiceClient.Me.Photo.Content.GetAsync())
                 {
                     byte[] photoByte = ((MemoryStream)photoStream).ToArray();
                     ViewData["Photo"] = Convert.ToBase64String(photoByte);

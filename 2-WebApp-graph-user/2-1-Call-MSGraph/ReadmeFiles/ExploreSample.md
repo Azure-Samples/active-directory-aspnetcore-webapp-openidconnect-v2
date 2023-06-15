@@ -10,7 +10,7 @@
 
 ## About The code
 
-1. In this aspnetcore web project, first the packages `Microsoft.Identity.Web`,  `Microsoft.Identity.Web.UI` and `Microsoft.Identity.Web.MicrosoftGraph` were added from NuGet. These libraries are used to simplify the process of signing-in a user and acquiring tokens for Microsoft Graph.
+1. In this aspnetcore web project, first the packages `Microsoft.Identity.Web`,  `Microsoft.Identity.Web.UI` and `Microsoft.Identity.Web.GraphServiceClient` were added from NuGet. These libraries are used to simplify the process of signing-in a user and acquiring tokens for Microsoft Graph.
 
 2. Starting with the **Startup.cs** file :
 
@@ -60,13 +60,13 @@
    [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
    public async Task<IActionResult> Profile()
    {
-    var me = await _graphServiceClient.Me.Request().GetAsync();
+    var me = await _graphServiceClient.Me.GetAsync();
     ViewData["Me"] = me;
 
     try
     {
         // Get user photo
-        using (var photoStream = await _graphServiceClient.Me.Photo.Content.Request().GetAsync())
+        using (var photoStream = await _graphServiceClient.Me.Photo.Content.GetAsync())
         {
             byte[] photoByte = ((MemoryStream)photoStream).ToArray();
             ViewData["Photo"] = Convert.ToBase64String(photoByte);

@@ -29,13 +29,13 @@ To process the CAE challenge from Microsoft Graph, the controller actions need t
 1. The process to handle CAE challenges from MS Graph comprises of the following steps:
     1. Catch a Microsoft Graph SDK's `ServiceException` and extract the required `claims`. This is done by wrapping the call to Microsoft Graph into a try/catch block that processes the challenge:
     ```CSharp
-    currentUser = await _graphServiceClient.Me.Request().GetAsync();
+    currentUser = await _graphServiceClient.Me.GetAsync();
     ```
     1. Then redirect the user back to Azure AD with the new requested `claims`. Azure AD will use this `claims` payload to discern what or if any additional processing is required, example being the user needs to sign-in again or do multi-factor authentication.
   ```CSharp
     try
     {
-        currentUser = await _graphServiceClient.Me.Request().GetAsync();
+        currentUser = await _graphServiceClient.Me.GetAsync();
     }
     // Catch CAE exception from Graph SDK
     catch (ServiceException svcex) when (svcex.Message.Contains("Continuous access evaluation resulted in claims challenge"))

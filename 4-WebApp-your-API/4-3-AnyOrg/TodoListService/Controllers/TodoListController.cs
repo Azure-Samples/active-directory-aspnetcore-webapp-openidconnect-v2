@@ -229,20 +229,23 @@ namespace ToDoListService.Controllers
             try
             {
                 // Call the Graph API and retrieve the user's profile.
-                IGraphServiceUsersCollectionPage users =
+                var users =
                 await CallGraphWithCAEFallback(
                     async () =>
                     {
-                        return await _graphServiceClient.Users.Request()
-                                                              .Filter($"accountEnabled eq true")
-                                                              .Select("id, userPrincipalName")
-                                                              .GetAsync();
+                        return await _graphServiceClient.Users.GetAsync(r =>
+                                                              {
+                                                                  r.QueryParameters.Filter = "accountEnabled eq true";
+                                                                  r.QueryParameters.Select = new string[] { "id", "userPrincipalName" };
+                                                              }
+                                                              );
+
                     }
                 );
 
                 if (users != null)
                 {
-                    return users.Select(x => x.UserPrincipalName).ToList();
+                    return users.Value.Select(x => x.UserPrincipalName).ToList();
                 }
                 throw new Exception();
             }
