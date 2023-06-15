@@ -193,7 +193,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 
 ## About The code
 
-1. In this aspnetcore web project, first the packages `Microsoft.Identity.Web`,  `Microsoft.Identity.Web.UI` and `Microsoft.Identity.Web.MicrosoftGraph` were added from NuGet. These libraries are used to simplify the process of signing-in a user and acquiring tokens for Microsoft Graph.
+1. In this aspnetcore web project, first the packages `Microsoft.Identity.Web`,  `Microsoft.Identity.Web.UI` and `Microsoft.Identity.Web.GraphServiceClient` were added from NuGet. These libraries are used to simplify the process of signing-in a user and acquiring tokens for Microsoft Graph.
 
 2. Starting with the **Startup.cs** file :
 
@@ -242,13 +242,13 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
    [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
    public async Task<IActionResult> Profile()
    {
-    var me = await _graphServiceClient.Me.Request().GetAsync();
+    var me = await _graphServiceClient.Me.GetAsync();
     ViewData["Me"] = me;
 
     try
     {
         // Get user photo
-        using (var photoStream = await _graphServiceClient.Me.Photo.Content.Request().GetAsync())
+        using (var photoStream = await _graphServiceClient.Me.Photo.Content.GetAsync())
         {
             byte[] photoByte = ((MemoryStream)photoStream).ToArray();
             ViewData["Photo"] = Convert.ToBase64String(photoByte);
@@ -509,13 +509,13 @@ To process the CAE challenge from Microsoft Graph, the controller actions need t
 1. The process to handle CAE challenges from MS Graph comprises of the following steps:
     1. Catch a Microsoft Graph SDK's `ServiceException` and extract the required `claims`. This is done by wrapping the call to Microsoft Graph into a try/catch block that processes the challenge:
     ```CSharp
-    currentUser = await _graphServiceClient.Me.Request().GetAsync();
+    currentUser = await _graphServiceClient.Me.GetAsync();
     ```
     1. Then redirect the user back to Azure AD with the new requested `claims`. Azure AD will use this `claims` payload to discern what or if any additional processing is required, example being the user needs to sign-in again or do multi-factor authentication.
   ```CSharp
     try
     {
-        currentUser = await _graphServiceClient.Me.Request().GetAsync();
+        currentUser = await _graphServiceClient.Me.GetAsync();
     }
     // Catch CAE exception from Graph SDK
     catch (ServiceException svcex) when (svcex.Message.Contains("Continuous access evaluation resulted in claims challenge"))

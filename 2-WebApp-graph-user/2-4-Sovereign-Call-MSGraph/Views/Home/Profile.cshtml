@@ -26,7 +26,7 @@
         </td>
     </tr>
     @{       
-        var me = ViewData["me"] as Microsoft.Graph.User;
+        var me = ViewData["me"] as Microsoft.Graph.Models.User;
         var properties = me.GetType().GetProperties();
         foreach (var child in properties)
         {

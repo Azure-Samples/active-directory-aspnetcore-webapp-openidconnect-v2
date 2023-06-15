@@ -16,7 +16,8 @@ builder.Services.AddDistributedMemoryCache();
 // Add Microsoft.Identity.Web services to the container.
 builder.Services.AddMicrosoftIdentityWebAppAuthentication(builder.Configuration)
     .EnableTokenAcquisitionToCallDownstreamApi(builder.Configuration.GetSection("DownstreamApi:Scopes").Value!.Split(' '))
-    .AddMicrosoftGraph(builder.Configuration.GetValue<string>("DownstreamApi:BaseUrl")!, builder.Configuration.GetValue<string>("DownstreamApi:Scopes")!)
+    .AddMicrosoftGraph(builder.Configuration.GetValue<string>("DownstreamApi:BaseUrl")!, 
+                       builder.Configuration.GetValue<string>("DownstreamApi:Scopes")!.Split(' '))
     .AddInMemoryTokenCaches();
 
 // Add session for sharing non-sensitive strings between routes.
