@@ -25,7 +25,7 @@ public class ProfileController : Controller
     {
         try
         {
-            User profile = await _graphServiceClient.Me
+            User? profile = await _graphServiceClient.Me
                 .GetAsync();
 
             return Ok(profile);
