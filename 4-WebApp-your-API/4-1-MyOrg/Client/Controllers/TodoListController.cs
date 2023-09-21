@@ -71,7 +71,7 @@ namespace TodoListClient.Controllers
         {
             todo = await _downstreamApi.CallApiForUserAsync<Todo, Todo>(
                  "TodoList", todo,
-                 options => { options.RelativePath = $"api/todolist/{id}"; options.HttpMethod = HttpMethod.Patch; }) ;
+                 options => { options.RelativePath = $"api/todolist/{id}"; options.HttpMethod = HttpMethod.Patch.ToString(); }) ;
             return RedirectToAction("Index");
         }
 
