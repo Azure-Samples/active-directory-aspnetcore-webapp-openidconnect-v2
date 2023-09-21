@@ -148,9 +148,11 @@ Note: if you had used the automation to setup your application mentioned in [Ste
    >   // Rest of strings...
    > },
    > ```
+   >
 
 1. If you do not have an existing database and tables needed for token caching, you can execute the `dotnet sql-cache create` command to create the table for you. To do that, follow the steps below.
-
+   > 1. In Visual Studio, open the SQL Server Object Explorer, then (localdb)\MSSQLLocalDB
+   > 2. Right click on Databases and select "Add New database", and then choose the name of the database: 'MY_TOKEN_CACHE_DATABASE'
     ```powershell
     dotnet tool install --global dotnet-sql-cache
     dotnet sql-cache create "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MY_TOKEN_CACHE_DATABASE;Integrated Security=True;" dbo TokenCache

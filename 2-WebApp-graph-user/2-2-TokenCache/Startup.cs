@@ -39,10 +39,10 @@ namespace _2_1_Call_MSGraph
             // For production deployments, preferably, generate the schema from the tables generated in dev environments and use it to create the necessary tables in production.
             /*
              *  1. For instance in Visual Studio, open the SQL Server Object explorer, then (localdb)\MSSQLLocalDB, then databases
-             *  2. Right click on Databases and select "Add New database", and then choose the name of the database: 'MsalTokenCacheDatabase'
+             *  2. Right click on Databases and select "Add New database", and then choose the name of the database: 'MY_TOKEN_CACHE_DATABASE'
              *  3. In the console application run the 2 following commands:
                      dotnet tool install --global dotnet-sql-cache
-                     dotnet sql-cache create "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MsalTokenCacheDatabase;Integrated Security=True;" dbo TokenCache
+                     dotnet sql-cache create "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MY_TOKEN_CACHE_DATABASE;Integrated Security=True;" dbo TokenCache
              */
 
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
