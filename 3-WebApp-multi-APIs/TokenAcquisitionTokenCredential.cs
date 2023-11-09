@@ -1,8 +1,8 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Azure.Core;
+﻿using Azure.Core;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Web;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace WebApp_OpenIDConnect_DotNet
 {

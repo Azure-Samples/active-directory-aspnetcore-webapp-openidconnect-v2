@@ -2,6 +2,15 @@
   "dependencies": {
     "secrets1": {
       "type": "secrets"
+    },
+    "storage1": {
+      "type": "storage",
+      "connectionId": "Storage",
+      "dynamicId": null
+    },
+    "identityapp1": {
+      "type": "identityapp",
+      "connectionId": "AzureAD:ClientSecret"
     }
   }
 }

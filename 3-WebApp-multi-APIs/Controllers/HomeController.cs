@@ -106,7 +106,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
                 catch (MicrosoftIdentityWebChallengeUserException ex)
                 {
                     throw ex;
-                }	
+                }
                 catch (MsalUiRequiredException ex)
                 {
                     throw ex;

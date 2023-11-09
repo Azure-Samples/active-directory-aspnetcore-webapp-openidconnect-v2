@@ -1,13 +1,9 @@
-﻿using Microsoft.Extensions.Options;
-
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-
-using WebApp_OpenIDConnect_DotNet.Services.GraphOperations;
 
 namespace WebApp_OpenIDConnect_DotNet.Services.Arm
 {
