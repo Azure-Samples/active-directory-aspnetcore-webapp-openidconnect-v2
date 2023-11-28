@@ -18,8 +18,8 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.16.0" />
-    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="2.16.0" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="$(MicrosoftIdentityWebVersion)" />
+    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="$(MicrosoftIdentityWebVersion)" />
   </ItemGroup>
 
 </Project>
