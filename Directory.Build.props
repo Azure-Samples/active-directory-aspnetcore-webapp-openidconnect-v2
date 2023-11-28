@@ -1,0 +1,5 @@
+<Project>
+    <PropertyGroup Label="Common dependency versions">
+        <MicrosoftIdentityWebVersion>2.16.0</MicrosoftIdentityWebVersion>
+    </PropertyGroup>
+</Project>
