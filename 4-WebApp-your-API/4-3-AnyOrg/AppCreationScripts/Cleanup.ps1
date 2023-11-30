@@ -40,8 +40,9 @@ Function Cleanup
     $tenantId = $context.TenantId
 
     # Get the user running the script
-    $currentUserPrincipalName = $context.Account
-    $user = Get-MgUser -Filter "UserPrincipalName eq '$($context.Account)'"
+    $me = Invoke-MgGraphRequest -Method GET https://graph.microsoft.com/v1.0/me
+    $currentUserPrincipalName = $me.userPrincipalName
+    $user = Get-MgUser -Filter "UserPrincipalName eq '$($currentUserPrincipalName)'"
 
     # get the tenant we signed in to
     $Tenant = Get-MgOrganization

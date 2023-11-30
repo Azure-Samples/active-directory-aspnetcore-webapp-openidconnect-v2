@@ -193,7 +193,7 @@ Function ConfigureApplications
     
     if (!$azureEnvironmentName)
     {
-        $azureEnvironmentName = "Global"
+        $azureEnvironmentName = "Global" # as oppesed to USGov
     }
 
     # Connect to the Microsoft Graph API, non-interactive is not supported for the moment (Oct 2021)
@@ -209,8 +209,9 @@ Function ConfigureApplications
     $tenantId = $context.TenantId
 
     # Get the user running the script
-    $currentUserPrincipalName = $context.Account
-    $user = Get-MgUser -Filter "UserPrincipalName eq '$($context.Account)'"
+    $me = Invoke-MgGraphRequest -Method GET https://graph.microsoft.com/v1.0/me
+    $currentUserPrincipalName = $me.userPrincipalName
+    $user = Get-MgUser -Filter "UserPrincipalName eq '$($currentUserPrincipalName)'"
 
     # get the tenant we signed in to
     $Tenant = Get-MgOrganization
@@ -259,7 +260,7 @@ Function ConfigureApplications
     $owner = Get-MgApplicationOwner -ApplicationId $currentAppObjectId
     if ($owner -eq $null)
     { 
-        New-MgApplicationOwnerByRef -ApplicationId $currentAppObjectId  -BodyParameter = @{"@odata.id" = "htps://graph.microsoft.com/v1.0/directoryObjects/$user.ObjectId"}
+        New-MgApplicationOwnerByRef -ApplicationId $currentAppObjectId  -BodyParameter @{"@odata.id" = "htps://graph.microsoft.com/v1.0/directoryObjects/$($user.Id)"}
         Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($serviceServicePrincipal.DisplayName)'"
     }
 
@@ -412,7 +413,7 @@ Function ConfigureApplications
     $owner = Get-MgApplicationOwner -ApplicationId $currentAppObjectId
     if ($owner -eq $null)
     { 
-        New-MgApplicationOwnerByRef -ApplicationId $currentAppObjectId  -BodyParameter = @{"@odata.id" = "htps://graph.microsoft.com/v1.0/directoryObjects/$user.ObjectId"}
+        New-MgApplicationOwnerByRef -ApplicationId $currentAppObjectId  -BodyParameter @{"@odata.id" = "htps://graph.microsoft.com/v1.0/directoryObjects/$($user.Id)"}
         Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($clientServicePrincipal.DisplayName)'"
     }
 
@@ -496,14 +497,14 @@ Function ConfigureApplications
     Write-Host "  - Application 'service' publishes application permissions. Do remember to navigate to any client app(s) registration in the app portal and consent for those, (if required)" -ForegroundColor Red 
     Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
    
-if($isOpenSSL -eq 'Y')
-{
-    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
-    Write-Host "You have generated certificate using OpenSSL so follow below steps: "
-    Write-Host "Install the certificate on your system from current folder."
-    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
-}
-Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  
+    if($isOpenSSL -eq 'Y')
+    {
+        Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+        Write-Host "You have generated certificate using OpenSSL so follow below steps: "
+        Write-Host "Install the certificate on your system from current folder."
+        Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+    }
+    Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  
 } # end of ConfigureApplications function
 
 # Pre-requisites
