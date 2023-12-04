@@ -3,9 +3,9 @@
 
 <details>
  <summary>Expand the section</summary>
-  ### Provisioning your Multi-tenant Apps in another Azure AD Tenant programmatically
+  ### Provisioning your Multi-tenant Apps in another Microsoft Entra tenant programmatically
 
-Often the user-based consent will be disabled in an Azure AD tenant or your application will be requesting permissions that requires a tenant-admin consent. In these scenarios, your application will need to utilize the `/adminconsent` endpoint to provision both the **ToDoListClient** and the **ToDoListService** before the users from that tenant are able to sign-in to your app.
+Often the user-based consent will be disabled in a Microsoft Entra tenant or your application will be requesting permissions that requires a tenant-admin consent. In these scenarios, your application will need to utilize the `/adminconsent` endpoint to provision both the **ToDoListClient** and the **ToDoListService** before the users from that tenant are able to sign-in to your app.
 
 When provisioning, you have to take care of the dependency in the topology where the **ToDoListClient** is dependent on **ToDoListService**. So in such a case, you would provision the **ToDoListService** before the **ToDoListClient**.
 
@@ -156,7 +156,7 @@ If a token has delegated permission scopes, they will be in the `scp` or `http:/
 
 #### Custom Token Validation Allowing only Registered Tenants
 
-By marking your application as multi-tenant, your application will be able to sign-in users from any Azure AD tenant out there. Now you would want to restrict the tenants you want to work with. For this, we will now extend token validation to only those Azure AD tenants registered in the application database. Below, the event handler `OnTokenValidated` was configured to grab the `tenantId` from the token claims and check if it has an entry on the records. If it doesn't, an exception is thrown, canceling the authentication.
+By marking your application as multi-tenant, your application will be able to sign-in users from any Microsoft Entra tenant out there. Now you would want to restrict the tenants you want to work with. For this, we will now extend token validation to only those Microsoft Entra tenants registered in the application database. Below, the event handler `OnTokenValidated` was configured to grab the `tenantId` from the token claims and check if it has an entry on the records. If it doesn't, an exception is thrown, canceling the authentication.
 
 Another way to control who is allowed into API is to use Policies. This is configured as part of services.AddAuthorization call. See the code below.
 

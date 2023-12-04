@@ -8,17 +8,17 @@ endpoint: Microsoft identity platform
 ---
 # An ASP.NET Core Web app signing-in users with the Microsoft identity platform in Azure AD B2C
 
-[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/aad%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 ## Scenario
 
 This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect to sign in users in **Azure AD B2C**. It assumes you have some familiarity with **Azure AD B2C**. If you'd like to learn all that B2C has to offer, start with our documentation at https://aka.ms/aadb2c.
 
-![Sign in with Azure AD](ReadmeFiles/sign-in.png)
+![Sign in with Microsoft Entra ID](ReadmeFiles/sign-in.png)
 
 ## How to run this sample
 
-To run this sample, follow the guidance in the [Configure authentication in a sample web application using Azure Active Directory B2C](https://docs.microsoft.com/azure/active-directory-b2c/configure-authentication-sample-web-app) article.
+To run this sample, follow the guidance in the [Configure authentication in a sample web application using Azure AD B2C](https://docs.microsoft.com/azure/active-directory-b2c/configure-authentication-sample-web-app) article.
 
 ## Troubleshooting
 
@@ -58,7 +58,7 @@ Here is the middleware example:
 Important things to notice:
 
 - The method `AddMicrosoftIdentityWebAppAuthentication` will configure the authentication based on the `MicrosoftIdentityOptions.cs` options. Feel free to bind more properties on `AzureAdB2C` section on `appsettings.json` if you need to set more options.
-- The URLs you set for `CallbackPath` and `SignedOutCallbackPath` should be registered on the **Reply URLs** of your application, in [Azure Portal](https://portal.azure.com).
+- The URLs you set for `CallbackPath` and `SignedOutCallbackPath` should be registered on the **Reply URLs** of your application, in [Microsoft admin center](https://portal.azure.com).
 
 ## Next steps
 
@@ -75,7 +75,7 @@ To understand more about Azure AD B2C see:
 
 To understand more about ASP.NET Core and Azure identity integration
 
-- [ASP.NET Core Azure AD samples](https://github.com/aspnet/AspNetCore/tree/master/src/Azure/AzureAD/samples)
+- [ASP.NET Core Microsoft Entra ID samples](https://github.com/aspnet/AspNetCore/tree/master/src/Azure/AzureAD/samples)
 
 To understand more about token validation, see:
 

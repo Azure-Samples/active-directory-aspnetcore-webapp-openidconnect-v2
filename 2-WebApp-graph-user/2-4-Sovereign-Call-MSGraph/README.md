@@ -10,7 +10,7 @@ endpoint: Microsoft identity platform
 
 # Using the Microsoft identity platform to call the Microsoft Graph API from an An ASP.NET Core 2.x Web App, on behalf of a user signing-in using their work and school account in Microsoft National Cloud
 
-[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/aad%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 ## Scenario
 
@@ -28,7 +28,7 @@ To run this sample:
 
 - Developers who wish to gain good familiarity of programming for Microsoft Graph are advised to go through the [An introduction to Microsoft Graph for developers](https://www.youtube.com/watch?v=EBbnpFdB92A) recorded session.
 
-### Step 1: Register the sample with your Azure AD tenant
+### Step 1: Register the sample with your Microsoft Entra tenant
 
 You first need to [register](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-4-Sovereign#step-2-register-the-sample-with-your-azure-ad-tenant) your app as described in [Web app signing-in users in Sovereign](hhttps://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-4-Sovereign#scenario)
 
@@ -193,7 +193,7 @@ HTML table displaying the properties of the *me* object as returned by Microsoft
                 else
                 {
                     <h3>NO PHOTO</h3>
-                    <p>Check user profile in Azure Active Directory to add a photo.</p>
+                    <p>Check user profile in Microsoft Entra ID to add a photo.</p>
                 }
             }
         </td>

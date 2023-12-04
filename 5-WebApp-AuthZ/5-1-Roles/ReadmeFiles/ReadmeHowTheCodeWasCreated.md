@@ -1,4 +1,4 @@
-﻿
+
 ## How the code was created
 
 <details>
@@ -37,7 +37,7 @@
             // This flag ensures that the ClaimsIdentity claims collection will be built from the claims in the token
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
-            // Adding authorization policies that enforce authorization using Azure AD roles.
+            // Adding authorization policies that enforce authorization using Microsoft Entra roles.
             services.AddAuthorization(options => 
             {
                 options.AddPolicy(AuthorizationPolicies.AssignmentToUserReaderRoleRequired, policy => policy.RequireRole(AppRole.UserReaders));

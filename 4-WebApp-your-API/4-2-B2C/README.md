@@ -11,7 +11,7 @@ description: "How to secure a Web API built with ASP.NET Core using the Azure AD
 
 # How to secure a Web API built with ASP.NET Core using the Azure AD B2C
 
-[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/aad%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 > The sample in this folder is part of a multi-chapter tutorial. The first phase is available at [An ASP.NET Core Web app signing-in users with the Microsoft identity platform in your organization](../../1-WebApp-OIDC/1-1-MyOrg).
 
@@ -56,30 +56,30 @@ or download and extract the repository .zip file.
 
 > :warning: To avoid path length limitations on Windows, we recommend cloning into a directory near the root of your drive.
 
-### Register the sample application(s) with your Azure Active Directory tenant
+### Register the sample application(s) with your Microsoft Entra tenant
 
-:warning: This sample comes with a pre-registered application for demo purposes. If you would like to use your own **Azure AD B2C** tenant and application, follow the steps below to register and configure the application on **Azure portal**. Otherwise, continue with the steps for [Running the sample](#running-the-sample).
+:warning: This sample comes with a pre-registered application for demo purposes. If you would like to use your own **Azure AD B2C** tenant and application, follow the steps below to register and configure the application on **Microsoft admin center**. Otherwise, continue with the steps for [Running the sample](#running-the-sample).
 
-### Choose the Azure AD tenant where you want to create your applications
+### Choose the Microsoft Entra tenant where you want to create your applications
 
 As a first step you'll need to:
 
-1. Sign in to the [Azure portal](https://portal.azure.com).
+1. Sign in to the [Microsoft admin center](https://portal.azure.com).
 1. If your account is present in more than one Azure AD B2C tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD B2C tenant.
 
 ### Create User Flows and Custom Policies
 
-Please refer to: [Tutorial: Create user flows in Azure Active Directory B2C](https://docs.microsoft.com/azure/active-directory-b2c/tutorial-create-user-flows)
+Please refer to: [Tutorial: Create user flows in Azure AD B2C](https://docs.microsoft.com/azure/active-directory-b2c/tutorial-create-user-flows)
 
 > Current sample uses the [self-service password reset](https://docs.microsoft.com/azure/active-directory-b2c/add-password-reset-policy?pivots=b2c-user-flow#self-service-password-reset-recommended) experience that is configured for **Sign up and sign in (Recommended)** user flow.
 
 ### Add External Identity Providers
 
-Please refer to: [Tutorial: Add identity providers to your applications in Azure Active Directory B2C](https://docs.microsoft.com/azure/active-directory-b2c/tutorial-add-identity-providers)
+Please refer to: [Tutorial: Add identity providers to your applications in Azure AD B2C](https://docs.microsoft.com/azure/active-directory-b2c/tutorial-add-identity-providers)
 
 ### Register the service app (TodoListService-aspnetcore-webapi)
 
-1. Navigate to the [Azure portal](https://portal.azure.com) and select the **Azure AD B2C** service.
+1. Navigate to the [Microsoft admin center](https://portal.azure.com) and select the **Azure AD B2C** service.
 1. Select the **App Registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `TodoListService-aspnetcore-webapi`.
@@ -107,13 +107,13 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 
 1. Open the `TodoListService\appsettings.json` file.
 1. Find the key `Instance` and replace the value with your tenant name. For example, `https://fabrikam.b2clogin.com`
-1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
-1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of the application copied from the Azure portal.
+1. Find the key `Domain` and replace the existing value with your Microsoft Entra tenant name.
+1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of the application copied from the Microsoft admin center.
 1. Find the key `SignUpSignInPolicyId` and replace with the name of the `Sign up and sign in` policy you created.
 
 ### Register the client app (TodoListClient-aspnetcore-webapi)
 
-1. Navigate to the [Azure portal](https://portal.azure.com) and select the **Azure AD B2C** service.
+1. Navigate to the [Microsoft admin center](https://portal.azure.com) and select the **Azure AD B2C** service.
 1. Select the **App Registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `TodoListClient-aspnetcore-webapi`.
@@ -134,7 +134,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
    - Type a key description (for instance `app secret`),
    - Select one of the available key durations (**In 1 year**, **In 2 years**, or **Never Expires**) as per your security posture.
    - The generated key value will be displayed when you select the **Add** button. Copy the generated value for use in the steps later.
-   - You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
+   - You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Microsoft admin center before navigating to any other screen or blade.
 1. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
    - Select the **Add a permission** button and then,
    - Ensure that the **My APIs** tab is selected.
@@ -151,11 +151,11 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 
 1. Open the `Client\appsettings.json` file.
 1. Find the key `Instance` and replace the value with your tenant name. For example, `https://fabrikam.b2clogin.com`
-1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
-1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of the application copied from the Azure portal.
+1. Find the key `Domain` and replace the existing value with your Microsoft Entra tenant name.
+1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of the application copied from the Microsoft admin center.
 1. Find the key `SignUpSignInPolicyId` and replace with the name of the `Sign up and sign in` policy you created.
 1. Find the key `EditProfilePolicyId` and replace with the name of the `Profile editing` policy you created.
-1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of the app, in the Azure portal.
+1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of the app, in the Microsoft admin center.
 1. Find the key `TodoListScope` and replace the existing value with the service Scope. For example, `https://{tenantName}.onmicrosoft.com/{service_clientId}/access_as_user`.
 
  This sample is configured with the password reset experience that is a part of the sign-up or sign-in policy. If separate password reset flow is required then add the key `ResetPasswordPolicyId` under **AzureAdB2C** section, and value of the key as the name of the `Password reset` policy you created.
@@ -417,7 +417,7 @@ There are two web projects in this sample. To deploy them to **Azure App Service
 
 #### Create and publish the `TodoListService-aspnetcore-webapi` to an Azure Web Site
 
-1. Sign in to the [Azure portal](https://portal.azure.com).
+1. Sign in to the [Microsoft admin center](https://portal.azure.com).
 1. Click `Create a resource` in the top left-hand corner, select **Web** --> **Web App**, and give your web site a name, for example, `TodoListService-aspnetcore-webapi-contoso.azurewebsites.net`.
 1. Next, select the `Subscription`, `Resource Group`, `App service plan and Location`. `OS` will be **Windows** and `Publish` will be **Code**.
 1. Click `Create` and wait for the App Service to be created.
@@ -431,8 +431,8 @@ There are two web projects in this sample. To deploy them to **Azure App Service
 
 #### Update the Active Directory tenant application registration for `TodoListService-aspnetcore-webapi`
 
-1. Navigate back to the [Azure portal](https://portal.azure.com).
-In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations (Preview)**.
+1. Navigate back to the [Microsoft admin center](https://portal.azure.com).
+In the left-hand navigation pane, select the **Microsoft Entra ID** service, and then select **App registrations (Preview)**.
 1. In the resulting screen, select the `TodoListService-aspnetcore-webapi` application.
 1. From the *Branding* menu, update the **Home page URL**, to the address of your service, for example [https://TodoListService-aspnetcore-webapi-contoso.azurewebsites.net](https://TodoListService-aspnetcore-webapi-contoso.azurewebsites.net). Save the configuration.
 1. Add the same URL in the list of values of the *Authentication -> Redirect URIs* menu. If you have multiple redirect URIs, make sure that there a new entry using the App service's Uri for each redirect Uri.
@@ -446,7 +446,7 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
 
 #### Create and publish `TodoListClient-aspnetcore-webapi` to an Azure App Services
 
-1. Sign in to the [Azure portal](https://portal.azure.com).
+1. Sign in to the [Microsoft admin center](https://portal.azure.com).
 1. Click `Create a resource` in the top left-hand corner, select **Web** --> **Web App**, and give your web site a name, for example, `TodoListClient-aspnetcore-webapi-contoso.azurewebsites.net`.
 1. Next, select the `Subscription`, `Resource Group`, `App service plan and Location`. `OS` will be **Windows** and `Publish` will be **Code**.
 1. Click `Create` and wait for the App Service to be created.
@@ -460,8 +460,8 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
 
 #### Update the Active Directory tenant application registration for `TodoListClient-aspnetcore-webapi`
 
-1. Navigate back to the [Azure portal](https://portal.azure.com).
-In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations (Preview)**.
+1. Navigate back to the [Microsoft admin center](https://portal.azure.com).
+In the left-hand navigation pane, select the **Microsoft Entra ID** service, and then select **App registrations (Preview)**.
 1. In the resulting screen, select the `TodoListClient-aspnetcore-webapi` application.
 1. In the **Authentication** page for your application, update the Logout URL fields with the address of your service, for example [https://TodoListClient-aspnetcore-webapi-contoso.azurewebsites.net](https://TodoListClient-aspnetcore-webapi-contoso.azurewebsites.net)
 1. From the *Branding* menu, update the **Home page URL**, to the address of your service, for example [https://TodoListClient-aspnetcore-webapi-contoso.azurewebsites.net](https://TodoListClient-aspnetcore-webapi-contoso.azurewebsites.net). Save the configuration.
@@ -473,12 +473,12 @@ In the left-hand navigation pane, select the **Azure Active Directory** service,
 
 Learn more about **Microsoft Identity Platform** and **Azure AD B2C**:
 
-- [Microsoft identity platform (Azure Active Directory for developers)](https://docs.microsoft.com/azure/active-directory/develop/)
+- [Microsoft identity platform (Microsoft Entra ID for developers)](https://docs.microsoft.com/azure/active-directory/develop/)
 - [Overview of Microsoft Authentication Library (MSAL)](https://docs.microsoft.com/azure/active-directory/develop/msal-overview)
-- [What is Azure Active Directory B2C?](https://docs.microsoft.com/azure/active-directory-b2c/overview)
+- [What is Azure AD B2C?](https://docs.microsoft.com/azure/active-directory-b2c/overview)
 - [Azure AD B2C User Flows](https://docs.microsoft.com/azure/active-directory-b2c/user-flow-overview)
 - [Azure AD B2C Custom Policies](https://docs.microsoft.com/azure/active-directory-b2c/custom-policy-overview)
-- [Tutorial: Grant access to an ASP.NET web API using Azure Active Directory B2C](https://docs.microsoft.com/azure/active-directory-b2c/tutorial-web-api-dotnet?tabs=app-reg-ga)
+- [Tutorial: Grant access to an ASP.NET web API using Azure AD B2C](https://docs.microsoft.com/azure/active-directory-b2c/tutorial-web-api-dotnet?tabs=app-reg-ga)
 
 To learn more about the code, visit:
 
@@ -490,11 +490,11 @@ To learn more about the code, visit:
 
 Use [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) to get support from the community.
 Ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
-Make sure that your questions or comments are tagged with [`msal` `ms-identity` `azure-active-directory` `azure-ad-b2c`].
+Make sure that your questions or comments are tagged with [`msal` `ms-identity` `microsoft-entra-id` `azure-ad-b2c`].
 
 If you find a bug in the sample, raise the issue on [GitHub Issues](../../issues).
 
-To provide feedback on or suggest features for Azure Active Directory, visit [User Voice page](https://feedback.azure.com/forums/169401-azure-active-directory).
+To provide feedback on or suggest features for Microsoft Entra ID, visit [User Voice page](https://feedback.azure.com/forums/169401-azure-active-directory).
 
 ## Contributing
 

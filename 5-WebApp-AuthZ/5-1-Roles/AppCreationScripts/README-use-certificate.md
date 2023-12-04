@@ -1,6 +1,6 @@
 # How to use certificates instead of secrets in your client applications
 
-We recommend you familiarize yourself with [Using certificates with Microsoft\.Identity\.Web](https://github.com/AzureAD/microsoft-identity-web/wiki/Certificates#getting-certificates-from-key-vault) as it provides various ways for a developer to use a certificate instead of a client secret to authenticate their apps with Azure AD.
+We recommend you familiarize yourself with [Using certificates with Microsoft\.Identity\.Web](https://github.com/AzureAD/microsoft-identity-web/wiki/Certificates#getting-certificates-from-key-vault) as it provides various ways for a developer to use a certificate instead of a client secret to authenticate their apps with Microsoft Entra ID.
 > Note: Please carefully go through [Getting certificates from Key Vault](https://github.com/AzureAD/microsoft-identity-web/wiki/Certificates#getting-certificates-from-key-vault) when deploying your app to production.
 
 - [Using a Client certificate with KeyVault](#using-a-client-certificate-with-keyvault)
@@ -22,7 +22,7 @@ This sample was configured to use a client secret, but have an option to use a c
 1. **Comment out** the next line:
 
 ```json
-"ClientSecret": "[Copy the client secret added to the app from the Azure portal]"
+"ClientSecret": "[Copy the client secret added to the app from the Microsoft admin center]"
 ```
 
 1. **Un-comment** the following lines:
@@ -57,7 +57,7 @@ AppCreationScripts-withCert/Cleanup.ps1
 AppCreationScripts-withCert/Configure.ps1
 ```
 
-1. To use KeyVault, sign in to the [Azure portal](https://portal.azure.com) and [create an Azure Key Vault](https://docs.microsoft.com/azure/key-vault/general/quick-create-portal)
+1. To use KeyVault, sign in to the [Microsoft admin center](https://portal.azure.com) and [create an Azure Key Vault](https://docs.microsoft.com/azure/key-vault/general/quick-create-portal)
 1. Inside Client/appsettings.json file - update "KeyVaultUrl" key to have URL of your Key Vault, like https://[your Key Vault name here].vault.azure.net
 1. [Upload](https://docs.microsoft.com/azure/key-vault/certificates/tutorial-import-certificate#import-a-certificate-to-key-vault) the generated AppCreationScripts-withCert\.PFX file into the Key Vault
 1. Run the sample as indicated in [README.md](README.md)
@@ -70,7 +70,7 @@ AppCreationScripts-withCert/Configure.ps1
 2. **Comment out** the next line:
 
 ```json
-"ClientSecret": "[Copy the client secret added to the app from the Azure portal]"
+"ClientSecret": "[Copy the client secret added to the app from the Microsoft admin center]"
 ```
 
 1. **Un-comment** the following lines:

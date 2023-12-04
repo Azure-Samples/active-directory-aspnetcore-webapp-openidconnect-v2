@@ -8,7 +8,7 @@ This tutorial has one WebApp and some chapters have a Web API project. To deploy
 
 ### Create and publish the `WebApp-OpenIDConnect-DotNet-code-v2` to an Azure Web Site
 
-1. Sign in to the [Azure portal](https://portal.azure.com).
+1. Sign in to the [Microsoft admin center](https://portal.azure.com).
 1. Click `Create a resource` in the top left-hand corner, select **Web** --> **Web App**, and give your web site a name, for example, `WebApp-OpenIDConnect-DotNet-code-v2-contoso.azurewebsites.net`.
 1. Thereafter select the `Subscription`, `Resource Group`, `App service plan and Location`. `OS` will be **Windows** and `Publish` will be **Code**.
 1. Click `Create` and wait for the App Service to be created.
@@ -28,8 +28,8 @@ This tutorial has one WebApp and some chapters have a Web API project. To deploy
 
 ### Update the redirect URLs
 
-1. Navigate back to to the [Azure portal](https://portal.azure.com).
-In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations**.
+1. Navigate back to to the [Microsoft admin center](https://portal.azure.com).
+In the left-hand navigation pane, select the **Microsoft Entra ID** service, and then select **App registrations**.
 1. In the resultant screen, select the `WebApp-OpenIDConnect-DotNet-code-v2` application.
 1. In the **Authentication** tab:
    - In the **Redirect URIs** section, select **Web** in the combo-box and add the following redirect URIs.
@@ -177,7 +177,7 @@ Therefore depending on the scenarios you want to run, you should add the corresp
 
 Use [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) to get support from the community.
 Ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
-Make sure that your questions or comments are tagged with [`azure-active-directory`] [`msal`] [`dotnet`].
+Make sure that your questions or comments are tagged with [`microsoft-entra-id`] [`msal`] [`dotnet`].
 
 If you find a bug in the sample, please raise the issue on [GitHub Issues](../../issues).
 

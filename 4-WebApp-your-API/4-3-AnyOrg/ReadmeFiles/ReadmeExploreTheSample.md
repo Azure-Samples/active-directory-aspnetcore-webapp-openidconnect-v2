@@ -53,7 +53,7 @@ Once it finishes, your applications service principals will be provisioned in th
 
 #### Consent using PowerShell
 
-The tenant administrators of a tenant can provision service principals for the applications in their tenant using the AAD PowerShell Module. After installing the AAD PowerShell Module v2, you can run the following cmdlet:
+The tenant administrators of a tenant can provision service principals for the applications in their tenant using the ME-ID PowerShell Module. After installing the ME-ID PowerShell Module v2, you can run the following cmdlet:
 
 ```console
 Connect-AzureAD -TenantId "[The tenant Id]"
@@ -64,7 +64,7 @@ If you get errors during admin consent, consider deleting the  **service princip
 
 #### How to delete Service Principals of your apps in a tenant
 
-Steps for deleting a service principal differs with respect to whether the principal is in the **home tenant** of the application or in another tenant. If it is in the **home tenant**, you will find the entry for the application under the **App Registrations** blade. If it is another tenant, you will find the entry under the **Enterprise Applications** blade. Read more about these blades in the [How and why applications are added to Azure AD](https://docs.microsoft.com/azure/active-directory/develop/active-directory-how-applications-are-added).The screenshot below shows how to access the service principal from a **home tenant**:
+Steps for deleting a service principal differs with respect to whether the principal is in the **home tenant** of the application or in another tenant. If it is in the **home tenant**, you will find the entry for the application under the **App Registrations** blade. If it is another tenant, you will find the entry under the **Enterprise Applications** blade. Read more about these blades in the [How and why applications are added to Microsoft Entra ID](https://docs.microsoft.com/azure/active-directory/develop/active-directory-how-applications-are-added).The screenshot below shows how to access the service principal from a **home tenant**:
 >
 > ![principal1](./ReadmeFiles/Home_Tenant_SP.png)
 >

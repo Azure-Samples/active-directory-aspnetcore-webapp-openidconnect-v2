@@ -1,4 +1,4 @@
-﻿## Troubleshooting
+## Troubleshooting
 
 <details>
  <summary>Expand the section</summary>
@@ -14,6 +14,6 @@ If you had provisioned a service principal of this app in the past and created a
 ### Error `The provided request must include a 'response_type' input parameter`
 
 If you try to sign-in with a Microsoft account (MSA), such as hotmail.com, outlook.com, and msn.com, you'd receive this error during admin consent because MSA is not supported at the `/common` endpoint which this sample is using to obtain the admin consent.
-Please use an admin account with from the Azure AD tenant for this purpose.
+Please use an admin account with from the Microsoft Entra tenant for this purpose.
 
  </details>

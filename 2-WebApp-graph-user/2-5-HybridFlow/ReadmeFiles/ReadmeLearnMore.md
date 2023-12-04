@@ -1,7 +1,7 @@
-* [Microsoft identity platform (Azure Active Directory for developers)](<https://docs.microsoft.com/azure/active-directory/develop/>)
+* [Microsoft identity platform (Microsoft Entra ID for developers)](<https://docs.microsoft.com/azure/active-directory/develop/>)
 * [Overview of Microsoft Authentication Library (MSAL)](<https://docs.microsoft.com/azure/active-directory/develop/msal-overview>)
-* [Authentication Scenarios for Azure AD](<https://docs.microsoft.com/azure/active-directory/develop/authentication-flows-app-scenarios>)
-* [Azure AD code samples](<https://docs.microsoft.com/azure/active-directory/develop/sample-v2-code>)
+* [Authentication Scenarios for Microsoft Entra ID](<https://docs.microsoft.com/azure/active-directory/develop/authentication-flows-app-scenarios>)
+* [Microsoft Entra ID code samples](<https://docs.microsoft.com/azure/active-directory/develop/sample-v2-code>)
 * [Register an application with the Microsoft identity platform](<https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app>)
 * [Building Zero Trust ready apps](<https://aka.ms/ztdevsession>)
 * [SPA Authorization Code](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/SPA-Authorization-Code)
@@ -22,4 +22,4 @@ For more information, visit the following links:
   *To learn more about security in aspnetcore,
   *[Introduction to Identity on ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authentication/identity)
   *[AuthenticationBuilder](https://docs.microsoft.com/dotnet/api/microsoft.aspnetcore.authentication.authenticationbuilder)
-  *[Azure Active Directory with ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authentication/azure-active-directory)
+  *[Microsoft Entra ID with ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authentication/azure-active-directory)

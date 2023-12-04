@@ -9,18 +9,18 @@ endpoint: Microsoft identity platform
 
 # An ASP.NET Core Web app signing-in users with the Microsoft identity platform in your organization
 
-> This sample is for Azure AD, not Azure AD B2C. See [sample 1-5-B2C](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-5-B2C), for B2C scenario.
+> This sample is for Microsoft Entra ID, not Azure AD B2C. See [sample 1-5-B2C](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-5-B2C), for B2C scenario.
 
-[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/aad%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 ## Scenario
 
 This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect to sign in users. Users can only sign-in with their `work and school` accounts in their own organization. It leverages the ASP.NET Core OpenID Connect middleware.
 
-![Sign in with Azure AD](ReadmeFiles/sign-in.png)
+![Sign in with Microsoft Entra ID](ReadmeFiles/sign-in.png)
 
 > This is the first chapter of this ASP.NET Core Web App tutorial. Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, you can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user) in a later chapter.
-  You can also sign-in users in any or several Azure Active Directory organizations, and even with Microsoft personal accounts or social identities. For more details the parent directory's [Readme.md](../Readme.md)
+  You can also sign-in users in any or several Microsoft Entra tenants, and even with Microsoft personal accounts or social identities. For more details the parent directory's [Readme.md](../Readme.md)
 
 ## How to run this sample
 
@@ -28,11 +28,11 @@ To run this sample:
 
 > Pre-requisites: Install .NET Core 3.0 or later (for example for Windows) by following the instructions at [.NET and C# - Get Started in 10 Minutes](https://www.microsoft.com/net/core). In addition to developing on Windows, you can develop on [Linux](https://www.microsoft.com/net/core#linuxredhat), [Mac](https://www.microsoft.com/net/core#macos), or [Docker](https://www.microsoft.com/net/core#dockercmd).
 
-### Step 1: Register the sample with your Azure AD tenant
+### Step 1: Register the sample with your Microsoft Entra tenant
 
 There is one project in this sample. To register it, you can:
 
-- either use PowerShell scripts that **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you and modify the Visual Studio projects' configuration files.
+- either use PowerShell scripts that **automatically** creates the Microsoft Entra applications and related objects (passwords, permissions, dependencies) for you and modify the Visual Studio projects' configuration files.
 
   <details>
   <summary>Expand to see how to use this automation</summary>
@@ -45,7 +45,7 @@ There is one project in this sample. To register it, you can:
        Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
        ```
 
-    3. Run the script to create your Azure AD application and configure the code of the sample application accordingly
+    3. Run the script to create your Microsoft Entra application and configure the code of the sample application accordingly
 
        ```PowerShell
        cd .\AppCreationScripts\ 
@@ -58,15 +58,15 @@ There is one project in this sample. To register it, you can:
 
     </details>
 
-- or, if you want to register your application with the Azure portal, follow the steps below:
+- or, if you want to register your application with the Microsoft admin center, follow the steps below:
 
-#### Choose the Azure AD tenant where you want to create your applications
+#### Choose the Microsoft Entra tenant where you want to create your applications
 
 As a first step you'll need to:
 
-1. Sign in to the [Azure portal](https://portal.azure.com) using either a work or school account or a personal Microsoft account.
-1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory**.
-   Change your portal session to the desired Azure AD tenant.
+1. Sign in to the [Microsoft admin center](https://portal.azure.com) using either a work or school account or a personal Microsoft account.
+1. If your account is present in more than one Microsoft Entra tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory**.
+   Change your portal session to the desired Microsoft Entra tenant.
 
 #### Register the webApp app (WebApp)
 
@@ -131,7 +131,7 @@ cd "1-WebApp-OIDC\1-1-MyOrg"
   
   - replace the `ClientID` value with the *Application ID* from the application you registered in Application Registration portal on *Step 1*.
   - replace the `TenantId` value with the *Tenant ID* where you registered your Application on *Step 1*.
-  - replace the `Domain` value with the *Azure AD domain name*,  e.g. contoso.onmicrosoft.com where you registered your Application on *Step 1*.
+  - replace the `Domain` value with the *Microsoft Entra domain name*,  e.g. contoso.onmicrosoft.com where you registered your Application on *Step 1*.
 
 #### Option 2: Create the sample from the command line
 
@@ -189,9 +189,9 @@ If your web site needs to be accessed from users using iOS 12, you probably want
 
 ## About The code
 
-This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Azure AD tenant. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Azure AD tenant where the app is registered. These values are  read from the `appsettings.json` file. The middleware takes care of:
+This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Microsoft Entra tenant. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Microsoft Entra tenant where the app is registered. These values are  read from the `appsettings.json` file. The middleware takes care of:
 
-- Downloading the Azure AD metadata, finding the signing keys, and finding the issuer name for the tenant.
+- Downloading the Microsoft Entra ID metadata, finding the signing keys, and finding the issuer name for the tenant.
 - Processing OpenID Connect sign-in responses by validating the signature and issuer in an incoming JWT, extracting the user's claims, and putting the claims in `ClaimsPrincipal.Current`.
 - Integrating with the session cookie ASP.NET Core middleware to establish a session for the user.
 

@@ -1,4 +1,4 @@
-﻿## Explore the sample
+## Explore the sample
 
 <details>
  <summary>Expand the section</summary>

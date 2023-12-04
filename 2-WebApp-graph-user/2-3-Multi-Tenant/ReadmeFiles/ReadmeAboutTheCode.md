@@ -1,4 +1,4 @@
-﻿## About The code
+## About The code
 
 <details>
  <summary>Expand the section</summary>
@@ -6,12 +6,12 @@
 This sample details the following aspects of a multi-tenant app.
 
 - usage of the `/common` endpoint.
-- Service principal provisioning of an app in Azure AD tenants
+- Service principal provisioning of an app in Microsoft Entra tenants
 - Custom Token Validation to allow users from onboarded tenants only.
 - Data partitioning in multi-tenant apps.
 - Acquiring Access tokens for Microsoft Graph for each tenant.
 
-This sample is using the OpenID Connect ASP.NET Core middleware to sign in users from multiple Azure AD tenants. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Azure AD tenant where the app is registered. These values are read from the `appsettings.json` file.
+This sample is using the OpenID Connect ASP.NET Core middleware to sign in users from multiple Microsoft Entra tenants. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Microsoft Entra tenant where the app is registered. These values are read from the `appsettings.json` file.
 
 You can trigger the middleware to send an OpenID Connect sign-in request by decorating a class or method with the `[Authorize]` attribute or by issuing a challenge (see the [AccountController.cs](https://github.com/aspnet/AspNetCore/blob/master/src/Azure/AzureAD/Authentication.AzureAD.UI/src/Areas/AzureAD/Controllers/AccountController.cs) file which is part of ASP.NET Core):
 
@@ -53,19 +53,19 @@ public IActionResult Onboard()
 }
 ```
 
-This results in an OAuth2 code grant request that triggers the admin consent flow and creates the service principal in the admin's tenant. The `state` parameter is used to validate the response, preventing a man-in-the-middle attack. Then, the `ProcessCode` action receives the authorization code from Azure AD and, if they appear valid, we create an entry in the application database for the new customer.
+This results in an OAuth2 code grant request that triggers the admin consent flow and creates the service principal in the admin's tenant. The `state` parameter is used to validate the response, preventing a man-in-the-middle attack. Then, the `ProcessCode` action receives the authorization code from Microsoft Entra ID and, if they appear valid, we create an entry in the application database for the new customer.
 
 The `https://graph.microsoft.com/.default` is a static scope that allows the tenant admin to consent for all permissions in one go. You can find more about static scope on [this link.](https://docs.microsoft.com/azure/active-directory/develop/v2-admin-consent#request-the-permissions-from-a-directory-admin)
 
 ### Custom token validation allowing only registered tenants
 
-On the `Startup.cs` we are calling `AddMicrosoftWebAppAuthentication` to configure the authentication, and within that method, we validates that the token issuer is from AAD.
+On the `Startup.cs` we are calling `AddMicrosoftWebAppAuthentication` to configure the authentication, and within that method, we validates that the token issuer is from aad.
 
 ```csharp
-options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).Validate;
+options.TokenValidationParameters.IssuerValidator = ME-IDIssuerValidator.GetIssuerValidator(options.Authority).Validate;
 ```
 
-To extend this validation to only Azure AD tenants registered in the application database, the event handler `OnTokenValidated` was configured to grab the `tenantId` from the token claims and check if it has an entry on the database. If it doesn't, a custom exception `UnauthorizedTenantException` is thrown, canceling the authentication, and the user is redirected to the `UnauthorizedTenant` view. At this stage, the user is not authenticated in the application.
+To extend this validation to only Microsoft Entra tenants registered in the application database, the event handler `OnTokenValidated` was configured to grab the `tenantId` from the token claims and check if it has an entry on the database. If it doesn't, a custom exception `UnauthorizedTenantException` is thrown, canceling the authentication, and the user is redirected to the `UnauthorizedTenant` view. At this stage, the user is not authenticated in the application.
 
 ```csharp
 services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>

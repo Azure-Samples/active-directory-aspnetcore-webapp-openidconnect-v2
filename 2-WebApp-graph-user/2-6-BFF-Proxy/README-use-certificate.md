@@ -31,7 +31,7 @@ In production, you should purchase a certificate signed by a well-known certific
 - **Step 1: [Create a self-signed certificate](#create-a-self-signed-certificate)**
   - Option 1: [create self-signed certificate on local machine](#create-self-signed-certificate-on-local-machine)
   - Option 2: [create self-signed certificate on Key Vault](#create-self-signed-certificate-on-key-vault)
-- **Step 2: [Configure an Azure AD app registration to use a certificate](#configure-an-azure-ad-app-registration-to-use-a-certificate)**
+- **Step 2: [Configure a Microsoft Entra app registration to use a certificate](#configure-an-azure-ad-app-registration-to-use-a-certificate)**
 - **Step 3: [Configure your app(s) to use a certificate](#configure-your-apps-to-use-a-certificate)**
   - Option 1: [using an existing certificate from local machine](#using-an-existing-certificate-from-local-machine)
   - Option 2: [using an existing certificate from Key Vault](#using-an-existing-certificate-from-key-vault)
@@ -107,9 +107,9 @@ Proceed to [Step 2](#configure-an-azure-ad-app-registration-to-use-a-certificate
 
 You can use Azure Key Vault to generate a self-signed certificate for you. Doing so will have the additional benefits of assigning a partner Certificate Authority (CA) and automating certificate rotation.
 <details>
-<summary>Click here to use Azure Portal</summary>
+<summary>Click here to use Microsoft admin center</summary>
 
-Follow the guide: [Set and retrieve a certificate from Azure Key Vault using the Azure portal](https://learn.microsoft.com/azure/key-vault/certificates/quick-create-portal)
+Follow the guide: [Set and retrieve a certificate from Azure Key Vault using the Microsoft admin center](https://learn.microsoft.com/azure/key-vault/certificates/quick-create-portal)
 
 Afterwards, proceed to [Step 2](#configure-an-azure-ad-app-registration-to-use-a-certificate).
 
@@ -124,13 +124,13 @@ Afterwards, proceed to [Step 2](#configure-an-azure-ad-app-registration-to-use-a
 
 </details>
 
-### Configure an Azure AD app registration to use a certificate
+### Configure a Microsoft Entra app registration to use a certificate
 
-Now you must associate your Azure AD app registration with the certificate you will use in your application.
+Now you must associate your Microsoft Entra app registration with the certificate you will use in your application.
 
 > :information_source: If you have the certificate locally available, you can follow the steps below. If your certificate(s) is on Azure Key Vault, you must first export and download them to your computer, and delete the local copy after following the steps below. See: [Export certificates from Azure Key Vault](https://learn.microsoft.com/azure/key-vault/certificates/how-to-export-certificate)
 
-1. Navigate to [Azure portal](https://portal.azure.com) and select your Azure AD app registration.
+1. Navigate to [Microsoft admin center](https://portal.azure.com) and select your Microsoft Entra app registration.
 1. Select **Certificates & secrets** blade on the left.
 1. Click on **Upload** certificate and select the certificate file to upload (e.g. *CallGraphBFF*).
 1. Click **Add**. Once the certificate is uploaded, the *thumbprint*, *start date*, and *expiration* values are displayed. Record the *thumbprint* value as you will make use of it later in your app's configuration file.
@@ -151,7 +151,7 @@ Finally, you need to modify the app's configuration files.
 2. *Comment out* the next line:
 
 ```json
-    "ClientSecret": "[Copy the client secret added to the app from the Azure portal]"
+    "ClientSecret": "[Copy the client secret added to the app from the Microsoft admin center]"
 ```
 
 3. *Un-comment* the following lines and replace the default values:
@@ -178,7 +178,7 @@ You can now start the application as instructed in the [README](./README#setup-t
 2. *Comment out* the next line:
 
 ```json
-    "ClientSecret": "[Copy the client secret added to the app from the Azure portal]"
+    "ClientSecret": "[Copy the client secret added to the app from the Microsoft admin center]"
 ```
 
 3. *Un-comment* the following lines and replace the default values:
@@ -203,7 +203,7 @@ Once you deploy your app(s) to Azure App Service, you can assign a managed ident
 
 ### Create a system-assigned identity
 
-1. Navigate to [Azure portal](https://portal.azure.com) and select the **Azure App Service**.
+1. Navigate to [Microsoft admin center](https://portal.azure.com) and select the **Azure App Service**.
 1. Find and select the App Service instance you've created previously.
 1. On App Service portal, select **Identity**.
 1. Within the **System assigned** tab, switch **Status** to **On**. Click **Save**.
@@ -214,7 +214,7 @@ For more information, see [Add a system-assigned identity](https://docs.microsof
 
 Now that your app deployed to App Service has a managed identity, in this step you grant it access to your key vault.
 
-1. Go to the [Azure portal](https://portal.azure.com) and search for your Key Vault.
+1. Go to the [Microsoft admin center](https://portal.azure.com) and search for your Key Vault.
 1. Select **Overview** > **Access policies** blade on the left.
 1. Click on **Add Access Policy** > **Certificate permissions** > **Get**
 1. Click on **Add Access Policy** > **Secret permissions** > **Get**
@@ -229,7 +229,7 @@ Finally, you need to add environment variables to the App Service where you depl
 
 > :warning: Make sure your application is able to read environment variables. Alternatively, you can hardcode the key vault URL and certificate name in your applications configuration file.
 
-1. In the [Azure portal](https://portal.azure.com), search for and select **App Service**, and then select your app.
+1. In the [Microsoft admin center](https://portal.azure.com), search for and select **App Service**, and then select your app.
 1. Select **Configuration** blade on the left, then select **New Application Settings**.
 1. Add the following variables (key-value pairs):
     1. **KEY_VAULT_URL**: the URL of the key vault you've created, e.g. `https://example.vault.azure.net`
