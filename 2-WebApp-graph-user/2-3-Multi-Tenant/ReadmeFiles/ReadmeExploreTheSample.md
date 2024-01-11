@@ -1,4 +1,4 @@
-﻿## Explore the sample
+## Explore the sample
 
 <details>
  <summary>Expand the section</summary>
@@ -6,7 +6,7 @@
 Clean the solution, rebuild the solution, and run it.
 The sample implements two distinct tasks: the onboarding of a new tenant and a basic ToDo List CRUD operation.
 
-Ideally, you would want to have two Azure AD tenants so you can test the multi-tenant aspect of this sample. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
+Ideally, you would want to have two Microsoft Entra tenants so you can test the multi-tenant aspect of this sample. For more information on how to get a Microsoft Entra tenant, see [How to get a Microsoft Entra tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
 
 #### Signing-in
 
@@ -20,7 +20,7 @@ If you try to sign-in with a tenant that hasn't been "onboarded" yet, you will l
 
 ![Unauthorized Tenant](ReadmeFiles/unauthorized-tenant.png)
 
-> :warning: If you had onboarded your tenant using this sample in the past and now getting the **AADSTS650051** error when onboarding again, please refer to the [Error AADSTS650051](#error-aadsts650051) section below to mitigate this error.
+> :warning: If you had onboarded your tenant using this sample in the past and now getting the **Microsoft Entra IDSTS650051** error when onboarding again, please refer to the [Error Microsoft Entra IDSTS650051](#error-Microsoft Entra IDsts650051) section below to mitigate this error.
 
 #### ToDo List
 

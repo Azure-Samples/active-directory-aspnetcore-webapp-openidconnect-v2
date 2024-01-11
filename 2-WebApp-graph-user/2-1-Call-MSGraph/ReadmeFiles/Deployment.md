@@ -18,7 +18,7 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 
 1. Open an instance of Visual Studio code set to the `WebApp-OpenIDConnect-DotNet-graph-v2` project folder.
 1. Install the VS Code extension [Azure App Service](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureappservice).
-1. Using the extension you just installed, sign in to **Azure App Service** using your Azure AD account.
+1. Using the extension you just installed, sign in to **Azure App Service** using your Microsoft Entra account.
 1. Choose `Terminal > New Terminal` from the VS Code menu to open a new terminal window in the project directory.
 1. Run the following command
 
@@ -34,10 +34,10 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 1. Select **.NET Core 3.1 (LTS)** as runtime stack.
 1. Select `Free` or any other option for your pricing tier.
 
-#### Update the Azure AD app registration (WebApp-OpenIDConnect-DotNet-graph-v2)
+#### Update the Microsoft Entra app registration (WebApp-OpenIDConnect-DotNet-graph-v2)
 
-1. Navigate back to to the [Azure portal](https://portal.azure.com).
-1. Go to the **Azure Active Directory** section, and then select **App registrations**.
+1. Navigate back to to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Go to the **Microsoft Entra ID** section, and then select **App registrations**.
 1. In the resulting screen, select the `WebApp-OpenIDConnect-DotNet-graph-v2` application.
 1. In the app's registration screen, select **Authentication** in the menu.
    - In the **Redirect URIs** section, update both of the reply URLs to match the site URL of your Azure deployment. Using the following examples as a guide, **replace** the text `example-domain` with the app name you created while deploying, for example:
@@ -57,7 +57,7 @@ We will follow the steps broadly outlined in the guide: [Use Key Vault from App 
 
 #### Set up your Managed Identity
 
-1. Navigate to [Azure portal](https://portal.azure.com) and select the **Azure App Service**.
+1. Navigate to [Microsoft Entra admin center](https://portal.azure.com) and select the **Azure App Service**.
 1. Find and select the App Service you've created previously.
 1. On App Service portal, select **Identity**.
 1. Within the **System assigned** tab, switch **Status** to **On**. Click **Save**.
@@ -75,7 +75,7 @@ Before starting here, make sure:
 
 ##### Upload your secret to KeyVault
 
-1. Navigate to your new key vault in the Azure portal.
+1. Navigate to your new key vault in the Microsoft Entra admin center.
 1. On the Key Vault settings pages, select **Secrets**.
 1. Click on **Generate/Import**.
 1. On the **Create a secret** screen choose the following values:
@@ -168,7 +168,7 @@ using Azure.Security.KeyVault.Secrets;
 
 8. Add an environment variable to your App Service so your web app can find its key vault.
 
-    1. Go to the [Azure portal](https://portal.azure.com). Search for and select **App Service**, and then select your app.
+    1. Go to the [Microsoft Entra admin center](https://portal.azure.com). Search for and select **App Service**, and then select your app.
     1. Select **Configuration** blade on the left, then select **New Application Settings**.
     1. Add a new variable, naming it **KEY_VAULT_URI**. Populate the value with the URI of your key vault, for example: `https://example-vault.vault.azure.net/`
 

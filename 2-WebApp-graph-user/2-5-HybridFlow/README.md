@@ -10,12 +10,12 @@ languages:
  - javascript
 products:
  - aspnet-core
- - azure-active-directory
+ - microsoft-entra-id
 ---
 
 # active-directory-aspnetcore-webapp-openidconnect-v2
 
-[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/aad%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 Table Of Contents
 
@@ -32,7 +32,7 @@ Table Of Contents
 
  Use the hybrid-SPA code flow to obtain an Access token for your Web API in he backend and use it in the client SPA [without re-authenticating the user]
 
- 1. The client ASP.NET Core Web App uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign-in and obtain a JWT [Access Token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from **Azure AD** as well as an additional [Spa Authorization Code](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/SPA-Authorization-Code) to be passed to a client-side single page application.
+ 1. The client ASP.NET Core Web App uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign-in and obtain a JWT [Access Token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from **Microsoft Entra ID** as well as an additional [Spa Authorization Code](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/SPA-Authorization-Code) to be passed to a client-side single page application.
  1. The [Spa Authorization Code](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/SPA-Authorization-Code) is passed to the client-side application using the session configuration for the application.
  1. The [Spa Authorization Code](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/SPA-Authorization-Code) is exchanged for another [Access Token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) in the client-side application.
  1. The [Access Token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) is used by the client-side application as a bearer token to call the **Microsoft Graph API**.
@@ -41,8 +41,8 @@ Table Of Contents
 ## Prerequisites
 
 * Either [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/download) and [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
-* An **Azure AD** tenant. For more information, see: [How to get an Azure AD tenant](https://docs.microsoft.com/azure/active-directory/develop/test-setup-environment#get-a-test-tenant)
-* A user account in your **Azure AD** tenant. This sample will not work with a **personal Microsoft account**.  If you're signed in to the [Azure portal](https://portal.azure.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
+* An **Microsoft Entra ID** tenant. For more information, see: [How to get a Microsoft Entra tenant](https://docs.microsoft.com/azure/active-directory/develop/test-setup-environment#get-a-test-tenant)
+* A user account in your **Microsoft Entra ID** tenant. This sample will not work with a **personal Microsoft account**.  If you're signed in to the [Microsoft Entra admin center](https://portal.azure.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
 ## Setup the sample
 
 ### Step 1: Clone or download this repository
@@ -65,14 +65,14 @@ or download and extract the repository .zip file.
 
 ### Step 3: Application Registration
 
-There are two projects in this sample. Each needs to be separately registered in your Azure AD tenant. To register these projects:
+There are two projects in this sample. Each needs to be separately registered in your Microsoft Entra tenant. To register these projects:
 
 You can follow the [manual steps](#Manual-steps) to set the up the application or use the automated steps below.
 
 ### Run automation scripts
 
 * use PowerShell scripts that:
-  * **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you.
+  * **automatically** creates the Microsoft Entra applications and related objects (passwords, permissions, dependencies) for you.
   * modify the projects' configuration files.
 
 > **WARNING**: If you have never used **Azure AD Powershell** before, we recommend you go through the [App Creation Scripts guide](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
@@ -84,7 +84,7 @@ You can follow the [manual steps](#Manual-steps) to set the up the application o
    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
    ```
 
-3. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
+3. Run the script to create your Microsoft Entra application and configure the code of the sample application accordingly.
 4. For interactive process - in PowerShell run:
 
    ```PowerShell
@@ -101,12 +101,12 @@ You can follow the [manual steps](#Manual-steps) to set the up the application o
 
 Follow the steps below for manually register and configure your apps
 
-  1. Sign in to the [Azure portal](https://portal.azure.com).
-  1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant.
+  1. Sign in to the [Microsoft Entra admin center](https://portal.azure.com).
+  1. If your account is present in more than one Microsoft Entra tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Microsoft Entra tenant.
 
 #### Register the service app
 
-  1. Navigate to the [Azure portal](https://portal.azure.com) and select the **Azure Active Directory** service.
+  1. Navigate to the [Microsoft Entra admin center](https://portal.azure.com) and select the **Microsoft Entra ID** service.
   1. Select the **App Registrations** blade on the left, then select **New registration**.
   1. In the **Register an application page** that appears, enter your application's registration information:
      * In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `HybridFlow-aspnetcore`.
@@ -125,7 +125,7 @@ Follow the steps below for manually register and configure your apps
      * Type a key description (for instance `app secret`),
      * Select one of the available key durations (**6 months**, **12 months** or **Custom**) as per your security posture.
      * The generated key value will be displayed when you select the **Add** button. Copy and save the generated value for use in later steps.
-     * You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
+     * You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Microsoft Entra admin center before navigating to any other screen or blade.
   5. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
      * Select the **Add a permission** button and then,
      * Ensure that the **Microsoft APIs** tab is selected.
@@ -140,10 +140,10 @@ Follow the steps below for manually register and configure your apps
    > In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
   1. Open the `appsettings.json` file.
-  1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
-  1. Find the key `TenantId` and replace the existing value with your Azure AD tenant ID.
-  1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `HybridFlow-aspnetcore` app copied from the Azure portal.
-  1. Find the key `ClientSecret` and replace the existing value with the **client secret** of `HybridFlow-aspnetcore` app copied from the Azure portal.
+  1. Find the key `Domain` and replace the existing value with your Microsoft Entra tenant name.
+  1. Find the key `TenantId` and replace the existing value with your Microsoft Entra tenant ID.
+  1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `HybridFlow-aspnetcore` app copied from the Microsoft Entra admin center.
+  1. Find the key `ClientSecret` and replace the existing value with the **client secret** of `HybridFlow-aspnetcore` app copied from the Microsoft Entra admin center.
 
 ##### (Optional) Create a self-signed certificate
 
@@ -160,7 +160,7 @@ Follow the steps below for manually register and configure your apps
   
   Alternatively you can use an existing certificate if you have one (just be sure to record its name for the next steps)
   
-###### Add the certificate for the application in Azure AD
+###### Add the certificate for the application in Microsoft Entra ID
   
   In the application registration blade for your application, in the **Certificates & secrets** page, in the **Certificates** section:
   
@@ -506,17 +506,17 @@ Feel free to to take part in our [sruvey](https://forms.microsoft.com/Pages/Resp
 
 ## Learn More
 
-* [Microsoft identity platform (Azure Active Directory for developers)](https://docs.microsoft.com/azure/active-directory/develop/)
+* [Microsoft identity platform (Microsoft Entra ID for developers)](https://docs.microsoft.com/azure/active-directory/develop/)
 * [Overview of Microsoft Authentication Library (MSAL)](https://docs.microsoft.com/azure/active-directory/develop/msal-overview)
-* [Authentication Scenarios for Azure AD](https://docs.microsoft.com/azure/active-directory/develop/authentication-flows-app-scenarios)
-* [Azure AD code samples](https://docs.microsoft.com/azure/active-directory/develop/sample-v2-code)
+* [Authentication Scenarios for Microsoft Entra ID](https://docs.microsoft.com/azure/active-directory/develop/authentication-flows-app-scenarios)
+* [Microsoft Entra ID code samples](https://docs.microsoft.com/azure/active-directory/develop/sample-v2-code)
 * [Register an application with the Microsoft identity platform](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
 * [Building Zero Trust ready apps](https://aka.ms/ztdevsession)
 
-* [Microsoft identity platform (Azure Active Directory for developers)](<https://docs.microsoft.com/azure/active-directory/develop/>)
+* [Microsoft identity platform (Microsoft Entra ID for developers)](<https://docs.microsoft.com/azure/active-directory/develop/>)
 * [Overview of Microsoft Authentication Library (MSAL)](<https://docs.microsoft.com/azure/active-directory/develop/msal-overview>)
-* [Authentication Scenarios for Azure AD](<https://docs.microsoft.com/azure/active-directory/develop/authentication-flows-app-scenarios>)
-* [Azure AD code samples](<https://docs.microsoft.com/azure/active-directory/develop/sample-v2-code>)
+* [Authentication Scenarios for Microsoft Entra ID](<https://docs.microsoft.com/azure/active-directory/develop/authentication-flows-app-scenarios>)
+* [Microsoft Entra ID code samples](<https://docs.microsoft.com/azure/active-directory/develop/sample-v2-code>)
 * [Register an application with the Microsoft identity platform](<https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app>)
 * [Building Zero Trust ready apps](<https://aka.ms/ztdevsession>)
 * [SPA Authorization Code](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/SPA-Authorization-Code)
@@ -537,7 +537,7 @@ For more information, visit the following links:
   *To learn more about security in aspnetcore,
   *[Introduction to Identity on ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authentication/identity)
   *[AuthenticationBuilder](https://docs.microsoft.com/dotnet/api/microsoft.aspnetcore.authentication.authenticationbuilder)
-  *[Azure Active Directory with ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authentication/azure-active-directory)
+  *[Microsoft Entra ID with ASP.NET Core](https://docs.microsoft.com/aspnet/core/security/authentication/azure-active-directory)
 
 
 

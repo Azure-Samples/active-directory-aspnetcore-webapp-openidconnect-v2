@@ -5,7 +5,7 @@ languages:
 products:
   - aspnet-core
   - ms-graph
-  - azure-active-directory
+  - microsoft-entra-id
 name: Enable your ASP.NET Core web app to sign in users and call Microsoft Graph with the Microsoft identity platform
 urlFragment: active-directory-aspnetcore-webapp-openidconnect-v2
 description: "This sample demonstrates a ASP.NET Core Web App calling the Microsoft Graph"
@@ -19,7 +19,7 @@ description: "This sample demonstrates a ASP.NET Core Web App calling the Micros
 - [Setup](#setup)
   - [Step 1: Clone or download this repository](#step-1-clone-or-download-this-repository)
   - [Step 2: Install project dependencies](#step-2-install-project-dependencies)
-  - [Step 3: Register the sample application(s) with your Azure Active Directory tenant](#step-3-register-the-sample-applications-with-your-azure-active-directory-tenant)
+  - [Step 3: Register the sample application(s) with your Microsoft Entra tenant](#step-3-register-the-sample-applications-with-your-azure-active-directory-tenant)
 - [Run the sample](#run-the-sample)
 - [Explore the sample](#explore-the-sample)
 - [About The code](#about-the-code)
@@ -33,7 +33,7 @@ description: "This sample demonstrates a ASP.NET Core Web App calling the Micros
 - [Community Help and Support](#community-help-and-support)
 - [Contributing](#contributing)
 
-[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/aad%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 ## Overview
 
@@ -41,7 +41,7 @@ This sample demonstrates an ASP.NET Core web app that calls the Microsoft Graph 
 
 ## Scenario
 
-1. The ASP.NET Core client web app uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign a user in, and obtain a JWT [access Tokens](https://aka.ms/access-tokens) from **Azure AD**.
+1. The ASP.NET Core client web app uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign a user in, and obtain a JWT [access Tokens](https://aka.ms/access-tokens) from **Microsoft Entra ID**.
 1. The access token is used by the client app as a bearer token to call Microsoft Graph.
 
 ![Sign in with the Microsoft identity platform and call Graph](ReadmeFiles/sign-in.png)
@@ -49,8 +49,8 @@ This sample demonstrates an ASP.NET Core web app that calls the Microsoft Graph 
 ## Prerequisites
 
 - Either [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/download) and [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
-- An **Azure AD** tenant. For more information see: [How to get an Azure AD tenant](https://docs.microsoft.com/azure/active-directory/develop/quickstart-create-new-tenant)
-- A user account in _your_ **Azure AD** tenant. This sample will not work with a **personal Microsoft account**.  If you're signed in to the [Azure portal](https://portal.azure.com) with a personal account and have not created a _user account in your directory_ before, you will need need to create one before proceeding.
+- An **Microsoft Entra ID** tenant. For more information see: [How to get a Microsoft Entra tenant](https://docs.microsoft.com/azure/active-directory/develop/quickstart-create-new-tenant)
+- A user account in _your_ **Microsoft Entra ID** tenant. This sample will not work with a **personal Microsoft account**.  If you're signed in to the [Microsoft Entra admin center](https://portal.azure.com) with a personal account and have not created a _user account in your directory_ before, you will need need to create one before proceeding.
 
 ## Setup
 
@@ -80,13 +80,13 @@ Go to the `"2-WebApp-graph-user\2-1-Call-MSGraph"` folder
     dotnet restore WebApp-OpenIDConnect-DotNet-graph.csproj
 ```
 
-### Step 3: Register the sample application(s) with your Azure Active Directory tenant
+### Step 3: Register the sample application(s) with your Microsoft Entra tenant
 
 There is one project in this sample. To register it, you can:
 
 - follow the steps below for manually register your apps
 - or use PowerShell scripts that:
-  - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you.
+  - **automatically** creates the Microsoft Entra applications and related objects (passwords, permissions, dependencies) for you.
   - modify the projects' configuration files.
 
 <details>
@@ -102,7 +102,7 @@ There is one project in this sample. To register it, you can:
    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
   ```
 
-1. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
+1. Run the script to create your Microsoft Entra application and configure the code of the sample application accordingly.
 1. In PowerShell run:
 
   ```PowerShell
@@ -115,16 +115,16 @@ There is one project in this sample. To register it, you can:
 
 </details>
 
-#### Choose the Azure AD tenant where you want to create your applications
+#### Choose the Microsoft Entra tenant where you want to create your applications
 
 As a first step you'll need to:
 
-1. Sign in to the [Azure portal](https://portal.azure.com).
-1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant.
+1. Sign in to the [Microsoft Entra admin center](https://portal.azure.com).
+1. If your account is present in more than one Microsoft Entra tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Microsoft Entra tenant.
 
 #### Register the client web app (WebApp-OpenIDConnect-DotNet-graph-v2)
 
-1. Navigate to the [Azure portal](https://portal.azure.com) and select the **Azure AD** service.
+1. Navigate to the [Microsoft Entra admin center](https://portal.azure.com) and select the **Microsoft Entra ID** service.
 1. Select the **App Registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp-OpenIDConnect-DotNet-graph-v2`.
@@ -144,7 +144,7 @@ As a first step you'll need to:
    - Type a key description (for instance `app secret`),
    - Select one of the available key durations (**6 months**, **12 months** or **Custom**) as per your security posture.
    - The generated key value will be displayed when you select the **Add** button. Copy and save the generated value for use in later steps.
-   - You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
+   - You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Microsoft Entra admin center before navigating to any other screen or blade.
 1. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
    - Select the **Add a permission** button and then,
    - Ensure that the **Microsoft APIs** tab is selected.
@@ -159,10 +159,10 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 >In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
 1. Open the `appsettings.json` file.
-1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `WebApp-OpenIDConnect-DotNet-graph-v2` app copied from the Azure portal.
-1. Find the key `TenantId` and replace the existing value with your Azure AD tenant ID.
-1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
-1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of `WebApp-OpenIDConnect-DotNet-graph-v2` copied from the Azure portal.
+1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `WebApp-OpenIDConnect-DotNet-graph-v2` app copied from the Microsoft Entra admin center.
+1. Find the key `TenantId` and replace the existing value with your Microsoft Entra tenant ID.
+1. Find the key `Domain` and replace the existing value with your Microsoft Entra tenant name.
+1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of `WebApp-OpenIDConnect-DotNet-graph-v2` copied from the Microsoft Entra admin center.
 
 - In case you want to deploy your app in [Sovereign or national clouds](https://docs.microsoft.com/graph/deployments), ensure the `GraphApiUrl` and `Instance` option matches the your requirements. The default values are set to Microsoft Graph in the Azure public cloud. You may skip this point if it does not apply to you.
 
@@ -287,7 +287,7 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 
 1. Open an instance of Visual Studio code set to the `WebApp-OpenIDConnect-DotNet-graph-v2` project folder.
 1. Install the VS Code extension [Azure App Service](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureappservice).
-1. Using the extension you just installed, sign in to **Azure App Service** using your Azure AD account.
+1. Using the extension you just installed, sign in to **Azure App Service** using your Microsoft Entra account.
 1. Choose `Terminal > New Terminal` from the VS Code menu to open a new terminal window in the project directory.
 1. Run the following command
 
@@ -303,10 +303,10 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 1. Select **.NET Core 3.1 (LTS)** as runtime stack.
 1. Select `Free` or any other option for your pricing tier.
 
-#### Update the Azure AD app registration (WebApp-OpenIDConnect-DotNet-graph-v2)
+#### Update the Microsoft Entra app registration (WebApp-OpenIDConnect-DotNet-graph-v2)
 
-1. Navigate back to to the [Azure portal](https://portal.azure.com).
-1. Go to the **Azure Active Directory** section, and then select **App registrations**.
+1. Navigate back to to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Go to the **Microsoft Entra ID** section, and then select **App registrations**.
 1. In the resulting screen, select the `WebApp-OpenIDConnect-DotNet-graph-v2` application.
 1. In the app's registration screen, select **Authentication** in the menu.
    - In the **Redirect URIs** section, update both of the reply URLs to match the site URL of your Azure deployment. Using the following examples as a guide, **replace** the text `example-domain` with the app name you created while deploying, for example:
@@ -326,7 +326,7 @@ We will follow the steps broadly outlined in the guide: [Use Key Vault from App 
 
 #### Set up your Managed Identity
 
-1. Navigate to [Azure portal](https://portal.azure.com) and select the **Azure App Service**.
+1. Navigate to [Microsoft Entra admin center](https://portal.azure.com) and select the **Azure App Service**.
 1. Find and select the App Service you've created previously.
 1. On App Service portal, select **Identity**.
 1. Within the **System assigned** tab, switch **Status** to **On**. Click **Save**.
@@ -344,7 +344,7 @@ Before starting here, make sure:
 
 ##### Upload your secret to KeyVault
 
-1. Navigate to your new key vault in the Azure portal.
+1. Navigate to your new key vault in the Microsoft Entra admin center.
 1. On the Key Vault settings pages, select **Secrets**.
 1. Click on **Generate/Import**.
 1. On the **Create a secret** screen choose the following values:
@@ -437,7 +437,7 @@ using Azure.Security.KeyVault.Secrets;
 
 8. Add an environment variable to your App Service so your web app can find its key vault.
 
-    1. Go to the [Azure portal](https://portal.azure.com). Search for and select **App Service**, and then select your app.
+    1. Go to the [Microsoft Entra admin center](https://portal.azure.com). Search for and select **App Service**, and then select your app.
     1. Select **Configuration** blade on the left, then select **New Application Settings**.
     1. Add a new variable, naming it **KEY_VAULT_URI**. Populate the value with the URI of your key vault, for example: `https://example-vault.vault.azure.net/`
 
@@ -511,7 +511,7 @@ To process the CAE challenge from Microsoft Graph, the controller actions need t
     ```CSharp
     currentUser = await _graphServiceClient.Me.GetAsync();
     ```
-    1. Then redirect the user back to Azure AD with the new requested `claims`. Azure AD will use this `claims` payload to discern what or if any additional processing is required, example being the user needs to sign-in again or do multi-factor authentication.
+    1. Then redirect the user back to Microsoft Entra ID with the new requested `claims`. Microsoft Entra ID will use this `claims` payload to discern what or if any additional processing is required, example being the user needs to sign-in again or do multi-factor authentication.
   ```CSharp
     try
     {
@@ -538,19 +538,19 @@ To process the CAE challenge from Microsoft Graph, the controller actions need t
 
 ## More information
 
-- [Microsoft identity platform (Azure Active Directory for developers)](https://docs.microsoft.com/azure/active-directory/develop/)
+- [Microsoft identity platform (Microsoft Entra ID for developers)](https://docs.microsoft.com/azure/active-directory/develop/)
 - [Overview of Microsoft Authentication Library (MSAL)](https://docs.microsoft.com/azure/active-directory/develop/msal-overview)
 - [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web)
 - [Quickstart: Register an application with the Microsoft identity platform (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
-- [Understanding Azure AD application consent experiences](https://docs.microsoft.com/azure/active-directory/develop/application-consent-experience)
+- [Understanding Microsoft Entra application consent experiences](https://docs.microsoft.com/azure/active-directory/develop/application-consent-experience)
 - [Understand user and admin consent](https://docs.microsoft.com/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant#understand-user-and-admin-consent)
-- [Application and service principal objects in Azure Active Directory](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals)
+- [Application and service principal objects in Microsoft Entra ID](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals)
 - [National Clouds](https://docs.microsoft.com/azure/active-directory/develop/authentication-national-cloud#app-registration-endpoints)
-- [Azure AD code samples](https://docs.microsoft.com/azure/active-directory/develop/sample-v2-code)
+- [Microsoft Entra ID code samples](https://docs.microsoft.com/azure/active-directory/develop/sample-v2-code)
 - [Managed Identities for Azure resources](https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/overview)
 - [Azure Key Vault](https://azure.microsoft.com/services/key-vault/)
 - [Use Key Vault from App Service with Azure Managed Identity](https://github.com/Azure-Samples/app-service-msi-keyvault-dotnet/blob/master/README.md)
-- [Authentication Scenarios for Azure AD](https://docs.microsoft.com/azure/active-directory/develop/authentication-flows-app-scenarios).
+- [Authentication Scenarios for Microsoft Entra ID](https://docs.microsoft.com/azure/active-directory/develop/authentication-flows-app-scenarios).
 
 ## Community Help and Support
 
@@ -560,7 +560,7 @@ Make sure that your questions or comments are tagged with [`azure-active-directo
 
 If you find a bug in the sample, raise the issue on [GitHub Issues](../../../../issues).
 
-To provide feedback on or suggest features for Azure Active Directory, visit [User Voice page](https://feedback.azure.com/forums/169401-azure-active-directory).
+To provide feedback on or suggest features for Microsoft Entra ID, visit [User Voice page](https://feedback.azure.com/forums/169401-azure-active-directory).
 
 ## Contributing
 

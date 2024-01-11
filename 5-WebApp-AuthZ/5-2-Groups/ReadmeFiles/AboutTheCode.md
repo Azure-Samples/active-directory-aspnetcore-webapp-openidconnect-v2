@@ -71,7 +71,7 @@ services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationSch
     // Use the groups claim for populating roles
     options.TokenValidationParameters.RoleClaimType = "groups";
 });
-// Adding authorization policies that enforce authorization using Azure AD roles.
+// Adding authorization policies that enforce authorization using Microsoft Entra roles.
 services.AddAuthorization(options =>
 {
     options.AddPolicy(AuthorizationPolicies.AssignmentToGroupMemberGroupRequired, policy => policy.RequireRole(Configuration["Groups:GroupMember"], Configuration["Groups:GroupAdmin"]));

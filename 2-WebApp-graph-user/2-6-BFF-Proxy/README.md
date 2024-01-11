@@ -6,13 +6,13 @@ languages:
  - csharp
  - javascript
 products:
- - azure-active-directory
+ - microsoft-entra-id
  - microsoft-identity-web
 urlFragment: active-directory-aspnetcore-webapp-openidconnect-v2
 extensions:
 - services: ms-identity
 - platform: .NET Core
-- endpoint: AAD v2.0
+- endpoint: Microsoft Entra ID v2.0
 - level: 300
 - client: ASP.NET Core web app
 - service: Microsoft Graph
@@ -20,7 +20,7 @@ extensions:
 
 # React SPA with ASP.NET Core backend calling Microsoft Graph using the backend for frontend (BFF) proxy architecture
 
-[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=XXX)
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/aad%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=XXX)
 
 * [Overview](#overview)
 * [Scenario](#scenario)
@@ -42,19 +42,19 @@ This sample demonstrates a React single-page application (SPA) with an ASP.NET C
 ## Scenario
 
 1. The client-side React SPA initiates token acquisition by calling the login endpoint of the ASP.NET core web app.
-1. ASP.NET Core web app uses **Microsoft.Identity.Web** to sign-in a user and obtain a JWT [ID Token](https://aka.ms/id-tokens) and an [Access Token](https://aka.ms/access-tokens) from **Azure AD**.
-1. ASP.NET Core web app uses the **access token** as a *bearer* token to authorize the user to call the Microsoft Graph API protected by **Azure AD**.
+1. ASP.NET Core web app uses **Microsoft.Identity.Web** to sign-in a user and obtain a JWT [ID Token](https://aka.ms/id-tokens) and an [Access Token](https://aka.ms/access-tokens) from **Microsoft Entra ID**.
+1. ASP.NET Core web app uses the **access token** as a *bearer* token to authorize the user to call the Microsoft Graph API protected by **Microsoft Entra ID**.
 1. ASP.NET Core web app returns the Microsoft Graph `/me` endpoint response back to the React SPA.
 
 ```mermaid
 sequenceDiagram
     participant Frontend
     participant Backend
-    participant Azure AD
+    participant Microsoft Entra ID
     participant Graph
     Frontend-)+Backend: /login
-    Backend-)+Azure AD: login.microsoftonline.com
-    Azure AD--)-Backend: token response
+    Backend-)+Microsoft Entra ID: login.microsoftonline.com
+    Microsoft Entra ID--)-Backend: token response
     Backend--)-Frontend: /login response (auth state)
     Frontend-)+Backend: /profile
     Backend-)+Graph: graph.microsoft.com/v1.0/me
@@ -65,8 +65,8 @@ sequenceDiagram
 ## Prerequisites
 
 * Either [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/download) and [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
-* An **Azure AD** tenant. For more information, see: [How to get an Azure AD tenant](https://docs.microsoft.com/azure/active-directory/develop/test-setup-environment#get-a-test-tenant)
-* A user account in your **Azure AD** tenant.
+* An **Microsoft Entra ID** tenant. For more information, see: [How to get a Microsoft Entra tenant](https://docs.microsoft.com/azure/active-directory/develop/test-setup-environment#get-a-test-tenant)
+* A user account in your **Microsoft Entra ID** tenant.
 
 ## Setup the sample
 
@@ -103,7 +103,7 @@ There is one project in this sample. To register it, you can:
 
 - follow the steps below for manually register your apps
 - or use PowerShell scripts that:
-  - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you.
+  - **automatically** creates the Microsoft Entra applications and related objects (passwords, permissions, dependencies) for you.
   - modify the projects' configuration files.
 
 <details>
@@ -117,7 +117,7 @@ There is one project in this sample. To register it, you can:
        ```PowerShell
        Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
        ```
-    1. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
+    1. Run the script to create your Microsoft Entra application and configure the code of the sample application accordingly.
     1. For interactive process -in PowerShell, run:
 
        ```PowerShell
@@ -127,20 +127,20 @@ There is one project in this sample. To register it, you can:
 
     Other ways of running the scripts are described in [App Creation Scripts guide](./AppCreationScripts/AppCreationScripts.md). The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
     
-    > :information_source: This sample can make use of client certificates. You can use **AppCreationScripts** to register an Azure AD application with certificates. See: [How to use certificates instead of client secrets](./README-use-certificate.md)
+    > :information_source: This sample can make use of client certificates. You can use **AppCreationScripts** to register a Microsoft Entra application with certificates. See: [How to use certificates instead of client secrets](./README-use-certificate.md)
 
 </details>
 
-#### Choose the Azure AD tenant where you want to create your applications
+#### Choose the Microsoft Entra tenant where you want to create your applications
 
 To manually register the apps, as a first step you'll need to:
 
-1. Sign in to the [Azure portal](https://portal.azure.com).
-1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant.
+1. Sign in to the [Microsoft Entra admin center](https://portal.azure.com).
+1. If your account is present in more than one Microsoft Entra tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Microsoft Entra tenant.
 
 #### Register the client app (CallGraphBFF)
 
-1. Navigate to the [Azure portal](https://portal.azure.com) and select the **Azure Active Directory** service.
+1. Navigate to the [Microsoft Entra admin center](https://portal.azure.com) and select the **Microsoft Entra ID** service.
 1. Select the **App Registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
     1. In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `CallGraphBFF`.
@@ -158,7 +158,7 @@ To manually register the apps, as a first step you'll need to:
     1. Type a key description (for instance `app secret`).
     1. Select one of the available key durations (**6 months**, **12 months** or **Custom**) as per your security posture.
     1. The generated key value will be displayed when you select the **Add** button. Copy and save the generated value for use in later steps.
-    1. You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
+    1. You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Microsoft Entra admin center before navigating to any other screen or blade.
     > :warning: For enhanced security, consider using **certificates** instead of client secrets. See: [How to use certificates instead of secrets](./README-use-certificate.md).
 1. Since this app signs-in users, we will now proceed to select **delegated permissions**, which is is required by apps signing-in users.
     1. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs:
@@ -184,9 +184,9 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 > In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
 1. Open the `2-6-BFF-Proxy/CallGraphBFF/appsettings.json` file.
-1. Find the string `Enter_the_Tenant_Id_Here` and replace it with your Azure AD tenant/directory ID.
-1. Find the string `Enter_the_Application_Id_Here` and replace it with the application ID (clientId) of `CallGraphBFF` app copied from the Azure portal.
-1. Find the string `Enter_the_Client_Secret_Here` and replace it with the generated secret that you saved during the creation of `CallGraphBFF` copied from the Azure portal.
+1. Find the string `Enter_the_Tenant_Id_Here` and replace it with your Microsoft Entra tenant/directory ID.
+1. Find the string `Enter_the_Application_Id_Here` and replace it with the application ID (clientId) of `CallGraphBFF` app copied from the Microsoft Entra admin center.
+1. Find the string `Enter_the_Client_Secret_Here` and replace it with the generated secret that you saved during the creation of `CallGraphBFF` copied from the Microsoft Entra admin center.
 
 ### Step 5: Running the sample
 
@@ -220,7 +220,7 @@ Were we successful in addressing your learning objective? Consider taking a mome
 Ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
 Make sure that your questions or comments are tagged with [`microsoft-identity-web` `ms-identity` `adal` `msal-net` `msal`].
 
-To provide feedback on or suggest features for Azure Active Directory, visit [User Voice page](https://feedback.azure.com/d365community/forum/79b1327d-d925-ec11-b6e6-000d3a4f06a4).
+To provide feedback on or suggest features for Microsoft Entra ID, visit [User Voice page](https://feedback.azure.com/d365community/forum/79b1327d-d925-ec11-b6e6-000d3a4f06a4).
 </details>
 
 ## About the code
@@ -255,7 +255,7 @@ login = (postLoginRedirectUri) => {
 }
 ```
 
-The controller in [AuthController.cs](./CallGraphBFF/Controllers/AuthController.cs) processes the request and initiates a token request against Azure AD via the `Challenge()` method:
+The controller in [AuthController.cs](./CallGraphBFF/Controllers/AuthController.cs) processes the request and initiates a token request against Microsoft Entra ID via the `Challenge()` method:
 
 ```csharp
 [HttpGet("login")]
@@ -274,7 +274,7 @@ Once the authentication is successful, the authentication state can be shared wi
 
 ### Cookie policies
 
-The sample makes use of HTTP only, strict cookies to secure the calls between the frontend and the backend. The default ASP.NET Core authentication cookie behavior will attempt to redirect unauthenticated requests to the identity provider (in this case, Azure AD). As this is not the desired behavior in BFF proxy architecture, custom cookie authenticated events is used to modify the default behavior (see [CustomCookieAuthenticationEvents.cs](./CallGraphBFF/Utils/CustomCookieAuthenticationEvents.cs)).
+The sample makes use of HTTP only, strict cookies to secure the calls between the frontend and the backend. The default ASP.NET Core authentication cookie behavior will attempt to redirect unauthenticated requests to the identity provider (in this case, Microsoft Entra ID). As this is not the desired behavior in BFF proxy architecture, custom cookie authenticated events is used to modify the default behavior (see [CustomCookieAuthenticationEvents.cs](./CallGraphBFF/Utils/CustomCookieAuthenticationEvents.cs)).
 
 ```csharp
 // Configure cookie properties for ASP.NET Core cookie authentication.
@@ -304,9 +304,9 @@ This sample app declares that it's CAE-capable by adding the `ClientCapabilities
 {
   "AzureAd": {
     "Instance": "https://login.microsoftonline.com/",
-    "TenantId": "[Enter 'common', or 'organizations' or the Tenant Id obtained from the Azure portal]",
-    "ClientId": "[Enter the Client Id aka Application ID obtained from the Azure portal]",
-    "ClientSecret": "[Copy the client secret added to the app from the Azure portal]",
+    "TenantId": "[Enter 'common', or 'organizations' or the Tenant Id obtained from the Microsoft Entra admin center]",
+    "ClientId": "[Enter the Client Id aka Application ID obtained from the Microsoft Entra admin center]",
+    "ClientSecret": "[Copy the client secret added to the app from the Microsoft Entra admin center]",
     "ClientCapabilities": [ "CP1" ],
     "CallbackPath": "/api/auth/signin-oidc",
     "SignedOutCallbackPath": "/api/auth/signout-oidc"
@@ -331,7 +331,7 @@ catch (ServiceException svcex) when (svcex.Message.Contains("Continuous access e
 }
 ```
 
-Next time when a login request is made to the backend, the claims challenge is retrieved from the session, and is used to present the user with a prompt for satisfying the challenge via Azure AD authorization endpoint.
+Next time when a login request is made to the backend, the claims challenge is retrieved from the session, and is used to present the user with a prompt for satisfying the challenge via Microsoft Entra authorization endpoint.
 
 ```csharp
 [HttpGet("login")]
@@ -393,10 +393,10 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 1. Install the Visual Studio Code extension [Azure App Service](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureappservice).
 1. Follow the link to [Publish with Visual Studio Code](https://docs.microsoft.com/aspnet/core/tutorials/publish-to-azure-webapp-using-vscode)
 
-#### Update the Azure AD app registration (CallGraphBFF)
+#### Update the Microsoft Entra app registration (CallGraphBFF)
 
-1. Navigate back to to the [Azure portal](https://portal.azure.com).
-In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations**.
+1. Navigate back to to the [Microsoft Entra admin center](https://portal.azure.com).
+In the left-hand navigation pane, select the **Microsoft Entra ID** service, and then select **App registrations**.
 1. In the resulting screen, select the `CallGraphBFF` application.
 1. In the app's registration screen, select **Authentication** in the menu.
     1. In the **Redirect URIs** section, update the reply URLs to match the site URL of your Azure deployment. For example:
@@ -422,15 +422,15 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## Learn More
 
-* [Microsoft identity platform (Azure Active Directory for developers)](https://docs.microsoft.com/azure/active-directory/develop/)
-* [Azure AD code samples](https://docs.microsoft.com/azure/active-directory/develop/sample-v2-code)
+* [Microsoft identity platform (Microsoft Entra ID for developers)](https://docs.microsoft.com/azure/active-directory/develop/)
+* [Microsoft Entra ID code samples](https://docs.microsoft.com/azure/active-directory/develop/sample-v2-code)
 * [Overview of Microsoft Authentication Library (MSAL)](https://docs.microsoft.com/azure/active-directory/develop/msal-overview)
 * [Register an application with the Microsoft identity platform](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
 * [Configure a client application to access web APIs](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
-* [Understanding Azure AD application consent experiences](https://docs.microsoft.com/azure/active-directory/develop/application-consent-experience)
+* [Understanding Microsoft Entra application consent experiences](https://docs.microsoft.com/azure/active-directory/develop/application-consent-experience)
 * [Understand user and admin consent](https://docs.microsoft.com/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant#understand-user-and-admin-consent)
-* [Application and service principal objects in Azure Active Directory](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals)
-* [Authentication Scenarios for Azure AD](https://docs.microsoft.com/azure/active-directory/develop/authentication-flows-app-scenarios)
+* [Application and service principal objects in Microsoft Entra ID](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals)
+* [Authentication Scenarios for Microsoft Entra ID](https://docs.microsoft.com/azure/active-directory/develop/authentication-flows-app-scenarios)
 * [Building Zero Trust ready apps](https://aka.ms/ztdevsession)
 * [National Clouds](https://docs.microsoft.com/azure/active-directory/develop/authentication-national-cloud#app-registration-endpoints)
 * [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web)

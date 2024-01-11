@@ -1,4 +1,4 @@
-﻿## How the code was created
+## How the code was created
 
 <details>
  <summary>Expand the section</summary>

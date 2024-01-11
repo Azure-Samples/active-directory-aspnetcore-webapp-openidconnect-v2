@@ -106,7 +106,7 @@
 
 1. In the `TodoListClient` project,  which represents the client app that signs-in a user and makes calls to the web api, first the package `Microsoft.Identity.Web`is added from NuGet.
 
-* The following lines in *Startup.cs* adds the ability to authenticate a user using Azure AD.
+* The following lines in *Startup.cs* adds the ability to authenticate a user using Microsoft Entra ID.
 
 ```csharp
         services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
@@ -139,7 +139,7 @@ The ToDoListClient's *appsettings.json* file contains `ToDoListScopes` key that 
                     {
                         string claimvalue = context.User.Claims.FirstOrDefault(x => x.Type == "acct").Value;
                         string userType = claimvalue == "0" ? "Member" : "Guest";
-                        Debug.WriteLine($"The type of the user account from this Azure AD tenant is-{userType}");
+                        Debug.WriteLine($"The type of the user account from this Microsoft Entra tenant is-{userType}");
                     }
                 }
                 await next();

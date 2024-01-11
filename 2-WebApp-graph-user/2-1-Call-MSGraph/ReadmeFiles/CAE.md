@@ -31,7 +31,7 @@ To process the CAE challenge from Microsoft Graph, the controller actions need t
     ```CSharp
     currentUser = await _graphServiceClient.Me.GetAsync();
     ```
-    1. Then redirect the user back to Azure AD with the new requested `claims`. Azure AD will use this `claims` payload to discern what or if any additional processing is required, example being the user needs to sign-in again or do multi-factor authentication.
+    1. Then redirect the user back to Microsoft Entra ID with the new requested `claims`. Microsoft Entra ID will use this `claims` payload to discern what or if any additional processing is required, example being the user needs to sign-in again or do multi-factor authentication.
   ```CSharp
     try
     {

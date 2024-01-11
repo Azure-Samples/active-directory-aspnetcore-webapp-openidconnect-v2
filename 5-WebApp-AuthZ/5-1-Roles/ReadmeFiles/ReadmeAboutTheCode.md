@@ -1,4 +1,4 @@
-﻿
+
 ## About the code
 
 <details>
@@ -29,7 +29,7 @@ public void ConfigureServices(IServiceCollection services)
                 options.TokenValidationParameters.RoleClaimType = "roles";
             });
 
-            // Adding authorization policies that enforce authorization using Azure AD roles.
+            // Adding authorization policies that enforce authorization using Microsoft Entra roles.
             services.AddAuthorization(options => 
             {
                 options.AddPolicy(AuthorizationPolicies.AssignmentToUserReaderRoleRequired, policy => policy.RequireRole(AppRole.UserReaders));

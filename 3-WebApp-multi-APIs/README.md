@@ -8,7 +8,7 @@ languages:
  - aspnetcore
  - charp
 products:
- - azure-active-directory
+ - microsoft-entra-id
  - microsoft-identity-web
  - azure-resource-manager
  - azure-resource-graph
@@ -22,7 +22,7 @@ description: An ASP.NET Core Web App which sign-in users with work and school or
 
 # An ASP.NET Core Web App which sign-in users with work and school or Microsoft personal accounts and calls Azure REST API and Azure Storage
 
-[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/aad%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 ## Scenario
 
@@ -41,7 +41,7 @@ To run this sample:
 >
 > This chapter shows the incremental changes required to call two Microsoft APIs other than Microsoft Graph (Azure Resource Management and Azure Storage).
 
-### Step 1: Register the sample with your Azure AD tenant
+### Step 1: Register the sample with your Microsoft Entra tenant
 
 You first need to [register](../1-WebApp-OIDC/1-3-AnyOrgOrPersonal/README.md#step-1-register-the-sample-with-your-azure-ad-tenant/README.md) your app as described in [the first phase of the tutorial](../1-WebApp-OIDC)
 
@@ -57,7 +57,7 @@ Then, the follow the following extra set of steps:
    - Check **user_impersonation**
    - Select **Add permissions**
 
-For the Azure Storage preparation see [Authenticate with Azure Active Directory from an application for access to blobs and queues](https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-aad-app)
+For the Azure Storage preparation see [Authenticate with Microsoft Entra ID from an application for access to blobs and queues](https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-Microsoft Entra ID-app)
 
 ### Step 2: Download/Clone/Go to the folder containing the sample code and build the application
 
@@ -181,7 +181,7 @@ In the `Views\Home` folder add a view named `Tenants.cshtml`
       // replace the URL below with your storage account URL
       Uri blobUri = new Uri("https://blobstorageazuread.blob.core.windows.net/sample-container/Blob1.txt");
       CloudBlockBlob blob = new CloudBlockBlob(blobUri, storageCredentials);
-      await blob.UploadTextAsync("Blob created by Azure AD authenticated user.");
+      await blob.UploadTextAsync("Blob created by Microsoft Entra authenticated user.");
 
       ViewData["Message"] = "Blob successfully created";
       return View();
@@ -239,9 +239,9 @@ In `HomeController.cs` add `TenantsWithImplicitAuth`:
 
 ## Troubleshooting
 
-To access Azure Resource Management (ARM), you'll need a work or school account (AAD account) and an Azure subscription. If your Azure subscription is for a Microsoft personal account, just create a new user in your directory, and use this user to run the sample
+To access Azure Resource Management (ARM), you'll need a work or school account (Microsoft Entra account) and an Azure subscription. If your Azure subscription is for a Microsoft personal account, just create a new user in your directory, and use this user to run the sample
 
-OpenIdConnectProtocolException: Message contains error: 'invalid_client', error_description: 'AADSTS650052: The app needs access to a service (\"https://*.blob.core.windows.net\") that your organization \"*tenantname*.onmicrosoft.com\" has not subscribed to or enabled. Contact your IT Admin to review the configuration of your service subscriptions.
+OpenIdConnectProtocolException: Message contains error: 'invalid_client', error_description: 'Microsoft Entra IDSTS650052: The app needs access to a service (\"https://*.blob.core.windows.net\") that your organization \"*tenantname*.onmicrosoft.com\" has not subscribed to or enabled. Contact your IT Admin to review the configuration of your service subscriptions.
 this is because the AzureStorage API was not registered as an API used by your Web App
 
 ## Learn more

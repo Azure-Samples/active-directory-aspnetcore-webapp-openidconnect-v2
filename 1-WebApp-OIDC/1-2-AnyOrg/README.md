@@ -10,27 +10,27 @@ languages:
   - csharp  
 products:
   - azure
-  - azure-active-directory  
+  - microsoft-entra-id  
   - dotnet
   - office-ms-graph
 description: "Change your ASP.NET Core Web app to sign-in users in any org with the Microsoft identity platform"
 ---
 # An ASP.NET Core Web app signing-in users in any org with the Microsoft identity platform
 
-> This sample is for Azure AD, not Azure AD B2C. See [active-directory-b2c-dotnetcore-webapp](https://github.com/Azure-Samples/active-directory-b2c-dotnetcore-webapp), until we incorporate the B2C variation in the tutorial.
+> This sample is for Microsoft Entra ID, not Azure Active Directory B2C. See [active-directory-b2c-dotnetcore-webapp](https://github.com/Azure-Samples/active-directory-b2c-dotnetcore-webapp), until we incorporate the B2C variation in the tutorial.
 
-[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/aad%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 ## Scenario
 
-This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect to sign in users. Users can a work and school accounts from any company or organization that has integrated with Azure Active Directory. It leverages the ASP.NET Core OpenID Connect middleware.
+This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect to sign in users. Users can a work and school accounts from any company or organization that has integrated with Microsoft Entra ID. It leverages the ASP.NET Core OpenID Connect middleware.
 
-![Sign in with Azure AD](ReadmeFiles/sign-in.png)
+![Sign in with Microsoft Entra ID](ReadmeFiles/sign-in.png)
 
 > This is the second chapter of the ASP.NET Core Web App tutorial. To try this sample 
 Once you understand how to sign-in users in an ASP.NET Core Web App with Open Id Connect, can learn how to enable your [Web App to call a Web API on behalf of the signed-in user](../../2-WebApp-graph-user/README-incremental-instructions.md) in a later chapter.
 
->  In addition to signing-in users from any organization, you can also sign-in users from just your own Azure Active Directory organization,or users using their  Microsoft personal accounts or social identities. For more details on all the available signIn options, refer to this [Readme.md](../README.md).
+>  In addition to signing-in users from any organization, you can also sign-in users from just your own Microsoft Entra tenant,or users using their  Microsoft personal accounts or social identities. For more details on all the available signIn options, refer to this [Readme.md](../README.md).
 
 ## How to run this sample
 
@@ -38,13 +38,13 @@ To run this sample:
 
 > Pre-requisites: Install .NET Core 3.0 or later (for example for Windows) by following the instructions at [.NET and C# - Get Started in 10 Minutes](https://www.microsoft.com/net/core). In addition to developing on Windows, you can develop on [Linux](https://www.microsoft.com/net/core#linuxredhat), [Mac](https://www.microsoft.com/net/core#macos), or [Docker](https://www.microsoft.com/net/core#dockercmd).
 
-### Step 1: Register the sample with your Azure AD tenant
+### Step 1: Register the sample with your Microsoft Entra tenant
 
 There is one project in this sample. To register it, you can:
 
-- either follow the steps [Step 2: Register the sample with your Azure Active Directory tenant](#step-2-register-the-sample-with-your-azure-active-directory-tenant) and [Step 3:  Configure the sample to use your Azure AD tenant](#choose-the-azure-ad-tenant-where-you-want-to-create-your-applications)
+- either follow the steps [Step 2: Register the sample with your Microsoft Entra tenant](#step-2-register-the-sample-with-your-azure-active-directory-tenant) and [Step 3:  Configure the sample to use your Microsoft Entra tenant](#choose-the-azure-ad-tenant-where-you-want-to-create-your-applications)
 - or use PowerShell scripts that:
-  - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you. Note that this works for Visual Studio only.
+  - **automatically** creates the Microsoft Entra applications and related objects (passwords, permissions, dependencies) for you. Note that this works for Visual Studio only.
   - modify the Visual Studio projects' configuration files.
 
 <details>
@@ -57,7 +57,7 @@ There is one project in this sample. To register it, you can:
    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
    ```
 
-1. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
+1. Run the script to create your Microsoft Entra application and configure the code of the sample application accordingly.
 1. In PowerShell run:
 
    ```PowerShell
@@ -74,13 +74,13 @@ There is one project in this sample. To register it, you can:
 
 Follow the steps below to manually walk through the steps to register and configure the applications.
 
-#### Choose the Azure AD tenant where you want to create your applications
+#### Choose the Microsoft Entra tenant where you want to create your applications
 
 As a first step you'll need to:
 
-1. Sign in to the [Azure portal](https://portal.azure.com) using either a work or school account or a personal Microsoft account.
-1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory**.
-   Change your portal session to the desired Azure AD tenant.
+1. Sign in to the [Microsoft Entra admin center](https://portal.azure.com) using either a work or school account or a personal Microsoft account.
+1. If your account is present in more than one Microsoft Entra tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory**.
+   Change your portal session to the desired Microsoft Entra tenant.
 
 #### Register the webApp app (WebApp)
 
@@ -191,7 +191,7 @@ cd "1-WebApp-OIDC\1-2-AnyOrg"
 
 2. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. The app immediately attempts to authenticate you via the Microsoft identity platform endpoint. Sign in with your personal account or with work or school account.
 
-> A recording of a Microsoft Identity Platform developer session that covered this topic of developing a multi-tenant app with Azure Active Directory is available at [Develop multi-tenant applications with Microsoft identity platform](https://www.youtube.com/watch?v=B416AxHoMJ4).
+> A recording of a Microsoft Identity Platform developer session that covered this topic of developing a multi-tenant app with Microsoft Entra ID is available at [Develop multi-tenant applications with Microsoft identity platform](https://www.youtube.com/watch?v=B416AxHoMJ4).
 
 ## Troubleshooting
 
@@ -207,9 +207,9 @@ If your web site needs to be accessed from users using iOS 12, you probably want
 
 ## About The code
 
-This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Azure AD tenant. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Azure AD tenant where the app is registered. These values are  read from the `appsettings.json` file. The middleware takes care of:
+This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Microsoft Entra tenant. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Microsoft Entra tenant where the app is registered. These values are  read from the `appsettings.json` file. The middleware takes care of:
 
-- Downloading the Azure AD metadata, finding the signing keys, and finding the issuer name for the tenant.
+- Downloading the Microsoft Entra ID metadata, finding the signing keys, and finding the issuer name for the tenant.
 - Processing OpenID Connect sign-in responses by validating the signature and issuer in an incoming JWT, extracting the user's claims, and putting the claims in `ClaimsPrincipal.Current`.
 - Integrating with the session cookie ASP.NET Core middleware to establish a session for the user.
 
@@ -221,7 +221,7 @@ These steps are encapsulated in the [Microsoft.Identity.Web](https://github.com/
 
 ## How to restrict users from specific organizations from signing-in your web app
 
-In order to restrict users from specific organizations from signing-in to your web app, you'll need to customize your code a bit more to restrict issuers. In Azure AD, the token issuers are the Azure AD tenants which issue tokens to applications.
+In order to restrict users from specific organizations from signing-in to your web app, you'll need to customize your code a bit more to restrict issuers. In Microsoft Entra ID, the token issuers are the Microsoft Entra tenants which issue tokens to applications.
 
 In the `Startup.cs` file, in the `ConfigureServices` method, after `services.AddMicrosoftWebAppAuthentication(Configuration)` add some code to filter  issuers by overriding the `TokenValidationParameters.IssuerValidator` delegate.
 
@@ -272,7 +272,7 @@ An example of code for `ValidateSpecificIssuers` is the following:
     }
 ```
 
-> If you are building a SaaS application that will be used in multiple Azure AD tenants, the please note that there are a number of steps that a SaaS developer should be aware of and is beyond the scope of this article. You are advised to go through the the multi-tenant app developer's guide [Build a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect](../../2-WebApp-graph-user/2-3-Multi-Tenant/README.md) as well.
+> If you are building a SaaS application that will be used in multiple Microsoft Entra tenants, the please note that there are a number of steps that a SaaS developer should be aware of and is beyond the scope of this article. You are advised to go through the the multi-tenant app developer's guide [Build a multi-tenant SaaS web application that calls Microsoft Graph using Microsoft Entra ID & OpenID Connect](../../2-WebApp-graph-user/2-3-Multi-Tenant/README.md) as well.
 
 ## Next steps
 
