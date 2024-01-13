@@ -52,7 +52,7 @@ This sample demonstrates an ASP.NET Core client Web App calling an ASP.NET Core 
 
 * Either [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/download) and [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
 * An **Microsoft Entra ID** tenant. For more information, see: [How to get a Microsoft Entra tenant](https://docs.microsoft.com/azure/active-directory/develop/test-setup-environment#get-a-test-tenant)
-* A user account in your **Microsoft Entra ID** tenant. This sample will not work with a **personal Microsoft account**. If you're signed in to the [Microsoft Entra admin center](https://portal.azure.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
+* A user account in your **Microsoft Entra ID** tenant. This sample will not work with a **personal Microsoft account**. If you're signed in to the [Microsoft Entra admin center](https://entra.microsoft.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
 
 ## Setup the sample
 
@@ -111,12 +111,12 @@ There are two projects in this sample. Each needs to be separately registered in
 
 To manually register the apps, as a first step you'll need to:
 
-1. Sign in to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com).
 1. If your account is present in more than one Microsoft Entra tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Microsoft Entra tenant.
 
 #### Register the service app (TodoListService-aspnetcore-webapi)
 
-1. Navigate to the [Microsoft Entra admin center](https://portal.azure.com) and select the **Microsoft Entra ID** service.
+1. Navigate to the [Microsoft Entra admin center](https://entra.microsoft.com) and select the **Microsoft Entra ID** service.
 1. Select the **App Registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
     1. In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `TodoListService-aspnetcore-webapi`.
@@ -181,7 +181,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 
 #### Register the client app (TodoListClient-aspnetcore-webapi)
 
-1. Navigate to the [Microsoft Entra admin center](https://portal.azure.com) and select the **Microsoft Entra ID** service.
+1. Navigate to the [Microsoft Entra admin center](https://entra.microsoft.com) and select the **Microsoft Entra ID** service.
 1. Select the **App Registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
     1. In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `TodoListClient-aspnetcore-webapi`.
@@ -589,7 +589,7 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 > 
 > If that's the case, you'll need enable [cross-origin resource sharing (CORS)](https://developer.mozilla.org/docs/Web/HTTP/CORS) for you web API. Follow the steps below to do this:
 >
-> - Go to [Microsoft Entra admin center](https://portal.azure.com), and locate the web API project that you've deployed to App Service.
+> - Go to [Microsoft Entra admin center](https://entra.microsoft.com), and locate the web API project that you've deployed to App Service.
 > - On the API blade, select **CORS**. Check the box **Enable Access-Control-Allow-Credentials**.
 > - Under **Allowed origins**, add the URL of your published web app **that will call this web API**. 
 
@@ -614,7 +614,7 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 
 #### Update the Microsoft Entra app registration (TodoListClient-aspnetcore-webapi)
 
-1. Navigate back to to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Navigate back to to the [Microsoft Entra admin center](https://entra.microsoft.com).
 In the left-hand navigation pane, select the **Microsoft Entra ID** service, and then select **App registrations (Preview)**.
 1. In the resulting screen, select the `TodoListClient-aspnetcore-webapi` application.
 1. In the app's registration screen, select **Authentication** in the menu.

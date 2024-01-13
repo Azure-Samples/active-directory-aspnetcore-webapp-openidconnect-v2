@@ -32,7 +32,7 @@ To run this sample, you'll need:
 - An OS X machine (necessary if you want to run the app on Mac)
 - A Linux machine (necessary if you want to run the app on Linux)
 - a Microsoft Entra tenant. For more information on how to get a Microsoft Entra tenant, see [How to get a Microsoft Entra tenant](https://azure.microsoft.com/en-us/documentation/articles/active-directory-howto-tenant/)
-- A user account in your Microsoft Entra tenant. This sample will not work with a Microsoft account (formerly Windows Live account). Therefore, if you signed in to the [Microsoft Entra admin center](https://portal.azure.com) with a Microsoft account and have never created a user account in your directory before, you need to do that now.
+- A user account in your Microsoft Entra tenant. This sample will not work with a Microsoft account (formerly Windows Live account). Therefore, if you signed in to the [Microsoft Entra admin center](https://entra.microsoft.com) with a Microsoft account and have never created a user account in your directory before, you need to do that now.
 
 ### Step 1:  Clone or download this repository
 
@@ -82,7 +82,7 @@ If you don't want to use this automation, follow the steps below.
 
 As a first step you'll need to:
 
-1. Sign in to the [Microsoft Entra admin center](https://portal.azure.com) using either a work or school account or a personal Microsoft account.
+1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com) using either a work or school account or a personal Microsoft account.
 1. If your account is present in more than one Microsoft Entra tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory**.
    Change your portal session to the desired Microsoft Entra tenant.
 
@@ -266,7 +266,7 @@ This project has one WebApp project. To deploy it to the Azure Web Site, you'll 
 
 ### Create and publish the `WebApp-OpenIDConnect-DotNet-code-v2` to an Azure Web Site
 
-1. Sign in to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com).
 1. Click `Create a resource` in the top left-hand corner, select **Web** --> **Web App**, and give your web site a name, for example, `WebApp-OpenIDConnect-DotNet-code-v2-contoso.azurewebsites.net`.
 1. Thereafter select the `Subscription`, `Resource Group`, `App service plan and Location`. `OS` will be **Windows** and `Publish` will be **Code**.
 1. Click `Create` and wait for the App Service to be created.
@@ -293,7 +293,7 @@ This project has one WebApp project. To deploy it to the Azure Web Site, you'll 
 
 ### Update the Active Directory tenant application registration for `WebApp-OpenIDConnect-DotNet-code-v2`
 
-1. Navigate back to to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Navigate back to to the [Microsoft Entra admin center](https://entra.microsoft.com).
 In the left-hand navigation pane, select the **Microsoft Entra ID** service, and then select **App registrations (Preview)**.
 1. In the resultant screen, select the `WebApp-OpenIDConnect-DotNet-code-v2` application.
 1. In the **Authentication** | page for your application, update the Logout URL fields with the address of your service, for example [https://WebApp-OpenIDConnect-DotNet-code-v2-contoso.azurewebsites.net](https://WebApp-OpenIDConnect-DotNet-code-v2-contoso.azurewebsites.net)

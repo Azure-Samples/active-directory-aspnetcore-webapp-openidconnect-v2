@@ -8,7 +8,7 @@ This tutorial has one WebApp and some chapters have a Web API project. To deploy
 
 ### Create and publish the `WebApp-OpenIDConnect-DotNet-code-v2` to an Azure Web Site
 
-1. Sign in to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com).
 1. Click `Create a resource` in the top left-hand corner, select **Web** --> **Web App**, and give your web site a name, for example, `WebApp-OpenIDConnect-DotNet-code-v2-contoso.azurewebsites.net`.
 1. Thereafter select the `Subscription`, `Resource Group`, `App service plan and Location`. `OS` will be **Windows** and `Publish` will be **Code**.
 1. Click `Create` and wait for the App Service to be created.
@@ -28,7 +28,7 @@ This tutorial has one WebApp and some chapters have a Web API project. To deploy
 
 ### Update the redirect URLs
 
-1. Navigate back to to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Navigate back to to the [Microsoft Entra admin center](https://entra.microsoft.com).
 In the left-hand navigation pane, select the **Microsoft Entra ID** service, and then select **App registrations**.
 1. In the resultant screen, select the `WebApp-OpenIDConnect-DotNet-code-v2` application.
 1. In the **Authentication** tab:

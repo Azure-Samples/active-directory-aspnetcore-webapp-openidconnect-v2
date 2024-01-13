@@ -1,6 +1,6 @@
-### Overview
+﻿### Overview
 
-When it comes to developing apps, developers can choose to configure their app to be either single-tenant or multi-tenant during app registration in the [Microsoft Entra admin center](https://portal.azure.com).
+When it comes to developing apps, developers can choose to configure their app to be either single-tenant or multi-tenant during app registration in the [Microsoft Entra admin center](https://entra.microsoft.com).
 
 - `Single-tenant` apps are only available in the tenant they were registered in, also known as their home tenant.
 - `Multi-tenant` apps are available to users in both their home tenant and other tenants where they are provisioned. Apps that allow users to sign-in using their personal accounts that they use to sign into services like Xbox and Skype are also multi-tenant apps.

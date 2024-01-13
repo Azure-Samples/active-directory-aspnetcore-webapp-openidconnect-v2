@@ -45,7 +45,7 @@ These scripts are:
   - creates a summary file named `createdApps.html` in the folder from which you ran the script, and containing, for each Microsoft Entra application it created:
     - the identifier of the application
     - the AppId of the application
-    - the url of its registration in the [Microsoft Entra admin center](https://portal.azure.com).
+    - the url of its registration in the [Microsoft Entra admin center](https://entra.microsoft.com).
 
 - `Cleanup.ps1` which cleans-up the Microsoft Entra objects created by `Configure.ps1`. Note that this script does not revert the changes done in the configuration files, though. You will need to undo the change from source control (from Visual Studio, or from the command line using, for instance, `git reset`).
 
@@ -118,7 +118,7 @@ Note that the script will choose the tenant in which to create the applications,
 
   if you want to create the apps in a particular tenant, you can use the following option:
   
-- Open the [Microsoft Entra admin center](https://portal.azure.com)
+- Open the [Microsoft Entra admin center](https://entra.microsoft.com)
 - Select the Microsoft Entra ID you are interested in (in the combo-box below your name on the top right of the browser window)
 - Find the "Active Directory" object in this tenant
 - Go to **Properties** and copy the content of the **Directory Id** property

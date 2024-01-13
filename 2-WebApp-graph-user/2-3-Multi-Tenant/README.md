@@ -49,7 +49,7 @@ This sample demonstrates a ASP.NET Core Web App calling Microsoft Graph.
 
 ### Overview
 
-When it comes to developing apps, developers can choose to configure their app to be either single-tenant or multi-tenant during app registration in the [Microsoft Entra admin center](https://portal.azure.com).
+When it comes to developing apps, developers can choose to configure their app to be either single-tenant or multi-tenant during app registration in the [Microsoft Entra admin center](https://entra.microsoft.com).
 
 - `Single-tenant` apps are only available in the tenant they were registered in, also known as their home tenant.
 - `Multi-tenant` apps are available to users in both their home tenant and other tenants where they are provisioned. Apps that allow users to sign-in using their personal accounts that they use to sign into services like Xbox and Skype are also multi-tenant apps.
@@ -77,7 +77,7 @@ The application puts forward a scenario where a SaaS application invites the adm
 * Either [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/download) and [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
 * An **Microsoft Entra ID** tenant. For more information, see: [How to get a Microsoft Entra tenant](https://docs.microsoft.com/azure/active-directory/develop/test-setup-environment#get-a-test-tenant)
 * A user account in your **Microsoft Entra ID** tenant.
->This sample will not work with a **personal Microsoft account**. If you're signed in to the [Microsoft Entra admin center](https://portal.azure.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
+>This sample will not work with a **personal Microsoft account**. If you're signed in to the [Microsoft Entra admin center](https://entra.microsoft.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
 * [Microsoft SQL Server](https://www.microsoft.com/sql-server/sql-server-downloads). [Express](https://learn.microsoft.com/sql/sql-server/editions-and-components-of-sql-server-2022?view=sql-server-ver16#sql-server-editions) version will be more than enough.
 
 ## Setup the sample
@@ -137,12 +137,12 @@ There is one project in this sample. To register it, you can:
 
 To manually register the apps, as a first step you'll need to:
 
-1. Sign in to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com).
 1. If your account is present in more than one Microsoft Entra tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Microsoft Entra tenant.
 
 #### Register the webApp app (WebApp_MultiTenant_v2)
 
-1. Navigate to the [Microsoft Entra admin center](https://portal.azure.com) and select the **Microsoft Entra ID** service.
+1. Navigate to the [Microsoft Entra admin center](https://entra.microsoft.com) and select the **Microsoft Entra ID** service.
 1. Select the **App Registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
     1. In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp_MultiTenant_v2`.
@@ -540,7 +540,7 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 
 #### Update the Microsoft Entra app registration (WebApp_MultiTenant_v2)
 
-1. Navigate back to to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Navigate back to to the [Microsoft Entra admin center](https://entra.microsoft.com).
 In the left-hand navigation pane, select the **Microsoft Entra ID** service, and then select **App registrations (Preview)**.
 1. In the resulting screen, select the `WebApp_MultiTenant_v2` application.
 1. In the app's registration screen, select **Authentication** in the menu.

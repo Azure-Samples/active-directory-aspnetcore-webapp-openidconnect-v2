@@ -1,4 +1,4 @@
-## Overview
+﻿## Overview
 
 This sample shows how a .NET Core MVC Web app that uses [OpenID Connect](https://docs.microsoft.com/azure/active-directory/develop/v1-protocols-openid-connect-code) to sign in users and use Microsoft Entra ID [App Roles](aka.ms/approles) for authorization. [App Roles](aka.ms/approles), along with Security groups are popular means to implement authorization.
 
@@ -23,7 +23,7 @@ This sample application defines the following two *App roles*:
 - `DirectoryViewers`: Have the ability to view any directory user's roles and security group assignments.
 - `UserReaders`: Have the ability to view a list of users in the directory.
 
-These App roles are defined in the [Microsoft Entra admin center](https://portal.azure.com) in the application's registration manifest.  When a user signs into the application, Microsoft Entra ID emits a `roles` claim for each role that the user has been granted individually to the user in the from of role membership. Assignment of users and groups to roles can be done through the portal's UI, or programmatically using the [Microsoft Graph](https://graph.microsoft.com) and [Azure AD Powershell](https://docs.microsoft.com/powershell/module/azuread).  In this sample, application role management is done through the Microsoft Entra admin center or using PowerShell.
+These App roles are defined in the [Microsoft Entra admin center](https://entra.microsoft.com) in the application's registration manifest.  When a user signs into the application, Microsoft Entra ID emits a `roles` claim for each role that the user has been granted individually to the user in the from of role membership. Assignment of users and groups to roles can be done through the portal's UI, or programmatically using the [Microsoft Graph](https://graph.microsoft.com) and [Azure AD Powershell](https://docs.microsoft.com/powershell/module/azuread).  In this sample, application role management is done through the Microsoft Entra admin center or using PowerShell.
 
 NOTE: Role claims will not be present for guest users in a tenant if the `https://login.microsoftonline.com/common/` endpoint is used as the authority to sign in users. Microsoft Entra ID can emit app roles only if the tenanted end point `https://login.microsoftonline.com/{tenant Id}/` is being used.
 

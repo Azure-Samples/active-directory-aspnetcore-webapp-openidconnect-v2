@@ -36,7 +36,7 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 
 #### Update the Microsoft Entra app registration (WebApp-OpenIDConnect-DotNet-graph-v2)
 
-1. Navigate back to to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Navigate back to to the [Microsoft Entra admin center](https://entra.microsoft.com).
 1. Go to the **Microsoft Entra ID** section, and then select **App registrations**.
 1. In the resulting screen, select the `WebApp-OpenIDConnect-DotNet-graph-v2` application.
 1. In the app's registration screen, select **Authentication** in the menu.
@@ -57,7 +57,7 @@ We will follow the steps broadly outlined in the guide: [Use Key Vault from App 
 
 #### Set up your Managed Identity
 
-1. Navigate to [Microsoft Entra admin center](https://portal.azure.com) and select the **Azure App Service**.
+1. Navigate to [Microsoft Entra admin center](https://entra.microsoft.com) and select the **Azure App Service**.
 1. Find and select the App Service you've created previously.
 1. On App Service portal, select **Identity**.
 1. Within the **System assigned** tab, switch **Status** to **On**. Click **Save**.
@@ -168,7 +168,7 @@ using Azure.Security.KeyVault.Secrets;
 
 8. Add an environment variable to your App Service so your web app can find its key vault.
 
-    1. Go to the [Microsoft Entra admin center](https://portal.azure.com). Search for and select **App Service**, and then select your app.
+    1. Go to the [Microsoft Entra admin center](https://entra.microsoft.com). Search for and select **App Service**, and then select your app.
     1. Select **Configuration** blade on the left, then select **New Application Settings**.
     1. Add a new variable, naming it **KEY_VAULT_URI**. Populate the value with the URI of your key vault, for example: `https://example-vault.vault.azure.net/`
 

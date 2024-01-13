@@ -130,7 +130,7 @@ Now you must associate your Microsoft Entra app registration with the certificat
 
 > :information_source: If you have the certificate locally available, you can follow the steps below. If your certificate(s) is on Azure Key Vault, you must first export and download them to your computer, and delete the local copy after following the steps below. See: [Export certificates from Azure Key Vault](https://learn.microsoft.com/azure/key-vault/certificates/how-to-export-certificate)
 
-1. Navigate to [Microsoft Entra admin center](https://portal.azure.com) and select your Microsoft Entra app registration.
+1. Navigate to [Microsoft Entra admin center](https://entra.microsoft.com) and select your Microsoft Entra app registration.
 1. Select **Certificates & secrets** blade on the left.
 1. Click on **Upload** certificate and select the certificate file to upload (e.g. *CallGraphBFF*).
 1. Click **Add**. Once the certificate is uploaded, the *thumbprint*, *start date*, and *expiration* values are displayed. Record the *thumbprint* value as you will make use of it later in your app's configuration file.
@@ -203,7 +203,7 @@ Once you deploy your app(s) to Azure App Service, you can assign a managed ident
 
 ### Create a system-assigned identity
 
-1. Navigate to [Microsoft Entra admin center](https://portal.azure.com) and select the **Azure App Service**.
+1. Navigate to [Microsoft Entra admin center](https://entra.microsoft.com) and select the **Azure App Service**.
 1. Find and select the App Service instance you've created previously.
 1. On App Service portal, select **Identity**.
 1. Within the **System assigned** tab, switch **Status** to **On**. Click **Save**.
@@ -214,7 +214,7 @@ For more information, see [Add a system-assigned identity](https://docs.microsof
 
 Now that your app deployed to App Service has a managed identity, in this step you grant it access to your key vault.
 
-1. Go to the [Microsoft Entra admin center](https://portal.azure.com) and search for your Key Vault.
+1. Go to the [Microsoft Entra admin center](https://entra.microsoft.com) and search for your Key Vault.
 1. Select **Overview** > **Access policies** blade on the left.
 1. Click on **Add Access Policy** > **Certificate permissions** > **Get**
 1. Click on **Add Access Policy** > **Secret permissions** > **Get**
@@ -229,7 +229,7 @@ Finally, you need to add environment variables to the App Service where you depl
 
 > :warning: Make sure your application is able to read environment variables. Alternatively, you can hardcode the key vault URL and certificate name in your applications configuration file.
 
-1. In the [Microsoft Entra admin center](https://portal.azure.com), search for and select **App Service**, and then select your app.
+1. In the [Microsoft Entra admin center](https://entra.microsoft.com), search for and select **App Service**, and then select your app.
 1. Select **Configuration** blade on the left, then select **New Application Settings**.
 1. Add the following variables (key-value pairs):
     1. **KEY_VAULT_URL**: the URL of the key vault you've created, e.g. `https://example.vault.azure.net`

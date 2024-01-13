@@ -1,4 +1,4 @@
-
+﻿
 ## How to deploy this sample to Azure
 
 <details>
@@ -12,7 +12,7 @@ This project has one WebApp project. To deploy it to Azure Web Sites, you'll nee
 
 ### Create and publish the `WebApp-RolesClaims` to an Azure Web Site
 
-1. Sign in to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com).
 1. Click `Create a resource` in the top left-hand corner, select **Web** --> **Web App**, and give your web site a name, for example, `WebApp-RolesClaims-contoso.azurewebsites.net`.
 1. Thereafter select the `Subscription`, `Resource Group`, `App service plan and Location`. `OS` will be **Windows** and `Publish` will be **Code**.
 1. Click `Create` and wait for the App Service to be created.
@@ -26,7 +26,7 @@ This project has one WebApp project. To deploy it to Azure Web Sites, you'll nee
 
 ### Update the Active Directory tenant application registration for `WebApp-RolesClaims`
 
-1. Navigate back to to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Navigate back to to the [Microsoft Entra admin center](https://entra.microsoft.com).
 In the left-hand navigation pane, select the **Microsoft Entra ID** service, and then select **App registrations (Preview)**.
 1. In the resultant screen, select the `WebApp-RolesClaims` application.
 1. In the **Authentication** | page for your application, update the Logout URL fields with the address of your service, for example [https://WebApp-RolesClaims-contoso.azurewebsites.net](https://WebApp-RolesClaims-contoso.azurewebsites.net)

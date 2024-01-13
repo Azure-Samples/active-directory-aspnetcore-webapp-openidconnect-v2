@@ -78,7 +78,7 @@ This sample application defines the following two *App roles*:
 - `DirectoryViewers`: Have the ability to view any directory user's roles and security group assignments.
 - `UserReaders`: Have the ability to view a list of users in the directory.
 
-These App roles are defined in the [Microsoft Entra admin center](https://portal.azure.com) in the application's registration manifest.  When a user signs into the application, Microsoft Entra ID emits a `roles` claim for each role that the user has been granted individually to the user in the from of role membership. Assignment of users and groups to roles can be done through the portal's UI, or programmatically using the [Microsoft Graph](https://graph.microsoft.com) and [Azure AD Powershell](https://docs.microsoft.com/powershell/module/azuread).  In this sample, application role management is done through the Microsoft Entra admin center or using PowerShell.
+These App roles are defined in the [Microsoft Entra admin center](https://entra.microsoft.com) in the application's registration manifest.  When a user signs into the application, Microsoft Entra ID emits a `roles` claim for each role that the user has been granted individually to the user in the from of role membership. Assignment of users and groups to roles can be done through the portal's UI, or programmatically using the [Microsoft Graph](https://graph.microsoft.com) and [Azure AD Powershell](https://docs.microsoft.com/powershell/module/azuread).  In this sample, application role management is done through the Microsoft Entra admin center or using PowerShell.
 
 NOTE: Role claims will not be present for guest users in a tenant if the `https://login.microsoftonline.com/common/` endpoint is used as the authority to sign in users. Microsoft Entra ID can emit app roles only if the tenanted end point `https://login.microsoftonline.com/{tenant Id}/` is being used.
 
@@ -89,7 +89,7 @@ NOTE: Role claims will not be present for guest users in a tenant if the `https:
 * An **Microsoft Entra ID** tenant. For more information, see: [How to get a Microsoft Entra tenant](https://docs.microsoft.com/azure/active-directory/develop/test-setup-environment#get-a-test-tenant)
 * A user account in your **Microsoft Entra ID** tenant.
 
->This sample will not work with a **personal Microsoft account**. If you're signed in to the [Microsoft Entra admin center](https://portal.azure.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
+>This sample will not work with a **personal Microsoft account**. If you're signed in to the [Microsoft Entra admin center](https://entra.microsoft.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
 
 ## Setup the sample
 
@@ -148,12 +148,12 @@ There is one project in this sample. To register it, you can:
 
 To manually register the apps, as a first step you'll need to:
 
-1. Sign in to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com).
 1. If your account is present in more than one Microsoft Entra tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Microsoft Entra tenant.
 
 #### Register the webApp app (WebApp-RolesClaims)
 
-1. Navigate to the [Microsoft Entra admin center](https://portal.azure.com) and select the **Microsoft Entra ID** service.
+1. Navigate to the [Microsoft Entra admin center](https://entra.microsoft.com) and select the **Microsoft Entra ID** service.
 1. Select the **App Registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
     1. In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp-RolesClaims`.
@@ -421,7 +421,7 @@ This project has one WebApp project. To deploy it to Azure Web Sites, you'll nee
 
 ### Create and publish the `WebApp-RolesClaims` to an Azure Web Site
 
-1. Sign in to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com).
 1. Click `Create a resource` in the top left-hand corner, select **Web** --> **Web App**, and give your web site a name, for example, `WebApp-RolesClaims-contoso.azurewebsites.net`.
 1. Thereafter select the `Subscription`, `Resource Group`, `App service plan and Location`. `OS` will be **Windows** and `Publish` will be **Code**.
 1. Click `Create` and wait for the App Service to be created.
@@ -435,7 +435,7 @@ This project has one WebApp project. To deploy it to Azure Web Sites, you'll nee
 
 ### Update the Active Directory tenant application registration for `WebApp-RolesClaims`
 
-1. Navigate back to to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Navigate back to to the [Microsoft Entra admin center](https://entra.microsoft.com).
 In the left-hand navigation pane, select the **Microsoft Entra ID** service, and then select **App registrations (Preview)**.
 1. In the resultant screen, select the `WebApp-RolesClaims` application.
 1. In the **Authentication** | page for your application, update the Logout URL fields with the address of your service, for example [https://WebApp-RolesClaims-contoso.azurewebsites.net](https://WebApp-RolesClaims-contoso.azurewebsites.net)

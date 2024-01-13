@@ -42,7 +42,7 @@ Table Of Contents
 
 * Either [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/download) and [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
 * An **Microsoft Entra ID** tenant. For more information, see: [How to get a Microsoft Entra tenant](https://docs.microsoft.com/azure/active-directory/develop/test-setup-environment#get-a-test-tenant)
-* A user account in your **Microsoft Entra ID** tenant. This sample will not work with a **personal Microsoft account**.  If you're signed in to the [Microsoft Entra admin center](https://portal.azure.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
+* A user account in your **Microsoft Entra ID** tenant. This sample will not work with a **personal Microsoft account**.  If you're signed in to the [Microsoft Entra admin center](https://entra.microsoft.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
 ## Setup the sample
 
 ### Step 1: Clone or download this repository
@@ -101,12 +101,12 @@ You can follow the [manual steps](#Manual-steps) to set the up the application o
 
 Follow the steps below for manually register and configure your apps
 
-  1. Sign in to the [Microsoft Entra admin center](https://portal.azure.com).
+  1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com).
   1. If your account is present in more than one Microsoft Entra tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Microsoft Entra tenant.
 
 #### Register the service app
 
-  1. Navigate to the [Microsoft Entra admin center](https://portal.azure.com) and select the **Microsoft Entra ID** service.
+  1. Navigate to the [Microsoft Entra admin center](https://entra.microsoft.com) and select the **Microsoft Entra ID** service.
   1. Select the **App Registrations** blade on the left, then select **New registration**.
   1. In the **Register an application page** that appears, enter your application's registration information:
      * In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `HybridFlow-aspnetcore`.

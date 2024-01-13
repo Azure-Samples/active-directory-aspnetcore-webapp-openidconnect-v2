@@ -54,12 +54,12 @@ You can follow the [manual steps](#Manual-steps) to set the up the application o
 
 Follow the steps below for manually register and configure your apps
 
-  1. Sign in to the [Microsoft Entra admin center](https://portal.azure.com).
+  1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com).
   1. If your account is present in more than one Microsoft Entra tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Microsoft Entra tenant.
 
 #### Register the service app
 
-  1. Navigate to the [Microsoft Entra admin center](https://portal.azure.com) and select the **Microsoft Entra ID** service.
+  1. Navigate to the [Microsoft Entra admin center](https://entra.microsoft.com) and select the **Microsoft Entra ID** service.
   1. Select the **App Registrations** blade on the left, then select **New registration**.
   1. In the **Register an application page** that appears, enter your application's registration information:
      * In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `HybridFlow-aspnetcore`.

@@ -50,7 +50,7 @@ This sample demonstrates an ASP.NET Core web app that calls the Microsoft Graph 
 
 - Either [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/download) and [.NET Core SDK](https://www.microsoft.com/net/learn/get-started)
 - An **Microsoft Entra ID** tenant. For more information see: [How to get a Microsoft Entra tenant](https://docs.microsoft.com/azure/active-directory/develop/quickstart-create-new-tenant)
-- A user account in _your_ **Microsoft Entra ID** tenant. This sample will not work with a **personal Microsoft account**.  If you're signed in to the [Microsoft Entra admin center](https://portal.azure.com) with a personal account and have not created a _user account in your directory_ before, you will need need to create one before proceeding.
+- A user account in _your_ **Microsoft Entra ID** tenant. This sample will not work with a **personal Microsoft account**.  If you're signed in to the [Microsoft Entra admin center](https://entra.microsoft.com) with a personal account and have not created a _user account in your directory_ before, you will need need to create one before proceeding.
 
 ## Setup
 
@@ -119,12 +119,12 @@ There is one project in this sample. To register it, you can:
 
 As a first step you'll need to:
 
-1. Sign in to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com).
 1. If your account is present in more than one Microsoft Entra tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Microsoft Entra tenant.
 
 #### Register the client web app (WebApp-OpenIDConnect-DotNet-graph-v2)
 
-1. Navigate to the [Microsoft Entra admin center](https://portal.azure.com) and select the **Microsoft Entra ID** service.
+1. Navigate to the [Microsoft Entra admin center](https://entra.microsoft.com) and select the **Microsoft Entra ID** service.
 1. Select the **App Registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp-OpenIDConnect-DotNet-graph-v2`.
@@ -305,7 +305,7 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 
 #### Update the Microsoft Entra app registration (WebApp-OpenIDConnect-DotNet-graph-v2)
 
-1. Navigate back to to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Navigate back to to the [Microsoft Entra admin center](https://entra.microsoft.com).
 1. Go to the **Microsoft Entra ID** section, and then select **App registrations**.
 1. In the resulting screen, select the `WebApp-OpenIDConnect-DotNet-graph-v2` application.
 1. In the app's registration screen, select **Authentication** in the menu.
@@ -326,7 +326,7 @@ We will follow the steps broadly outlined in the guide: [Use Key Vault from App 
 
 #### Set up your Managed Identity
 
-1. Navigate to [Microsoft Entra admin center](https://portal.azure.com) and select the **Azure App Service**.
+1. Navigate to [Microsoft Entra admin center](https://entra.microsoft.com) and select the **Azure App Service**.
 1. Find and select the App Service you've created previously.
 1. On App Service portal, select **Identity**.
 1. Within the **System assigned** tab, switch **Status** to **On**. Click **Save**.
@@ -437,7 +437,7 @@ using Azure.Security.KeyVault.Secrets;
 
 8. Add an environment variable to your App Service so your web app can find its key vault.
 
-    1. Go to the [Microsoft Entra admin center](https://portal.azure.com). Search for and select **App Service**, and then select your app.
+    1. Go to the [Microsoft Entra admin center](https://entra.microsoft.com). Search for and select **App Service**, and then select your app.
     1. Select **Configuration** blade on the left, then select **New Application Settings**.
     1. Add a new variable, naming it **KEY_VAULT_URI**. Populate the value with the URI of your key vault, for example: `https://example-vault.vault.azure.net/`
 

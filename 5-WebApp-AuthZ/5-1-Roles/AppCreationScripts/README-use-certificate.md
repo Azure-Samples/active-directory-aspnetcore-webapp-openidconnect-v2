@@ -57,7 +57,7 @@ AppCreationScripts-withCert/Cleanup.ps1
 AppCreationScripts-withCert/Configure.ps1
 ```
 
-1. To use KeyVault, sign in to the [Microsoft Entra admin center](https://portal.azure.com) and [create an Azure Key Vault](https://docs.microsoft.com/azure/key-vault/general/quick-create-portal)
+1. To use KeyVault, sign in to the [Microsoft Entra admin center](https://entra.microsoft.com) and [create an Azure Key Vault](https://docs.microsoft.com/azure/key-vault/general/quick-create-portal)
 1. Inside Client/appsettings.json file - update "KeyVaultUrl" key to have URL of your Key Vault, like https://[your Key Vault name here].vault.azure.net
 1. [Upload](https://docs.microsoft.com/azure/key-vault/certificates/tutorial-import-certificate#import-a-certificate-to-key-vault) the generated AppCreationScripts-withCert\.PFX file into the Key Vault
 1. Run the sample as indicated in [README.md](README.md)

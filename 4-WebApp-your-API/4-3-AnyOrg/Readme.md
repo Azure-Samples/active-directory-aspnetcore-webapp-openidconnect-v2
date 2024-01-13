@@ -92,7 +92,7 @@ This behavior is expected as the browser is not authenticated. The Web applicati
 * An **Microsoft Entra ID** tenant. For more information, see: [How to get a Microsoft Entra tenant](https://docs.microsoft.com/azure/active-directory/develop/test-setup-environment#get-a-test-tenant)
 * A user account in your **Microsoft Entra ID** tenant.
 
->This sample will not work with a **personal Microsoft account**. If you're signed in to the [Microsoft Entra admin center](https://portal.azure.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
+>This sample will not work with a **personal Microsoft account**. If you're signed in to the [Microsoft Entra admin center](https://entra.microsoft.com) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
 
 ## Setup the sample
 
@@ -151,12 +151,12 @@ There are two projects in this sample. Each needs to be separately registered in
 
 To manually register the apps, as a first step you'll need to:
 
-1. Sign in to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com).
 1. If your account is present in more than one Microsoft Entra tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Microsoft Entra tenant.
 
 #### Register the service app (WebApi_MultiTenant_v2)
 
-1. Navigate to the [Microsoft Entra admin center](https://portal.azure.com) and select the **Microsoft Entra ID** service.
+1. Navigate to the [Microsoft Entra admin center](https://entra.microsoft.com) and select the **Microsoft Entra ID** service.
 1. Select the **App Registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
     1. In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApi_MultiTenant_v2`.
@@ -242,7 +242,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 
 #### Register the client app (WebApp_MultiTenant_v2)
 
-1. Navigate to the [Microsoft Entra admin center](https://portal.azure.com) and select the **Microsoft Entra ID** service.
+1. Navigate to the [Microsoft Entra admin center](https://entra.microsoft.com) and select the **Microsoft Entra ID** service.
 1. Select the **App Registrations** blade on the left, then select **New registration**.
 1. In the **Register an application page** that appears, enter your application's registration information:
     1. In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp_MultiTenant_v2`.
@@ -318,7 +318,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 
 For a middle-tier web API (`WebApi_MultiTenant_v2`) to be able to call a downstream web API, the middle tier app needs to be granted the required permissions as well. However, since the middle-tier cannot interact with the signed-in user, it needs to be explicitly bound to the client app in its **Microsoft Entra ID** registration. This binding merges the permissions required by both the client and the middle-tier web API and presents it to the end user in a single consent dialog. The user then consent to this combined set of permissions. To achieve this, you need to add the **Application Id** of the client app to the `knownClientApplications` property in the **manifest** of the web API. Here's how:
 
-1. In the [Microsoft Entra admin center](https://portal.azure.com), navigate to your `WebApi_MultiTenant_v2` app registration, and select the **Manifest** blade.
+1. In the [Microsoft Entra admin center](https://entra.microsoft.com), navigate to your `WebApi_MultiTenant_v2` app registration, and select the **Manifest** blade.
 1. In the manifest editor, change the `knownClientApplications: []` line so that the array contains the Client ID of the client application (`WebApp_MultiTenant_v2`) as an element of the array.
 
 For instance:
@@ -759,12 +759,12 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 > 
 > If that's the case, you'll need enable [cross-origin resource sharing (CORS)](https://developer.mozilla.org/docs/Web/HTTP/CORS) for you web API. Follow the steps below to do this:
 >
-> * Go to [Microsoft Entra admin center](https://portal.azure.com), and locate the web API project that you've deployed to App Service.
+> * Go to [Microsoft Entra admin center](https://entra.microsoft.com), and locate the web API project that you've deployed to App Service.
 > * On the API blade, select **CORS**. Check the box **Enable Access-Control-Allow-Credentials**.
 > * Under **Allowed origins**, add the URL of your published web app **that will call this web API**.
 #### Update the Microsoft Entra app registration (WebApi_MultiTenant_v2)
 
-1. Navigate back to to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Navigate back to to the [Microsoft Entra admin center](https://entra.microsoft.com).
 In the left-hand navigation pane, select the **Microsoft Entra ID** service, and then select **App registrations (Preview)**.
 1. In the resulting screen, select the `WebApi_MultiTenant_v2` application.
 1. In the app's registration screen, select **Authentication** in the menu.
@@ -792,7 +792,7 @@ Follow the link to [Publish with Visual Studio](https://docs.microsoft.com/visua
 
 #### Update the Microsoft Entra app registration (WebApp_MultiTenant_v2)
 
-1. Navigate back to to the [Microsoft Entra admin center](https://portal.azure.com).
+1. Navigate back to to the [Microsoft Entra admin center](https://entra.microsoft.com).
 In the left-hand navigation pane, select the **Microsoft Entra ID** service, and then select **App registrations (Preview)**.
 1. In the resulting screen, select the `WebApp_MultiTenant_v2` application.
 1. In the app's registration screen, select **Authentication** in the menu.
