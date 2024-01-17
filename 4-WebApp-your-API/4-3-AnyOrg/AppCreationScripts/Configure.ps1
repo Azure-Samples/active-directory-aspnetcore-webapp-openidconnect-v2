@@ -193,7 +193,7 @@ Function ConfigureApplications
     
     if (!$azureEnvironmentName)
     {
-        $azureEnvironmentName = "Global" # as oppesed to USGov
+        $azureEnvironmentName = "Global" # as opposed to USGov
     }
 
     # Connect to the Microsoft Graph API, non-interactive is not supported for the moment (Oct 2021)
