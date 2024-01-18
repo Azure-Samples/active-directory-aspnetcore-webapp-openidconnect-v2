@@ -1,14 +1,14 @@
 ﻿## Overview
 
-This sample shows how a .NET Core MVC Web app that uses [OpenID Connect](https://docs.microsoft.com/azure/active-directory/develop/v1-protocols-openid-connect-code) to sign in users and use Azure AD [App Roles](aka.ms/approles) for authorization. [App Roles](aka.ms/approles), along with Security groups are popular means to implement authorization.
+This sample shows how a .NET Core MVC Web app that uses [OpenID Connect](https://docs.microsoft.com/azure/active-directory/develop/v1-protocols-openid-connect-code) to sign in users and use Microsoft Entra ID [App Roles](aka.ms/approles) for authorization. [App Roles](aka.ms/approles), along with Security groups are popular means to implement authorization.
 
-This application implements RBAC using Azure AD's App roles & Role Claims feature. Another approach is to use Azure AD Groups and Group Claims, as shown in [WebApp-GroupClaims](../../5-WebApp-AuthZ/5-2-Groups/README.md). Azure AD Groups and [App Roles](aka.ms/approles) are by no means mutually exclusive; they can be used in tandem to provide even finer grained access control.
+This application implements RBAC using Microsoft Entra ID's App roles & Role Claims feature. Another approach is to use Microsoft Entra groups and Group Claims, as shown in [WebApp-GroupClaims](../../5-WebApp-AuthZ/5-2-Groups/README.md). Microsoft Entra groups and [App Roles](aka.ms/approles) are by no means mutually exclusive; they can be used in tandem to provide even finer grained access control.
 
 Using RBAC with App roles and Role Claims, developers can securely enforce authorization policies with minimal effort on their part.
 
-- A Microsoft Identity Platform Office Hours session covered Azure AD App roles and security groups, featuring this scenario and this sample. A recording of the session is is provided in this video [Using Security Groups and App roles in your apps](https://www.youtube.com/watch?v=LRoc-na27l0)
+- A Microsoft Identity Platform Office Hours session covered Microsoft Entra app roles and security groups, featuring this scenario and this sample. A recording of the session is is provided in this video [Using Security Groups and App roles in your apps](https://www.youtube.com/watch?v=LRoc-na27l0)
 
-For more information about how the protocols work in this scenario and other scenarios, see [Authentication Scenarios for Azure AD](http://go.microsoft.com/fwlink/?LinkId=394414).
+For more information about how the protocols work in this scenario and other scenarios, see [Authentication Scenarios for Microsoft Entra ID](http://go.microsoft.com/fwlink/?LinkId=394414).
 
 ## Scenario
 
@@ -23,7 +23,7 @@ This sample application defines the following two *App roles*:
 - `DirectoryViewers`: Have the ability to view any directory user's roles and security group assignments.
 - `UserReaders`: Have the ability to view a list of users in the directory.
 
-These App roles are defined in the [Azure portal](https://portal.azure.com) in the application's registration manifest.  When a user signs into the application, Azure AD emits a `roles` claim for each role that the user has been granted individually to the user in the from of role membership. Assignment of users and groups to roles can be done through the portal's UI, or programmatically using the [Microsoft Graph](https://graph.microsoft.com) and [Azure AD PowerShell](https://docs.microsoft.com/powershell/module/azuread).  In this sample, application role management is done through the Azure portal or using PowerShell.
+These App roles are defined in the [Microsoft Entra admin center](https://entra.microsoft.com) in the application's registration manifest.  When a user signs into the application, Microsoft Entra ID emits a `roles` claim for each role that the user has been granted individually to the user in the from of role membership. Assignment of users and groups to roles can be done through the portal's UI, or programmatically using the [Microsoft Graph](https://graph.microsoft.com) and [Azure AD Powershell](https://docs.microsoft.com/powershell/module/azuread).  In this sample, application role management is done through the Microsoft Entra admin center or using PowerShell.
 
-NOTE: Role claims will not be present for guest users in a tenant if the `https://login.microsoftonline.com/common/` endpoint is used as the authority to sign in users. Azure AD can emit app roles only if the tenanted end point `https://login.microsoftonline.com/{tenant Id}/` is being used.
+NOTE: Role claims will not be present for guest users in a tenant if the `https://login.microsoftonline.com/common/` endpoint is used as the authority to sign in users. Microsoft Entra ID can emit app roles only if the tenanted end point `https://login.microsoftonline.com/{tenant Id}/` is being used.
 

@@ -11,26 +11,26 @@ languages:
   - CSharp
 products:
   - azure
-  - azure-active-directory
+  - microsoft-entra-id
   - dotnet
   - CSharp
   - office-ms-graph
-description: "Build a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect"
+description: "Build a multi-tenant SaaS web application that calls Microsoft Graph using Microsoft Entra ID & OpenID Connect"
 ---
 
-# Build a multi-tenant SaaS web application that calls Microsoft Graph using Azure AD & OpenID Connect
+# Build a multi-tenant SaaS web application that calls Microsoft Graph using Microsoft Entra ID & OpenID Connect
 
-> This sample is for Azure AD, not Azure AD B2C.
+> This sample is for Microsoft Entra ID, not Azure Active Directory B2C.
 
-[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/aad%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 ## About this sample
 
-This sample shows how to build an ASP.NET Core MVC web application that uses OpenID Connect to sign in users from multiple Azure AD tenants. Additionally it also introduces developers to the concept of a [multi-tenant](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps) Azure Active Directory application.
+This sample shows how to build an ASP.NET Core MVC web application that uses OpenID Connect to sign in users from multiple Microsoft Entra tenants. Additionally it also introduces developers to the concept of a [multi-tenant](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps) Microsoft Entra application.
 
 It also introduces developers to the concept of
 
-- Multi-tenant Azure Active Directory application
+- Multi-tenant Microsoft Entra application
 - [Azure National cloud deployments](https://docs.microsoft.com/en-us/graph/deployments)
 
 > :grey_exclamation: If you want to run this sample in [Azure Worldwide Cloud](https://portal.azure.com/), please navigate to the [README.md](README.md).
@@ -44,31 +44,31 @@ In addition to the public cloud​, Azure Active Directory is deployed in th
 - Microsoft Cloud Germany
 - Azure and Office 365 operated by 21Vianet in China
 
-> A recording of a Microsoft Identity Platform developer session that covered this topic of developing a multi-tenant app with Azure Active Directory is available at [Develop multi-tenant applications with Microsoft identity platform](https://www.youtube.com/watch?v=B416AxHoMJ4).
+> A recording of a Microsoft Identity Platform developer session that covered this topic of developing a multi-tenant app with Microsoft Entra ID is available at [Develop multi-tenant applications with Microsoft identity platform](https://www.youtube.com/watch?v=B416AxHoMJ4).
 
 ### Overview
 
-When it comes to developing apps, developers can choose to configure their app to be either single-tenant or multi-tenant during app registration in the [Azure portal](https://portal.azure.com).
+When it comes to developing apps, developers can choose to configure their app to be either single-tenant or multi-tenant during app registration in the [Microsoft Entra admin center](https://entra.microsoft.com).
 
 - `Single-tenant` apps are only available in the tenant they were registered in, also known as their home tenant.
 - `Multi-tenant` apps are available to users in both their home tenant and other tenants where they are provisioned. Apps that allow users to sign-in using their personal accounts that they use to sign into services like Xbox and Skype are also multi-tenant apps.
 
-For more information about apps and tenancy, see [Tenancy in Azure Active Directory](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps)
+For more information about apps and tenancy, see [Tenancy in Microsoft Entra ID](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps)
 
-![Sign in with Azure AD](ReadmeFiles/topology.png)
+![Sign in with Microsoft Entra ID](ReadmeFiles/topology.png)
 
 ## Scenario
 
-This sample shows how to build a .NET Core MVC web application that uses the [OpenID Connect](https://docs.microsoft.com/azure/active-directory/develop/v2-protocols-oidc) protocol to sign in users from multiple Azure AD tenants and acquire token for [Microsoft Graph](https://graph.microsoft.com) using the [Microsoft Authentication Library (MSAL)](https://docs.microsoft.com/azure/active-directory/develop/msal-overview). It leverages the ASP.NET Core OpenID Connect middleware.
+This sample shows how to build a .NET Core MVC web application that uses the [OpenID Connect](https://docs.microsoft.com/azure/active-directory/develop/v2-protocols-oidc) protocol to sign in users from multiple Microsoft Entra tenants and acquire token for [Microsoft Graph](https://graph.microsoft.com) using the [Microsoft Authentication Library (MSAL)](https://docs.microsoft.com/azure/active-directory/develop/msal-overview). It leverages the ASP.NET Core OpenID Connect middleware.
 
-The application puts forward a scenario where a SaaS application invites the administrators of Azure AD tenants to `enroll` their tenants into this app. This process is analogous to a customer `buying` a SaaS product.  
+The application puts forward a scenario where a SaaS application invites the administrators of Microsoft Entra tenants to `enroll` their tenants into this app. This process is analogous to a customer `buying` a SaaS product.  
 
  1. Once you start the application, you will land on the homepage where you can **sign-in** or **onboard** your tenant.
  1. If you try to **Sign-In** before onboarding your tenant, you'd land on the **Unauthorized Tenant** page. Click on the **Take me to the onboarding process** button to onboard your tenant to this application.
  1. On the onboarding page, you will be asked to sign-in as a tenant **administrator** and accept the permissions requested in the **admin consent** screen to successfully provision the application in your tenant.
  1. Once you have **registered your tenant**, all users from that tenant will be able to sign-in and explore the ToDo list.
 
-> :grey_exclamation: Azure Government applications can use Azure AD Government identities, but can also use Azure AD Public identities to authenticate to an application hosted in Azure Government. A multi-tenant application **will not** be accessible using Azure AD Public identities. To know more about choosing identity authority go to [choosing your identity authority in Azure Government](https://docs.microsoft.com/en-us/azure/azure-government/documentation-government-plan-identity#choosing-your-identity-authority).
+> :grey_exclamation: Azure Government applications can use Microsoft Entra ID Government identities, but can also use Microsoft Entra ID Public identities to authenticate to an application hosted in Azure Government. A multi-tenant application **will not** be accessible using Microsoft Entra ID Public identities. To know more about choosing identity authority go to [choosing your identity authority in Azure Government](https://docs.microsoft.com/en-us/azure/azure-government/documentation-government-plan-identity#choosing-your-identity-authority).
 
 ## How to run this sample
 
@@ -76,7 +76,7 @@ To run this sample:
 
 > Pre-requisites: Install .NET Core 2.2 or later (for example for Windows) by following the instructions at [.NET and C# - Get Started in 10 Minutes](https://www.microsoft.com/net/core). In addition to developing on Windows, you can develop on [Linux](https://www.microsoft.com/net/core#linuxredhat), [Mac](https://www.microsoft.com/net/core#macos), or [Docker](https://www.microsoft.com/net/core#dockercmd).
 
-Ideally, you would want to have two Azure AD tenants so you can test all the aspects of this multi-tenant sample. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
+Ideally, you would want to have two Microsoft Entra tenants so you can test all the aspects of this multi-tenant sample. For more information on how to get a Microsoft Entra tenant, see [How to get a Microsoft Entra tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
 
 If you are using the automation provided via Powershell to create your app, you need to change the [Configure.ps1](./AppCreationScripts/Configure.ps1) and [Cleanup.ps1](./AppCreationScripts/Cleanup.ps1) as instructed below to append the `-AzureEnvironmentName` parameter. The details on this parameter and its possible values are listed in [Connect-AzureAD](https://docs.microsoft.com/en-us/powershell/module/azuread/connect-azuread?view=azureadps-2.0).
 
@@ -97,13 +97,13 @@ or download and extract the repository .zip file.
 
 > Given that the name of the sample is quiet long, and so are the names of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
-### Step 2:  Register the sample application with your Azure Active Directory tenant
+### Step 2:  Register the sample application with your Microsoft Entra tenant
 
 There is one project in this sample. To register it, you can:
 
-- either follow the steps [Step 2: Register the sample with your Azure Active Directory tenant](#step-2-register-the-sample-with-your-azure-active-directory-tenant) and [Step 3:  Configure the sample to use your Azure AD tenant](#choose-the-azure-ad-tenant-where-you-want-to-create-your-applications)
+- either follow the steps [Step 2: Register the sample with your Microsoft Entra tenant](#step-2-register-the-sample-with-your-azure-active-directory-tenant) and [Step 3:  Configure the sample to use your Microsoft Entra tenant](#choose-the-azure-ad-tenant-where-you-want-to-create-your-applications)
 - or use PowerShell scripts that:
-  - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you. Note that this works for Visual Studio only.
+  - **automatically** creates the Microsoft Entra applications and related objects (passwords, permissions, dependencies) for you. Note that this works for Visual Studio only.
   - modify the Visual Studio projects' configuration files.
 
 <details>
@@ -116,7 +116,7 @@ There is one project in this sample. To register it, you can:
    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
    ```
 
-1. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
+1. Run the script to create your Microsoft Entra application and configure the code of the sample application accordingly.
 1. In PowerShell run:
 
    ```PowerShell
@@ -133,13 +133,13 @@ There is one project in this sample. To register it, you can:
 
 Follow the steps below to manually walk through the steps to register and configure the applications.
 
-### Step 3:  Configure the sample to use your Azure AD tenant
+### Step 3:  Configure the sample to use your Microsoft Entra tenant
 
 As a first step you'll need to:
 
-1. Sign in to the [National cloud Azure portal](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-national-cloud#app-registration-endpoints) using either a work or school account or a personal Microsoft account.
-1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory**.
-   Change your portal session to the desired Azure AD tenant.
+1. Sign in to the [National cloud Microsoft Entra admin center](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-national-cloud#app-registration-endpoints) using either a work or school account or a personal Microsoft account.
+1. If your account is present in more than one Microsoft Entra tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory**.
+   Change your portal session to the desired Microsoft Entra tenant.
 
 #### Register the web app (WebApp_MultiTenant_v2)
 
@@ -165,7 +165,7 @@ As a first step you'll need to:
    - Type a key description (for instance `app secret`),
    - Select one of the available key durations (**In 1 year**, **In 2 years**, or **Never Expires**) as per your security concerns.
    - The generated key value will be displayed when you click the **Add** button. Copy the generated value for use in the steps later.
-   - You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
+   - You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Microsoft Entra admin center before navigating to any other screen or blade.
 1. In the app's registration screen, click on the **API permissions** blade in the left to open the page where we add access to the Apis that your application needs.
    - Click the **Add a permission** button and then,
    - Ensure that the **Microsoft APIs** tab is selected.
@@ -179,11 +179,11 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 >In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
 1. Open the `appsettings.json` file
-1. Find the app key `Instance` and replace the existing value with the corresponding [Azure AD endpoint](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-national-cloud#azure-ad-authentication-endpoints) for the national cloud you want to target.
-1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `WebApp_MultiTenant_v2` application copied from the Azure portal.
+1. Find the app key `Instance` and replace the existing value with the corresponding [Microsoft Entra ID endpoint](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-national-cloud#azure-ad-authentication-endpoints) for the national cloud you want to target.
+1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `WebApp_MultiTenant_v2` application copied from the Microsoft Entra admin center.
 1. Find the app key `TenantId` and replace the existing value with `organizations`.
-1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
-1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp_MultiTenant_v2` app, in the Azure portal.
+1. Find the app key `Domain` and replace the existing value with your Microsoft Entra tenant name.
+1. Find the app key `ClientSecret` and replace the existing value with the key you saved during the creation of the `WebApp_MultiTenant_v2` app, in the Microsoft Entra admin center.
 1. Find the app keys `GraphAPI:Endpoint` and `GraphAPI:StaticScope` and replace the existing value with the corresponding [Microsoft Graph endpoint](https://docs.microsoft.com/en-us/graph/deployments#microsoft-graph-and-graph-explorer-service-root-endpoints) for the  national cloud you want to target.
 
 ### Step 4: Run the sample
@@ -191,7 +191,7 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 Clean the solution, rebuild the solution, and run it.
 The sample implements two distinct tasks: the onboarding of a new tenant and a basic ToDo List CRUD operation.
 
-Ideally, you would want to have two Azure AD tenants so you can test the multi-tenant aspect of this sample. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
+Ideally, you would want to have two Microsoft Entra tenants so you can test the multi-tenant aspect of this sample. For more information on how to get a Microsoft Entra tenant, see [How to get a Microsoft Entra tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
 
 #### Signing-in
 
@@ -205,7 +205,7 @@ If you try to sign-in with a tenant that hasn't been "onboarded" yet, you will l
 
 ![Unauthorized Tenant](ReadmeFiles/unauthorized-tenant.png)
 
-> :warning: If you had onboarded your tenant using this sample in the past and now getting the **AADSTS650051** error when onboarding again, please refer to the [Error AADSTS650051](#error-aadsts650051) section below to mitigate this error.
+> :warning: If you had onboarded your tenant using this sample in the past and now getting the **Microsoft Entra IDSTS650051** error when onboarding again, please refer to the [Error Microsoft Entra IDSTS650051](#error-Microsoft Entra IDsts650051) section below to mitigate this error.
 
 #### ToDo List
 
@@ -224,12 +224,12 @@ The list of users will be presented in the **Assigned To** dropdown:
 This sample details the following aspects of a multi-tenant app.
 
 - usage of the `/common` endpoint.
-- Service principal provisioning of an app in Azure AD tenants
+- Service principal provisioning of an app in Microsoft Entra tenants
 - Custom Token Validation to allow users from onboarded tenants only.
 - Data partitioning in multi-tenant apps.
 - Acquiring Access tokens for Microsoft Graph for each tenant.
 
-This sample is using the OpenID Connect ASP.NET Core middleware to sign in users from multiple Azure AD tenants. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Azure AD tenant where the app is registered. These values are read from the `appsettings.json` file.
+This sample is using the OpenID Connect ASP.NET Core middleware to sign in users from multiple Microsoft Entra tenants. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Microsoft Entra tenant where the app is registered. These values are read from the `appsettings.json` file.
 
 You can trigger the middleware to send an OpenID Connect sign-in request by decorating a class or method with the `[Authorize]` attribute or by issuing a challenge (see the [AccountController.cs](https://github.com/aspnet/AspNetCore/blob/master/src/Azure/AzureAD/Authentication.AzureAD.UI/src/Areas/AzureAD/Controllers/AccountController.cs) file which is part of ASP.NET Core):
 
@@ -271,19 +271,19 @@ public IActionResult Onboard()
 }
 ```
 
-This results in an OAuth2 code grant request that triggers the admin consent flow and creates the service principal in the admin's tenant. The `state` parameter is used to validate the response, preventing a man-in-the-middle attack. Then, the `ProcessCode` action receives the authorization code from Azure AD and, if they appear valid, we create an entry in the application database for the new customer.
+This results in an OAuth2 code grant request that triggers the admin consent flow and creates the service principal in the admin's tenant. The `state` parameter is used to validate the response, preventing a man-in-the-middle attack. Then, the `ProcessCode` action receives the authorization code from Microsoft Entra ID and, if they appear valid, we create an entry in the application database for the new customer.
 
 The `https://graph.microsoft.com/.default` is a static scope that allows the tenant admin to consent for all permissions in one go. You can find more about static scope on [this link.](https://docs.microsoft.com/azure/active-directory/develop/v2-admin-consent#request-the-permissions-from-a-directory-admin)
 
 ### Custom token validation allowing only registered tenants
 
-On the `Startup.cs` we are calling `AddMicrosoftWebAppAuthentication` to configure the authentication, and within that method, we validates that the token issuer is from AAD.
+On the `Startup.cs` we are calling `AddMicrosoftWebAppAuthentication` to configure the authentication, and within that method, we validates that the token issuer is from Microsoft Entra ID.
 
 ```csharp
-options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).Validate;
+options.TokenValidationParameters.IssuerValidator = Microsoft Entra IDIssuerValidator.GetIssuerValidator(options.Authority).Validate;
 ```
 
-To extend this validation to only Azure AD tenants registered in the application database, the event handler `OnTokenValidated` was configured to grab the `tenantId` from the token claims and check if it has an entry on the database. If it doesn't, a custom exception `UnauthorizedTenantException` is thrown, canceling the authentication, and the user is redirected to the `UnauthorizedTenant` view. At this stage, the user is not authenticated in the application.
+To extend this validation to only Microsoft Entra tenants registered in the application database, the event handler `OnTokenValidated` was configured to grab the `tenantId` from the token claims and check if it has an entry on the database. If it doesn't, a custom exception `UnauthorizedTenantException` is thrown, canceling the authentication, and the user is redirected to the `UnauthorizedTenant` view. At this stage, the user is not authenticated in the application.
 
 ```csharp
 services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
@@ -347,11 +347,11 @@ AuthenticationResult result = await confidentialClientApplication
 
 ## Troubleshooting
 
-### Error AADSTS650051
+### Error Microsoft Entra IDSTS650051
 
 If you are receiving the following error message, you might need to **delete older service principals of this application**. Please [delete the existing [service principal](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals) from the **enterprise app** blade of the tenant before re-creating this application]. Click on the **Enterprise Applications** blade in the portal, locate this application `WebApp_MultiTenant_v2`, navigate to its **properties** and click **Delete** to delete the service principal.
 
-> OpenIdConnectProtocolException: Message contains error: 'invalid_client', error_description: 'AADSTS650051: Application '{applicationId}' is requesting permissions that are either invalid or out of date.
+> OpenIdConnectProtocolException: Message contains error: 'invalid_client', error_description: 'Microsoft Entra IDSTS650051: Application '{applicationId}' is requesting permissions that are either invalid or out of date.
 
 If you had provisioned a service principal of this app in the past and created a new one, the tenants that had signed-in in the app might still have the previous service principal registered causing a conflict with the new one. The solution for the conflict is to delete the older service principal from each tenant in the **Enterprise Application** menu.
 
@@ -365,15 +365,15 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 To learn more about single and multi-tenant apps
 
-- [Tenancy in Azure Active Directory](https://docs.microsoft.com/en-us/azure/active-directory/develop/single-and-multi-tenant-apps)
-- [How to: Sign in any Azure Active Directory user using the multi-tenant application pattern](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant)
-- [Application and service principal objects in Azure Active Directory](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals)
+- [Tenancy in Microsoft Entra ID](https://docs.microsoft.com/en-us/azure/active-directory/develop/single-and-multi-tenant-apps)
+- [How to: Sign in any Microsoft Entra ID user using the multi-tenant application pattern](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant)
+- [Application and service principal objects in Microsoft Entra ID](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals)
 - [National Clouds](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-national-cloud)
 - [Endpoints](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-protocols#endpoints)
 - [Multi-tenant SaaS database tenancy patterns](https://docs.microsoft.com/azure/sql-database/saas-tenancy-app-design-patterns)
 
 To learn more about admin consent experiences
-- [Understanding Azure AD application consent experiences](https://docs.microsoft.com/en-us/azure/active-directory/develop/application-consent-experience)
+- [Understanding Microsoft Entra application consent experiences](https://docs.microsoft.com/en-us/azure/active-directory/develop/application-consent-experience)
 - [Understand user and admin consent](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant#understand-user-and-admin-consent)
 
 To learn more about token validation, see

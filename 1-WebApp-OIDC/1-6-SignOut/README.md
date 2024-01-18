@@ -1,6 +1,6 @@
 # Signing out
 
-[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/aad%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 This page explains how sign-out works
 
@@ -44,7 +44,7 @@ else
 Pressing the **Sign out** button on the web app, triggers the `SignOut` action on the `Account` controller. The code for the `AccountController` is available at [Microsoft.Identity.Web repository]
 (https://github.com/AzureAD/microsoft-identity-web/blob/master/src/Microsoft.Identity.Web.UI/Areas/MicrosoftIdentity/Controllers/AccountController.cs), and what it does is:
 
-- set an openid redirect URI to `/Account/SignedOut` so that the controller is called back when Azure AD has performed the sign out
+- set an openid redirect URI to `/Account/SignedOut` so that the controller is called back when Microsoft Entra ID has performed the sign out
 - call `Signout()`, which lets the OpenId connect middleware contact the Microsoft identity platform `logout` endpoint which:
 
   - clears the session cookie from the browser,

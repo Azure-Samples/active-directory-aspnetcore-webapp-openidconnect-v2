@@ -8,13 +8,13 @@ endpoint: Microsoft identity platform
 ---
 # Build an ASP.NET Core Web app signing-in users in sovereign clouds with the Microsoft identity platform
 
-[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/AAD%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
+[![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/aad%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 ## Scenario
 
 This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect to sign in users. Users can only sign in with their 'work and school' accounts in their organization **belonging to national or sovereign clouds**. This sample use  US Government cloud scenario. It leverages the ASP.NET Core OpenID Connect middleware.
 
-![Sign in with Azure AD](ReadmeFiles/sign-in.png)
+![Sign in with Microsoft Entra ID](ReadmeFiles/sign-in.png)
 
 National clouds (aka Sovereign clouds) are physically isolated instances of Azure. These regions of Azure are designed to make sure that data residency, sovereignty, and compliance requirements are honored within geographical boundaries.
 
@@ -52,19 +52,19 @@ cd "1-WebApp-OIDC\1-4-Sovereign"
 
 > Given that the name of the sample is very long, and so are the name of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
 
-### Step 2: Register the sample with your Azure AD tenant
+### Step 2: Register the sample with your Microsoft Entra tenant
 
-1. Sign in to the [US Government Azure portal](https://portal.azure.us)
+1. Sign in to the [US Government Microsoft Entra admin center](https://portal.azure.us)
 
    > For registering your app in other National Clouds go to [App Registration endpoints](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-national-cloud#app-registration-endpoints) of the National Cloud of your choice using either a work or school account.
    >
    > Note: Azure Germany doesn't support **App registrations (Preview)* experience.
 
-2. Choose the Azure AD tenant where you want to create your applications
-      - If your account is present in more than one Azure AD tenant, select profile button at the top-right corner in the menu on top of the page and select `Switch Directory`.
-      - On `Directory + Subscription` switch your portal session to the desired Azure AD tenant.
+2. Choose the Microsoft Entra tenant where you want to create your applications
+      - If your account is present in more than one Microsoft Entra tenant, select profile button at the top-right corner in the menu on top of the page and select `Switch Directory`.
+      - On `Directory + Subscription` switch your portal session to the desired Microsoft Entra tenant.
 
-1. In the left-hand navigation pane, select the **Azure Active Directory** service, and then select **App registrations (Preview)**.
+1. In the left-hand navigation pane, select the **Microsoft Entra ID** service, and then select **App registrations (Preview)**.
 1. In **App registrations (Preview)** page, select **New registration**.
 1. When the **Register an application page** appears, enter your application's registration information:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `WebApp`.
@@ -171,9 +171,9 @@ If your web site needs to be accessed from users using iOS 12, you probably want
 
 ## About The code
 
-This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Azure AD tenant. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Azure AD tenant where the app is registered. These values are  read from the `appsettings.json` file. The middleware takes care of:
+This sample shows how to use the OpenID Connect ASP.NET Core middleware to sign in users from a single Microsoft Entra tenant. The middleware is initialized in the `Startup.cs` file by passing it the Client ID of the app, and the URL of the Microsoft Entra tenant where the app is registered. These values are  read from the `appsettings.json` file. The middleware takes care of:
 
-- Downloading the Azure AD metadata, finding the signing keys, and finding the issuer name for the tenant.
+- Downloading the Microsoft Entra ID metadata, finding the signing keys, and finding the issuer name for the tenant.
 - Processing OpenID Connect sign-in responses by validating the signature and issuer in an incoming JWT, extracting the user's claims, and putting the claims in `ClaimsPrincipal.Current`.
 - Integrating with the session cookie ASP.NET Core middleware to establish a session for the user.
 

@@ -18,14 +18,14 @@ or download and extract the repository .zip file.
 
 ### Step 3: Application Registration
 
-There are two projects in this sample. Each needs to be separately registered in your Azure AD tenant. To register these projects:
+There are two projects in this sample. Each needs to be separately registered in your Microsoft Entra tenant. To register these projects:
 
 You can follow the [manual steps](#Manual-steps) to set the up the application or use the automated steps below.
 
 ### Run automation scripts
 
 * use PowerShell scripts that:
-  * **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you.
+  * **automatically** creates the Microsoft Entra applications and related objects (passwords, permissions, dependencies) for you.
   * modify the projects' configuration files.
 
 > **WARNING**: If you have never used **Azure AD Powershell** before, we recommend you go through the [App Creation Scripts guide](./AppCreationScripts/AppCreationScripts.md) once to ensure that your environment is prepared correctly for this step.
@@ -37,7 +37,7 @@ You can follow the [manual steps](#Manual-steps) to set the up the application o
    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
    ```
 
-3. Run the script to create your Azure AD application and configure the code of the sample application accordingly.
+3. Run the script to create your Microsoft Entra application and configure the code of the sample application accordingly.
 4. For interactive process - in PowerShell run:
 
    ```PowerShell
@@ -54,12 +54,12 @@ You can follow the [manual steps](#Manual-steps) to set the up the application o
 
 Follow the steps below for manually register and configure your apps
 
-  1. Sign in to the [Azure portal](https://portal.azure.com).
-  1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant.
+  1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com).
+  1. If your account is present in more than one Microsoft Entra tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Microsoft Entra tenant.
 
 #### Register the service app
 
-  1. Navigate to the [Azure portal](https://portal.azure.com) and select the **Azure Active Directory** service.
+  1. Navigate to the [Microsoft Entra admin center](https://entra.microsoft.com) and select the **Microsoft Entra ID** service.
   1. Select the **App Registrations** blade on the left, then select **New registration**.
   1. In the **Register an application page** that appears, enter your application's registration information:
      * In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `HybridFlow-aspnetcore`.
@@ -78,7 +78,7 @@ Follow the steps below for manually register and configure your apps
      * Type a key description (for instance `app secret`),
      * Select one of the available key durations (**6 months**, **12 months** or **Custom**) as per your security posture.
      * The generated key value will be displayed when you select the **Add** button. Copy and save the generated value for use in later steps.
-     * You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Azure portal before navigating to any other screen or blade.
+     * You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means, so make sure to note it from the Microsoft Entra admin center before navigating to any other screen or blade.
   1. In the app's registration screen, select the **API permissions** blade in the left to open the page where we add access to the APIs that your application needs.
      * Select the **Add a permission** button and then,
      * Ensure that the **Microsoft APIs** tab is selected.
@@ -93,10 +93,10 @@ Follow the steps below for manually register and configure your apps
    > In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
   1. Open the `appsettings.json` file.
-  1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
-  1. Find the key `TenantId` and replace the existing value with your Azure AD tenant ID.
-  1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `HybridFlow-aspnetcore` app copied from the Azure portal.
-  1. Find the key `ClientSecret` and replace the existing value with the **client secret** of `HybridFlow-aspnetcore` app copied from the Azure portal.
+  1. Find the key `Domain` and replace the existing value with your Microsoft Entra tenant name.
+  1. Find the key `TenantId` and replace the existing value with your Microsoft Entra tenant ID.
+  1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of `HybridFlow-aspnetcore` app copied from the Microsoft Entra admin center.
+  1. Find the key `ClientSecret` and replace the existing value with the **client secret** of `HybridFlow-aspnetcore` app copied from the Microsoft Entra admin center.
 
 ##### (Optional) Create a self-signed certificate
 
@@ -113,7 +113,7 @@ Follow the steps below for manually register and configure your apps
   
   Alternatively you can use an existing certificate if you have one (just be sure to record its name for the next steps)
   
-###### Add the certificate for the application in Azure AD
+###### Add the certificate for the application in Microsoft Entra ID
   
   In the application registration blade for your application, in the **Certificates & secrets** page, in the **Certificates** section:
   
