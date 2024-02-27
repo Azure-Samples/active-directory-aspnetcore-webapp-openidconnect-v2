@@ -11,7 +11,7 @@ body:
   attributes:
     label: Microsoft.Identity.Web version
     description: "Please enter the latest version this issue can be reproduced in. "
-    placeholder: "2.17.0"
+    placeholder: "2.17.1"
   validations:
     required: true
 
