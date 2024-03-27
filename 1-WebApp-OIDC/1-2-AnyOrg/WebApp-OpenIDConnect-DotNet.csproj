@@ -18,13 +18,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Identity.Web" Version="2.17.2" />
-    <PackageReference Include="Microsoft.Identity.Web.Certificate" Version="2.17.2" />
-    <PackageReference Include="Microsoft.Identity.Web.Certificateless" Version="2.17.2" />
-    <PackageReference Include="Microsoft.Identity.Web.Diagnostics" Version="2.17.2" />
-    <PackageReference Include="Microsoft.Identity.Web.TokenAcquisition" Version="2.17.2" />
-    <PackageReference Include="Microsoft.Identity.Web.TokenCache" Version="2.17.2" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.17.2" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="2.17.3" />
+    <PackageReference Include="Microsoft.Identity.Web.Certificate" Version="2.17.3" />
+    <PackageReference Include="Microsoft.Identity.Web.Certificateless" Version="2.17.3" />
+    <PackageReference Include="Microsoft.Identity.Web.Diagnostics" Version="2.17.3" />
+    <PackageReference Include="Microsoft.Identity.Web.TokenAcquisition" Version="2.17.3" />
+    <PackageReference Include="Microsoft.Identity.Web.TokenCache" Version="2.17.3" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.17.3" />
   </ItemGroup>
 
 </Project>
