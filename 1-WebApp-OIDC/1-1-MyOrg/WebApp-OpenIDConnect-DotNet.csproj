@@ -24,13 +24,13 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Identity.Web" Version="2.17.3" />
-    <PackageReference Include="Microsoft.Identity.Web.Certificate" Version="2.17.3" />
-    <PackageReference Include="Microsoft.Identity.Web.Certificateless" Version="2.17.3" />
-    <PackageReference Include="Microsoft.Identity.Web.Diagnostics" Version="2.17.3" />
-    <PackageReference Include="Microsoft.Identity.Web.TokenAcquisition" Version="2.17.3" />
-    <PackageReference Include="Microsoft.Identity.Web.TokenCache" Version="2.17.3" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.17.3" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="2.18.0" />
+    <PackageReference Include="Microsoft.Identity.Web.Certificate" Version="2.18.0" />
+    <PackageReference Include="Microsoft.Identity.Web.Certificateless" Version="2.18.0" />
+    <PackageReference Include="Microsoft.Identity.Web.Diagnostics" Version="2.18.0" />
+    <PackageReference Include="Microsoft.Identity.Web.TokenAcquisition" Version="2.18.0" />
+    <PackageReference Include="Microsoft.Identity.Web.TokenCache" Version="2.18.0" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.18.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
   </ItemGroup>
 
