@@ -324,7 +324,7 @@ For a middle-tier web API (`WebApi_MultiTenant_v2`) to be able to call a downstr
 For instance:
 
 ```json
-    "knownClientApplications": ["ca8dca8d-f828-4f08-82f5-325e1a1c6428"],
+    "knownClientApplications": ["00001111-aaaa-2222-bbbb-3333cccc4444","11112222-bbbb-3333-cccc-4444dddd5555"],
 ```
 
 1. **Save** the changes to the manifest.
