@@ -49,7 +49,7 @@ There is one project in this sample. To register it, you can:
 
        ```PowerShell
        cd .\AppCreationScripts\ 
-   .\Configure.ps1
+       .\Configure.ps1
        ```
 
        > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
