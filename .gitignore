@@ -138,3 +138,5 @@ packages
 /.vscode
 /2-WebApp-graph-user/2-1-Call-MSGraph/Properties/PublishProfiles
 /2-WebApp-graph-user/2-3-Multi-Tenant/AppCreationScripts/createdApps.html
+/.SharedData
+/out/.s/.output/.responses/.s/.output/.reports
