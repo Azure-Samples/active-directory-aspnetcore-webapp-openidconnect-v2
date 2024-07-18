@@ -1,2 +1,1 @@
-msbuild /t:restore buildAllSlns.proj
-msbuild buildAllSlns.proj
+msbuild /restore buildAllSlns.proj /v:m
