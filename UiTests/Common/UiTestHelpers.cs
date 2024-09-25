@@ -34,7 +34,7 @@ namespace Common
                     await Task.Delay(1000);
                     InitialConnectionRetryCount--;
                     if (InitialConnectionRetryCount == 0)
-                    { throw; }
+                        { throw; }
                 }
             }
         }
@@ -421,6 +421,7 @@ namespace Common
             {
                 if (!UiTestHelpers.ProcessesAreAlive(processes.Values.ToList())) { RestartProcesses(processes, processDataEntries); }
                 else { break; }
+                }
             }
 
             if (!UiTestHelpers.ProcessesAreAlive(processes.Values.ToList()))

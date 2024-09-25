@@ -17,8 +17,8 @@
     <SystemTextJsonVersion>8.0.4</SystemTextJsonVersion>
     <XunitAssertVersion>2.9.1</XunitAssertVersion>
     <XunitExtensibilityCoreVersion>2.9.1</XunitExtensibilityCoreVersion>
-    <XunitRunnerVisualStudioVersion>2.8.2</XunitRunnerVisualStudioVersion>
-    <XunitVersion>2.9.1</XunitVersion>
+		<XunitRunnerVisualStudioVersion>2.8.2</XunitRunnerVisualStudioVersion>
+		<XunitVersion>2.9.1</XunitVersion>
   </PropertyGroup>
-
+  
 </Project>
