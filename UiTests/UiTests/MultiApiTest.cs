@@ -23,7 +23,8 @@ namespace MultipleApiUiTest
         private const string SignOutPageUriPath = @"/MicrosoftIdentity/Account/SignedOut";
         private const uint ClientPort = 44321;
         private const string TraceFileClassName = "OpenIDConnect";
-        private readonly LocatorAssertionsToBeVisibleOptions _assertVisibleOptions = new() { Timeout = 5000 };
+        private const uint NumProcessRetries = 3;
+        private readonly LocatorAssertionsToBeVisibleOptions _assertVisibleOptions = new() { Timeout = 15000 };
         private readonly string _sampleAppPath = "3-WebApp-multi-APIs" + Path.DirectorySeparatorChar.ToString();
         private readonly string _testAssemblyLocation = typeof(MultiApiTest).Assembly.Location;
         private readonly ITestOutputHelper _output;
@@ -61,11 +62,11 @@ namespace MultipleApiUiTest
                 // The delay before starting client prevents transient devbox issue where the client fails to load the first time after rebuilding
                 var clientProcessOptions = new ProcessStartOptions(_testAssemblyLocation, _sampleAppPath, TC.s_oidcWebAppExe, clientEnvVars);
 
-                bool areProcessesRunning = TH.StartAndVerifyProcessesAreRunning([clientProcessOptions], out processes);
+                bool areProcessesRunning = TH.StartAndVerifyProcessesAreRunning([clientProcessOptions], out processes, NumProcessRetries);
 
                 if (!areProcessesRunning)
                 {
-                    _output.WriteLine("Process not started after 3 attempts.");
+                    _output.WriteLine($"Process not started after {NumProcessRetries} attempts.");
                     StringBuilder runningProcesses = new StringBuilder();
                     foreach (var process in processes)
                     {

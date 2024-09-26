@@ -1,9 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Azure.Core;
-using Azure.Security.KeyVault.Secrets;
-using Microsoft.Playwright;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Management;
 using System.Runtime.Versioning;
@@ -34,7 +33,7 @@ namespace Common
                     await Task.Delay(1000);
                     InitialConnectionRetryCount--;
                     if (InitialConnectionRetryCount == 0)
-                        { throw; }
+                    { throw; }
                 }
             }
         }
@@ -598,4 +597,3 @@ namespace Common
         }
     }
 }
-
