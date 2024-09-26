@@ -1,19 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Management;
-using System.Runtime.Versioning;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.Playwright;
+using System.Diagnostics;
+using System.Management;
+using System.Runtime.Versioning;
+using System.Text;
 using Xunit.Abstractions;
 
 namespace Common
@@ -41,7 +35,7 @@ namespace Common
                     await Task.Delay(1000);
                     InitialConnectionRetryCount--;
                     if (InitialConnectionRetryCount == 0)
-                        { throw; }
+                    { throw; }
                 }
             }
         }
@@ -366,7 +360,7 @@ namespace Common
             return (await client.GetSecretAsync(keyvaultSecretName)).Value.Value;
         }
 
-        public static bool StartAndVerifyProcessesAreRunning(List<ProcessStartOptions> processDataEntries, out Dictionary<string, Process> processes)
+        public static bool StartAndVerifyProcessesAreRunning(List<ProcessStartOptions> processDataEntries, out Dictionary<string, Process> processes, uint numRetries)
         {
             processes = new Dictionary<string, Process>();
 
@@ -380,16 +374,16 @@ namespace Common
                                                 processDataEntry.EnvironmentVariables);
 
                 processes.Add(processDataEntry.ExecutableName, process);
+
+                // Gives the current process time to start up before the next process is run
                 Thread.Sleep(5000);
             }
 
             //Verify that processes are running
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < numRetries; i++)
             {
-                if (!UiTestHelpers.ProcessesAreAlive(processes.Values.ToList()))
-                {
-                    RestartProcesses(processes, processDataEntries);
-                }
+                if (!UiTestHelpers.ProcessesAreAlive(processes.Values.ToList())) { RestartProcesses(processes, processDataEntries); }
+                else { break; }
             }
 
             if (!UiTestHelpers.ProcessesAreAlive(processes.Values.ToList()))
@@ -473,3 +467,4 @@ namespace Common
         }
     }
 }
+
