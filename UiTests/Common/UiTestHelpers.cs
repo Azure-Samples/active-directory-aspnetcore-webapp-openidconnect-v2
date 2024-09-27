@@ -376,7 +376,7 @@ namespace Common
                 processes.Add(processDataEntry.ExecutableName, process);
 
                 // Gives the current process time to start up before the next process is run
-                Thread.Sleep(5000);
+                Thread.Sleep(2000);
             }
 
             //Verify that processes are running

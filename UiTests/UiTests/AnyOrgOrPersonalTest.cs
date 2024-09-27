@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,22 +15,21 @@ using Xunit;
 using Xunit.Abstractions;
 using Process = System.Diagnostics.Process;
 using TC = Common.TestConstants;
-using TH = Common.UiTestHelpers;
 
 namespace MultipleApiUiTest
 {
-    public class MultiApiTest : IClassFixture<InstallPlaywrightBrowserFixture>
+    public class AnyOrgOrPersonalTest : IClassFixture<InstallPlaywrightBrowserFixture>
     {
         private const string SignOutPageUriPath = @"/MicrosoftIdentity/Account/SignedOut";
         private const uint ClientPort = 44321;
         private const string TraceFileClassName = "OpenIDConnect";
         private const uint NumProcessRetries = 3;
-        private readonly LocatorAssertionsToBeVisibleOptions _assertVisibleOptions = new() { Timeout = 15000 };
-        private readonly string _sampleAppPath = "3-WebApp-multi-APIs" + Path.DirectorySeparatorChar.ToString();
-        private readonly string _testAssemblyLocation = typeof(MultiApiTest).Assembly.Location;
+        private readonly LocatorAssertionsToBeVisibleOptions _assertVisibleOptions = new() { Timeout = 25000 };
+        private readonly string _sampleAppPath = "1-WebApp-OIDC" + Path.DirectorySeparatorChar + "1-3-AnyOrgOrPersonal" + Path.DirectorySeparatorChar.ToString();
+        private readonly string _testAssemblyLocation = typeof(AnyOrgOrPersonalTest).Assembly.Location;
         private readonly ITestOutputHelper _output;
 
-        public MultiApiTest(ITestOutputHelper output)
+        public AnyOrgOrPersonalTest(ITestOutputHelper output)
         {
             _output = output;
         }
@@ -62,7 +62,7 @@ namespace MultipleApiUiTest
                 // The delay before starting client prevents transient devbox issue where the client fails to load the first time after rebuilding
                 var clientProcessOptions = new ProcessStartOptions(_testAssemblyLocation, _sampleAppPath, TC.s_oidcWebAppExe, clientEnvVars);
 
-                bool areProcessesRunning = TH.StartAndVerifyProcessesAreRunning([clientProcessOptions], out processes, NumProcessRetries);
+                bool areProcessesRunning = UiTestHelpers.StartAndVerifyProcessesAreRunning([clientProcessOptions], out processes, NumProcessRetries);
 
                 if (!areProcessesRunning)
                 {
@@ -71,7 +71,7 @@ namespace MultipleApiUiTest
                     foreach (var process in processes)
                     {
 #pragma warning disable CA1305 // Specify IFormatProvider
-                        runningProcesses.AppendLine($"Is {process.Key} running: {TH.ProcessIsAlive(process.Value)}");
+                        runningProcesses.AppendLine($"Is {process.Key} running: {UiTestHelpers.ProcessIsAlive(process.Value)}");
 #pragma warning restore CA1305 // Specify IFormatProvider
                     }
                     Assert.Fail(TC.WebAppCrashedString + " " + runningProcesses.ToString());
@@ -82,9 +82,9 @@ namespace MultipleApiUiTest
                 // Initial sign in
                 _output.WriteLine("Starting web app sign-in flow.");
                 string email = labResponse.User.Upn;
-                await TH.NavigateToWebApp(uriWithPort, page);
-                await TH.EnterEmailAsync(page, email, _output);
-                await TH.EnterPasswordAsync(page, labResponse.User.GetOrFetchPassword(), _output);
+                await UiTestHelpers.NavigateToWebApp(uriWithPort, page);
+                await UiTestHelpers.EnterEmailAsync(page, email, _output);
+                await UiTestHelpers.EnterPasswordAsync(page, labResponse.User.GetOrFetchPassword(), _output);
                 await Assertions.Expect(page.GetByText("Integrating Azure AD V2")).ToBeVisibleAsync(_assertVisibleOptions);
                 await Assertions.Expect(page.GetByText(email)).ToBeVisibleAsync(_assertVisibleOptions);
                 _output.WriteLine("Web app sign-in flow successful.");
@@ -92,7 +92,7 @@ namespace MultipleApiUiTest
                 // Sign out
                 _output.WriteLine("Starting web app sign-out flow.");
                 await page.GetByRole(AriaRole.Link, new() { Name = "Sign out" }).ClickAsync();
-                await TH.PerformSignOut_MicrosoftIdFlow(page, email, TC.LocalhostUrl + ClientPort + SignOutPageUriPath, _output);
+                await UiTestHelpers.PerformSignOut_MicrosoftIdFlow(page, email, TC.LocalhostUrl + ClientPort + SignOutPageUriPath, _output);
                 _output.WriteLine("Web app sign out successful.");
             }
             catch (Exception ex)
@@ -111,16 +111,16 @@ namespace MultipleApiUiTest
                     _output.WriteLine("No Screenshot.");
                 }
 
-                string runningProcesses = TH.GetRunningProcessAsString(processes);
+                string runningProcesses = UiTestHelpers.GetRunningProcessAsString(processes);
                 Assert.Fail($"the UI automation failed: {ex} output: {ex.Message}.\n{runningProcesses}\nTest run: {guid}");
             }
             finally
             {
                 // Add the following to make sure all processes and their children are stopped.
-                TH.EndProcesses(processes);
+                UiTestHelpers.EndProcesses(processes);
 
                 // Stop tracing and export it into a zip archive.
-                string path = TH.GetTracePath(_testAssemblyLocation, TraceFileName);
+                string path = UiTestHelpers.GetTracePath(_testAssemblyLocation, TraceFileName);
                 await context.Tracing.StopAsync(new() { Path = path });
                 _output.WriteLine($"Trace data for {TraceFileName} recorded to {path}.");
 
