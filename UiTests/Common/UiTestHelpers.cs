@@ -350,7 +350,7 @@ namespace Common
         /// <param name="keyvaultSecretName">The name of the secret</param>
         /// <returns>The value of the secret from key vault</returns>
         /// <exception cref="ArgumentNullException">Throws if no secret name is provided</exception>
-        internal static async Task<string> GetValueFromKeyvaultWitDefaultCreds(Uri keyvaultUri, string keyvaultSecretName, TokenCredential creds)
+        public static async Task<string> GetValueFromKeyvaultWitDefaultCreds(Uri keyvaultUri, string keyvaultSecretName, TokenCredential creds)
         {
             if (string.IsNullOrEmpty(keyvaultSecretName))
             {

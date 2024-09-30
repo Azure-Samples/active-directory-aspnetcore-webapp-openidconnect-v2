@@ -21,7 +21,12 @@ namespace Common
         public const string HttpsStarColon = "https://*:";
         public const string WebAppCrashedString = $"The web app process has exited prematurely.";
         public const string OIDCUser = "fIDLAB@MSIDLAB3.com";
+
         public static readonly string s_oidcWebAppExe = Path.DirectorySeparatorChar.ToString() + "WebApp-OpenIDConnect-DotNet.exe";
         public static readonly string s_oidcWebAppPath = Path.DirectorySeparatorChar.ToString() + "WebApp-OpenIDConnect";
+        public static readonly string s_todoListClientExe = Path.DirectorySeparatorChar.ToString() + "TodoListClient.exe";
+        public static readonly string s_todoListClientPath = Path.DirectorySeparatorChar.ToString() + "Client";
+        public static readonly string s_todoListServiceExe = Path.DirectorySeparatorChar.ToString() + "TodoListService.exe";
+        public static readonly string s_todoListServicePath = Path.DirectorySeparatorChar.ToString() + "TodoListService";
     }
 }

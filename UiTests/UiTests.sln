@@ -3,14 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnyOrgOrPersonalUiTest", "AnyOrgOrPersonalUiTest.csproj", "{2B42751A-8650-4DE4-9B46-B01C21825EB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnyOrgOrPersonalUiTest", "AnyOrgOrPersonalUiTest\AnyOrgOrPersonalUiTest.csproj", "{2B42751A-8650-4DE4-9B46-B01C21825EB1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "..\Common\Common.csproj", "{3074B729-52E8-408E-8BBC-815FE9217385}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{3074B729-52E8-408E-8BBC-815FE9217385}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6A8B8F57-DBC6-43E2-84E7-16D24E54157B}"
 	ProjectSection(SolutionItems) = preProject
 		..\Directory.Build.props = ..\Directory.Build.props
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2CUiTest", "B2CUiTest\B2CUiTest.csproj", "{BF7D9973-9B92-4BED-ADE2-09087DDA9C85}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +28,10 @@ Global
 		{3074B729-52E8-408E-8BBC-815FE9217385}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3074B729-52E8-408E-8BBC-815FE9217385}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3074B729-52E8-408E-8BBC-815FE9217385}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF7D9973-9B92-4BED-ADE2-09087DDA9C85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF7D9973-9B92-4BED-ADE2-09087DDA9C85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF7D9973-9B92-4BED-ADE2-09087DDA9C85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF7D9973-9B92-4BED-ADE2-09087DDA9C85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
