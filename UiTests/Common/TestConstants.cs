@@ -8,6 +8,7 @@ namespace Common
 {
     public static class TestConstants
     {
+        public const string AppSetttingsDotJson = "appsettings.json";
         public const string Headless = "headless";
         public const string HeaderText = "Header";
         public const string EmailText = "Email";
