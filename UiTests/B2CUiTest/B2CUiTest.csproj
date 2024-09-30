@@ -1,5 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <!--<TargetFrameworks Condition="'$(TargetNet9)'== 'True'">$(TargetFrameworks); net9.0</TargetFrameworks>-->
@@ -26,7 +26,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\..\1-WebApp-OIDC\1-3-AnyOrgOrPersonal\WebApp-OpenIDConnect-DotNet.csproj" />
+    <ProjectReference Include="..\..\4-WebApp-your-API\4-2-B2C\TodoListService\TodoListService.csproj" />
+    <ProjectReference Include="..\..\4-WebApp-your-API\4-2-B2C\Client\TodoListClient.csproj" />
   </ItemGroup>
 
 </Project>
