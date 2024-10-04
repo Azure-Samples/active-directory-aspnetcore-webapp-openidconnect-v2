@@ -12,8 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\Directory.Build.props = ..\Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2CUiTest", "B2CUiTest\B2CUiTest.csproj", "{BF7D9973-9B92-4BED-ADE2-09087DDA9C85}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,10 +26,6 @@ Global
 		{3074B729-52E8-408E-8BBC-815FE9217385}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3074B729-52E8-408E-8BBC-815FE9217385}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3074B729-52E8-408E-8BBC-815FE9217385}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BF7D9973-9B92-4BED-ADE2-09087DDA9C85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF7D9973-9B92-4BED-ADE2-09087DDA9C85}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF7D9973-9B92-4BED-ADE2-09087DDA9C85}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF7D9973-9B92-4BED-ADE2-09087DDA9C85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
