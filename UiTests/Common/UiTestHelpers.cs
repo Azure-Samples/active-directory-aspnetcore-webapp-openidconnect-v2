@@ -224,6 +224,26 @@ namespace Common
         }
 
         /// <summary>
+        /// Builds the path to the process's directory
+        /// </summary>
+        /// <param name="testAssemblyLocation">The path to the test's directory</param>
+        /// <param name="appLocation">The path to the processes directory</param>
+        /// <returns>The path to the directory for the given app</returns>
+        private static string GetAppsettingsDirectory(string testAssemblyLocation, string appLocation)
+        {
+            string testedAppLocation = Path.GetDirectoryName(testAssemblyLocation)!;
+            // e.g. microsoft-identity-web\tests\E2E Tests\WebAppUiTests\bin\Debug\net6.0
+            string[] segments = testedAppLocation.Split(Path.DirectorySeparatorChar);
+            int numberSegments = segments.Length;
+            int startLastSegments = numberSegments - 3;
+            int endFirstSegments = startLastSegments - 2;
+            return Path.Combine(
+                Path.Combine(segments.Take(endFirstSegments).ToArray()),
+                appLocation
+            );
+        }
+
+        /// <summary>
         /// Creates absolute path for Playwright trace file
         /// </summary>
         /// <param name="testAssemblyLocation">The path the test is being run from</param>
@@ -427,6 +447,70 @@ namespace Common
                 }
             }
             return runningProcesses.ToString();
+        }
+
+        /// <summary>
+        /// Takes two paths to existing files and swaps their names and locations effectively swapping the contents of the files.
+        /// </summary>
+        /// <param name="path1">The path of the first file to swap</param>
+        /// <param name="path2">The path of the file to swap it with</param>
+        public static void SwapFiles(string path1, string path2)
+        {
+            string tempFile = Path.GetTempFileName();
+            string file1Name = Path.GetFileName(path1);
+            string file2Name = Path.GetFileName(path2);
+            string file1Dir = Path.GetDirectoryName(path1);
+            string file2Dir = Path.GetDirectoryName(path2);
+
+            // Move file1 to tempFile
+            File.Move(path1, tempFile);
+
+            // Move file2 to file1's original location and rename it to file1's name
+            File.Move(path2, Path.Combine(file1Dir, file1Name));
+
+            // Move tempFile (original file1) to file2's original location and rename it to file2's name
+            File.Move(tempFile, Path.Combine(file2Dir, file2Name));
+
+            Console.WriteLine("Files swapped and renamed successfully.");
+        }
+
+
+        public static void RebuildSolution(string solutionPath)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = "dotnet",
+                Arguments = $"build {solutionPath} --no-incremental",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using (Process process = new Process())
+            {
+                process.StartInfo = startInfo;
+                process.OutputDataReceived += (sender, e) => Console.WriteLine(e.Data);
+                process.ErrorDataReceived += (sender, e) => Console.WriteLine(e.Data);
+
+                process.Start();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+                process.WaitForExit();
+            }
+
+            Console.WriteLine("Solution rebuild initiated.");
+        }
+
+        public static void BuildSampleWithTestAppsettings(string testAssemblyLocation, string appLocation, string testAppsettingsName)
+        {
+            string appsettingsDirectory = GetAppsettingsDirectory(testAssemblyLocation, appLocation);
+            string appsettingsPath = Path.Combine(appsettingsDirectory, TestConstants.AppSetttingsDotJson);
+            string testAppsettingsPath = Path.Combine(appsettingsDirectory, testAppsettingsName);
+            SwapFiles(appsettingsPath, testAppsettingsPath);
+            RebuildSolution(appsettingsDirectory);
+            SwapFiles(appsettingsPath, testAppsettingsPath);
+
         }
     }
 
