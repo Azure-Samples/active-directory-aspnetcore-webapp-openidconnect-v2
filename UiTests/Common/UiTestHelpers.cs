@@ -414,7 +414,7 @@ namespace Common
             return true;
         }
 
-        static void RestartProcesses(Dictionary<string, Process> processes, List<ProcessStartOptions> processDataEntries)
+        private static void RestartProcesses(Dictionary<string, Process> processes, List<ProcessStartOptions> processDataEntries)
         {
             //attempt to restart failed processes
             foreach (KeyValuePair<string, Process> processEntry in processes)
@@ -434,6 +434,12 @@ namespace Common
                 }
             }
         }
+
+        /// <summary>
+        /// Returns a string representation of the running processes
+        /// </summary>
+        /// <param name="processes">Dict of running processes</param>
+        /// <returns>A string of all processes from the give dict</returns>
         public static string GetRunningProcessAsString(Dictionary<string, Process>? processes)
         {
             StringBuilder runningProcesses = new StringBuilder();
@@ -469,8 +475,11 @@ namespace Common
             Console.WriteLine("File contents swapped successfully.");
         }
 
-
-        private static void RebuildSolution(string solutionPath)
+        /// <summary>
+        /// Builds the solution at the given path.
+        /// </summary>
+        /// <param name="solutionPath">Absolute path to the sln file to be built</param>
+        private static void BuildSolution(string solutionPath)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
@@ -479,7 +488,7 @@ namespace Common
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
-                CreateNoWindow = false
+                CreateNoWindow = true
             };
 
             using (Process process = new Process())
@@ -497,22 +506,29 @@ namespace Common
             Console.WriteLine("Solution rebuild initiated.");
         }
 
+        /// <summary>
+        /// Replaces existing appsettings.json file with a test appsettings file, builds the solution, and then swaps the files back.
+        /// </summary>
+        /// <param name="testAssemblyLocation">Absolute path to the current test's working directory</param>
+        /// <param name="sampleRelPath">Relative path to the sample app to build starting at the repo's root, does not include appsettings filename</param>
+        /// <param name="testAppsettingsRelPath">Relative path to the test appsettings file starting at the repo's root, includes appsettings filename</param>
+        /// <param name="solutionFileName">Filename for the sln file to build</param>
         public static void BuildSampleWithTestAppsettings(
             string testAssemblyLocation, 
-            string appLocation, 
-            string testAppsettingsPathFromRepoRoot,
+            string sampleRelPath, 
+            string testAppsettingsRelPath,
             string solutionFileName
             )
         {
-            string appsettingsDirectory = GetAppsettingsDirectory(testAssemblyLocation, appLocation);
-            string appsettingsPath = Path.Combine(appsettingsDirectory, TestConstants.AppSetttingsDotJson);
-            string testAppsettingsPath = GetAppsettingsDirectory(testAssemblyLocation, testAppsettingsPathFromRepoRoot);
+            string appsettingsDirectory = GetAppsettingsDirectory(testAssemblyLocation, sampleRelPath);
+            string appsettingsAbsPath = Path.Combine(appsettingsDirectory, TestConstants.AppSetttingsDotJson);
+            string testAppsettingsAbsPath = GetAppsettingsDirectory(testAssemblyLocation, testAppsettingsRelPath);
 
-            SwapFiles(appsettingsPath, testAppsettingsPath);
+            SwapFiles(appsettingsAbsPath, testAppsettingsAbsPath);
 
-            try { RebuildSolution(appsettingsDirectory + solutionFileName); }
+            try { BuildSolution(appsettingsDirectory + solutionFileName); }
             catch (Exception) { throw; }
-            finally { SwapFiles(appsettingsPath, testAppsettingsPath); }
+            finally { SwapFiles(appsettingsAbsPath, testAppsettingsAbsPath); }
         }
     }
 
