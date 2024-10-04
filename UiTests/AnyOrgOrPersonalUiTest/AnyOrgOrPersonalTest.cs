@@ -24,8 +24,10 @@ namespace MultipleApiUiTest
         private const uint ClientPort = 44321;
         private const string TraceFileClassName = "OpenIDConnect";
         private const uint NumProcessRetries = 3;
+        private const string SampleSlnFileName = "1-3-AnyOrgOrPersonal.sln";
         private readonly LocatorAssertionsToBeVisibleOptions _assertVisibleOptions = new() { Timeout = 25000 };
         private readonly string _sampleAppPath = "1-WebApp-OIDC" + Path.DirectorySeparatorChar + "1-3-AnyOrgOrPersonal" + Path.DirectorySeparatorChar.ToString();
+        private readonly string _testAppsettingsPath = "UiTests" + Path.DirectorySeparatorChar + "AnyOrgOrPersonalUiTest" + Path.DirectorySeparatorChar.ToString() + TC.AppSetttingsDotJson;
         private readonly string _testAssemblyLocation = typeof(AnyOrgOrPersonalTest).Assembly.Location;
         private readonly ITestOutputHelper _output;
 
@@ -58,6 +60,9 @@ namespace MultipleApiUiTest
 
             try
             {
+                // Build the sample app with correct appsettings file.
+                UiTestHelpers.BuildSampleWithTestAppsettings(_testAssemblyLocation, _sampleAppPath, _testAppsettingsPath, SampleSlnFileName);
+
                 // Start the web app and api processes.
                 // The delay before starting client prevents transient devbox issue where the client fails to load the first time after rebuilding
                 var clientProcessOptions = new ProcessStartOptions(_testAssemblyLocation, _sampleAppPath, TC.s_oidcWebAppExe, clientEnvVars);

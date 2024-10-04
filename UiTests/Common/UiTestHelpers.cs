@@ -454,37 +454,32 @@ namespace Common
         /// </summary>
         /// <param name="path1">The path of the first file to swap</param>
         /// <param name="path2">The path of the file to swap it with</param>
-        public static void SwapFiles(string path1, string path2)
+        private static void SwapFiles(string path1, string path2)
         {
-            string tempFile = Path.GetTempFileName();
-            string file1Name = Path.GetFileName(path1);
-            string file2Name = Path.GetFileName(path2);
-            string file1Dir = Path.GetDirectoryName(path1);
-            string file2Dir = Path.GetDirectoryName(path2);
+            // Read the contents of both files
+            string file1Contents = File.ReadAllText(path1);
+            string file2Contents = File.ReadAllText(path2);
 
-            // Move file1 to tempFile
-            File.Move(path1, tempFile);
+            // Write the contents of file2 to file1
+            File.WriteAllText(path1, file2Contents);
 
-            // Move file2 to file1's original location and rename it to file1's name
-            File.Move(path2, Path.Combine(file1Dir, file1Name));
+            // Write the contents of file1 to file2
+            File.WriteAllText(path2, file1Contents);
 
-            // Move tempFile (original file1) to file2's original location and rename it to file2's name
-            File.Move(tempFile, Path.Combine(file2Dir, file2Name));
-
-            Console.WriteLine("Files swapped and renamed successfully.");
+            Console.WriteLine("File contents swapped successfully.");
         }
 
 
-        public static void RebuildSolution(string solutionPath)
+        private static void RebuildSolution(string solutionPath)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
                 FileName = "dotnet",
-                Arguments = $"build {solutionPath} --no-incremental",
+                Arguments = $"build {solutionPath}",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
-                CreateNoWindow = true
+                CreateNoWindow = false
             };
 
             using (Process process = new Process())
@@ -502,15 +497,22 @@ namespace Common
             Console.WriteLine("Solution rebuild initiated.");
         }
 
-        public static void BuildSampleWithTestAppsettings(string testAssemblyLocation, string appLocation, string testAppsettingsName)
+        public static void BuildSampleWithTestAppsettings(
+            string testAssemblyLocation, 
+            string appLocation, 
+            string testAppsettingsPathFromRepoRoot,
+            string solutionFileName
+            )
         {
             string appsettingsDirectory = GetAppsettingsDirectory(testAssemblyLocation, appLocation);
             string appsettingsPath = Path.Combine(appsettingsDirectory, TestConstants.AppSetttingsDotJson);
-            string testAppsettingsPath = Path.Combine(appsettingsDirectory, testAppsettingsName);
-            SwapFiles(appsettingsPath, testAppsettingsPath);
-            RebuildSolution(appsettingsDirectory);
+            string testAppsettingsPath = GetAppsettingsDirectory(testAssemblyLocation, testAppsettingsPathFromRepoRoot);
+
             SwapFiles(appsettingsPath, testAppsettingsPath);
 
+            try { RebuildSolution(appsettingsDirectory + solutionFileName); }
+            catch (Exception) { throw; }
+            finally { SwapFiles(appsettingsPath, testAppsettingsPath); }
         }
     }
 
