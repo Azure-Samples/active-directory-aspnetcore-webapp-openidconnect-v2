@@ -1,17 +1,16 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Azure.Identity;
+using Common;
+using Microsoft.Identity.Lab.Api;
+using Microsoft.Playwright;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Versioning;
-using System.Threading;
 using System.Threading.Tasks;
-using Azure.Identity;
-using Common;
-using Microsoft.Identity.Lab.Api;
-using Microsoft.Playwright;
 using Xunit;
 using Xunit.Abstractions;
 using TC = Common.TestConstants;
