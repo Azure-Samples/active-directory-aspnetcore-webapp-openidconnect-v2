@@ -136,6 +136,7 @@ namespace Common
             await entryBox.FillAsync(entryText);
             await entryBox.PressAsync("Enter");
         }
+
         private static void WriteLine(ITestOutputHelper? output, string message)
         {
             if (output != null)
