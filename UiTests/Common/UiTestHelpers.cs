@@ -150,7 +150,7 @@ namespace Common
         }
 
         /// <summary>
-        /// This starts the recording of playwright trace files. The corresponsing EndAndWritePlaywrightTrace method will also need to be used.
+        /// This starts the recording of playwright trace files. The corresponding EndAndWritePlaywrightTrace method will also need to be used.
         /// This is not used anywhere by default and will need to be added to the code if desired.
         /// </summary>
         /// <param name="page">The page object whose context the trace will record.</param>
