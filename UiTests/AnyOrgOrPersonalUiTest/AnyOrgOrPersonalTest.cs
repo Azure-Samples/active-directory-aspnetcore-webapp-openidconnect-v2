@@ -121,7 +121,7 @@ namespace MultipleApiUiTest
             }
             finally
             {
-                // Add the following to make sure all processes and their children are stopped.
+                // Make sure all processes and their children are stopped.
                 UiTestHelpers.EndProcesses(processes);
 
                 // Stop tracing and export it into a zip archive.
