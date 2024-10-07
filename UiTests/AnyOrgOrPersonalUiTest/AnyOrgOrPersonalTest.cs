@@ -102,7 +102,7 @@ namespace MultipleApiUiTest
             }
             catch (Exception ex)
             {
-                //Adding guid incase of multiple test runs. This will allow screenshots to be matched to their appropriet test runs.
+                // Adding guid in case of multiple test runs. This will allow screenshots to be matched to their appropriate test runs.
                 var guid = Guid.NewGuid().ToString();
                 try
                 {
