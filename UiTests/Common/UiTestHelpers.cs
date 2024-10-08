@@ -15,11 +15,10 @@ namespace Common
     public static class UiTestHelpers
     {
         /// <summary>
-        /// Navigates to a web page with retry logic to ensure establish a connection in case a web app needs more startup time.
+        /// Navigates to a web page with retry logic to more reliably connect in case a web app needs more startup time.
         /// </summary>
         /// <param name="uri">The uri to navigate to</param>
         /// <param name="page">A page in a playwright browser</param>
-        /// <returns></returns>
         public static async Task NavigateToWebApp(string uri, IPage page)
         {
             uint InitialConnectionRetryCount = 5;
@@ -124,13 +123,13 @@ namespace Common
             await FillEntryBox(passwordInputLocator, password);
         }
 
-        public static async Task StaySignedIn_MicrosoftIdFlow(IPage page, string staySignedInText, ITestOutputHelper? output = null)
+        private static async Task StaySignedIn_MicrosoftIdFlow(IPage page, string staySignedInText, ITestOutputHelper? output = null)
         {
             WriteLine(output, $"Logging in ... Clicking {staySignedInText} on whether the browser should stay signed in.");
             await page.GetByRole(AriaRole.Button, new() { Name = staySignedInText }).ClickAsync();
         }
 
-        public static async Task FillEntryBox(ILocator entryBox, string entryText)
+        private static async Task FillEntryBox(ILocator entryBox, string entryText)
         {
             await entryBox.ClickAsync();
             await entryBox.FillAsync(entryText);
@@ -269,6 +268,10 @@ namespace Common
             );
         }
 
+        /// <summary>
+        /// Goes through all processes and ends them and any child processes they spawned
+        /// </summary>
+        /// <param name="processes"></param>
         public static void EndProcesses(Dictionary<string, Process>? processes)
         {
             Queue<Process> processQueue = new();
@@ -286,7 +289,7 @@ namespace Common
         /// Kills the processes in the queue and all of their children
         /// </summary>
         /// <param name="processQueue">queue of parent processes</param>
-        public static void KillProcessTrees(Queue<Process> processQueue)
+        private static void KillProcessTrees(Queue<Process> processQueue)
         {
 #if WINDOWS
             Process currentProcess;
@@ -381,6 +384,13 @@ namespace Common
             return (await client.GetSecretAsync(keyvaultSecretName)).Value.Value;
         }
 
+        /// <summary>
+        /// Starts all processes in the given list and verifies that they are running
+        /// </summary>
+        /// <param name="processDataEntries">The startup options for each process to be started</param>
+        /// <param name="processes">A dictionary to hold the process objects once started</param>
+        /// <param name="numRetries">The number of times to retry starting a process</param>
+        /// <returns>A boolean to say whether all the processes were able to start up successfully</returns>
         public static bool StartAndVerifyProcessesAreRunning(List<ProcessStartOptions> processDataEntries, out Dictionary<string, Process> processes, uint numRetries)
         {
             processes = new Dictionary<string, Process>();
@@ -469,9 +479,17 @@ namespace Common
 
             // Write the contents of file2 to file1
             File.WriteAllText(path1, file2Contents);
-
-            // Write the contents of file1 to file2
-            File.WriteAllText(path2, file1Contents);
+            try
+            {
+                // Write the contents of file1 to file2
+                File.WriteAllText(path2, file1Contents);
+            }
+            catch (Exception)
+            {
+                // If the second write fails, revert the first write
+                File.WriteAllText(path1, file1Contents);
+                throw;
+            }
 
             Console.WriteLine("File contents swapped successfully.");
         }
@@ -547,6 +565,9 @@ namespace Common
         }
     }
 
+    /// <summary>
+    /// A POCO class to hold the options for starting a process
+    /// </summary>
     public class ProcessStartOptions
     {
         public string TestAssemblyLocation { get; }
