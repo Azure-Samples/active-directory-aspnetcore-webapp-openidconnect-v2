@@ -73,6 +73,12 @@ namespace Common
             await StaySignedIn_MicrosoftIdFlow(page, staySignedInText, output);
         }
 
+        /// <summary>
+        /// Enters the email of the user to sign in.
+        /// </summary>
+        /// <param name="page">Playwright Page object the login is occurring on</param>
+        /// <param name="email">The email to use for the login</param>
+        /// <param name="output">Used to communicate output to the test's Standard Output</param>
         public static async Task EnterEmailAsync(IPage page, string email, ITestOutputHelper? output = null)
         {
             WriteLine(output, $"Logging in ... Entering and submitting user name: {email}.");
