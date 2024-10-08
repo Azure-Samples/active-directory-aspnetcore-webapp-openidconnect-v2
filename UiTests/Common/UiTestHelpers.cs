@@ -395,7 +395,7 @@ namespace Common
         {
             processes = new Dictionary<string, Process>();
 
-            //Start Processes
+            // Start Processes
             foreach (ProcessStartOptions processDataEntry in processDataEntries)
             {
                 var process = UiTestHelpers.StartProcessLocally(
