@@ -401,7 +401,7 @@ namespace Common
         {
             processes = new Dictionary<string, Process>();
 
-            //Start Processes
+            // Start Processes
             foreach (ProcessStartOptions processDataEntry in processDataEntries)
             {
                 var process = UiTestHelpers.StartProcessLocally(
@@ -416,7 +416,7 @@ namespace Common
                 Thread.Sleep(2000);
             }
 
-            //Verify that processes are running
+            // Verify that processes are running
             for (int i = 0; i < numRetries; i++)
             {
                 if (!UiTestHelpers.ProcessesAreAlive(processes.Values.ToList())) { RestartProcesses(processes, processDataEntries); }
@@ -433,7 +433,7 @@ namespace Common
 
         private static void RestartProcesses(Dictionary<string, Process> processes, List<ProcessStartOptions> processDataEntries)
         {
-            //attempt to restart failed processes
+            // attempt to restart failed processes
             foreach (KeyValuePair<string, Process> processEntry in processes)
             {
                 if (!ProcessIsAlive(processEntry.Value))
@@ -446,7 +446,7 @@ namespace Common
                                                     processDataEntry.EnvironmentVariables);
                     Thread.Sleep(5000);
 
-                    //Update process in collection
+                    // Update process in collection
                     processes[processEntry.Key] = process;
                 }
             }
