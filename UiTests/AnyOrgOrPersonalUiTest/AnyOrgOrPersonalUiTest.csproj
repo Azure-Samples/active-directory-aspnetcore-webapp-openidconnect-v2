@@ -2,7 +2,6 @@
   
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <!--<TargetFrameworks Condition="'$(TargetNet9)'== 'True'">$(TargetFrameworks); net9.0</TargetFrameworks>-->
     <IsPackable>false</IsPackable>
     <Nullable>enable</Nullable>
   </PropertyGroup>
