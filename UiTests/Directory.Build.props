@@ -1,0 +1,24 @@
+<Project>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <TargetFrameworks>net8.0</TargetFrameworks>
+    <IsPackable>false</IsPackable>
+    <EnablePackageValidation>false</EnablePackageValidation>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Common dependency versions">
+    <CoverletCollectorVersion>6.0.2</CoverletCollectorVersion>
+    <MicrosoftAspNetCoreMvcTestingVersion>8.0.8</MicrosoftAspNetCoreMvcTestingVersion>
+    <MicrosoftIdentityLabApiVersion>1.0.2</MicrosoftIdentityLabApiVersion>		
+    <MicrosoftNetTestSdkVersion>17.11.1</MicrosoftNetTestSdkVersion>
+    <MicrosoftPlaywrightVersion>1.47.0</MicrosoftPlaywrightVersion>
+    <SystemManagementVersion>8.0.0</SystemManagementVersion>
+    <SystemTextJsonVersion>8.0.4</SystemTextJsonVersion>
+    <XunitAssertVersion>2.9.1</XunitAssertVersion>
+    <XunitExtensibilityCoreVersion>2.9.1</XunitExtensibilityCoreVersion>
+    <XunitRunnerVisualStudioVersion>2.8.2</XunitRunnerVisualStudioVersion>
+    <XunitVersion>2.9.1</XunitVersion>
+  </PropertyGroup>
+
+</Project>
