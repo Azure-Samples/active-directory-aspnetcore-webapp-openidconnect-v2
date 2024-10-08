@@ -61,7 +61,7 @@ namespace MultipleApiUiTest
             try
             {
                 // Build the sample app with correct appsettings file.
-                UiTestHelpers.BuildSampleWithTestAppsettings(_testAssemblyLocation, _sampleAppPath, _testAppsettingsPath, SampleSlnFileName);
+                UiTestHelpers.BuildSampleUsingTestAppsettings(_testAssemblyLocation, _sampleAppPath, _testAppsettingsPath, SampleSlnFileName);
 
                 // Start the web app and api processes.
                 // The delay before starting client prevents transient devbox issue where the client fails to load the first time after rebuilding

@@ -24,12 +24,15 @@ namespace B2CUiTest
         private const string KeyvaultClientSecretName = "IdWeb-B2C-Client-ClientSecret";
         private const string NameOfUser = "unknown";
         private const uint ProcessStartupRetryNum = 3;
+        private const string SampleSolutionFileName = "4-2-B2C-Secured-API.sln";
         private const uint TodoListClientPort = 5000;
         private const uint TodoListServicePort = 44332;
         private const string TraceClassName = "B2C-Login";
+
         private readonly LocatorAssertionsToBeVisibleOptions _assertVisibleOptions = new() { Timeout = 25000 };
-        private readonly string _sampleClientAppPath = Path.Join("4-WebApp-your-API", "4-2-B2C", TC.s_todoListClientPath);
-        private readonly string _sampleServiceAppPath = Path.Join("4-WebApp-your-API", "4-2-B2C", TC.s_todoListServicePath);
+        private readonly string _sampleClientAppPath;
+        private readonly string _samplePath = Path.Join("4-WebApp-your-API", "4-2-B2C");
+        private readonly string _sampleServiceAppPath;
         private readonly Uri _keyvaultUri = new("https://webappsapistests.vault.azure.net");
         private readonly ITestOutputHelper _output;
         private readonly string _testAssemblyLocation = typeof(B2CUiTest).Assembly.Location;
@@ -37,6 +40,8 @@ namespace B2CUiTest
         public B2CUiTest(ITestOutputHelper output)
         {
             _output = output;
+            _sampleClientAppPath = Path.Join(_samplePath, TC.s_todoListClientPath);
+            _sampleServiceAppPath = Path.Join(_samplePath, TC.s_todoListServicePath);
         }
 
         [Fact]
@@ -72,6 +77,8 @@ namespace B2CUiTest
 
             try
             {
+                UiTestHelpers.BuildSampleUsingSampleAppsettings(_testAssemblyLocation, _samplePath, SampleSolutionFileName);
+
                 // Start the web app and api processes.
                 // The delay before starting client prevents transient devbox issue where the client fails to load the first time after rebuilding.
                 var clientProcessOptions = new ProcessStartOptions(_testAssemblyLocation, _sampleClientAppPath, TC.s_todoListClientExe, clientEnvVars); // probs need to add client specific path
