@@ -1,8 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
+using Azure.Core;
+using Azure.Security.KeyVault.Secrets;
+using Microsoft.Playwright;
 using System.Diagnostics;
 using System.Management;
 using System.Runtime.Versioning;
@@ -420,7 +421,6 @@ namespace Common
             {
                 if (!UiTestHelpers.ProcessesAreAlive(processes.Values.ToList())) { RestartProcesses(processes, processDataEntries); }
                 else { break; }
-            }
             }
 
             if (!UiTestHelpers.ProcessesAreAlive(processes.Values.ToList()))

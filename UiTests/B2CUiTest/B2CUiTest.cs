@@ -18,19 +18,21 @@ using TC = Common.TestConstants;
 namespace B2CUiTest
 {
     public class B2CUiTest : IClassFixture<InstallPlaywrightBrowserFixture>
-    {
+    {// if some other app is listening on the port I want can I kick it off? Also, could I kill the process using the port or at least ID it?
         private const string KeyvaultEmailName = "IdWeb-B2C-user";
         private const string KeyvaultPasswordName = "IdWeb-B2C-password";
         private const string KeyvaultClientSecretName = "IdWeb-B2C-Client-ClientSecret";
         private const string NameOfUser = "unknown";
+        private const uint ProcessStartupRetryNum = 3;
         private const uint TodoListClientPort = 5000;
         private const uint TodoListServicePort = 44332;
         private const string TraceClassName = "B2C-Login";
         private readonly LocatorAssertionsToBeVisibleOptions _assertVisibleOptions = new() { Timeout = 25000 };
-        private readonly string _sampleAppPath = Path.Join("4-WebApp-your-API", "4-2-B2C");
+        private readonly string _sampleClientAppPath = Path.Join("4-WebApp-your-API", "4-2-B2C", TC.s_todoListClientPath);
+        private readonly string _sampleServiceAppPath = Path.Join("4-WebApp-your-API", "4-2-B2C", TC.s_todoListServicePath);
         private readonly Uri _keyvaultUri = new("https://webappsapistests.vault.azure.net");
         private readonly ITestOutputHelper _output;
-        private readonly string _testAssemblyPath = typeof(B2CUiTest).Assembly.Location;
+        private readonly string _testAssemblyLocation = typeof(B2CUiTest).Assembly.Location;
 
         public B2CUiTest(ITestOutputHelper output)
         {
@@ -42,6 +44,7 @@ namespace B2CUiTest
         public async Task B2C_ValidCreds_LoginLogout()
         {
             // Web app and api environmental variable setup.
+            Dictionary<string, Process>? processes = null;
             DefaultAzureCredential azureCred = new();
             string clientSecret = await UiTestHelpers.GetValueFromKeyvaultWitDefaultCreds(_keyvaultUri, KeyvaultClientSecretName, azureCred);
             var serviceEnvVars = new Dictionary<string, string>
@@ -67,21 +70,14 @@ namespace B2CUiTest
             IBrowserContext context = await browser.NewContextAsync(new BrowserNewContextOptions { IgnoreHTTPSErrors = true });
             await context.Tracing.StartAsync(new() { Screenshots = true, Snapshots = true, Sources = true });
 
-            Process? serviceProcess = null;
-            Process? clientProcess = null;
-
             try
             {
                 // Start the web app and api processes.
                 // The delay before starting client prevents transient devbox issue where the client fails to load the first time after rebuilding.
-                serviceProcess = UiTestHelpers.StartProcessLocally(_testAssemblyPath, _sampleAppPath + TC.s_todoListServicePath, TC.s_todoListServiceExe, serviceEnvVars);
-                await Task.Delay(3000);
-                clientProcess = UiTestHelpers.StartProcessLocally(_testAssemblyPath, _sampleAppPath + TC.s_todoListClientPath, TC.s_todoListClientExe, clientEnvVars);
+                var clientProcessOptions = new ProcessStartOptions(_testAssemblyLocation, _sampleClientAppPath, TC.s_todoListClientExe, clientEnvVars); // probs need to add client specific path
+                var serviceProcessOptions = new ProcessStartOptions(_testAssemblyLocation, _sampleServiceAppPath, TC.s_todoListServiceExe, serviceEnvVars);
 
-                if (!UiTestHelpers.ProcessesAreAlive(new List<Process>() { clientProcess, serviceProcess }))
-                {
-                    Assert.Fail(TC.WebAppCrashedString);
-                }
+                UiTestHelpers.StartAndVerifyProcessesAreRunning([serviceProcessOptions, clientProcessOptions], out processes, ProcessStartupRetryNum);
 
                 // Navigate to web app the retry logic ensures the web app has time to start up to establish a connection.
                 IPage page = await context.NewPageAsync();
@@ -93,11 +89,11 @@ namespace B2CUiTest
                         await page.GotoAsync(TC.LocalhostUrl + TodoListClientPort);
                         break;
                     }
-                    catch (PlaywrightException ex)
+                    catch (PlaywrightException)
                     {
                         await Task.Delay(1000);
                         InitialConnectionRetryCount--;
-                        if (InitialConnectionRetryCount == 0) { throw ex; }
+                        if (InitialConnectionRetryCount == 0) { throw; }
                     }
                 }
                 LabResponse labResponse = await LabUserHelper.GetB2CLocalAccountAsync();
@@ -127,14 +123,11 @@ namespace B2CUiTest
             }
             finally
             {
-                // Add the following to make sure all processes and their children are stopped.
-                Queue<Process> processes = new Queue<Process>();
-                if (serviceProcess != null) { processes.Enqueue(serviceProcess); }
-                if (clientProcess != null) { processes.Enqueue(clientProcess); }
-                UiTestHelpers.KillProcessTrees(processes);
+                // End all processes.
+                UiTestHelpers.EndProcesses(processes);
 
                 // Stop tracing and export it into a zip archive.
-                string path = UiTestHelpers.GetTracePath(_testAssemblyPath, TraceFileName);
+                string path = UiTestHelpers.GetTracePath(_testAssemblyLocation, TraceFileName);
                 await context.Tracing.StopAsync(new() { Path = path });
                 _output.WriteLine($"Trace data for {TraceFileName} recorded to {path}.");
 

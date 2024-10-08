@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="1.12.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(MicrosoftAspNetCoreMvcTestingVersion)" />
     <PackageReference Include="Microsoft.Identity.Lab.Api" Version="$(MicrosoftIdentityLabApiVersion)" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNetTestSdkVersion)" />
@@ -26,8 +27,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\..\4-WebApp-your-API\4-2-B2C\TodoListService\TodoListService.csproj" />
-    <ProjectReference Include="..\..\4-WebApp-your-API\4-2-B2C\Client\TodoListClient.csproj" />
   </ItemGroup>
 
 </Project>
