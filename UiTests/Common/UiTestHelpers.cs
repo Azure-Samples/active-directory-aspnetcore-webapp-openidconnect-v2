@@ -410,7 +410,7 @@ namespace Common
                 Thread.Sleep(2000);
             }
 
-            //Verify that processes are running
+            // Verify that processes are running
             for (int i = 0; i < numRetries; i++)
             {
                 if (!UiTestHelpers.ProcessesAreAlive(processes.Values.ToList())) { RestartProcesses(processes, processDataEntries); }
