@@ -18,7 +18,7 @@ using TC = Common.TestConstants;
 namespace B2CUiTest
 {
     public class B2CUiTest : IClassFixture<InstallPlaywrightBrowserFixture>
-    {// if some other app is listening on the port I want can I kick it off? Also, could I kill the process using the port or at least ID it?
+    {
         private const string KeyvaultEmailName = "IdWeb-B2C-user";
         private const string KeyvaultPasswordName = "IdWeb-B2C-password";
         private const string KeyvaultClientSecretName = "IdWeb-B2C-Client-ClientSecret";
