@@ -440,7 +440,7 @@ namespace Common
                                                     processDataEntry.EnvironmentVariables);
                     Thread.Sleep(5000);
 
-                    //Update process in collection
+                    // Update process in collection
                     processes[processEntry.Key] = process;
                 }
             }
