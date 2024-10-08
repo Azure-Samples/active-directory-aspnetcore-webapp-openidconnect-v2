@@ -427,7 +427,7 @@ namespace Common
 
         private static void RestartProcesses(Dictionary<string, Process> processes, List<ProcessStartOptions> processDataEntries)
         {
-            //attempt to restart failed processes
+            // attempt to restart failed processes
             foreach (KeyValuePair<string, Process> processEntry in processes)
             {
                 if (!ProcessIsAlive(processEntry.Value))
