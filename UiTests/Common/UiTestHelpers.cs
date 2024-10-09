@@ -235,7 +235,7 @@ namespace Common
         /// <param name="testAssemblyLocation">The path to the test's directory</param>
         /// <param name="appLocation">The path to the processes directory</param>
         /// <returns>The path to the directory for the given app</returns>
-        private static string GetAppsettingsDirectory(string testAssemblyLocation, string appLocation)
+        private static string GetAbsoluteAppDirectory(string testAssemblyLocation, string appLocation)
         {
             string testedAppLocation = Path.GetDirectoryName(testAssemblyLocation)!;
             // e.g. microsoft-identity-web\tests\E2E Tests\WebAppUiTests\bin\Debug\net6.0
@@ -380,7 +380,7 @@ namespace Common
         /// <param name="keyvaultSecretName">The name of the secret</param>
         /// <returns>The value of the secret from key vault</returns>
         /// <exception cref="ArgumentNullException">Throws if no secret name is provided</exception>
-        internal static async Task<string> GetValueFromKeyvaultWitDefaultCreds(Uri keyvaultUri, string keyvaultSecretName, TokenCredential creds)
+        public static async Task<string> GetValueFromKeyvaultWitDefaultCreds(Uri keyvaultUri, string keyvaultSecretName, TokenCredential creds)
         {
             if (string.IsNullOrEmpty(keyvaultSecretName))
             {
@@ -528,7 +528,7 @@ namespace Common
                 process.WaitForExit();
             }
 
-            Console.WriteLine("Solution rebuild initiated.");
+            Console.WriteLine("Solution build initiated.");
         }
 
         /// <summary>
@@ -538,22 +538,28 @@ namespace Common
         /// <param name="sampleRelPath">Relative path to the sample app to build starting at the repo's root, does not include appsettings filename</param>
         /// <param name="testAppsettingsRelPath">Relative path to the test appsettings file starting at the repo's root, includes appsettings filename</param>
         /// <param name="solutionFileName">Filename for the sln file to build</param>
-        public static void BuildSampleWithTestAppsettings(
+        public static void BuildSampleUsingTestAppsettings(
             string testAssemblyLocation, 
             string sampleRelPath, 
             string testAppsettingsRelPath,
             string solutionFileName
             )
         {
-            string appsettingsDirectory = GetAppsettingsDirectory(testAssemblyLocation, sampleRelPath);
+            string appsettingsDirectory = GetAbsoluteAppDirectory(testAssemblyLocation, sampleRelPath);
             string appsettingsAbsPath = Path.Combine(appsettingsDirectory, TestConstants.AppSetttingsDotJson);
-            string testAppsettingsAbsPath = GetAppsettingsDirectory(testAssemblyLocation, testAppsettingsRelPath);
+            string testAppsettingsAbsPath = GetAbsoluteAppDirectory(testAssemblyLocation, testAppsettingsRelPath);
 
             SwapFiles(appsettingsAbsPath, testAppsettingsAbsPath);
 
-            try { BuildSolution(appsettingsDirectory + solutionFileName); }
+            try { BuildSolution(Path.Combine(appsettingsDirectory, solutionFileName)); }
             catch (Exception) { throw; }
             finally { SwapFiles(appsettingsAbsPath, testAppsettingsAbsPath); }
+        }
+
+        public static void BuildSampleUsingSampleAppsettings(string testAssemblyLocation, string sampleRelPath, string solutionFileName)
+        {
+            string appsDirectory = GetAbsoluteAppDirectory(testAssemblyLocation, sampleRelPath);
+            BuildSolution(Path.Combine(appsDirectory, solutionFileName)); 
         }
     }
 
@@ -597,4 +603,3 @@ namespace Common
         }
     }
 }
-
