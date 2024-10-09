@@ -26,7 +26,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\..\1-WebApp-OIDC\1-3-AnyOrgOrPersonal\WebApp-OpenIDConnect-DotNet.csproj" />
   </ItemGroup>
 
 </Project>
