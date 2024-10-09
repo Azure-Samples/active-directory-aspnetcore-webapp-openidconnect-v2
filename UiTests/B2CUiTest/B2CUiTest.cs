@@ -71,7 +71,7 @@ namespace B2CUiTest
             // Playwright setup. To see browser UI, set 'Headless = false'.
             const string TraceFileName = TraceClassName + "_TodoAppFunctionsCorrectly";
             using IPlaywright playwright = await Playwright.CreateAsync();
-            IBrowser browser = await playwright.Chromium.LaunchAsync(new() { Headless = false });
+            IBrowser browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
             IBrowserContext context = await browser.NewContextAsync(new BrowserNewContextOptions { IgnoreHTTPSErrors = true });
             await context.Tracing.StartAsync(new() { Screenshots = true, Snapshots = true, Sources = true });
 
