@@ -489,7 +489,7 @@ namespace Common
             {
                 // Write the contents of file1 to file2
                 File.WriteAllText(path2, file1Contents);
-    }
+            }
             catch (Exception)
             {
                 // If the second write fails, revert the first write
@@ -500,7 +500,7 @@ namespace Common
             Console.WriteLine("File contents swapped successfully.");
         }
 
-    /// <summary>
+        /// <summary>
         /// Builds the solution at the given path.
         /// </summary>
         /// <param name="solutionPath">Absolute path to the sln file to be built</param>
