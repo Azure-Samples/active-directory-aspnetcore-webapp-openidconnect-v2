@@ -140,7 +140,7 @@ using Azure.Security.KeyVault.Secrets;
 ```CSharp
     // uncomment the following 3 lines to get ClientSecret from KeyVault
   string tenantId = Configuration.GetValue<string>("AzureAd:TenantId");
-  services.Configure<MicrosoftIdentityOptions>(
+  services.Configure<MicrosoftIdentityOptions>(OpenIdConnectDefaults.AuthenticationScheme,
         options => { options.ClientSecret = GetSecretFromKeyVault(tenantId, "ENTER_YOUR_SECRET_NAME_HERE"); });
 ```
 
@@ -159,7 +159,7 @@ using Azure.Security.KeyVault.Secrets;
 
         // uncomment the following 3 lines to get ClientSecret from KeyVault
             string tenantId = Configuration.GetValue<string>("AzureAd:TenantId");
-            services.Configure<MicrosoftIdentityOptions>(
+            services.Configure<MicrosoftIdentityOptions>(OpenIdConnectDefaults.AuthenticationScheme,
             options => { options.ClientSecret = GetSecretFromKeyVault(tenantId, "myClientSecret"); });
 
       // ... more method code continues below
