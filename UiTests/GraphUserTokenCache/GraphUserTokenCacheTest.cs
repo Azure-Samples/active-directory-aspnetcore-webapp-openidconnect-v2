@@ -1,16 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Versioning;
-using System.Text;
-using System.Threading.Tasks;
 using Common;
 using Microsoft.Identity.Lab.Api;
 using Microsoft.Playwright;
+using System.Text;
 using Xunit;
 using Xunit.Abstractions;
 using Process = System.Diagnostics.Process;
@@ -30,10 +24,10 @@ namespace GraphUserTokenCacheTest
         private const string SqlTableName = "TokenCache";
         private const string TraceFileClassName = "GraphUserTokenCacheTest";
         private readonly LocatorAssertionsToBeVisibleOptions _assertVisibleOptions = new() { Timeout = 25000 };
+        private readonly ITestOutputHelper _output;
         private readonly string _sampleAppPath = "2-WebApp-graph-user" + Path.DirectorySeparatorChar + "2-2-TokenCache" + Path.DirectorySeparatorChar.ToString();
         private readonly string _testAppsettingsPath = "UiTests" + Path.DirectorySeparatorChar + "GraphUserTokenCache" + Path.DirectorySeparatorChar.ToString() + TC.AppSetttingsDotJson;
         private readonly string _testAssemblyLocation = typeof(GraphUserTokenCacheTest).Assembly.Location;
-        private readonly ITestOutputHelper _output;
 
         public GraphUserTokenCacheTest(ITestOutputHelper output)
         {
