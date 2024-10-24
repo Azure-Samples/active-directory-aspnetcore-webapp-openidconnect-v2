@@ -3,6 +3,7 @@
 
 using Azure.Core;
 using Azure.Security.KeyVault.Secrets;
+using Microsoft.Data.SqlClient;
 using Microsoft.Playwright;
 using System.Diagnostics;
 using System.Management;
@@ -556,10 +557,79 @@ namespace Common
             finally { SwapFiles(appsettingsAbsPath, testAppsettingsAbsPath); }
         }
 
+        /// <summary>
+        /// Builds the sample app using the appsettings.json file in the sample app's directory.
+        /// </summary>
+        /// <param name="testAssemblyLocation">Absolute path to the current test's working directory</param>
+        /// <param name="sampleRelPath">Relative path to the sample app to build starting at the repo's root, does not include appsettings filename</param>
+        /// <param name="solutionFileName">Filename for the sln file to build</param>
         public static void BuildSampleUsingSampleAppsettings(string testAssemblyLocation, string sampleRelPath, string solutionFileName)
         {
             string appsDirectory = GetAbsoluteAppDirectory(testAssemblyLocation, sampleRelPath);
             BuildSolution(Path.Combine(appsDirectory, solutionFileName)); 
+        }
+
+        /// <summary>
+        /// Checks to see if the specified database and token cache table exist in the given server and creates them if they do not.
+        /// </summary>
+        /// <param name="serverConnectionString">The string representing the server location</param>
+        /// <param name="databaseName">Name of the database where the Token Cache will be held</param>
+        /// <param name="tableName">Name of the table that holds the token cache</param>
+        /// <param name="output">Enables writing to the test's output</param>
+        public static void EnsureDatabaseAndTokenCacheTableExist(string serverConnectionString, string databaseName, string tableName, ITestOutputHelper output)
+        {
+            using (SqlConnection connection = new SqlConnection(serverConnectionString))
+            {
+                connection.Open();
+
+                // Check if database exists
+                string checkDatabaseQuery = $"SELECT database_id FROM sys.databases WHERE name = '{databaseName}'";
+                using (SqlCommand command = new(checkDatabaseQuery, connection))
+                {
+                    object result = command.ExecuteScalar();
+                    if (result == null)
+                    {
+                        // Create database if it doesn't exist
+                        string createDatabaseQuery = $"CREATE DATABASE {databaseName}";
+                        using SqlCommand createCommand = new SqlCommand(createDatabaseQuery, connection);
+                        createCommand.ExecuteNonQuery();
+                        output.WriteLine("Database created.");
+                    }
+                    else
+                    {
+                        output.WriteLine("Database already exists.");
+                    }
+                }
+
+                // Switch to the database
+                connection.ChangeDatabase(databaseName);
+
+                // Check if table exists
+                string checkTableQuery = $"SELECT object_id('{tableName}', 'U')";
+                using (SqlCommand command = new SqlCommand(checkTableQuery, connection))
+                {
+                    object result = command.ExecuteScalar();
+                    if (result.GetType() == typeof(DBNull))
+                    {
+                        // Create table if it doesn't exist
+                        string createCacheTableQuery = $@"
+                        CREATE TABLE [dbo].[{tableName}] (
+                            [Id] NVARCHAR(449) NOT NULL PRIMARY KEY,
+                            [Value] VARBINARY(MAX) NOT NULL,
+                            [ExpiresAtTime] DATETIMEOFFSET NOT NULL,
+                            [SlidingExpirationInSeconds] BIGINT NULL,
+                            [AbsoluteExpiration] DATETIMEOFFSET NULL
+                        )";
+                        using SqlCommand createCommand = new SqlCommand(createCacheTableQuery, connection);
+                        createCommand.ExecuteNonQuery();
+                        output.WriteLine("Table created.");
+                    }
+                    else
+                    {
+                        output.WriteLine("Table already exists.");
+                    }
+                }
+            }
         }
     }
 
