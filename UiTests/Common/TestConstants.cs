@@ -20,7 +20,8 @@ namespace Common
         public const string HttpsStarColon = "https://*:";
         public const string KestrelEndpointEnvVar = "Kestrel:Endpoints:Http:Url";
         public const string LocalhostUrl = @"https://localhost:";
-        public const string OIDCUser = "fIDLAB@MSIDLAB3.com";
+        public const string MsidLab3User = "fIDLAB@MSIDLAB3.com";
+        public const string MsidLab4User = "idlab@msidlab4.onmicrosoft.com";
         public const string PasswordText = "Password";
         public const string ServerFilePrefix = "server_";
         public const string TodoTitle1 = "Testing create todo item";

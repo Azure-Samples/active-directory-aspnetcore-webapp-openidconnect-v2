@@ -1,44 +1,41 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Versioning;
-using System.Text;
-using System.Threading.Tasks;
 using Common;
 using Microsoft.Identity.Lab.Api;
 using Microsoft.Playwright;
+using System.Text;
 using Xunit;
 using Xunit.Abstractions;
 using Process = System.Diagnostics.Process;
 using TC = Common.TestConstants;
 
-namespace MultipleApiUiTest
-{
-    public class AnyOrgOrPersonalTest : IClassFixture<InstallPlaywrightBrowserFixture>
-    {
-        private const string SignOutPageUriPath = @"/MicrosoftIdentity/Account/SignedOut";
-        private const uint ClientPort = 44321;
-        private const string TraceFileClassName = "OpenIDConnect";
-        private const uint NumProcessRetries = 3;
-        private const string SampleSlnFileName = "1-3-AnyOrgOrPersonal.sln";
-        private readonly LocatorAssertionsToBeVisibleOptions _assertVisibleOptions = new() { Timeout = 25000 };
-        private readonly string _sampleAppPath = "1-WebApp-OIDC" + Path.DirectorySeparatorChar + "1-3-AnyOrgOrPersonal" + Path.DirectorySeparatorChar.ToString();
-        private readonly string _testAppsettingsPath = "UiTests" + Path.DirectorySeparatorChar + "AnyOrgOrPersonalUiTest" + Path.DirectorySeparatorChar.ToString() + TC.AppSetttingsDotJson;
-        private readonly string _testAssemblyLocation = typeof(AnyOrgOrPersonalTest).Assembly.Location;
-        private readonly ITestOutputHelper _output;
 
-        public AnyOrgOrPersonalTest(ITestOutputHelper output)
+namespace GraphUserTokenCacheTest
+{
+    public class GraphUserTokenCacheTest
+    {
+        private const uint ClientPort = 44321;
+        private const uint NumProcessRetries = 3;
+        private const string SampleSlnFileName = "2-2-TokenCache.sln";
+        private const string SignOutPageUriPath = @"/MicrosoftIdentity/Account/SignedOut";
+        private const string SqlDbName = "MY_TOKEN_CACHE_DATABASE";
+        private const string SqlServerConnectionString = "Server=(localdb)\\mssqllocaldb;Integrated Security=true";
+        private const string SqlTableName = "TokenCache";
+        private const string TraceFileClassName = "GraphUserTokenCacheTest";
+        private readonly LocatorAssertionsToBeVisibleOptions _assertVisibleOptions = new() { Timeout = 25000 };
+        private readonly ITestOutputHelper _output;
+        private readonly string _sampleAppPath = "2-WebApp-graph-user" + Path.DirectorySeparatorChar + "2-2-TokenCache" + Path.DirectorySeparatorChar.ToString();
+        private readonly string _testAppsettingsPath = "UiTests" + Path.DirectorySeparatorChar + "GraphUserTokenCache" + Path.DirectorySeparatorChar.ToString() + TC.AppSetttingsDotJson;
+        private readonly string _testAssemblyLocation = typeof(GraphUserTokenCacheTest).Assembly.Location;
+
+        public GraphUserTokenCacheTest(ITestOutputHelper output)
         {
             _output = output;
         }
 
         [Fact]
-        [SupportedOSPlatform("windows")]
-        public async Task ChallengeUser_MicrosoftIdFlow_LocalApp_ValidEmailPasswordCreds_LoginLogout()
+        public async Task ChallengeUser_MicrosoftIdFlow_LocalApp_ValidEmailPasswordCreds_LoginLogoutAsync()
         {
             // Setup web app and api environmental variables.
             var clientEnvVars = new Dictionary<string, string>
@@ -60,6 +57,9 @@ namespace MultipleApiUiTest
 
             try
             {
+                // Make sure database and table for cache exist, if not they will be created.
+                UiTestHelpers.EnsureDatabaseAndTokenCacheTableExist(SqlServerConnectionString, SqlDbName, SqlTableName, _output);
+
                 // Build the sample app with correct appsettings file.
                 UiTestHelpers.BuildSampleUsingTestAppsettings(_testAssemblyLocation, _sampleAppPath, _testAppsettingsPath, SampleSlnFileName);
 
@@ -72,7 +72,7 @@ namespace MultipleApiUiTest
                 if (!areProcessesRunning)
                 {
                     _output.WriteLine($"Process not started after {NumProcessRetries} attempts.");
-                    StringBuilder runningProcesses = new StringBuilder();
+                    StringBuilder runningProcesses = new();
                     foreach (var process in processes)
                     {
 #pragma warning disable CA1305 // Specify IFormatProvider
@@ -82,14 +82,13 @@ namespace MultipleApiUiTest
                     Assert.Fail(TC.WebAppCrashedString + " " + runningProcesses.ToString());
                 }
 
-                LabResponse labResponse = await LabUserHelper.GetSpecificUserAsync(TC.MsidLab3User);
+                LabResponse labResponse = await LabUserHelper.GetSpecificUserAsync(TC.MsidLab4User);
 
                 // Initial sign in
                 _output.WriteLine("Starting web app sign-in flow.");
                 string email = labResponse.User.Upn;
                 await UiTestHelpers.NavigateToWebApp(uriWithPort, page);
-                await UiTestHelpers.EnterEmailAsync(page, email, _output);
-                await UiTestHelpers.EnterPasswordAsync(page, labResponse.User.GetOrFetchPassword(), _output);
+                await UiTestHelpers.FirstLogin_MicrosoftIdFlow_ValidEmailPassword(page, email, labResponse.User.GetOrFetchPassword());
                 await Assertions.Expect(page.GetByText("Integrating Azure AD V2")).ToBeVisibleAsync(_assertVisibleOptions);
                 await Assertions.Expect(page.GetByText(email)).ToBeVisibleAsync(_assertVisibleOptions);
                 _output.WriteLine("Web app sign-in flow successful.");
@@ -134,6 +133,5 @@ namespace MultipleApiUiTest
                 playwright.Dispose();
             }
         }
-
     }
 }
