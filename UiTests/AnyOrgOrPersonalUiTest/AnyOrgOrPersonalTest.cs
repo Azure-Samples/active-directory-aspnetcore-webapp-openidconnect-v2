@@ -82,7 +82,7 @@ namespace MultipleApiUiTest
                     Assert.Fail(TC.WebAppCrashedString + " " + runningProcesses.ToString());
                 }
 
-                LabResponse labResponse = await LabUserHelper.GetSpecificUserAsync(TC.OIDCUser);
+                LabResponse labResponse = await LabUserHelper.GetSpecificUserAsync(TC.MsidLab3User);
 
                 // Initial sign in
                 _output.WriteLine("Starting web app sign-in flow.");
