@@ -582,54 +582,68 @@ namespace Common
             {
                 connection.Open();
 
-                // Check if database exists
-                string checkDatabaseQuery = $"SELECT database_id FROM sys.databases WHERE name = '{databaseName}'";
-                using (SqlCommand command = new(checkDatabaseQuery, connection))
+                // Check if database exists and create it if it does not
+                if (DatabaseExists(connection, databaseName))
                 {
-                    object result = command.ExecuteScalar();
-                    if (result == null)
-                    {
-                        // Create database if it doesn't exist
-                        string createDatabaseQuery = $"CREATE DATABASE {databaseName}";
-                        using SqlCommand createCommand = new SqlCommand(createDatabaseQuery, connection);
-                        createCommand.ExecuteNonQuery();
-                        output.WriteLine("Database created.");
-                    }
-                    else
-                    {
-                        output.WriteLine("Database already exists.");
-                    }
+                    output.WriteLine("Database already exists.");
+                }
+                else
+                {
+                    CreateDatabase(connection, databaseName);
+                    output.WriteLine("Database created.");
                 }
 
                 // Switch to the database
                 connection.ChangeDatabase(databaseName);
 
-                // Check if table exists
-                string checkTableQuery = $"SELECT object_id('{tableName}', 'U')";
-                using (SqlCommand command = new SqlCommand(checkTableQuery, connection))
+                // Check if table exists and create it if it does not
+                if (TableExists(connection, tableName))
                 {
-                    object result = command.ExecuteScalar();
-                    if (result.GetType() == typeof(DBNull))
-                    {
-                        // Create table if it doesn't exist
-                        string createCacheTableQuery = $@"
-                        CREATE TABLE [dbo].[{tableName}] (
-                            [Id] NVARCHAR(449) NOT NULL PRIMARY KEY,
-                            [Value] VARBINARY(MAX) NOT NULL,
-                            [ExpiresAtTime] DATETIMEOFFSET NOT NULL,
-                            [SlidingExpirationInSeconds] BIGINT NULL,
-                            [AbsoluteExpiration] DATETIMEOFFSET NULL
-                        )";
-                        using SqlCommand createCommand = new SqlCommand(createCacheTableQuery, connection);
-                        createCommand.ExecuteNonQuery();
-                        output.WriteLine("Table created.");
-                    }
-                    else
-                    {
-                        output.WriteLine("Table already exists.");
-                    }
+                    output.WriteLine("Table already exists.");
+                }
+                else
+                {
+                    CreateTokenCacheTable(connection, tableName);
+                    output.WriteLine("Table created.");
                 }
             }
+        }
+
+        private static bool DatabaseExists(SqlConnection connection, string databaseName)
+        {
+            string checkDatabaseQuery = $"SELECT database_id FROM sys.databases WHERE name = '{databaseName}'";
+            using SqlCommand command = new SqlCommand(checkDatabaseQuery, connection);
+            object result = command.ExecuteScalar();
+            return result != null;
+        }
+
+        private static void CreateDatabase(SqlConnection connection, string databaseName)
+        {
+            string createDatabaseQuery = $"CREATE DATABASE {databaseName}";
+            using SqlCommand createCommand = new SqlCommand(createDatabaseQuery, connection);
+            createCommand.ExecuteNonQuery();
+        }
+
+        private static bool TableExists(SqlConnection connection, string tableName)
+        {
+            string checkTableQuery = $"SELECT object_id('{tableName}', 'U')";
+            using SqlCommand command = new SqlCommand(checkTableQuery, connection);
+            object result = command.ExecuteScalar();
+            return result.GetType() != typeof(DBNull);
+        }
+
+        private static void CreateTokenCacheTable(SqlConnection connection, string tableName)
+        {
+            string createCacheTableQuery = $@"
+                CREATE TABLE [dbo].[{tableName}] (
+                    [Id] NVARCHAR(449) NOT NULL PRIMARY KEY,
+                    [Value] VARBINARY(MAX) NOT NULL,
+                    [ExpiresAtTime] DATETIMEOFFSET NOT NULL,
+                    [SlidingExpirationInSeconds] BIGINT NULL,
+                    [AbsoluteExpiration] DATETIMEOFFSET NULL
+                )";
+            using SqlCommand createCommand = new SqlCommand(createCacheTableQuery, connection);
+            createCommand.ExecuteNonQuery();
         }
     }
 
