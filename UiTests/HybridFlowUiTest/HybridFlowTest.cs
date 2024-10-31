@@ -24,7 +24,7 @@ namespace HybridFlowUiTest
         private const string TraceFileClassName = "OpenIDConnect-HybridFlow";
         private const uint NumProcessRetries = 3;
         private const string SampleSlnFileName = "2-5-HybridFlow.sln";
-        private const string SampleExeFileName = "\\2-5-HybridFlow.exe";
+        private const string SampleExeFileName = "2-5-HybridFlow.exe";
         private readonly LocatorAssertionsToBeVisibleOptions _assertVisibleOptions = new() { Timeout = 25000 };
         private readonly string _sampleAppPath = "2-WebApp-graph-user" + Path.DirectorySeparatorChar + "2-5-HybridFlow" + Path.DirectorySeparatorChar.ToString();
         private readonly string _testAppsettingsPath = "UiTests" + Path.DirectorySeparatorChar + "HybridFlowUiTest" + Path.DirectorySeparatorChar.ToString() + TC.AppSetttingsDotJson;
@@ -52,7 +52,7 @@ namespace HybridFlowUiTest
             // Arrange Playwright setup, to see the browser UI set Headless = false.
             const string TraceFileName = TraceFileClassName + "_LoginLogout";
             using IPlaywright playwright = await Playwright.CreateAsync();
-            IBrowser browser = await playwright.Chromium.LaunchAsync(new() { Headless = false });
+            IBrowser browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
             IBrowserContext context = await browser.NewContextAsync(new BrowserNewContextOptions { IgnoreHTTPSErrors = true });
             await context.Tracing.StartAsync(new() { Screenshots = true, Snapshots = true, Sources = true });
             IPage page = await context.NewPageAsync();
@@ -65,7 +65,12 @@ namespace HybridFlowUiTest
 
                 // Start the web app and api processes.
                 // The delay before starting client prevents transient devbox issue where the client fails to load the first time after rebuilding
-                var clientProcessOptions = new ProcessStartOptions(_testAssemblyLocation, _sampleAppPath, SampleExeFileName, clientEnvVars);
+                var clientProcessOptions = new ProcessStartOptions(
+                    _testAssemblyLocation,
+                    _sampleAppPath,
+                    Path.DirectorySeparatorChar.ToString() + SampleExeFileName,
+                    clientEnvVars
+                    );
 
                 bool areProcessesRunning = UiTestHelpers.StartAndVerifyProcessesAreRunning([clientProcessOptions], out processes, NumProcessRetries);
 
