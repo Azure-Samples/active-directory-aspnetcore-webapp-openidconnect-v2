@@ -12,9 +12,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2CUiTest", "B2CUiTest\B2CUiTest.csproj", "{BF7D9973-9B92-4BED-ADE2-09087DDA9C85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "B2CUiTest", "B2CUiTest\B2CUiTest.csproj", "{BF7D9973-9B92-4BED-ADE2-09087DDA9C85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphUserTokenCache", "GraphUserTokenCache\GraphUserTokenCache.csproj", "{B083D288-AB6E-4849-9AC2-E1DA1F727483}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GraphUserTokenCache", "GraphUserTokenCache\GraphUserTokenCache.csproj", "{B083D288-AB6E-4849-9AC2-E1DA1F727483}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HybridFlowUiTest", "HybridFlowUiTest\HybridFlowUiTest.csproj", "{344CD55E-14C7-4999-A040-6C049F0070CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +40,10 @@ Global
 		{B083D288-AB6E-4849-9AC2-E1DA1F727483}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B083D288-AB6E-4849-9AC2-E1DA1F727483}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B083D288-AB6E-4849-9AC2-E1DA1F727483}.Release|Any CPU.Build.0 = Release|Any CPU
+		{344CD55E-14C7-4999-A040-6C049F0070CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{344CD55E-14C7-4999-A040-6C049F0070CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{344CD55E-14C7-4999-A040-6C049F0070CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{344CD55E-14C7-4999-A040-6C049F0070CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
