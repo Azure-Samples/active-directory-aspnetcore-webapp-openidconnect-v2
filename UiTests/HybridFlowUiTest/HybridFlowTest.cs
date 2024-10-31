@@ -1,20 +1,17 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Runtime.Versioning;
-using System.Text;
-using System.Threading.Tasks;
 using Common;
 using Microsoft.Identity.Lab.Api;
 using Microsoft.Playwright;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Versioning;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using static System.Net.Mime.MediaTypeNames;
 using Process = System.Diagnostics.Process;
 using TC = Common.TestConstants;
 
