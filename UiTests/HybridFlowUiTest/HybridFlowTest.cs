@@ -1,37 +1,37 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Versioning;
-using System.Text;
-using System.Threading.Tasks;
 using Common;
 using Microsoft.Identity.Lab.Api;
 using Microsoft.Playwright;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Versioning;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using Process = System.Diagnostics.Process;
 using TC = Common.TestConstants;
 
-namespace MultipleApiUiTest
+namespace HybridFlowUiTest
 {
-    public class AnyOrgOrPersonalTest : IClassFixture<InstallPlaywrightBrowserFixture>
+    public class HybridFlowTest : IClassFixture<InstallPlaywrightBrowserFixture>
     {
         private const string SignOutPageUriPath = @"/MicrosoftIdentity/Account/SignedOut";
         private const uint ClientPort = 44321;
-        private const string TraceFileClassName = "OpenIDConnect";
+        private const string TraceFileClassName = "OpenIDConnect-HybridFlow";
         private const uint NumProcessRetries = 3;
-        private const string SampleSlnFileName = "1-3-AnyOrgOrPersonal.sln";
+        private const string SampleSlnFileName = "2-5-HybridFlow.sln";
+        private const string SampleExeFileName = "2-5-HybridFlow.exe";
         private readonly LocatorAssertionsToBeVisibleOptions _assertVisibleOptions = new() { Timeout = 25000 };
-        private readonly string _sampleAppPath = "1-WebApp-OIDC" + Path.DirectorySeparatorChar + "1-3-AnyOrgOrPersonal" + Path.DirectorySeparatorChar.ToString();
-        private readonly string _testAppsettingsPath = "UiTests" + Path.DirectorySeparatorChar + "AnyOrgOrPersonalUiTest" + Path.DirectorySeparatorChar.ToString() + TC.AppSetttingsDotJson;
-        private readonly string _testAssemblyLocation = typeof(AnyOrgOrPersonalTest).Assembly.Location;
+        private readonly string _sampleAppPath = "2-WebApp-graph-user" + Path.DirectorySeparatorChar + "2-5-HybridFlow" + Path.DirectorySeparatorChar.ToString();
+        private readonly string _testAppsettingsPath = "UiTests" + Path.DirectorySeparatorChar + "HybridFlowUiTest" + Path.DirectorySeparatorChar.ToString() + TC.AppSetttingsDotJson;
+        private readonly string _testAssemblyLocation = typeof(HybridFlowTest).Assembly.Location;
         private readonly ITestOutputHelper _output;
 
-        public AnyOrgOrPersonalTest(ITestOutputHelper output)
+        public HybridFlowTest(ITestOutputHelper output)
         {
             _output = output;
         }
@@ -65,7 +65,12 @@ namespace MultipleApiUiTest
 
                 // Start the web app and api processes.
                 // The delay before starting client prevents transient devbox issue where the client fails to load the first time after rebuilding
-                var clientProcessOptions = new ProcessStartOptions(_testAssemblyLocation, _sampleAppPath, TC.s_oidcWebAppExe, clientEnvVars);
+                var clientProcessOptions = new ProcessStartOptions(
+                    _testAssemblyLocation,
+                    _sampleAppPath,
+                    Path.DirectorySeparatorChar.ToString() + SampleExeFileName,
+                    clientEnvVars
+                    );
 
                 bool areProcessesRunning = UiTestHelpers.StartAndVerifyProcessesAreRunning([clientProcessOptions], out processes, NumProcessRetries);
 
@@ -82,15 +87,15 @@ namespace MultipleApiUiTest
                     Assert.Fail(TC.WebAppCrashedString + " " + runningProcesses.ToString());
                 }
 
-                LabResponse labResponse = await LabUserHelper.GetSpecificUserAsync(TC.MsidLab3User);
+                LabResponse labResponse = await LabUserHelper.GetSpecificUserAsync(TC.MsidLab4User);
 
                 // Initial sign in
                 _output.WriteLine("Starting web app sign-in flow.");
                 string email = labResponse.User.Upn;
                 await UiTestHelpers.NavigateToWebApp(uriWithPort, page);
-                await UiTestHelpers.EnterEmailAsync(page, email, _output);
-                await UiTestHelpers.EnterPasswordAsync(page, labResponse.User.GetOrFetchPassword(), _output);
-                await Assertions.Expect(page.GetByText("Integrating Azure AD V2")).ToBeVisibleAsync(_assertVisibleOptions);
+                await page.GetByRole(AriaRole.Link, new() { Name = "Sign in" }).ClickAsync();
+                await UiTestHelpers.FirstLogin_MicrosoftIdFlow_ValidEmailPassword(page, email, labResponse.User.GetOrFetchPassword(), _output);
+                await Assertions.Expect(page.GetByText("SPA Authorization Code")).ToBeVisibleAsync(_assertVisibleOptions);
                 await Assertions.Expect(page.GetByText(email)).ToBeVisibleAsync(_assertVisibleOptions);
                 _output.WriteLine("Web app sign-in flow successful.");
 
