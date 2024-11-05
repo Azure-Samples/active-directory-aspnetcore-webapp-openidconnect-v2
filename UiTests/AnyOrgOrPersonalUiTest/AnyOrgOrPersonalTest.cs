@@ -21,7 +21,7 @@ namespace AnyOrgOrPersonalUiTest
     {
         private const string SignOutPageUriPath = @"/MicrosoftIdentity/Account/SignedOut";
         private const uint ClientPort = 44321;
-        private const string TraceFileClassName = "AnyOrgOrPersonalUiTest";
+        private const string TraceFileClassName = "AnyOrgOrPersonal";
         private const uint NumProcessRetries = 3;
         private const string SampleSlnFileName = "1-3-AnyOrgOrPersonal.sln";
         private readonly LocatorAssertionsToBeVisibleOptions _assertVisibleOptions = new() { Timeout = 25000 };
