@@ -27,7 +27,7 @@
             "HomePage": "https://localhost:7000",
             "ReplyUrls": "https://localhost:7000/api/auth/signin-oidc, https://localhost:7000/api/auth/signout-oidc",
             "SDK": "MicrosoftIdentityWeb",
-            "SampleSubPath": "2-WebApp-graph-user\\2-6-BFF-Proxy\\CallGraphBFF",
+            "SampleSubPath": "2-WebApp-graph-user\\2-6-BFF-Proxy",
             "PasswordCredentials": "Auto",
             "Certificate": "Auto",
             "RequiredResourcesAccess": [
@@ -49,7 +49,7 @@
         {
             "App": "client",
             "SettingKind": "Replace",
-            "SettingFile": "\\..\\CallGraphBFF\\appsettings.json",
+            "SettingFile": "\\..\\appsettings.json",
             "Mappings": [
                 {
                     "key": "Enter_the_Tenant_Id_Here",

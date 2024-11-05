@@ -147,7 +147,7 @@ Finally, you need to modify the app's configuration files.
 
 > Perform the steps below for the client app (CallGraphBFF)
 
-1. Open the `CallGraphBFF\appsettings.json` file.
+1. Open the `appsettings.json` file.
 2. *Comment out* the next line:
 
 ```json
@@ -174,7 +174,7 @@ You can now start the application as instructed in the [README](./README#setup-t
 
 > Perform the steps below for the client app (CallGraphBFF)
 
-1. Open the `CallGraphBFF\appsettings.json` file.
+1. Open the `appsettings.json` file.
 2. *Comment out* the next line:
 
 ```json

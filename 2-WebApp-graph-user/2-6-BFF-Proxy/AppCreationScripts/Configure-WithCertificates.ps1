@@ -319,8 +319,8 @@ Function ConfigureApplications
     Write-Host "Successfully registered and configured that app registration for 'CallGraphBFF' at `n $clientPortalUrl" -ForegroundColor Green 
     
     # Update config file for 'client'
-    # $configFile = $pwd.Path + "\..\CallGraphBFF\appsettings.json"
-    $configFile = $(Resolve-Path ($pwd.Path + "\..\CallGraphBFF\appsettings.json"))
+    # $configFile = $pwd.Path + "\..\appsettings.json"
+    $configFile = $(Resolve-Path ($pwd.Path + "\..\appsettings.json"))
     
     $dictionary = @{ "Enter_the_Tenant_Id_Here" = $tenantId;"Enter_the_Application_Id_Here" = $clientAadApplication.AppId;"Enter_the_Client_Secret_Here" = $clientAppKey };
 
