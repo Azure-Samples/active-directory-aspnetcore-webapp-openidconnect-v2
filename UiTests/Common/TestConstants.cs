@@ -28,11 +28,11 @@ namespace Common
         public const string TodoTitle2 = "Testing edit todo item";
         public const string WebAppCrashedString = $"The web app process has exited prematurely.";
 
-        public static readonly string s_oidcWebAppExe = Path.DirectorySeparatorChar.ToString() + "WebApp-OpenIDConnect-DotNet.exe";
-        public static readonly string s_oidcWebAppPath = Path.DirectorySeparatorChar.ToString() + "WebApp-OpenIDConnect";
-        public static readonly string s_todoListClientExe = Path.DirectorySeparatorChar.ToString() + "TodoListClient.exe";
-        public static readonly string s_todoListClientPath = Path.DirectorySeparatorChar.ToString() + "Client";
-        public static readonly string s_todoListServiceExe = Path.DirectorySeparatorChar.ToString() + "TodoListService.exe";
-        public static readonly string s_todoListServicePath = Path.DirectorySeparatorChar.ToString() + "TodoListService";
+        public static readonly string s_oidcWebAppExe = Path.DirectorySeparatorChar + "WebApp-OpenIDConnect-DotNet.exe";
+        public static readonly string s_oidcWebAppPath = Path.DirectorySeparatorChar + "WebApp-OpenIDConnect";
+        public static readonly string s_todoListClientExe = Path.DirectorySeparatorChar + "TodoListClient.exe";
+        public static readonly string s_todoListClientPath = Path.DirectorySeparatorChar + "Client";
+        public static readonly string s_todoListServiceExe = Path.DirectorySeparatorChar + "TodoListService.exe";
+        public static readonly string s_todoListServicePath = Path.DirectorySeparatorChar + "TodoListService";
     }
 }

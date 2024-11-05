@@ -22,11 +22,11 @@ namespace GraphUserTokenCacheTest
         private const string SqlDbName = "MY_TOKEN_CACHE_DATABASE";
         private const string SqlServerConnectionString = "Server=(localdb)\\mssqllocaldb;Integrated Security=true";
         private const string SqlTableName = "TokenCache";
-        private const string TraceFileClassName = "GraphUserTokenCacheTest";
+        private const string TraceFileClassName = "GraphUserTokenCache";
         private readonly LocatorAssertionsToBeVisibleOptions _assertVisibleOptions = new() { Timeout = 25000 };
         private readonly ITestOutputHelper _output;
-        private readonly string _sampleAppPath = "2-WebApp-graph-user" + Path.DirectorySeparatorChar + "2-2-TokenCache" + Path.DirectorySeparatorChar.ToString();
-        private readonly string _testAppsettingsPath = "UiTests" + Path.DirectorySeparatorChar + "GraphUserTokenCache" + Path.DirectorySeparatorChar.ToString() + TC.AppSetttingsDotJson;
+        private readonly string _sampleAppPath = "2-WebApp-graph-user" + Path.DirectorySeparatorChar + "2-2-TokenCache" + Path.DirectorySeparatorChar;
+        private readonly string _testAppsettingsPath = "UiTests" + Path.DirectorySeparatorChar + "GraphUserTokenCache" + Path.DirectorySeparatorChar + TC.AppSetttingsDotJson;
         private readonly string _testAssemblyLocation = typeof(GraphUserTokenCacheTest).Assembly.Location;
 
         public GraphUserTokenCacheTest(ITestOutputHelper output)
@@ -35,7 +35,7 @@ namespace GraphUserTokenCacheTest
         }
 
         [Fact]
-        public async Task ChallengeUser_MicrosoftIdFlow_LocalApp_ValidEmailPasswordCreds_LoginLogoutAsync()
+        public async Task LocalApp_ValidEmailPasswordCreds_LoginLogout()
         {
             // Setup web app and api environmental variables.
             var clientEnvVars = new Dictionary<string, string>

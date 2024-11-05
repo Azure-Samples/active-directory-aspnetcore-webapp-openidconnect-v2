@@ -6,8 +6,6 @@ using Azure.Security.KeyVault.Secrets;
 using Microsoft.Data.SqlClient;
 using Microsoft.Playwright;
 using System.Diagnostics;
-using System.Management;
-using System.Runtime.Versioning;
 using System.Text;
 using Xunit.Abstractions;
 
@@ -52,24 +50,6 @@ namespace Common
         {
             string staySignedInText = staySignedIn ? "Yes" : "No";
             await EnterEmailAsync(page, email, output);
-            await EnterPasswordAsync(page, password, output);
-            await StaySignedIn_MicrosoftIdFlow(page, staySignedInText, output);
-        }
-
-        /// <summary>
-        /// Login flow for anytime after the first time in a given browsing session.
-        /// </summary>
-        /// <param name="page">Playwright Page object the web app is accessed from</param>
-        /// <param name="email">email of the user to sign in</param>
-        /// <param name="password">password for sign in</param>
-        /// <param name="output">Used to communicate output to the test's Standard Output</param>
-        /// <param name="staySignedIn">Whether to select "stay signed in" on login</param>
-        public static async Task SuccessiveLogin_MicrosoftIdFlow_ValidEmailPassword(IPage page, string email, string password, ITestOutputHelper? output = null, bool staySignedIn = false)
-        {
-            string staySignedInText = staySignedIn ? "Yes" : "No";
-
-            WriteLine(output, $"Logging in again in this browsing session... selecting user via email: {email}.");
-            await SelectKnownAccountByEmail_MicrosoftIdFlow(page, email);
             await EnterPasswordAsync(page, password, output);
             await StaySignedIn_MicrosoftIdFlow(page, staySignedInText, output);
         }
@@ -156,21 +136,6 @@ namespace Common
         }
 
         /// <summary>
-        /// This starts the recording of playwright trace files. The corresponding EndAndWritePlaywrightTrace method will also need to be used.
-        /// This is not used anywhere by default and will need to be added to the code if desired.
-        /// </summary>
-        /// <param name="page">The page object whose context the trace will record.</param>
-        public static async Task StartPlaywrightTrace(IPage page)
-        {
-            await page.Context.Tracing.StartAsync(new()
-            {
-                Screenshots = true,
-                Snapshots = true,
-                Sources = true
-            });
-        }
-
-        /// <summary>
         /// Starts a process from an executable, sets its working directory, and redirects its output to the test's output.
         /// </summary>
         /// <param name="testAssemblyLocation">The path to the test's directory.</param>
@@ -179,7 +144,7 @@ namespace Common
         /// <param name="portNumber">The port for the process to listen on.</param>
         /// <param name="isHttp">If the launch URL is http or https. Default is https.</param>
         /// <returns>The started process.</returns>
-        public static Process StartProcessLocally(string testAssemblyLocation, string appLocation, string executableName, Dictionary<string, string>? environmentVariables = null)
+        private static Process StartProcessLocally(string testAssemblyLocation, string appLocation, string executableName, Dictionary<string, string>? environmentVariables = null)
         {
             string applicationWorkingDirectory = GetApplicationWorkingDirectory(testAssemblyLocation, appLocation);
             ProcessStartInfo processStartInfo = new ProcessStartInfo(applicationWorkingDirectory + executableName)
@@ -258,7 +223,7 @@ namespace Common
         /// <returns>An absolute path to a Playwright Trace zip folder</returns>
         public static string GetTracePath(string testAssemblyLocation, string traceName)
         {
-            const string traceParentFolder = "E2E Tests";
+            const string traceParentFolder = "UiTests";
             const string traceFolder = "PlaywrightTraces";
             const string zipExtension = ".zip";
             const int netVersionNumberLength = 3;
@@ -321,24 +286,6 @@ namespace Common
                 p.WaitForExit();
             }
 #endif
-        }
-
-        /// <summary>
-        /// Gets the child processes of a process on Windows
-        /// </summary>
-        /// <param name="process">The parent process</param>
-        /// <returns>A list of child processes</returns>
-        [SupportedOSPlatform("windows")]
-        public static IList<Process> GetChildProcesses(this Process process)
-        {
-            ManagementObjectSearcher processSearch = new ManagementObjectSearcher($"Select * From Win32_Process Where ParentProcessID={process.Id}");
-            IList<Process> processList = processSearch.Get()
-                .Cast<ManagementObject>()
-                .Select(mo =>
-                    Process.GetProcessById(Convert.ToInt32(mo["ProcessID"], System.Globalization.CultureInfo.InvariantCulture)))
-                .ToList();
-            processSearch.Dispose();
-            return processList;
         }
 
         /// <summary>
