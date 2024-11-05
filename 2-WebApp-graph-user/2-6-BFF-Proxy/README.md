@@ -85,7 +85,7 @@ or download and extract the repository *.zip* file.
 ### Step 2: Navigate to project folder
 
 ```console
-    cd 2-WebApp-graph-user/2-6-BFF-Proxy/CallGraphBFF
+    cd 2-WebApp-graph-user/2-6-BFF-Proxy
 ```
 
 ### Step 3. Trust development certificates
@@ -183,7 +183,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 
 > In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
-1. Open the `2-6-BFF-Proxy/CallGraphBFF/appsettings.json` file.
+1. Open the `2-6-BFF-Proxy/appsettings.json` file.
 1. Find the string `Enter_the_Tenant_Id_Here` and replace it with your Microsoft Entra tenant/directory ID.
 1. Find the string `Enter_the_Application_Id_Here` and replace it with the application ID (clientId) of `CallGraphBFF` app copied from the Microsoft Entra admin center.
 1. Find the string `Enter_the_Client_Secret_Here` and replace it with the generated secret that you saved during the creation of `CallGraphBFF` copied from the Microsoft Entra admin center.
@@ -193,7 +193,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 From your shell or command line, execute the following commands:
 
 ```console
-    cd 2-WebApp-graph-user/2-6-BFF-Proxy/CallGraphBFF
+    cd 2-WebApp-graph-user/2-6-BFF-Proxy/
     dotnet run
 ```
 
@@ -227,7 +227,7 @@ To provide feedback on or suggest features for Microsoft Entra ID, visit [User V
 
 ### Login and logout
 
-In [Program.cs](./CallGraphBFF/Program.cs), **Microsoft Identity Web** service is configured to obtain tokens to call downstream web APIs (here, Microsoft Graph):
+In [Program.cs](./Program.cs), **Microsoft Identity Web** service is configured to obtain tokens to call downstream web APIs (here, Microsoft Graph):
 
 ```csharp
 // Add Microsoft.Identity.Web services to the container.
@@ -237,7 +237,7 @@ builder.Services.AddMicrosoftIdentityWebAppAuthentication(builder.Configuration)
     .AddInMemoryTokenCaches();
 ```
 
-On the frontend side, the React SPA uses the [AuthProvider HOC](./CallGraphBFF/ClientApp/src/AuthProvider.js), which makes a GET call to the `/api/auth/login` endpoint of the ASP.NET Core web app.
+On the frontend side, the React SPA uses the [AuthProvider HOC](./ClientApp/src/AuthProvider.js), which makes a GET call to the `/api/auth/login` endpoint of the ASP.NET Core web app.
 
 ```javascript
 login = (postLoginRedirectUri) => {
@@ -255,7 +255,7 @@ login = (postLoginRedirectUri) => {
 }
 ```
 
-The controller in [AuthController.cs](./CallGraphBFF/Controllers/AuthController.cs) processes the request and initiates a token request against Microsoft Entra ID via the `Challenge()` method:
+The controller in [AuthController.cs](./Controllers/AuthController.cs) processes the request and initiates a token request against Microsoft Entra ID via the `Challenge()` method:
 
 ```csharp
 [HttpGet("login")]
@@ -274,7 +274,7 @@ Once the authentication is successful, the authentication state can be shared wi
 
 ### Cookie policies
 
-The sample makes use of HTTP only, strict cookies to secure the calls between the frontend and the backend. The default ASP.NET Core authentication cookie behavior will attempt to redirect unauthenticated requests to the identity provider (in this case, Microsoft Entra ID). As this is not the desired behavior in BFF proxy architecture, custom cookie authenticated events is used to modify the default behavior (see [CustomCookieAuthenticationEvents.cs](./CallGraphBFF/Utils/CustomCookieAuthenticationEvents.cs)).
+The sample makes use of HTTP only, strict cookies to secure the calls between the frontend and the backend. The default ASP.NET Core authentication cookie behavior will attempt to redirect unauthenticated requests to the identity provider (in this case, Microsoft Entra ID). As this is not the desired behavior in BFF proxy architecture, custom cookie authenticated events is used to modify the default behavior (see [CustomCookieAuthenticationEvents.cs](./Utils/CustomCookieAuthenticationEvents.cs)).
 
 ```csharp
 // Configure cookie properties for ASP.NET Core cookie authentication.
@@ -298,7 +298,7 @@ Microsoft Graph is now CAE-enabled in Preview. This means that it can ask its cl
 
 #### Declare the CAE capability in the configuration
 
-This sample app declares that it's CAE-capable by adding the `ClientCapabilities` field to the configuration in [appsettings.json](./CallGraphBFF/appsettings.json):
+This sample app declares that it's CAE-capable by adding the `ClientCapabilities` field to the configuration in [appsettings.json](./appsettings.json):
 
 ```json
 {
@@ -362,7 +362,7 @@ For more details on what's inside the access token, clients should use the token
 
 ### Calling Microsoft Graph
 
-To make bearer token calls to the Microsoft Graph API, **Microsoft.Identity.Web** makes use of the Microsoft Graph SDK internally. This is shown in [Program.cs](./CallGraphBFF/Program.cs):
+To make bearer token calls to the Microsoft Graph API, **Microsoft.Identity.Web** makes use of the Microsoft Graph SDK internally. This is shown in [Program.cs](./Program.cs):
 
 ```csharp
 // Add services to the container.
@@ -372,7 +372,7 @@ builder.Services.AddMicrosoftIdentityWebAppAuthentication(builder.Configuration)
     .AddInMemoryTokenCaches();
 ```
 
-The service can then be injected into controllers to make Graph calls afterwards. See [ProfileController.cs](./CallGraphBFF/Controllers/ProfileController.cs) for more.
+The service can then be injected into controllers to make Graph calls afterwards. See [ProfileController.cs](./Controllers/ProfileController.cs) for more.
 
 ### Deploying Web app to Azure App Service
 
