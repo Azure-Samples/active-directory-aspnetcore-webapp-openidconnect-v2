@@ -27,7 +27,7 @@ namespace B2CUiTest
         private const string SampleSolutionFileName = "4-2-B2C-Secured-API.sln";
         private const uint TodoListClientPort = 5000;
         private const uint TodoListServicePort = 44332;
-        private const string TraceClassName = "B2C-Login";
+        private const string TraceClassName = "B2C";
 
         private readonly LocatorAssertionsToBeVisibleOptions _assertVisibleOptions = new() { Timeout = 25000 };
         private readonly string _sampleClientAppPath;
@@ -46,7 +46,7 @@ namespace B2CUiTest
 
         [Fact]
         [SupportedOSPlatform("windows")]
-        public async Task B2C_ValidCreds_LoginLogout()
+        public async Task LocalApp_ValidEmailPasswordCreds_LoginLogout()
         {
             // Web app and api environmental variable setup.
             Dictionary<string, Process>? processes = null;

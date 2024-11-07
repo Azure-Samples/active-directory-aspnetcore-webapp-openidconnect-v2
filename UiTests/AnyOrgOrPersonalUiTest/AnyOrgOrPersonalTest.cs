@@ -1,33 +1,32 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Versioning;
-using System.Text;
-using System.Threading.Tasks;
 using Common;
 using Microsoft.Identity.Lab.Api;
 using Microsoft.Playwright;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Versioning;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using Process = System.Diagnostics.Process;
 using TC = Common.TestConstants;
 
-namespace MultipleApiUiTest
+namespace AnyOrgOrPersonalUiTest
 {
     public class AnyOrgOrPersonalTest : IClassFixture<InstallPlaywrightBrowserFixture>
     {
         private const string SignOutPageUriPath = @"/MicrosoftIdentity/Account/SignedOut";
         private const uint ClientPort = 44321;
-        private const string TraceFileClassName = "OpenIDConnect";
+        private const string TraceFileClassName = "AnyOrgOrPersonal";
         private const uint NumProcessRetries = 3;
         private const string SampleSlnFileName = "1-3-AnyOrgOrPersonal.sln";
         private readonly LocatorAssertionsToBeVisibleOptions _assertVisibleOptions = new() { Timeout = 25000 };
-        private readonly string _sampleAppPath = "1-WebApp-OIDC" + Path.DirectorySeparatorChar + "1-3-AnyOrgOrPersonal" + Path.DirectorySeparatorChar.ToString();
-        private readonly string _testAppsettingsPath = "UiTests" + Path.DirectorySeparatorChar + "AnyOrgOrPersonalUiTest" + Path.DirectorySeparatorChar.ToString() + TC.AppSetttingsDotJson;
+        private readonly string _sampleAppPath = "1-WebApp-OIDC" + Path.DirectorySeparatorChar + "1-3-AnyOrgOrPersonal" + Path.DirectorySeparatorChar;
+        private readonly string _testAppsettingsPath = "UiTests" + Path.DirectorySeparatorChar + "AnyOrgOrPersonalUiTest" + Path.DirectorySeparatorChar + TC.AppSetttingsDotJson;
         private readonly string _testAssemblyLocation = typeof(AnyOrgOrPersonalTest).Assembly.Location;
         private readonly ITestOutputHelper _output;
 
@@ -38,7 +37,7 @@ namespace MultipleApiUiTest
 
         [Fact]
         [SupportedOSPlatform("windows")]
-        public async Task ChallengeUser_MicrosoftIdFlow_LocalApp_ValidEmailPasswordCreds_LoginLogout()
+        public async Task LocalApp_ValidEmailPasswordCreds_LoginLogout()
         {
             // Setup web app and api environmental variables.
             var clientEnvVars = new Dictionary<string, string>

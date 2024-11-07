@@ -1,0 +1,4 @@
+# Ignore all files in this directory, which is needed for PR pipeline test traces
+*
+# Except this file
+!.gitignore

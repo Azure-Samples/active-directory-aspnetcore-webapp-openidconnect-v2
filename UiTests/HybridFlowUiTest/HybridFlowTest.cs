@@ -21,13 +21,13 @@ namespace HybridFlowUiTest
     {
         private const string SignOutPageUriPath = @"/MicrosoftIdentity/Account/SignedOut";
         private const uint ClientPort = 44321;
-        private const string TraceFileClassName = "OpenIDConnect-HybridFlow";
+        private const string TraceFileClassName = "HybridFlow";
         private const uint NumProcessRetries = 3;
         private const string SampleSlnFileName = "2-5-HybridFlow.sln";
         private const string SampleExeFileName = "2-5-HybridFlow.exe";
         private readonly LocatorAssertionsToBeVisibleOptions _assertVisibleOptions = new() { Timeout = 25000 };
-        private readonly string _sampleAppPath = "2-WebApp-graph-user" + Path.DirectorySeparatorChar + "2-5-HybridFlow" + Path.DirectorySeparatorChar.ToString();
-        private readonly string _testAppsettingsPath = "UiTests" + Path.DirectorySeparatorChar + "HybridFlowUiTest" + Path.DirectorySeparatorChar.ToString() + TC.AppSetttingsDotJson;
+        private readonly string _sampleAppPath = "2-WebApp-graph-user" + Path.DirectorySeparatorChar + "2-5-HybridFlow" + Path.DirectorySeparatorChar;
+        private readonly string _testAppsettingsPath = "UiTests" + Path.DirectorySeparatorChar + "HybridFlowUiTest" + Path.DirectorySeparatorChar + TC.AppSetttingsDotJson;
         private readonly string _testAssemblyLocation = typeof(HybridFlowTest).Assembly.Location;
         private readonly ITestOutputHelper _output;
 
@@ -38,7 +38,7 @@ namespace HybridFlowUiTest
 
         [Fact]
         [SupportedOSPlatform("windows")]
-        public async Task ChallengeUser_MicrosoftIdFlow_LocalApp_ValidEmailPasswordCreds_LoginLogout()
+        public async Task LocalApp_ValidEmailPasswordCreds_LoginLogout()
         {
             // Setup web app and api environmental variables.
             var clientEnvVars = new Dictionary<string, string>
@@ -68,7 +68,7 @@ namespace HybridFlowUiTest
                 var clientProcessOptions = new ProcessStartOptions(
                     _testAssemblyLocation,
                     _sampleAppPath,
-                    Path.DirectorySeparatorChar.ToString() + SampleExeFileName,
+                    Path.DirectorySeparatorChar + SampleExeFileName,
                     clientEnvVars
                     );
 
