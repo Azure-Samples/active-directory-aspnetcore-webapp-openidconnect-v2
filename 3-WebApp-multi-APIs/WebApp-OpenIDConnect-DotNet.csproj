@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.21.0" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="3.6.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
