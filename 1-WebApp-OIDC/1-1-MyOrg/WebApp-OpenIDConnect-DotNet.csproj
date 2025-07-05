@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="3.7.0" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="3.10.0" />
   </ItemGroup>
 
 </Project>

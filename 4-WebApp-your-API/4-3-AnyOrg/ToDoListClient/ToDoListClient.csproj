@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="3.7.0" />
-    <PackageReference Include="Microsoft.Identity.Web.GraphServiceClient" Version="3.7.0" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="3.10.0" />
+    <PackageReference Include="Microsoft.Identity.Web.GraphServiceClient" Version="3.10.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
