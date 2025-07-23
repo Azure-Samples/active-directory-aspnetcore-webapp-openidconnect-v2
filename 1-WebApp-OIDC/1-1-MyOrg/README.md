@@ -96,10 +96,7 @@ As a first step you'll need to:
    - In the Redirect URIs section, select **Web** in the combo-box and enter the following redirect URIs.
        - `https://localhost:44321/`
        - `https://localhost:44321/signin-oidc`
-   - In the **Advanced settings** section set **Logout URL** to `https://localhost:44321/signout-oidc`
-   - In the **Advanced settings** | **Implicit grant** section, check **ID tokens** as this sample requires
-     the [ID Token](https://docs.microsoft.com/azure/active-directory/develop/id-tokens) to be enabled to
-     sign-in the user.
+   - In the **Advanced settings** section set **Logout URL** to `https://localhost:44321/signout-oidc`  
      <details open=true>
      <summary>Expand/collapse screenshot</summary>
 
@@ -109,7 +106,12 @@ As a first step you'll need to:
 
 1. Select **Save**.
 
-> Note that unless the Web App calls a Web API, no certificate or secret is needed.
+1. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where we can generate secrets and upload certificates.
+1. In the **Client secrets** section, select **New client secret** and add a new secret
+
+> [!NOTE]
+> Secrets are weak credentials. In production, use a federated credential if you are hosted on Azure, or a certificate otherwise. See https://aka.ms/idweb/client-credentials
+
 
 ### Step 2: Download/ Clone this sample code or build the application using a template
 
@@ -132,7 +134,8 @@ cd "1-WebApp-OIDC\1-1-MyOrg"
   - replace the `ClientID` value with the *Application ID* from the application you registered in Application Registration portal on *Step 1*.
   - replace the `TenantId` value with the *Tenant ID* where you registered your Application on *Step 1*.
   - replace the `Domain` value with the *Microsoft Entra domain name*,  e.g. contoso.onmicrosoft.com where you registered your Application on *Step 1*.
-
+  - replace the `ClientSecret` value with the *client secret* you created in the previous step.
+  
 #### Option 2: Create the sample from the command line
 
 1. Run the following command to create a sample from the command line using the `SingleOrg` template:
