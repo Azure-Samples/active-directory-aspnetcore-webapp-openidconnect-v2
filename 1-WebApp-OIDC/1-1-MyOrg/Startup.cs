@@ -33,9 +33,10 @@ namespace WebApp_OpenIDConnect_DotNet
                 options.HandleSameSiteCookieCompatibility();
             });
 
-            // Sign-in users with the Microsoft identity platform
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-            .AddMicrosoftIdentityWebApp(options => Configuration.Bind("AzureAd", options));
+                .AddMicrosoftIdentityWebApp(options => Configuration.Bind("AzureAd", options))
+                .EnableTokenAcquisitionToCallDownstreamApi() // This is needed to exchange the authorization code for an ID Token
+                .AddInMemoryTokenCaches(); 
 
             services.AddControllersWithViews(options =>
             {
