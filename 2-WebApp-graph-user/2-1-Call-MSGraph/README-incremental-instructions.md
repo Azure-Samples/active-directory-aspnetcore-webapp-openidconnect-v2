@@ -321,7 +321,7 @@ To process the CAE challenge from Microsoft Graph, the controller actions need t
 
 ## Next steps
 
-- Learn how to enable distributed caches in [token cache serialization](../2-2-TokenCache)
+- Configure Microsoft.Identity.Web in-memory or distributed token caching by following the official [token cache serialization guidance](https://learn.microsoft.com/entra/msal/dotnet/how-to/token-cache-serialization?tabs=aspnetcore).
 - Learn how the same principle you've just learned can be used to call:
   - [several Microsoft APIs](../../3-WebApp-multi-APIs), which will enable you to learn how incremental consent and conditional access is managed in your Web App
   - 3rd party, or even [your own Web API](../../4-WebApp-your-API), which will enable you to learn about custom scopes

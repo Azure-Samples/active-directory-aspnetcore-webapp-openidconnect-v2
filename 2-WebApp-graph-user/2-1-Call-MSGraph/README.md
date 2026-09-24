@@ -39,6 +39,8 @@ description: "This sample demonstrates a ASP.NET Core Web App calling the Micros
 
 This sample demonstrates an ASP.NET Core web app that calls the Microsoft Graph API for a signed-in user.
 
+Microsoft.Identity.Web token caching can be configured for in-memory or distributed caches by following the official [token cache serialization guidance](https://learn.microsoft.com/entra/msal/dotnet/how-to/token-cache-serialization?tabs=aspnetcore).
+
 ## Scenario
 
 1. The ASP.NET Core client web app uses the [Microsoft.Identity.Web](https://aka.ms/microsoft-identity-web) to sign a user in, and obtain a JWT [access Tokens](https://aka.ms/access-tokens) from **Microsoft Entra ID**.
@@ -556,7 +558,7 @@ To process the CAE challenge from Microsoft Graph, the controller actions need t
 
 Use [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) to get support from the community.
 Ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
-Make sure that your questions or comments are tagged with [`azure-active-directory` `azure-ad-b2c` `ms-identity` `adal` `msal`].
+Make sure that your questions or comments are tagged with [`azure-active-directory` `ms-identity` `adal` `msal`].
 
 If you find a bug in the sample, raise the issue on [GitHub Issues](../../../../issues).
 

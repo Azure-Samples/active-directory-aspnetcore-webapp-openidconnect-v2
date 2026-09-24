@@ -8,8 +8,6 @@ endpoint: Microsoft identity platform
 ---
 # Change your ASP.NET Core Web app to sign-in users in any org with the Microsoft identity platform
 
-> This sample is for Microsoft Entra ID, not Azure Active Directory B2C. See [active-directory-b2c-dotnetcore-webapp](https://github.com/Azure-Samples/active-directory-b2c-dotnetcore-webapp), until we incorporate the B2C variation in the tutorial.
-
 ![Build badge](https://identitydivision.visualstudio.com/_apis/public/build/definitions/a7934fdd-dcde-4492-a406-7fad6ac00e17/514/badge)
 
 ## Scenario
