@@ -9,8 +9,6 @@ endpoint: Microsoft identity platform
 
 # An ASP.NET Core Web app signing-in users with the Microsoft identity platform in your organization
 
-> This sample is for Microsoft Entra ID, not Azure Active Directory B2C. See [sample 1-5-B2C](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-5-B2C), for B2C scenario.
-
 ## Scenario
 
 This sample shows how to build a .NET Core MVC Web app that uses OpenID Connect to sign in users. Users can only sign-in with their `work and school` accounts in their own organization. It leverages the ASP.NET Core OpenID Connect middleware.

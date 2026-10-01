@@ -20,8 +20,6 @@ description: "Build a multi-tenant SaaS web application that calls Microsoft Gra
 
 # Build a multi-tenant SaaS web application that calls Microsoft Graph using Microsoft Entra ID & OpenID Connect
 
-> This sample is for Microsoft Entra ID, not Azure Active Directory B2C.
-
 [![Build status](https://identitydivision.visualstudio.com/IDDP/_apis/build/status/aad%20Samples/.NET%20client%20samples/ASP.NET%20Core%20Web%20App%20tutorial)](https://identitydivision.visualstudio.com/IDDP/_build/latest?definitionId=819)
 
 ## About this sample
@@ -384,4 +382,3 @@ To understand more about app registration, see:
 
 - [Quickstart: Register an application with the Microsoft identity platform (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
 - [Quickstart: Configure a client application to access web APIs (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
-

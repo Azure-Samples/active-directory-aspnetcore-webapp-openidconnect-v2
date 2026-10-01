@@ -23,7 +23,6 @@ body:
       - "1-WebApp-OIDC/1-2-AnyOrg"
       - "1-WebApp-OIDC/1-3-AnyOrgOrPersonal"
       - "1-WebApp-OIDC/1-4-Sovereign"
-      - "1-WebApp-OIDC/1-5-B2C"
       - "1-WebApp-OIDC/1-6-SignOut"
       - "Not applicable"
   validations:
@@ -34,14 +33,12 @@ body:
     label: Web API (call Graph or downstream APIs)
     options:
       - "2-WebApp-graph-user/2-1-Call-MSGraph"
-      - "2-WebApp-graph-user/2-2-TokenCache"
       - "2-WebApp-graph-user/2-3-Multi-Tenant"
       - "2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph"
       - "2-WebApp-graph-user/2-5-HybridFlow"
       - "2-WebApp-graph-user/2-6-BFF-Proxy"
       - "3-WebApp-multi-APIs"
       - "4-WebApp-your-API/4-1-MyOrg"
-      - "4-WebApp-your-API/4-2-B2C"
       - "4-WebApp-your-API/4-3-AnyOrg"
       - "Not applicable"
   validations:

@@ -383,33 +383,6 @@
 			<path d="M0 693.82 L415.78 693.82" class="st15"/>
 		</g>
 		<a
-				xlink:href="https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/1-WebApp-OIDC/1-5-B2C">
-			<g id="group208-103" transform="translate(-241.439,-21.6542) rotate(-45)" v:mID="208" v:groupContext="group"
-					v:layerMember="0">
-				<v:userDefs>
-					<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
-				</v:userDefs>
-				<title>Station.208</title>
-				<g id="shape209-104" v:mID="209" v:groupContext="shape" v:layerMember="0">
-					<title>Sheet.209</title>
-					<path d="M0 686.73 A14.1732 14.1732 0 0 1 28.35 686.73 A14.1732 14.1732 0 1 1 0 686.73 Z" class="st12"/>
-				</g>
-				<g id="shape210-106" v:mID="210" v:groupContext="shape" v:layerMember="0" transform="translate(4.25197,-4.25197)">
-					<title>Sheet.210</title>
-					<path d="M0 690.99 A9.92126 9.92126 0 0 1 19.84 690.99 A9.92126 9.92126 0 1 1 0 690.99 Z" class="st7"/>
-				</g>
-				<g id="shape211-108" v:mID="211" v:groupContext="shape" transform="translate(28.3465,0)">
-					<title>Sheet.211</title>
-					<desc>With local or social identities (B2C)</desc>
-					<v:textBlock v:margins="rect(0,0,0,0)" v:tabSpace="42.5197"/>
-					<v:textRect cx="42.6694" cy="686.734" width="85.34" height="28.3465"/>
-					<rect x="0" y="672.561" width="85.3387" height="28.3465" class="st13"/>
-					<text x="20.69" y="677.73" class="st9" v:langID="1033"><v:paragraph v:horizAlign="1"/><v:tabList/>With local <v:lf/><tspan
-								x="2.79" dy="1.2em" class="st10">or social identities<v:lf/></tspan><tspan x="30.99" dy="1.2em"
-								class="st10">(B2C)</tspan></text>				</g>
-			</g>
-		</a>
-		<a
 				xlink:href="https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/4-WebApp-your-API">
 			<g id="group279-113" transform="translate(173.722,-215.339) rotate(-45)" v:mID="279" v:groupContext="group"
 					v:layerMember="0">
@@ -607,38 +580,6 @@
 			<v:textRect cx="482.06" cy="657.158" width="964.13" height="87.498"/>
 			<rect x="0" y="613.409" width="964.12" height="87.498" class="st4"/>
 			<text x="4" y="628.21" class="st5" v:langID="1033"><v:paragraph/><v:tabList/>Deployment to Azure</text>		</g>
-		<g id="group325-184" transform="translate(86.9799,-82.6617) rotate(-45)" v:mID="325" v:groupContext="group"
-				v:layerMember="0">
-			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
-			</v:userDefs>
-			<title>Station.325</title>
-			<g id="shape326-185" v:mID="326" v:groupContext="shape" v:layerMember="0">
-				<title>Sheet.326</title>
-				<path d="M0 686.73 A14.1732 14.1732 0 0 1 28.35 686.73 A14.1732 14.1732 0 1 1 0 686.73 Z" class="st6"/>
-			</g>
-			<g id="shape327-187" v:mID="327" v:groupContext="shape" v:layerMember="0" transform="translate(4.25197,-4.25197)">
-				<title>Sheet.327</title>
-				<path d="M0 690.99 A9.92126 9.92126 0 0 1 19.84 690.99 A9.92126 9.92126 0 1 1 0 690.99 Z" class="st7"/>
-			</g>
-			<g id="shape328-189" v:mID="328" v:groupContext="shape" transform="translate(28.3465,0)">
-				<title>Sheet.328</title>
-				<desc>Token caches</desc>
-				<v:textBlock v:margins="rect(0,0,0,0)" v:tabSpace="42.5197"/>
-				<v:textRect cx="29.8348" cy="686.734" width="59.67" height="28.3465"/>
-				<rect x="0" y="672.561" width="59.6697" height="28.3465" class="st8"/>
-				<text x="2.55" y="689.73" class="st16" v:langID="1033"><v:paragraph v:horizAlign="1"/><v:tabList/>Token caches</text>			</g>
-		</g>
-		<g id="shape331-192" v:mID="331" v:groupContext="shape" transform="translate(526.084,-317.855)">
-			<title>Sheet.331</title>
-			<desc>- in memory token cache - session token cache - SQL token cache</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197" v:verticalAlign="0"/>
-			<v:textRect cx="38.8858" cy="653.01" width="77.78" height="95.7952"/>
-			<rect x="0" y="605.112" width="77.7717" height="95.7952" class="st17"/>
-			<text x="4" y="618.11" class="st18" v:langID="1033"><v:paragraph/><v:tabList/>- in memory <v:lf/><tspan x="4"
-						dy="1.2em" class="st10">   </tspan>token cache<v:newlineChar/><tspan x="4" dy="1.2em" class="st10">-</tspan> session <v:lf/><tspan
-						x="4" dy="1.2em" class="st10">   </tspan>token cache<v:newlineChar/><tspan x="4" dy="1.2em" class="st10">-</tspan> SQL <v:lf/><tspan
-						x="4" dy="1.2em" class="st10">  </tspan>token cache</text>		</g>
 		<g id="shape431-200" v:mID="431" v:groupContext="shape" v:layerMember="1" transform="translate(8.58055,-53.7638)">
 			<title>Dynamic connector.431</title>
 			<path d="M0 693.82 L44.29 693.82" class="st19"/>
@@ -666,10 +607,6 @@
 			<title>Dynamic connector.439</title>
 			<path d="M0 693.82 L-31.71 693.82" class="st3"/>
 		</g>
-		<g id="shape440-216" v:mID="440" v:groupContext="shape" v:layerMember="1" transform="translate(422.966,-24.4571)">
-			<title>Dynamic connector.440</title>
-			<path d="M0 693.82 L-31.71 693.82" class="st22"/>
-		</g>
 		<g id="shape442-219" v:mID="442" v:groupContext="shape" v:layerMember="1" transform="translate(422.966,-67.9891)">
 			<title>Dynamic connector.442</title>
 			<path d="M0 693.82 L-31.71 693.82" class="st2"/>
@@ -688,13 +625,6 @@
 			<v:textRect cx="46.3161" cy="690.907" width="92.64" height="20"/>
 			<rect x="0" y="680.907" width="92.6322" height="20" class="st17"/>
 			<text x="4" y="693.91" class="st20" v:langID="1033"><v:paragraph/><v:tabList/>National clouds</text>		</g>
-		<g id="shape445-228" v:mID="445" v:groupContext="shape" transform="translate(437.068,-24.6933)">
-			<title>Sheet.445</title>
-			<desc>B2C</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="46.3161" cy="690.907" width="92.64" height="20"/>
-			<rect x="0" y="680.907" width="92.6322" height="20" class="st17"/>
-			<text x="4" y="693.91" class="st20" v:langID="1033"><v:paragraph/><v:tabList/>B2C</text>		</g>
 		<g id="group452-231" transform="translate(230.876,-56.7695)" v:mID="452" v:groupContext="group" v:layerMember="0">
 			<v:userDefs>
 				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
@@ -782,32 +712,5 @@
 			<v:textRect cx="279.213" cy="652.718" width="558.43" height="96.378"/>
 			<rect x="0" y="604.53" width="558.425" height="96.378" class="st4"/>
 			<text x="4" y="619.33" class="st26" v:langID="1033"><v:paragraph/><v:tabList/>Legend</text>		</g>
-		<a
-				xlink:href="https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/master/4-WebApp-your-API/4-2-B2C"
-				xlink:title="Web app calls B2C web API">
-			<g id="group1004-275" transform="translate(174.345,-21.6542) rotate(-45)" v:mID="1004" v:groupContext="group"
-					v:layerMember="0">
-				<v:userDefs>
-					<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
-				</v:userDefs>
-				<title>Station.1004</title>
-				<g id="shape1005-276" v:mID="1005" v:groupContext="shape" v:layerMember="0">
-					<title>Sheet.1005</title>
-					<path d="M0 686.73 A14.1732 14.1732 0 0 1 28.35 686.73 A14.1732 14.1732 0 1 1 0 686.73 Z" class="st12"/>
-				</g>
-				<g id="shape1006-278" v:mID="1006" v:groupContext="shape" v:layerMember="0" transform="translate(4.25197,-4.25197)">
-					<title>Sheet.1006</title>
-					<path d="M0 690.99 A9.92126 9.92126 0 0 1 19.84 690.99 A9.92126 9.92126 0 1 1 0 690.99 Z" class="st7"/>
-				</g>
-				<g id="shape1007-280" v:mID="1007" v:groupContext="shape" transform="translate(28.3465,0)">
-					<title>Sheet.1007</title>
-					<desc>Call your B2C API</desc>
-					<v:textBlock v:margins="rect(0,0,0,0)" v:tabSpace="42.5197"/>
-					<v:textRect cx="22.137" cy="686.734" width="44.28" height="28.3465"/>
-					<rect x="0" y="672.561" width="44.274" height="28.3465" class="st13"/>
-					<text x="2.79" y="683.73" class="st9" v:langID="1033"><v:paragraph v:horizAlign="1"/><v:tabList/>Call your<v:newlineChar/><tspan
-								x="4.75" dy="1.2em" class="st10">B2C API</tspan></text>				</g>
-			</g>
-		</a>
 	</g>
 </svg>
