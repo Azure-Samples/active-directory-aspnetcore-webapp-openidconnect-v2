@@ -137,3 +137,10 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 - The documentation for the Microsoft identity platform is available from [https://aka.ms/aadv2](https://aka.ms/aadv2).
 - Other samples for the Microsoft identity platform are available from [https://aka.ms/aaddevsamplesv2](https://aka.ms/aaddevsamplesv2).
 - The conceptual documentation for MSAL.NET is available from [https://aka.ms/msalnet](https://aka.ms/msalnet).
+
+## Appendix: Archived Azure AD B2C samples
+
+The Azure AD B2C scenarios have been removed from the active tutorial and are no longer maintained. Their last versions remain available for reference on the [`archive/azure-ad-b2c`](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/archive/azure-ad-b2c) branch:
+
+- [Sign in users with Azure AD B2C](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/archive/azure-ad-b2c/1-WebApp-OIDC/1-5-B2C)
+- [Protect and call a web API with Azure AD B2C](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/tree/archive/azure-ad-b2c/4-WebApp-your-API/4-2-B2C)
