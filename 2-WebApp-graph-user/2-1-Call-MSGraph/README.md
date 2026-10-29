@@ -164,12 +164,7 @@ Open the project in your IDE (like Visual Studio or Visual Studio Code) to confi
 1. Find the key `Domain` and replace the existing value with your Microsoft Entra tenant name.
 1. Find the key `ClientSecret` and replace the existing value with the key you saved during the creation of `WebApp-OpenIDConnect-DotNet-graph-v2` copied from the Microsoft Entra admin center.
 
-- In case you want to deploy your app in [Sovereign or national clouds](https://docs.microsoft.com/graph/deployments), ensure the `GraphApiUrl` and `Instance` option matches the your requirements. The default values are set to Microsoft Graph in the Azure public cloud. You may skip this point if it does not apply to you.
-
-  ```Json
-  "Instance": "https://login.microsoftonline.com/",
-  "GraphApiUrl": "https://graph.microsoft.com/v1.0"
-  ```
+- For sovereign or national clouds, configure `AzureAd:Instance`, `DownstreamApi:BaseUrl`, and `DownstreamApi:Scopes` using the [national-cloud configuration guide](../../1-WebApp-OIDC/1-4-Sovereign/README.md#microsoft-graph). The defaults target the public cloud.
 
 ## Run the sample
 

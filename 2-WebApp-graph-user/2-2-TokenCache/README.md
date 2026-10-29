@@ -170,11 +170,7 @@ Note: if you had used the automation to setup your application mentioned in [Ste
    > },
    > ```
 
-- In case you want to deploy your app in Sovereign or national clouds, ensure the `GraphApiUrl` option matches the one you want. By default this is Microsoft Graph in the Azure public cloud
-
-  ```JSon
-   "GraphApiUrl": "https://graph.microsoft.com"
-  ```
+- For sovereign or national clouds, configure `AzureAd:Instance`, `DownstreamApi:BaseUrl`, and `DownstreamApi:Scopes` using the [national-cloud configuration guide](../../1-WebApp-OIDC/1-4-Sovereign/README.md#microsoft-graph). The defaults target the public cloud.
 
 ### Step 4: Run the sample
 
