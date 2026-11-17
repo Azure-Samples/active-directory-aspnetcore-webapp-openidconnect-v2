@@ -1,0 +1,116 @@
+name: Release maintenance issue
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Exact cataloged IdWeb package identifier (not MSAL)
+        required: true
+        type: string
+      version:
+        description: Exact published three-part stable IdWeb package version
+        required: true
+        type: string
+      release_notes_url:
+        description: Official IdWeb release URL matching this version
+        required: true
+        type: string
+      event_key:
+        description: Optional coordinator deduplication key
+        required: false
+        type: string
+      assign_copilot:
+        description: Assign the release issue using a separately configured user token
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: release-maintenance-${{ inputs.package }}-${{ inputs.version }}
+  cancel-in-progress: false
+
+jobs:
+  open-issue:
+    if: ${{ github.repository == 'Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2' && github.ref == 'refs/heads/master' && vars.MAINTENANCE_DISPATCH_ACTOR != '' && github.actor == vars.MAINTENANCE_DISPATCH_ACTOR }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
+        with:
+          ref: master
+          persist-credentials: false
+      - name: Create or reuse an exact-release issue
+        id: release-issue
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        env:
+          RELEASE_PACKAGE: ${{ inputs.package }}
+          RELEASE_VERSION: ${{ inputs.version }}
+          RELEASE_URL: ${{ inputs.release_notes_url }}
+          EVENT_KEY: ${{ inputs.event_key }}
+          APPROVED_PACKAGE: ${{ vars.MAINTENANCE_PACKAGE }}
+          APPROVED_VERSION: ${{ vars.MAINTENANCE_TARGET_VERSION }}
+        with:
+          script: |
+            const crypto = require('node:crypto');
+            const catalog = require('./scripts/maintenance-samples.json');
+            const packageId = process.env.RELEASE_PACKAGE;
+            const version = process.env.RELEASE_VERSION;
+            if (!catalog.packages.includes(packageId) || !/^\d+\.\d+\.\d+$/.test(version)) {
+              throw new Error('Only cataloged IdWeb packages and exact stable versions are supported.');
+            }
+            if (packageId !== process.env.APPROVED_PACKAGE || version !== process.env.APPROVED_VERSION) {
+              throw new Error('Dispatch must match the administrator-approved Copilot setup package/version.');
+            }
+            const expectedUrl = `https://github.com/AzureAD/microsoft-identity-web/releases/tag/${version}`;
+            if (process.env.RELEASE_URL !== expectedUrl) {
+              throw new Error('Release URL must identify the exact official IdWeb version tag.');
+            }
+            const repository = `${context.repo.owner}/${context.repo.repo}`.toLowerCase();
+            const key = crypto.createHash('sha256')
+              .update(`${repository}|${packageId.toLowerCase()}|${version}`).digest('hex');
+            if (process.env.EVENT_KEY && process.env.EVENT_KEY !== key) {
+              throw new Error('Event key does not match this repository/package/version.');
+            }
+            const marker = `<!-- sample-maintenance:${key} -->`;
+            for await (const page of github.paginate.iterator(github.rest.issues.listForRepo, {
+              ...context.repo, state: 'all', per_page: 100
+            })) {
+              const existing = page.data.find(issue => !issue.pull_request &&
+                issue.user?.login === 'github-actions[bot]' && issue.body?.includes(marker));
+              if (existing) {
+                core.setOutput('issue-number', existing.number);
+                core.notice(`Release issue already exists: ${existing.html_url}`);
+                return;
+              }
+            }
+            const issue = await github.rest.issues.create({
+              ...context.repo,
+              title: `Evaluate ${packageId} ${version} in retained IdWeb samples`,
+              body: [marker,
+                `Evaluate direct references to ${packageId} at exact version ${version}.`,
+                `Official release: ${expectedUrl}`,
+                'Follow AGENTS.md and scripts/maintenance-samples.json. Use sample-implementer with actual read-only planner/reviewer role execution.',
+                'Require ORIGINAL .maintenance-evidence/manifest.json from setup matching this package/version and each original project baseline. Missing or mismatched evidence is SETUP_BLOCKED; never refetch/regenerate it.',
+                'Compare public contracts, implementation, tests and new parameters/defaults/options across both exact IdWeb source revisions. Produce the required scenario-improvement matrix with source/test citations, coverage and candidate dispositions; release notes or compatibility alone are insufficient.',
+                'Keep excluded/newer projects, other package references, frameworks, flows, settings and harness files unchanged. Never add MSAL references. Coordinated package migrations require maintainer-approved scope.',
+                'Run offline tests and original-manifest validation with -ExpectedVersion ' + version + '. Require hosted builds and independent review; clearly report every NOT RUN/PARTIAL/BLOCKED check. Do not execute SDK code or live authentication.',
+                'Open a NEW PR against this upstream repository master, never append to a cleanup PR. Do not merge, enable auto-merge or alter approval policies.',
+                'Human workflow execution approval and human merge approval remain required according to existing policy.'
+              ].join('\n\n')
+            });
+            core.setOutput('issue-number', issue.data.number);
+            core.notice(`Created release issue: ${issue.data.html_url}`);
+      - name: Optionally assign Copilot
+        if: ${{ inputs.assign_copilot }}
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        env:
+          RELEASE_ISSUE_NUMBER: ${{ steps.release-issue.outputs.issue-number }}
+        with:
+          github-token: ${{ secrets.COPILOT_ASSIGNMENT_TOKEN }}
+          script: |
+            const assignIssue = require('./.github/scripts/assign-maintenance-issue.cjs');
+            await assignIssue({ github, context, core, issueNumber: Number(process.env.RELEASE_ISSUE_NUMBER) });

@@ -1,0 +1,36 @@
+name: Maintenance validation
+
+on:
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-harness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
+        with:
+          persist-credentials: false
+      - name: Offline harness regression checks
+        shell: pwsh
+        run: ./scripts/Test-Maintenance.ps1
+      - name: Mocked assignment checks (no GitHub mutations)
+        run: node --test .github/scripts/assign-maintenance-issue.test.cjs
+  build-retained-applications:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@55ec9447dda3d1cf6bd587150f3262f30ee10815 # v3.4.2
+        with:
+          dotnet-version: 9.x
+      - name: Build all thirteen retained IdWeb applications
+        shell: pwsh
+        run: ./scripts/Validate-Maintenance.ps1 -Build
