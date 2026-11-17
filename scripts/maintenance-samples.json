@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "packages": [
+    "Microsoft.Identity.Web",
+    "Microsoft.Identity.Web.UI",
+    "Microsoft.Identity.Web.DownstreamApi",
+    "Microsoft.Identity.Web.GraphServiceClient",
+    "Microsoft.Identity.Web.GraphServiceClientBeta",
+    "Microsoft.Identity.Web.MicrosoftGraph"
+  ],
+  "projects": [
+    "1-WebApp-OIDC/1-1-MyOrg/WebApp-OpenIDConnect-DotNet.csproj",
+    "2-WebApp-graph-user/2-1-Call-MSGraph/WebApp-OpenIDConnect-DotNet-graph.csproj",
+    "2-WebApp-graph-user/2-2-TokenCache/WebApp-OpenIDConnect-DotNet.csproj",
+    "2-WebApp-graph-user/2-3-Multi-Tenant/WebApp-MultiTenant-v2.csproj",
+    "2-WebApp-graph-user/2-5-HybridFlow/2-5-HybridFlow.csproj",
+    "2-WebApp-graph-user/2-6-BFF-Proxy/CallGraphBFF.csproj",
+    "3-WebApp-multi-APIs/WebApp-OpenIDConnect-DotNet.csproj",
+    "4-WebApp-your-API/4-1-MyOrg/Client/TodoListClient.csproj",
+    "4-WebApp-your-API/4-1-MyOrg/TodoListService/TodoListService.csproj",
+    "4-WebApp-your-API/4-3-AnyOrg/ToDoListClient/ToDoListClient.csproj",
+    "4-WebApp-your-API/4-3-AnyOrg/TodoListService/ToDoListService.csproj",
+    "5-WebApp-AuthZ/5-1-Roles/WebApp-OpenIDConnect-DotNet.csproj",
+    "5-WebApp-AuthZ/5-2-Groups/WebApp-OpenIDConnect-DotNet.csproj"
+  ],
+  "supportProjects": [
+    "UiTests/AnyOrgOrPersonalUiTest/AnyOrgOrPersonalUiTest.csproj",
+    "UiTests/Common/Common.csproj",
+    "UiTests/GraphUserTokenCache/GraphUserTokenCache.csproj",
+    "UiTests/HybridFlowUiTest/HybridFlowUiTest.csproj"
+  ],
+  "excludedProjects": [
+    "1-WebApp-OIDC/1-5-B2C/WebApp-OpenIDConnect-DotNet.csproj",
+    "2-WebApp-graph-user/2-4-Sovereign-Call-MSGraph/WebApp-OpenIDConnect-DotNet.csproj",
+    "4-WebApp-your-API/4-2-B2C/Client/TodoListClient.csproj",
+    "4-WebApp-your-API/4-2-B2C/TodoListService/TodoListService.csproj",
+    "UiTests/B2CUiTest/B2CUiTest.csproj"
+  ]
+}
